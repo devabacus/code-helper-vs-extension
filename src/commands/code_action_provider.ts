@@ -28,7 +28,7 @@ export class CodeHelperProvider implements vscode.CodeActionProvider {
         };
 
         actions.push(snippetAction,
-            //  newFeatureAction
+             newFeatureAction
             );
         return actions;
     }

@@ -6,7 +6,7 @@ import {
 	workspace,
 } from "vscode";
 import {
-	snippetGenerate, newFeature, writeToTerminal, registerCodeActions
+	snippetGenerate, newFeature, writeToTerminal, registerCodeActions, startFlutter
 }
 	from "./commands";
 
@@ -19,6 +19,8 @@ export function activate(context: ExtensionContext) {
 		commands.registerCommand('code-helper.snippet_generate', snippetGenerate),
 		commands.registerCommand('code-helper.new_feature', newFeature),
 		commands.registerCommand('code-helper.terminal', writeToTerminal),
+		commands.registerCommand("code-helper.startFlutter", startFlutter)
+
 	);
 }
 

@@ -19,7 +19,7 @@ export async function newFeature() {
         'presentadion/widgets',
     ];
     
-    createDirs(folderPaths);
+    createDirs(folderPaths, true);
 
 }
 
