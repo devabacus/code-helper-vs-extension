@@ -41,7 +41,7 @@
       },
       {
         "command": "code-helper.startFlutter",
-        "title": "add flutter handle"
+        "title": "start flutter"
       }
     ],
     "keybindings": [
