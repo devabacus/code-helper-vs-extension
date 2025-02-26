@@ -18,7 +18,18 @@ export class CodeHelperProvider implements vscode.CodeActionProvider {
             title: "Generate Snippet"
         };
 
-        actions.push(snippetAction);
+        const newFeatureAction = new vscode.CodeAction(
+            "New Feature",
+            vscode.CodeActionKind.QuickFix
+        );
+        newFeatureAction.command = {
+            command: "code-helper.new_feature",
+            title: "New Feature"
+        };
+
+        actions.push(snippetAction,
+            //  newFeatureAction
+            );
         return actions;
     }
 }

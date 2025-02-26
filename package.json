@@ -18,7 +18,8 @@
   "main": "./out/extension.js",
   "activationEvents": [
     "onLanguage:dart",
-    "onCommand:code-helper.snippet_generate"
+    "onCommand:code-helper.snippet_generate",
+    "onCommand:code-helper.new_feature"
   ],
   
   "contributes": {
