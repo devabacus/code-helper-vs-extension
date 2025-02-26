@@ -33,15 +33,16 @@ export function snippet_generate() {
     return changedText;
   }
   
+ 
   function addTabs(codeRow: string): string {
-    let codeRowChanged = '';
-    // replace spaces with \t as spaces ignore in snipptets.json
-    if (codeRow.startsWith('  ')) codeRowChanged = '\\t' + codeRow.trim();
-    else if (codeRow.startsWith('    ')) codeRowChanged = '\\t\\t' + codeRow.trim();
-    else codeRowChanged = codeRow.trim();
-    return codeRowChanged;
-  }
-  
+    let spacesCount = codeRow.search(/\S|$/); // Количество пробелов перед текстом (учитывая пустые строки)
+    if (spacesCount === -1) return ''; // Если строка пустая, просто возвращаем её
+
+    let tabsCount = Math.floor(spacesCount / 2); // 2 пробела = 1 \t
+    let tabs = '\\t'.repeat(tabsCount); // Генерируем нужное количество \t
+    return tabs + codeRow.slice(spacesCount); // Добавляем отступы и обрезаем начальные пробелы
+}
+
   function escapeChars(codeRow: string): string {
     return codeRow.replace(/"/g, '\\"');
   }
