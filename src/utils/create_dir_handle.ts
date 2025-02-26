@@ -12,6 +12,20 @@ export const pickPath = async (): Promise<string | undefined> => {
     return path;
 };
 
+
+// Вспомогательная функция для выбора папки
+export async function promptForTargetDirectory(): Promise<string | undefined> {
+    const options: OpenDialogOptions = {
+        canSelectMany: false,
+        openLabel: "Выберите папку для создания",
+        canSelectFolders: true,
+        defaultUri: workspace.workspaceFolders?.[0]?.uri
+    };
+
+    return (await window.showOpenDialog(options))?.[0]?.fsPath;
+}
+
+
 // Функция для получения ввода от пользователя
 export const getUserInput = async (): Promise<string | undefined> => {
     const userInput = await window.showInputBox({ prompt: "Введите название папки (или оставьте пустым)" });
@@ -53,14 +67,3 @@ export async function createDirs(folderPaths: string[], userInputNeed: boolean =
 }
 
 
-// Вспомогательная функция для выбора папки
-async function promptForTargetDirectory(): Promise<string | undefined> {
-    const options: OpenDialogOptions = {
-        canSelectMany: false,
-        openLabel: "Выберите папку для создания",
-        canSelectFolders: true,
-        defaultUri: workspace.workspaceFolders?.[0]?.uri
-    };
-
-    return (await window.showOpenDialog(options))?.[0]?.fsPath;
-}
