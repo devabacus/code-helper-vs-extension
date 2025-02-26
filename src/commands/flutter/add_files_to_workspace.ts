@@ -1,4 +1,4 @@
-import { copyFromSnippets, copyPowerShellFile } from "./file_helper";
+import { copyFromSnippets, copyPowerShellFile } from "../file_helper";
 
 
 
