@@ -1,27 +1,23 @@
-import {  
+import {
 	commands,
 	ExtensionContext,
 	languages,
 	window,
 	workspace,
-  } from "vscode";
+} from "vscode";
+import { 
+	 snippet_generate}
+	from "./commands";
 
 
 
 export function activate(context: ExtensionContext) {
 
-	console.log('Congratulations, your extension "code-helper" is now active!');
 
-	const disposable = commands.registerCommand('code-helper.helloWorld', () => {
-		window.showInformationMessage('Уже 4-е обновление, поздравляю!');
-		console.log('привет ты запустил команду');
-		
-		
-		
-	});
-
-	context.subscriptions.push(disposable);
+	context.subscriptions.push(
+		commands.registerCommand('code-helper.snippet_generate', snippet_generate),
+	);
 }
 
 // This method is called when your extension is deactivated
-export function deactivate() {}
+export function deactivate() { }

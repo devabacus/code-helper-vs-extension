@@ -19,10 +19,18 @@
   "contributes": {
     "commands": [
       {
-        "command": "code-helper.helloWorld",
-        "title": "codehelper"
+        "command": "code-helper.snippet_generate",
+        "title": "snippet_generate"
       }
-    ]
+
+    ], 
+    "keybindings": [
+	{
+	  "command": "code-helper.snippet_generate",
+	  "key": "alt+ctrl+shift+b"
+	}
+  ]
+
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
