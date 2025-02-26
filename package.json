@@ -16,7 +16,15 @@
   ],
   "activationEvents": [],
   "main": "./out/extension.js",
+  "activationEvents": [
+    "onLanguage:dart",
+    "onCommand:code-helper.snippet_generate"
+  ],
+  
   "contributes": {
+
+
+
     "commands": [
       {
         "command": "code-helper.snippet_generate",
@@ -25,6 +33,10 @@
       {
         "command": "code-helper.new_feature",
         "title": "new_feature"
+      },
+      {
+        "command": "code-helper.terminal",
+        "title": "write to terminal"
       }
     ],
     "keybindings": [
@@ -33,6 +45,7 @@
         "key": "alt+ctrl+shift+b"
       }
     ]
+
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",

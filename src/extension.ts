@@ -5,19 +5,20 @@ import {
 	window,
 	workspace,
 } from "vscode";
-import { 
-	 snippet_generate, newFeature,
-	 }
+import {
+	snippetGenerate, newFeature, writeToTerminal, registerCodeActions
+}
 	from "./commands";
 
 
 
 export function activate(context: ExtensionContext) {
 
-
+	registerCodeActions(context);
 	context.subscriptions.push(
-		commands.registerCommand('code-helper.snippet_generate', snippet_generate),
+		commands.registerCommand('code-helper.snippet_generate', snippetGenerate),
 		commands.registerCommand('code-helper.new_feature', newFeature),
+		commands.registerCommand('code-helper.terminal', writeToTerminal),
 	);
 }
 
