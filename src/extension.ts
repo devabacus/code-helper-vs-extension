@@ -6,7 +6,8 @@ import {
 	workspace,
 } from "vscode";
 import { 
-	 snippet_generate}
+	 snippet_generate, newFeature,
+	 }
 	from "./commands";
 
 
@@ -16,6 +17,7 @@ export function activate(context: ExtensionContext) {
 
 	context.subscriptions.push(
 		commands.registerCommand('code-helper.snippet_generate', snippet_generate),
+		commands.registerCommand('code-helper.new_feature', newFeature),
 	);
 }
 

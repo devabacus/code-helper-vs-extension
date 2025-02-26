@@ -9,8 +9,10 @@
 			"name": "Run Extension",
 			"type": "extensionHost",
 			"request": "launch",
+			"runtimeExecutable": "${execPath}",
 			"args": [
-				"--extensionDevelopmentPath=${workspaceFolder}"
+				"--extensionDevelopmentPath=${workspaceFolder}",
+				//  "--disable-extensions"
 			],
 			"outFiles": [
 				"${workspaceFolder}/out/**/*.js"
@@ -19,3 +21,24 @@
 		}
 	]
 }
+
+
+// {
+// 	"version": "0.2.0",
+// 	"configurations": [
+// 		{
+// 			"name": "Run Extension",
+// 			"type": "extensionHost",
+// 			"request": "launch",
+// 			"args": [
+// 				"--extensionDevelopmentPath=${workspaceFolder}",
+// 				"${workspaceFolder}/test-workspace"
+// 			],
+// 			"cwd": "${workspaceFolder}/test-workspace",
+// 			"outFiles": [
+// 				"${workspaceFolder}/out/**/*.js"
+// 			],
+// 			"preLaunchTask": "${defaultBuildTask}"
+// 		}
+// 	]
+// }

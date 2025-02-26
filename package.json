@@ -7,7 +7,7 @@
     "type": "git",
     "url": "https://github.com/devabacus/code-helper-vs-extension.git"
   },
-  "version": "0.0.2",
+  "version": "0.0.1",
   "engines": {
     "vscode": "^1.97.0"
   },
@@ -21,16 +21,18 @@
       {
         "command": "code-helper.snippet_generate",
         "title": "snippet_generate"
+      },
+      {
+        "command": "code-helper.new_feature",
+        "title": "new_feature"
       }
-
-    ], 
+    ],
     "keybindings": [
-	{
-	  "command": "code-helper.snippet_generate",
-	  "key": "alt+ctrl+shift+b"
-	}
-  ]
-
+      {
+        "command": "code-helper.snippet_generate",
+        "key": "alt+ctrl+shift+b"
+      }
+    ]
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
@@ -52,6 +54,7 @@
     "typescript": "^5.7.3"
   },
   "dependencies": {
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.21",
+    "mkdirp": "^3.0.1"
   }
 }
