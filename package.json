@@ -40,8 +40,8 @@
         "title": "write to terminal"
       },
       {
-        "command": "code-helper.startFlutter",
-        "title": "start flutter"
+        "command": "code-helper.startapp",
+        "title": "start app"
       }
     ],
     "keybindings": [
