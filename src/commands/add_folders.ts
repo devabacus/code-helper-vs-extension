@@ -41,6 +41,44 @@ export async function addFolders() {
     // Получаем список папок, соответствующий выбору пользователя
     const selectedFolders = folderOptions[selectedOption];
 
-    createDirs(selectedFolders);
+    const path = await createDirs(selectedFolders);;
 
+    if (path) {
+        createBarrelFiles(path, selectedFolders);
+    }
+
+    }
+
+    function createBarrelFiles(rootPath: string, folders: string[]) {
+        const barrelFiles: Record<string, string> = {
+            "models": "models.dart",
+            "view": "view.dart",
+            "widgets": "widgets.dart",
+            "bloc": "bloc.dart",
+            "data/datasources": "datasources.dart",
+            "data/repositories": "repositories.dart",
+            "domain/entries": "entries.dart",
+            "domain/repositories": "repositories.dart",
+            "domain/usecases": "usecases.dart",
+            "presentation/bloc": "bloc.dart",
+            "presentation/pages": "pages.dart",
+            "presentation/widgets": "widgets.dart"
+        };
+    
+        for (const folder of folders) {
+            const folderPath = path.join(rootPath, folder);
+            console.log(`Проверка папки: ${folderPath}, существует: ${fs.existsSync(folderPath)}`);
+    
+            if (!fs.existsSync(folderPath)) {
+                continue;
+            }
+    
+            const barrelFileName = barrelFiles[folder];
+            if (barrelFileName) {
+                const filePath = path.join(folderPath, barrelFileName);
+                if (!fs.existsSync(filePath)) {
+                    fs.writeFileSync(filePath, `// ${barrelFileName} - файл для экспорта всех модулей\n`, "utf8");
+                }
+            }
+        }
     }

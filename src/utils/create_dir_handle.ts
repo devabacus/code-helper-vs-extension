@@ -33,9 +33,9 @@ export const getUserInput = async (): Promise<string | undefined> => {
 };
 
 // Основная функция для создания директорий
-export async function createDirs(folderPaths: string[], userInputNeed: boolean = false) {
+export async function createDirs(folderPaths: string[], userInputNeed: boolean = false):Promise<string|undefined> {
     let userInput: string | undefined;
-
+    let newFolderPath;
     if (userInputNeed) {
         userInput = await getUserInput();
         if (!userInput) {
@@ -53,7 +53,7 @@ export async function createDirs(folderPaths: string[], userInputNeed: boolean =
 
     for (const dirPath of folderPaths) {
         // Формируем путь: если `userInput` указан, создаём папки внутри него
-        const newFolderPath = userInput 
+        newFolderPath = userInput 
             ? `${targetDirectory}/${userInput}/${dirPath}` 
             : `${targetDirectory}/${dirPath}`;
 
@@ -64,6 +64,8 @@ export async function createDirs(folderPaths: string[], userInputNeed: boolean =
             window.showErrorMessage(`Ошибка при создании папки: ${error}`);
         }
     }
+    return targetDirectory;
+
 }
 
 
