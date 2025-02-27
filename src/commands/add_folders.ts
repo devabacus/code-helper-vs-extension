@@ -7,6 +7,12 @@ import { createDirs } from "../utils/create_dir_handle";
 export async function addFolders() {
     // Определяем доступные наборы папок
     const folderOptions: Record<string, string[]> = {
+        "Simple Feature": [
+            'bloc',
+            'models',
+            'view',
+            'widgets',
+        ],
         "Flutter New Feature": [
             'data/datasources',
             'data/repositories',
@@ -30,11 +36,11 @@ export async function addFolders() {
     });
 
     // Если пользователь не выбрал вариант — ничего не делаем
-    if (!selectedOption) return;
+    if (!selectedOption) {return;}
 
     // Получаем список папок, соответствующий выбору пользователя
     const selectedFolders = folderOptions[selectedOption];
 
-    createDirs(selectedFolders, true);
+    createDirs(selectedFolders);
 
     }
