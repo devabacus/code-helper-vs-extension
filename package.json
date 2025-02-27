@@ -14,17 +14,11 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
   "main": "./out/extension.js",
   "activationEvents": [
-    "onLanguage:dart",
-    "onCommand:code-helper.snippet_generate"    
+    "onLanguage:dart"
   ],
-  
   "contributes": {
-
-
-
     "commands": [
       {
         "command": "code-helper.snippet_generate",
@@ -49,7 +43,6 @@
         "key": "alt+ctrl+shift+b"
       }
     ]
-
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
