@@ -1,11 +1,12 @@
 import { Uri, window, workspace } from "vscode";
 import { createFlutterPackage } from "./create_package";
+import { addBLePackage } from "./add_ble_package";
 
 
 export async function flutterHandler() {
     const options: { [key: string]: () => Promise<void> } = {
         'Создать Flutter пакет': createFlutterPackage,
-        'Другая функция': someOtherFunction,
+        'Добавить ble': addBLePackage,
     };
 
     const choice = await window.showQuickPick(Object.keys(options), {
