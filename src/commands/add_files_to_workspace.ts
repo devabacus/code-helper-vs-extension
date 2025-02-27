@@ -11,6 +11,7 @@ export function selectAndAddPowerShellScript() {
     vscode.window.showQuickPick(options.map(o => o.label), { placeHolder: "Выберите PowerShell скрипт" })
         .then(selected => {
             if (!selected) return; // Если выбор отменён — ничего не делаем
+            
             const selectedFile = options.find(o => o.label === selected)?.fileName;
             if (selectedFile) {copyFromSnippets(selectedFile);}
         });

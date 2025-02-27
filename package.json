@@ -33,10 +33,6 @@
         "title": "write to terminal"
       },
       {
-        "command": "code-helper.startApp",
-        "title": "myapp"
-      },
-      {
         "command": "code-helper.myFlutter",
         "title": "myFlutter"
       }
