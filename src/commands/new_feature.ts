@@ -2,6 +2,7 @@ import { mkdirp } from "mkdirp";
 import { Uri, window, workspace } from "vscode";
 import * as fs from "fs";
 import * as path from "path";
+import { createDirs } from "../utils/create_dir_handle";
 
 export async function addFolders() {
     // Определяем доступные наборы папок
@@ -34,29 +35,6 @@ export async function addFolders() {
     // Получаем список папок, соответствующий выбору пользователя
     const selectedFolders = folderOptions[selectedOption];
 
-    // Запрашиваем у пользователя путь, где создать папки (однократный вызов)
-    const selectedUri = await window.showOpenDialog({
-        canSelectFolders: true,
-        canSelectFiles: false,
-        canSelectMany: false,
-        openLabel: "Выберите директорию для создания папок"
-    });
+    createDirs(selectedFolders, true);
 
-    if (!selectedUri || selectedUri.length === 0) return;
-
-    const basePath = selectedUri[0].fsPath;
-
-    // Создаём папки
-    for (const folder of selectedFolders) {
-        const fullPath = path.join(basePath, folder);
-        try {
-            if (!fs.existsSync(fullPath)) {
-                await mkdirp(fullPath);
-            }
-        } catch (error) {
-            window.showErrorMessage(`Ошибка при создании папки: ${fullPath}`);
-        }
     }
-
-    window.showInformationMessage(`Структура папок "${selectedOption}" успешно создана.`);
-}
