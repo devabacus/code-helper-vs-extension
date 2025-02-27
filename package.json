@@ -18,8 +18,7 @@
   "main": "./out/extension.js",
   "activationEvents": [
     "onLanguage:dart",
-    "onCommand:code-helper.snippet_generate",
-    "onCommand:code-helper.new_feature"
+    "onCommand:code-helper.snippet_generate"    
   ],
   
   "contributes": {
@@ -32,16 +31,16 @@
         "title": "snippet_generate"
       },
       {
-        "command": "code-helper.new_feature",
-        "title": "new_feature"
+        "command": "code-helper.add_folders",
+        "title": "add folders"
       },
       {
         "command": "code-helper.terminal",
         "title": "write to terminal"
       },
       {
-        "command": "code-helper.startapp",
-        "title": "start app"
+        "command": "code-helper.startApp",
+        "title": "myapp"
       }
     ],
     "keybindings": [

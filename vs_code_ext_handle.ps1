@@ -3,7 +3,7 @@ npm install -g @vscode/vsce
 code --install-extension mrfrolk.code-helper
 
 
-code --uninstall-extension mrfrolk.code-helper && code --install-extension mrfrolk.code-helper
+# code --uninstall-extension mrfrolk.code-helper && code --install-extension mrfrolk.code-helper
 code --list-extensions
 code --disable-extensions
 
