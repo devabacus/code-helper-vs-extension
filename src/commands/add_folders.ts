@@ -54,13 +54,11 @@ export async function addFolders() {
             "models": "models.dart",
             "view": "view.dart",
             "widgets": "widgets.dart",
-            "bloc": "bloc.dart",
             "data/datasources": "datasources.dart",
             "data/repositories": "repositories.dart",
             "domain/entries": "entries.dart",
             "domain/repositories": "repositories.dart",
             "domain/usecases": "usecases.dart",
-            "presentation/bloc": "bloc.dart",
             "presentation/pages": "pages.dart",
             "presentation/widgets": "widgets.dart"
         };
