@@ -7,8 +7,8 @@ import {
 } from "vscode";
 
 
-export const writeToTerminal = function (){
+export const writeToTerminal = function (command="whoami"){
     const terminal = window.createTerminal('My Terminal');
-    terminal.sendText('whoami');
+    terminal.sendText(command);
     terminal.show();
 };
