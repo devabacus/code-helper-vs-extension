@@ -4,19 +4,23 @@ import * as path from 'path';
 import { exec } from 'child_process';
 
 /**
- * Выполняет команду в терминале и возвращает промис
+ * Выполняет команду в терминале и возвращает промис.
  */
-function executeCommand(command: string, cwd?: string): Promise<void> {
+function executeCommand(command: string, cwd: string): Promise<void> {
     return new Promise((resolve, reject) => {
-        const terminal = vscode.window.createTerminal('Flutter Package Setup');
-        terminal.show();
-        terminal.sendText(command);
-        resolve();
+        exec(command, { cwd }, (error, stdout, stderr) => {
+            if (error) {
+                vscode.window.showErrorMessage(`Ошибка: ${stderr || error.message}`);
+                reject(error);
+            } else {
+                resolve();
+            }
+        });
     });
 }
 
 /**
- * Создаёт новый Flutter пакет и добавляет его в example
+ * Создаёт новый Flutter пакет и добавляет его в example.
  */
 export async function createFlutterPackage() {
     const packageName = await vscode.window.showInputBox({
@@ -46,17 +50,21 @@ export async function createFlutterPackage() {
         // Шаг 2: Создание папки example
         fs.mkdirSync(examplePath, { recursive: true });
 
-        // Шаг 3: Создание Flutter приложения в example
-        await executeCommand(`flutter create .`, examplePath);
+        // Шаг 3: Создание Flutter приложения внутри example
+        await executeCommand(`flutter create example`, projectPath);
 
-        // Шаг 4: Добавление зависимости в pubspec.yaml
+        // Шаг 4: Добавление зависимости пакета в pubspec.yaml example
         const pubspecPath = path.join(examplePath, 'pubspec.yaml');
-        let pubspecContent = fs.readFileSync(pubspecPath, 'utf8');
-        pubspecContent = pubspecContent.replace(
-            'dependencies:',
-            `dependencies:\n  ${packageName}:\n    path: ../`
-        );
-        fs.writeFileSync(pubspecPath, pubspecContent);
+        if (fs.existsSync(pubspecPath)) {
+            let pubspecContent = fs.readFileSync(pubspecPath, 'utf8');
+            pubspecContent = pubspecContent.replace(
+                'dependencies:',
+                `dependencies:\n  ${packageName}:\n    path: ../`
+            );
+            fs.writeFileSync(pubspecPath, pubspecContent);
+        } else {
+            vscode.window.showErrorMessage(`Файл pubspec.yaml не найден в ${examplePath}`);
+        }
 
         vscode.window.showInformationMessage(`Пакет ${packageName} успешно создан!`);
     } catch (error) {
