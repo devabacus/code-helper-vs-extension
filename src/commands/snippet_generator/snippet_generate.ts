@@ -1,4 +1,4 @@
-import { window, commands, Position, OpenDialogOptions } from 'vscode';
+import { window, commands, Position, OpenDialogOptions, SnippetString } from 'vscode';
 
 export function snippetGenerate() {
   const editor = window.activeTextEditor;
@@ -9,11 +9,28 @@ export function snippetGenerate() {
     const line = selection.end.line;
     const newline = line + 2;
 
-    editor.edit(async (builder) => {
-      builder.insert(new Position(newline, 0), textChanger(codeBlock));
-      console.log(codeBlock);
-    });
+    const wrappedSnippet = wrapSnippet(textChanger(codeBlock));
+    editor.insertSnippet(new SnippetString(wrappedSnippet), new Position(newline, 0));
+
+    // editor.edit(async (builder) => {
+    //   builder.insert(new Position(newline, 0), textChanger(codeBlock));
+    //   console.log(codeBlock);
+    // });
   }
+}
+
+
+function wrapSnippet(snippetBody: string): string {
+  return (
+    '"${1:snippet name}": {' +
+    '\n\t"scope": "${TM_FILENAME/.+\\.((py)|(php)|(go)|(js)|(dart)|(cs)|(cpp)|(java)|(ts)|(ps1)|(sh)|(ahk))$/${2:+python}${3:+php}${4:+go}${5:+javascript,javascriptreact}${6:+dart}${7:+csharp}${8:+cpp}${9:+java}${10:+typescript}${11:+powershell}${12:+shellscript}${13:+ahk}/}",' +
+    '\n\t"prefix": "${2}",' +
+    '\n\t"body": [' +
+    '\n' + snippetBody +
+    '\t],' +
+    '\n\t"description": "${4:${1}}"' +
+    '\n},\n'
+  );
 }
 
 

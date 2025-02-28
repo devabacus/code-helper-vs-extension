@@ -12,6 +12,7 @@ import {
 	from "./commands";
 import { flutterHandler } from "./commands/flutter/flutter_handler";
 import { startFlutterApp } from "./commands/flutter/start_flutter_app";
+import { snippetGenerateWithWrapper } from "./commands/snippet_generator/snippet_generate2";
 
 
 
