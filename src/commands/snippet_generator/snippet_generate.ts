@@ -1,24 +1,39 @@
 import { window, commands, Position, OpenDialogOptions, SnippetString } from 'vscode';
 
+
+
+export function preSnippetGenerate() {
+  const editor = window.activeTextEditor;
+  if (editor) {
+    const document = editor?.document;
+    const selection = editor?.selection;
+    const codeBlock = document.getText(selection);
+    const newline = selection.end.line + 2;
+
+    editor.edit(async (builder) => {
+      builder.insert(new Position(newline, 0), textChanger(codeBlock));
+      console.log(codeBlock);
+    });
+  }
+}
+
 export function snippetGenerate() {
   const editor = window.activeTextEditor;
   if (editor) {
     const document = editor?.document;
     const selection = editor?.selection;
     const codeBlock = document.getText(selection);
-    const line = selection.end.line;
-    const newline = line + 2;
+    const newline = selection.end.line + 2;
+
 
     const wrappedSnippet = wrapSnippet(textChanger(codeBlock));
     editor.insertSnippet(new SnippetString(wrappedSnippet), new Position(newline, 0));
-
-    // editor.edit(async (builder) => {
-    //   builder.insert(new Position(newline, 0), textChanger(codeBlock));
-    //   console.log(codeBlock);
-    // });
   }
 }
 
+export function snippetHandle() {
+
+}
 
 function wrapSnippet(snippetBody: string): string {
   return (

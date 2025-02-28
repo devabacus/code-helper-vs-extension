@@ -39,7 +39,8 @@ export async function addBLePackage() {
             let pubspecContent = fs.readFileSync(pubspecPath, 'utf8');
 
             if (!pubspecContent.includes('ble_manager:')) {
-                const newDependency = `  ble_manager:\n    git:\n      url: https://github.com/devabacus/ble_manager.git\n      ref: v0.0.2\n`;
+                // const newDependency = `  ble_manager:\n    git:\n      url: https://github.com/devabacus/ble_manager.git\n      ref: v0.0.2\n`;
+                const newDependency = `  ble_manager:\n    git:\n      url: https://github.com/devabacus/ble_manager.git\n`;
                 pubspecContent = pubspecContent.replace('dependencies:', `dependencies:\n${newDependency}`);
                 fs.writeFileSync(pubspecPath, pubspecContent);
                 vscode.window.showInformationMessage('Добавлена зависимость ble_manager в pubspec.yaml.');

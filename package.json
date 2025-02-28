@@ -25,6 +25,10 @@
         "title": "snippet_generate"
       },
       {
+        "command": "code-helper.pre_snippet_generate",
+        "title": "pre_snippet_generate"
+      },
+      {
         "command": "code-helper.add_folders",
         "title": "add folders"
       },
@@ -35,12 +39,21 @@
       {
         "command": "code-helper.myFlutter",
         "title": "myFlutter"
+      },
+
+      {
+        "command": "code-helper.testmy",
+        "title": "testmy"
       }
     ],
     "keybindings": [
       {
         "command": "code-helper.snippet_generate",
-        "key": "alt+ctrl+shift+b"
+        "key": "alt+ctrl+shift+p"
+      },
+      {
+        "command": "code-helper.pre_snippet_generate",
+        "key": "alt+ctrl+shift+i"
       }
     ]
   },

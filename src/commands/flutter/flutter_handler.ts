@@ -11,8 +11,8 @@ export async function flutterHandler() {
     const options: { [key: string]: () => Promise<void> } = {
         'Создать Flutter пакет': createFlutterPackage,
         'Добавить ble': addBLePackage,
-        'startapp': startFlutterApp,
-        'fix android ndk version': fixAndroidNDKVersion,
+        'Старт': startFlutterApp,
+        
     };
 
     const choice = await window.showQuickPick(Object.keys(options), {
@@ -23,3 +23,8 @@ export async function flutterHandler() {
         await options[choice]();
     }
 }
+
+
+// export async function ${1:fname}()${2: : Promise<${3:void}>} {
+//     ${4:}
+// }
