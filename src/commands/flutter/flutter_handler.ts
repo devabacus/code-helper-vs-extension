@@ -2,7 +2,7 @@ import { Uri, window, workspace } from "vscode";
 import { createFlutterPackage } from "./create_package";
 import { addBLePackage } from "./add_ble_package";
 import { fixAndroidNDKVersion } from "./fix_android_ndk_version";
-import { startFlutterApp } from "./start_flutter_app";
+import { startFlutterApp, startFlutterAppRouter } from "./start_flutter_app";
 
 
 
@@ -12,6 +12,7 @@ export async function flutterHandler() {
         'Создать Flutter пакет': createFlutterPackage,
         'Добавить ble': addBLePackage,
         'Старт': startFlutterApp,
+        'Старт c router': startFlutterAppRouter,
         
     };
 

@@ -9,6 +9,15 @@ import {
 
 export const writeToTerminal = function (command="whoami"){
     const terminal = window.createTerminal('My Terminal');
-    terminal.sendText(command);
     terminal.show();
+    terminal.sendText(command);
 };
+
+
+export function terminalCommands(commands: string[]) {
+    
+    commands.forEach(command => {
+        writeToTerminal(command);		
+    });
+}
+

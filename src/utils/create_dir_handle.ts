@@ -27,8 +27,8 @@ export async function promptForTargetDirectory(): Promise<string | undefined> {
 
 
 // Функция для получения ввода от пользователя
-export const getUserInput = async (): Promise<string | undefined> => {
-    const userInput = await window.showInputBox({ prompt: "Введите название папки (или оставьте пустым)" });
+export const getUserInput = async (prompt: string): Promise<string | undefined> => {
+    const userInput = await window.showInputBox({ prompt: prompt });
     return userInput?.trim() || undefined;
 };
 
@@ -37,7 +37,7 @@ export async function createDirs(folderPaths: string[], userInputNeed: boolean =
     let userInput: string | undefined;
     let newFolderPath;
     if (userInputNeed) {
-        userInput = await getUserInput();
+        userInput = await getUserInput("Введите название папки (или оставьте пустым)");
         if (!userInput) {
             window.showErrorMessage("Название папки не может быть пустым.");
             return;
