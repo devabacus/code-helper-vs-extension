@@ -1,7 +1,6 @@
-import { Uri, window, workspace } from "vscode";
-import { createFlutterPackage } from "./create_package";
+import { window } from "vscode";
 import { addBLePackage } from "./add_ble_package";
-import { fixAndroidNDKVersion } from "./fix_android_ndk_version";
+import { createFlutterPackage } from "./create_package";
 import { startFlutterApp, startFlutterAppRouter } from "./start_flutter_app";
 
 

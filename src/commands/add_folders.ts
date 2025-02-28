@@ -41,7 +41,7 @@ export async function addFolders() {
     // Получаем список папок, соответствующий выбору пользователя
     const selectedFolders = folderOptions[selectedOption];
 
-    const path = await createDirs(selectedFolders);;
+    const path = await createDirs(selectedFolders);
 
     if (path) {
         createBarrelFiles(path, selectedFolders);

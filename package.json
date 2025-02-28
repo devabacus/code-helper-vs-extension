@@ -42,8 +42,12 @@
       },
 
       {
-        "command": "code-helper.testmy",
-        "title": "testmy"
+        "command": "code-helper.myPython",
+        "title": "myPython"
+      },
+      {
+        "command": "code-helper.vsCodeExtHandler",
+        "title": "myVsExt"
       }
     ],
     "keybindings": [

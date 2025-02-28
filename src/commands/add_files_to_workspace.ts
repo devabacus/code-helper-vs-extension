@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { copyFromSnippets, copyPowerShellFile } from "./file_helper";
+import { addFileFromSnippetFolder } from "./file_helper";
 
 
 export function selectAndAddPowerShellScript() {
@@ -11,8 +11,8 @@ export function selectAndAddPowerShellScript() {
     vscode.window.showQuickPick(options.map(o => o.label), { placeHolder: "Выберите PowerShell скрипт" })
         .then(selected => {
             if (!selected) return; // Если выбор отменён — ничего не делаем
-            
+
             const selectedFile = options.find(o => o.label === selected)?.fileName;
-            if (selectedFile) {copyFromSnippets(selectedFile);}
+            if (selectedFile) { addFileFromSnippetFolder(selectedFile); }
         });
 }

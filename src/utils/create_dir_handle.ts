@@ -32,6 +32,9 @@ export const getUserInput = async (prompt: string): Promise<string | undefined> 
     return userInput?.trim() || undefined;
 };
 
+
+
+
 // Основная функция для создания директорий
 export async function createDirs(folderPaths: string[], userInputNeed: boolean = false):Promise<string|undefined> {
     let userInput: string | undefined;

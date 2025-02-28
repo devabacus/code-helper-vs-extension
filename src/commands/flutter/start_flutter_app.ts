@@ -1,6 +1,6 @@
 import { Uri, window, workspace } from "vscode";
 import { fixAndroidNDKVersion } from "./fix_android_ndk_version";
-import { copyFromSnippets } from "../file_helper";
+import { addFileFromSnippetFolder } from "../file_helper";
 import { terminalCommands, writeToTerminal } from "../../utils/terminal_handle";
 import { insertText } from "../../utils/insert_text";
 import { startContent } from "../flutter/flutter_content";
@@ -16,7 +16,7 @@ const startTerminalCommands: string[] = [
 
 export async function startFlutterApp() {
     baseCommand();
-    
+
 }
 
 export async function startFlutterAppRouter() {
@@ -26,7 +26,7 @@ export async function startFlutterAppRouter() {
 
 export async function baseCommand() {
     await fixAndroidNDKVersion();
-    copyFromSnippets("flutter_handle.ps1");
+    addFileFromSnippetFolder("flutter_handle.ps1");
     insertText(startContent);
 }
 

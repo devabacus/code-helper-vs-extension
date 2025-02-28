@@ -10,7 +10,8 @@ import {
 	writeToTerminal
 } from "./commands";
 import { flutterHandler } from "./commands/flutter/flutter_handler";
-import { testmy } from "./utils/testmy";
+import { pythonHandler } from "./commands/python/python_handler";
+import { vsCodeExtHandler } from "./commands/vs_code_ext/vs_code_ext_handler";
 
 
 
@@ -23,9 +24,9 @@ export function activate(context: ExtensionContext) {
 		commands.registerCommand('code-helper.add_folders', addFolders),
 		commands.registerCommand('code-helper.terminal', writeToTerminal),
 		commands.registerCommand("code-helper.myFlutter", flutterHandler),
-		commands.registerCommand("code-helper.testmy", testmy)
+		commands.registerCommand("code-helper.myPython", pythonHandler),
+		commands.registerCommand("code-helper.vsCodeExtHandler", vsCodeExtHandler),
 	);
 }
 
-// This method is called when your extension is deactivated
 export function deactivate() { }
