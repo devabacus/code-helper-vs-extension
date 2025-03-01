@@ -27,8 +27,6 @@ export async function terminalCommands(commands: string[], cwd: string):Promise<
     
     for (const command of commands) {
         await executeCommand(command, cwd);
-        // console.log("execut command " + command);
-        window.showInformationMessage(`команда ` + command + ' выполнена');
     }
 }
 

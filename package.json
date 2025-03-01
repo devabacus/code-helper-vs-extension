@@ -47,7 +47,7 @@
       },
       {
         "command": "code-helper.vsCodeExtHandler",
-        "title": "myVsExt"
+        "title": "myExt"
       }
     ],
     "keybindings": [

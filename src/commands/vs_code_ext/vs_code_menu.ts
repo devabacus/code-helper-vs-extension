@@ -21,15 +21,11 @@ export async function vsCodeExtHandler() {
 
 async function reinstallExtension() {
     const reinstallExtCmds = [
-        'git init',
-        'git add .',
-        'git commit -m "ivan durak"'
-        // 'vsce package',
-        // 'code --uninstall-extension mrfrolk.code-helper',
-        // 'code --install-extension code-helper-0.0.1.vsix'
+        'vsce package',
+        'code --uninstall-extension mrfrolk.code-helper',
+        'code --install-extension code-helper-0.0.1.vsix'
     ];
    await terminalCommands(reinstallExtCmds, getRootWorkspaceFolders());
-   
-    //TODO need to implement run commands
+   window.showInformationMessage('✅ Расширение успешно обновлено!');
 }
 

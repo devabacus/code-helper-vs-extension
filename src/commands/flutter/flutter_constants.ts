@@ -74,3 +74,5 @@ export const routerContent = `import 'package:flutter/material.dart';
 export const routesContent = `class AppRoutes {
         static const String home = '/';
       }`;
+
+      
