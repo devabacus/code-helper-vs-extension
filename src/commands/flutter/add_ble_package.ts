@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
-import { BlePermissionsBlock } from './flutter_constants';
+import { BlePermissionsBlock } from './flutter_content/flutter_constants';
 import { executeCommand } from '../../utils';
 
 /**

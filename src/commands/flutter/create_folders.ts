@@ -1,13 +1,13 @@
 import vscode from 'vscode';
 import fs from 'fs';
-import { routerContent, routesContent } from './flutter_constants';
+import { routerContent, routesContent } from './flutter_content/flutter_constants';
 import path from 'path';
 import { getRootWorkspaceFolders } from '../../utils/path_util';
 
 
 
 export function createFlutterRouterFiles() {
-    
+
     const rootPath = getRootWorkspaceFolders();
     const appRouterPath = path.join(rootPath, 'lib', 'app_router');
     const appRoutesPath = path.join(rootPath, 'lib', 'app_routes');
@@ -24,7 +24,7 @@ export function createFlutterRouterFiles() {
     const routerFilePath = path.join(appRouterPath, 'router.dart');
     const routesFilePath = path.join(appRoutesPath, 'routes.dart');
 
-  
+
     if (!fs.existsSync(routerFilePath)) {
         fs.writeFileSync(routerFilePath, routerContent, 'utf8');
     }
