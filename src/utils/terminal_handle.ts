@@ -19,10 +19,6 @@ export async function writeToTerminal (command="whoami"){
     terminal.sendText(command);
 };
 
-
-
-
-
 export async function terminalCommands(commands: string[], cwd: string):Promise<void> {
     
     for (const command of commands) {

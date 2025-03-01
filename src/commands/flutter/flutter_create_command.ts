@@ -1,41 +1,47 @@
 import * as vscode from "vscode";
 import * as path from "path";
-import { writeToTerminal } from "../../utils/terminal_handle";
+import { executeCommand, writeToTerminal } from "../../utils/terminal_handle";
 import { getUserInput, pickPath } from "../../utils/ui/ui_util";
+import { getUserInputWrapper } from "../../utils/ui/ui_ask_folder";
+import { startFlutterAppRouter } from "./start_flutter_app";
+import { insertTextToFile } from "../../utils";
+import { startApp, startAppWithRoute } from "./flutter_content/flutter_content";
+import * as fs from 'fs';
+import { addGoRouterPackage } from "./flutter_content/flutter_commands";
+import { createFlutterRouterFiles } from "./create_folders";
 
 
-export async function flutterCreate() {
-    const newProjectPath = await pickPath();
-    if (!newProjectPath) {
-        vscode.window.showErrorMessage("Путь к проекту не выбран!");
+
+
+
+
+
+export async function flutterCreateNewProject():Promise<void> {
+    
+    const projectPath = await pickPath();
+    if (!projectPath) {
         return;
     }
-
-    const projectName = await getUserInput("Название проекта");
+    const projectName = await getUserInput('введите название Flutter проекта');
     if (!projectName) {
-        vscode.window.showErrorMessage("Название проекта не введено!");
         return;
     }
+    const create_command = `flutter create ${projectName}`;
+    const fullProjectPath = path.join(projectPath, projectName);
+    const mainDartPath = path.join(fullProjectPath, 'lib', 'main.dart');
 
-    const projectPath = path.join(newProjectPath, projectName);
-    const mainFilePath = path.join(projectPath, "lib", "main.dart");
 
-    // Команда для создания Flutter-проекта
-    const flutterCreateCommand = `flutter create "${projectPath}"`;
+    await executeCommand(create_command, projectPath);
+    
+    await executeCommand(addGoRouterPackage, fullProjectPath);
 
-    // Выполняем команду создания проекта в терминале
-    writeToTerminal(flutterCreateCommand);
+    createFlutterRouterFiles(fullProjectPath);
+    fs.writeFileSync(mainDartPath, startAppWithRoute, { encoding: "utf-8" });
+    
+    const openCommand = `code -g "${mainDartPath}" "${fullProjectPath}"`;
+    
+    await executeCommand(openCommand, projectPath);
 
-    // Открываем проект в VS Code API (без нового окна)
-    await vscode.commands.executeCommand("vscode.openFolder", vscode.Uri.file(projectPath), { forceNewWindow: false });
+    // insertTextToFile(startApp, mainDartPath);
 
-    // Делаем задержку, чтобы `main.dart` точно успел создаться
-    setTimeout(async () => {
-        try {
-            const doc = await vscode.workspace.openTextDocument(vscode.Uri.file(mainFilePath));
-            await vscode.window.showTextDocument(doc, { preview: false });
-        } catch (error) {
-            vscode.window.showErrorMessage("Не удалось открыть main.dart: ");
-        }
-    }, 3000); // Ожидание 3 секунды перед открытием main.dart
 }

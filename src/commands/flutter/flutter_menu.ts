@@ -2,6 +2,7 @@ import { window } from "vscode";
 import { createFlutterPackage } from "./flutter_create_package";
 import { addBLePackage } from "./add_ble_package";
 import { startFlutterApp, startFlutterAppRouter } from "./start_flutter_app";
+import { flutterCreateNewProject } from "./flutter_create_command";
 
 
 
@@ -12,6 +13,8 @@ export async function flutterHandler() {
         'Добавить ble': addBLePackage,
         'Старт': startFlutterApp,
         'Старт c router': startFlutterAppRouter,
+        'Новый проект' : flutterCreateNewProject
+        // 'Добавить feature' : 
         
     };
 

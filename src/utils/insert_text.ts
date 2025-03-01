@@ -1,10 +1,9 @@
 import { Range, Uri, window, workspace } from "vscode";
+import * as fs from 'fs';
 
 
-export function insertText(text: string) {
+export function insertTextInDocument(text: string) {
     const editor = window.activeTextEditor;
-
-
     if (!editor) {
         return;
     }
@@ -22,7 +21,14 @@ export function insertText(text: string) {
 }
 
 
-const insertTextAfter = (searchText:string, insertText:string) => {
+export function insertTextToFile(newText: string, filePath: string) {
+    fs.writeFileSync(filePath, newText, { encoding: "utf-8" });
+}
+
+
+
+
+const insertTextAfter = (searchText: string, insertText: string) => {
     const editor = window.activeTextEditor;
     if (!editor) return;
     const document = editor?.document;

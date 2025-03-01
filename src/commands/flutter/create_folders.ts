@@ -6,9 +6,8 @@ import { getRootWorkspaceFolders } from '../../utils/path_util';
 
 
 
-export function createFlutterRouterFiles() {
+export function createFlutterRouterFiles(rootPath: string) {
 
-    const rootPath = getRootWorkspaceFolders();
     const appRouterPath = path.join(rootPath, 'lib', 'app_router');
     const appRoutesPath = path.join(rootPath, 'lib', 'app_routes');
 

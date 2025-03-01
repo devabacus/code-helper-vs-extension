@@ -2,29 +2,29 @@ import { Uri, window, workspace } from "vscode";
 import { fixAndroidNDKVersion } from "./fix_android_ndk_version";
 import { addFileFromSnippetFolder } from "../../utils/file_handle";
 import { terminalCommands, writeToTerminal } from "../../utils/terminal_handle";
-import { insertText } from "../../utils/insert_text";
+import { insertTextInDocument } from "../../utils/insert_text";
 import { startApp, startAppWithRoute } from "./flutter_content/flutter_content";
-import { flutterCreate } from "./flutter_create_command";
 import { createFlutterRouterFiles } from "./create_folders";
+import { addGoRouterPackage } from "./flutter_content/flutter_commands";
+import { getRootWorkspaceFolders } from "../../utils/path_util";
 
 
-const addGoRouterPackage = "flutter pub add go_router";
+
 
 const startTerminalCommands: string[] = [
     addGoRouterPackage,
-
 ];
 
 export async function startFlutterApp() {
     baseCommand();
-    insertText(startApp);
+    insertTextInDocument(startApp);
 }
 
 export async function startFlutterAppRouter() {
     baseCommand();
     writeToTerminal(addGoRouterPackage);
-    createFlutterRouterFiles();
-    insertText(startAppWithRoute);
+    createFlutterRouterFiles(getRootWorkspaceFolders());
+    insertTextInDocument(startAppWithRoute);
 }
 
 export async function baseCommand() {
