@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { addFileFromSnippetFolder } from "./file_helper";
+import { addFileFromSnippetFolder } from "../utils/file_handle";
 
 
 export function selectAndAddPowerShellScript() {

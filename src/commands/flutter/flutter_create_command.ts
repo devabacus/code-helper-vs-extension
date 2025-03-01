@@ -1,7 +1,8 @@
 import * as vscode from "vscode";
 import * as path from "path";
-import { getUserInput, pickPath } from "../../utils/create_dir_handle";
 import { writeToTerminal } from "../../utils/terminal_handle";
+import { getUserInput, pickPath } from "../../utils/ui/ui_util";
+
 
 export async function flutterCreate() {
     const newProjectPath = await pickPath();
@@ -34,7 +35,7 @@ export async function flutterCreate() {
             const doc = await vscode.workspace.openTextDocument(vscode.Uri.file(mainFilePath));
             await vscode.window.showTextDocument(doc, { preview: false });
         } catch (error) {
-            vscode.window.showErrorMessage("Не удалось открыть main.dart: " );
+            vscode.window.showErrorMessage("Не удалось открыть main.dart: ");
         }
     }, 3000); // Ожидание 3 секунды перед открытием main.dart
 }

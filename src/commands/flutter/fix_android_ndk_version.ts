@@ -1,18 +1,15 @@
 import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
+import { getRootWorkspaceFolders } from '../../utils/path_util';
 
 /**
  * Исправляет версию Android NDK в build.gradle.kts, заменяя flutter.ndkVersion на конкретное значение.
  */
 export async function fixAndroidNDKVersion() {
-    const workspaceFolders = vscode.workspace.workspaceFolders;
-    if (!workspaceFolders) {
-        vscode.window.showErrorMessage('Откройте рабочую папку перед исправлением NDK версии.');
-        return;
-    }
 
-    const projectPath = workspaceFolders[0].uri.fsPath;
+
+    const projectPath = getRootWorkspaceFolders();
     const buildGradlePath = path.join(projectPath, 'android', 'app', 'build.gradle.kts');
 
     try {

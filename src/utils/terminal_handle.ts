@@ -6,6 +6,7 @@ import {
 	workspace,
 } from "vscode";
 
+
 import { exec } from "child_process";
 import { promisify } from "util";
 
@@ -19,24 +20,30 @@ export async function writeToTerminal (command="whoami"){
 };
 
 
-export function terminalCommands(commands: string[]) {
+
+
+
+export async function terminalCommands(commands: string[], cwd: string):Promise<void> {
     
-    commands.forEach(command => {
-        writeToTerminal(command);		
+    for (const command of commands) {
+        await executeCommand(command, cwd);
+        // console.log("execut command " + command);
+        window.showInformationMessage(`команда ` + command + ' выполнена');
+    }
+}
+
+
+export function executeCommand(command: string, cwd: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+        exec(command, { cwd }, (error, stdout, stderr) => {
+            if (error) {
+                window.showErrorMessage(`Ошибка: ${stderr || error.message}`);
+                reject(error);
+            } else {
+                resolve();
+            }
+        });
     });
 }
 
-
-export async function runCommandsSequentially(commands: string[]) {
-    for (const cmd of commands) {
-        console.log(`Executing: ${cmd}`);
-        try {
-            const { stdout, stderr } = await execAsync(cmd, { shell: "powershell" });
-            if (stdout) console.log("Output:", stdout);
-            if (stderr) console.error("Error:", stderr);
-        } catch (error) {
-            console.error(`Command failed: ${cmd}`, error);
-        }
-    }
-}
 

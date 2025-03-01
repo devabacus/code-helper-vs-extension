@@ -1,23 +1,12 @@
 import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
-import { exec } from 'child_process';
+import { BlePermissionsBlock } from './flutter_constants';
+import { executeCommand } from '../../utils';
 
 /**
  * Выполняет команду в терминале и возвращает промис.
  */
-function executeCommand(command: string, cwd: string): Promise<void> {
-    return new Promise((resolve, reject) => {
-        exec(command, { cwd }, (error, stdout, stderr) => {
-            if (error) {
-                vscode.window.showErrorMessage(`Ошибка: ${stderr || error.message}`);
-                reject(error);
-            } else {
-                resolve();
-            }
-        });
-    });
-}
 
 /**
  * Добавляет зависимость ble_manager и Bluetooth разрешения в AndroidManifest.xml.
@@ -56,26 +45,12 @@ export async function addBLePackage() {
         if (fs.existsSync(androidManifestPath)) {
             let manifestContent = fs.readFileSync(androidManifestPath, 'utf8');
 
-            const permissionsBlock = `
-    <uses-feature android:name="android.hardware.bluetooth_le" android:required="false" />
 
-    <!-- New Bluetooth permissions in Android 12 -->
-    <uses-permission android:name="android.permission.BLUETOOTH_SCAN" android:usesPermissionFlags="neverForLocation" />
-    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
-
-    <!-- legacy for Android 11 or lower -->
-    <uses-permission android:name="android.permission.BLUETOOTH" android:maxSdkVersion="30" />
-    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" android:maxSdkVersion="30" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" android:maxSdkVersion="30"/>
-
-    <!-- legacy for Android 9 or lower -->
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" android:maxSdkVersion="28" />
-`;
 
             if (!manifestContent.includes('android.permission.BLUETOOTH_SCAN')) {
                 manifestContent = manifestContent.replace(
                     /<application\b[^>]*>/,
-                    permissionsBlock + '\n$&'
+                    BlePermissionsBlock + '\n$&'
                 );
                 fs.writeFileSync(androidManifestPath, manifestContent);
                 vscode.window.showInformationMessage('Bluetooth-разрешения добавлены в AndroidManifest.xml.');
