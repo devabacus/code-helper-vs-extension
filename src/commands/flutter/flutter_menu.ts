@@ -2,7 +2,8 @@ import { window } from "vscode";
 import { createFlutterPackage } from "./flutter_create_package";
 import { addBLePackage } from "./add_ble_package";
 import { startFlutterApp, startFlutterAppRouter } from "./start_flutter_app";
-import { flutterCreateNewProject } from "./flutter_create_command";
+import { flutterCreateNewProject } from "./flutter_create_project";
+import { addRouterToProject } from "./add_flutter_plugins";
 
 
 
@@ -13,9 +14,9 @@ export async function flutterHandler() {
         'Добавить ble': addBLePackage,
         'Старт': startFlutterApp,
         'Старт c router': startFlutterAppRouter,
-        'Новый проект' : flutterCreateNewProject
+        'Новый проект': () => flutterCreateNewProject(),
+        'Новый проект c роутером': () => flutterCreateNewProject(addRouterToProject)
         // 'Добавить feature' : 
-        
     };
 
     const choice = await window.showQuickPick(Object.keys(options), {
@@ -26,6 +27,9 @@ export async function flutterHandler() {
         await options[choice]();
     }
 }
+
+
+
 
 
 // export async function ${1:fname}()${2: : Promise<${3:void}>} {

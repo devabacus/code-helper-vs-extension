@@ -16,7 +16,7 @@ import { createFlutterRouterFiles } from "./create_folders";
 
 
 
-export async function flutterCreateNewProject():Promise<void> {
+export async function flutterCreateNewProject(callback?:(fullProjectPath: string)=>void):Promise<void> {
     
     const projectPath = await pickPath();
     if (!projectPath) {
@@ -30,13 +30,14 @@ export async function flutterCreateNewProject():Promise<void> {
     const fullProjectPath = path.join(projectPath, projectName);
     const mainDartPath = path.join(fullProjectPath, 'lib', 'main.dart');
 
-
     await executeCommand(create_command, projectPath);
     
-    await executeCommand(addGoRouterPackage, fullProjectPath);
+    if(callback){
+        callback(fullProjectPath);
+    }
 
-    createFlutterRouterFiles(fullProjectPath);
-    fs.writeFileSync(mainDartPath, startAppWithRoute, { encoding: "utf-8" });
+    //добавление плагина go-router, файлы, папки
+    
     
     const openCommand = `code -g "${mainDartPath}" "${fullProjectPath}"`;
     
