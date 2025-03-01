@@ -1,20 +1,7 @@
-import * as vscode from "vscode";
 import * as path from "path";
-import { executeCommand, writeToTerminal } from "../../utils/terminal_handle";
+import { executeCommand } from "../../utils/terminal_handle";
 import { getUserInput, pickPath } from "../../utils/ui/ui_util";
-import { getUserInputWrapper } from "../../utils/ui/ui_ask_folder";
-import { startFlutterAppRouter } from "./start_flutter_app";
-import { insertTextToFile } from "../../utils";
-import { startApp, startAppWithRoute } from "./flutter_content/flutter_content";
-import * as fs from 'fs';
-import { addGoRouterPackage } from "./flutter_content/flutter_commands";
-import { createFlutterRouterFiles } from "./create_folders";
-
-
-
-
-
-
+import { addFileFromSnippetFolder } from "../../utils";
 
 export async function flutterCreateNewProject(callback?:(fullProjectPath: string)=>void):Promise<void> {
     
@@ -35,14 +22,12 @@ export async function flutterCreateNewProject(callback?:(fullProjectPath: string
     if(callback){
         callback(fullProjectPath);
     }
-
+    addFileFromSnippetFolder("flutter_handle.ps1", fullProjectPath);
     //добавление плагина go-router, файлы, папки
-    
-    
     const openCommand = `code -g "${mainDartPath}" "${fullProjectPath}"`;
     
     await executeCommand(openCommand, projectPath);
-
+    
     // insertTextToFile(startApp, mainDartPath);
 
 }

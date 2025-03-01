@@ -4,18 +4,21 @@ import { addBLePackage } from "./add_ble_package";
 import { startFlutterApp, startFlutterAppRouter } from "./start_flutter_app";
 import { flutterCreateNewProject } from "./flutter_create_project";
 import { addRouterToProject } from "./add_flutter_plugins";
+import { writeToFile } from "../../utils";
+import path from "path";
+import { startApp, startAppWithRoute } from "./flutter_content/flutter_content";
 
 
 
 
 export async function flutterHandler() {
     const options: { [key: string]: () => Promise<void> } = {
+        'Новый проект': () => flutterCreateNewProject(startAppRoutine),
+        'Новый проект c роутером': () => flutterCreateNewProject(addRouterToProject),
         'Создать Flutter пакет': createFlutterPackage,
         'Добавить ble': addBLePackage,
         'Старт': startFlutterApp,
         'Старт c router': startFlutterAppRouter,
-        'Новый проект': () => flutterCreateNewProject(),
-        'Новый проект c роутером': () => flutterCreateNewProject(addRouterToProject)
         // 'Добавить feature' : 
     };
 
@@ -29,9 +32,6 @@ export async function flutterHandler() {
 }
 
 
-
-
-
-// export async function ${1:fname}()${2: : Promise<${3:void}>} {
-//     ${4:}
-// }
+export function startAppRoutine(fullProjectPath: string) {
+    writeToFile(path.join(fullProjectPath, "lib", "main.dart"), startApp);
+}
