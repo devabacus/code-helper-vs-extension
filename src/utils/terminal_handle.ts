@@ -19,10 +19,12 @@ export async function writeToTerminal (command="whoami"){
     terminal.sendText(command);
 };
 
-export async function terminalCommands(commands: string[], cwd: string):Promise<void> {
+export async function terminalCommands(commands: string[], path: string):Promise<void> {
     
     for (const command of commands) {
-        await executeCommand(command, cwd);
+        await executeCommand(command, path);
+   window.showInformationMessage(`${command}`);
+
     }
 }
 

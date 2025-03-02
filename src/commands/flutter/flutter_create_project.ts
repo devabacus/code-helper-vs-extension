@@ -2,6 +2,7 @@ import * as path from "path";
 import { executeCommand } from "../../utils/terminal_handle";
 import { getUserInput, pickPath } from "../../utils/ui/ui_util";
 import { addFileFromSnippetFolder } from "../../utils";
+import { gitInit } from "../git_init";
 
 export async function flutterCreateNewProject(callback?:(fullProjectPath: string)=>void):Promise<void> {
     
@@ -23,7 +24,10 @@ export async function flutterCreateNewProject(callback?:(fullProjectPath: string
         callback(fullProjectPath);
     }
     addFileFromSnippetFolder("flutter_handle.ps1", fullProjectPath);
-    //добавление плагина go-router, файлы, папки
+    addFileFromSnippetFolder("git_handle.ps1", fullProjectPath);
+    gitInit(fullProjectPath);
+    
+    
     const openCommand = `code -g "${mainDartPath}" "${fullProjectPath}"`;
     
     await executeCommand(openCommand, projectPath);
