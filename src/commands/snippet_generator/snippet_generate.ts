@@ -51,10 +51,11 @@ function wrapSnippet(snippetBody: string): string {
 
 function textChanger(codeText: string): string {
   let changedText = '';
-  const textRows = codeText.split('\n');
+  const textRows = codeText.split('\n'); //Делим - создаем список строк по \n
 
   for (let row = 0; row < textRows.length; row++) {
     let rowText = escapeChars(textRows[row]);
+    
     rowText = addTabs(rowText);
 
     // 🛠 Если строка пустая, добавляем её в сниппет как просто `""`
@@ -74,7 +75,7 @@ function addTabs(codeRow: string): string {
 
   let tabsCount = Math.floor(spacesCount / 2); // 2 пробела = 1 \t
   let tabs = '\\t'.repeat(tabsCount); // Генерируем \t
-  return tabs + codeRow.trimEnd(); // Добавляем отступы и убираем лишние пробелы справа
+  return tabs + codeRow.trim(); // Добавляем отступы и убираем лишние пробелы справа
 }
 
 
