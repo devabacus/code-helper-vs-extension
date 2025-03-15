@@ -28,8 +28,8 @@ export async function addDependecy(newDependency: string, projectPath: string):P
 
 export async function flutterHandler() {
     const options: { [key: string]: () => Promise<void> } = {
+        'Новый проект': () => flutterCreateNewProject(addRouterToProject),
         'Новый базовый проект': () => flutterCreateNewProject(startAppRoutine),
-        'Новый проект с роутером, логгером': () => flutterCreateNewProject(addRouterToProject),
         'Создать Flutter пакет': createFlutterPackage,
         'Добавить ble': addBLePackage,
         'Добавить logger': ()=>addDependecy(mLogger, getRootWorkspaceFolders()),
