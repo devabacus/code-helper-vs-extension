@@ -1,15 +1,14 @@
-import { window } from "vscode";
-import { createFlutterPackage } from "./flutter_create_package";
-import { addBLePackage } from "./add_ble_package";
-import { startFlutterApp, startFlutterAppRouter } from "./start_flutter_app";
-import { flutterCreateNewProject } from "./flutter_create_project";
-import { addRouterToProject } from "./add_flutter_plugins";
-import { addFileFromSnippetFolder, executeCommand, writeToFile } from "../../utils";
-import path from "path";
-import { startApp, startAppWithRoute } from "./flutter_content/flutter_content";
-import { getRootWorkspaceFolders } from "../../utils/path_util";
 import * as fs from "fs";
+import path from "path";
+import { window } from "vscode";
+import { addFileFromSnippetFolder, executeCommand, writeToFile } from "../../utils";
+import { getRootWorkspaceFolders } from "../../utils/path_util";
+import { addBLePackage } from "./add_ble_package";
+import { addRouterToProject } from "./add_flutter_plugins";
+import { startApp } from "./flutter_content/flutter_content";
 import { mLogger } from "./flutter_content/package_pubscpec";
+import { createFlutterPackage } from "./flutter_create_package";
+import { flutterCreateNewProject } from "./flutter_create_project";
 
 
 
@@ -33,8 +32,6 @@ export async function flutterHandler() {
         'Создать Flutter пакет': createFlutterPackage,
         'Добавить ble': addBLePackage,
         'Добавить logger': ()=>addDependecy(mLogger, getRootWorkspaceFolders()),
-        'Старт': startFlutterApp,
-        'Старт c router': startFlutterAppRouter,
         'Добавить flutter_handler.ps1': () => addFileFromSnippetFolder("flutter_handle.ps1", getRootWorkspaceFolders()),
         'Добавить git_handle.ps1': () => addFileFromSnippetFolder("git_handle.ps1", getRootWorkspaceFolders()),
         // 'Добавить feature' : 

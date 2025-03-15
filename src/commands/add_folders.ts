@@ -1,9 +1,6 @@
 import * as fs from "fs";
 import * as path from "path";
-import { window } from "vscode";
-import { createDirs } from "../utils/dir_handle";
-import { barrelFiles, folderOptions } from "./flutter/flutter_content/flutter_constants";
-import { askPickOption } from "../utils/ui/ui_util";
+import { barrelFiles } from "./flutter/flutter_content/flutter_constants";
 
 
 

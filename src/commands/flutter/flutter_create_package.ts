@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as vscode from 'vscode';
 import { executeCommand } from '../../utils';
-import { addPubSpecDependency } from './flutter_util';
+import { addPubSpecDependency } from './flutter_add_pubspec';
 import { textValidator } from '../../utils/text_util';
 import { getRootWorkspaceFolders } from '../../utils/path_util';
 import { getUserInput } from '../../utils/ui/ui_util';

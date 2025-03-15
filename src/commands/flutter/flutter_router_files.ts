@@ -1,37 +1,38 @@
-import vscode from 'vscode';
 import fs from 'fs';
-import { routerContent, routesContent } from './flutter_content/flutter_constants';
 import path from 'path';
-import { getRootWorkspaceFolders } from '../../utils/path_util';
+import vscode from 'vscode';
+import { routerContent, routesContent } from './flutter_content/flutter_constants';
 
 
 
-export function createFlutterRouterFiles(rootPath: string) {
-
-    const appRouterPath = path.join(rootPath, 'lib', 'app_router');
-    const appRoutesPath = path.join(rootPath, 'lib', 'app_routes');
-
-    // Создаём папки, если их нет
-    if (!fs.existsSync(appRouterPath)) {
-        fs.mkdirSync(appRouterPath);
-    }
-    if (!fs.existsSync(appRoutesPath)) {
-        fs.mkdirSync(appRoutesPath);
-    }
-
+export async function createFolder(path: string) {
     
+    if (!fs.existsSync(path)) {
+        fs.mkdirSync(path, {recursive: true});
+    }
+
+}
+
+export function createFile(path: string, content: string) {
+    
+    if (!fs.existsSync(path)) {
+        fs.writeFileSync(path, content, 'utf8');
+    }
+
+}
+
+export async function createFlutterRouterFiles(rootPath: string) {
+
+    const appRouterPath = path.join(rootPath, 'lib', 'core', 'routing');
+
+    await createFolder(appRouterPath);
 
     // Создаём файлы
-    const routerFilePath = path.join(appRouterPath, 'router.dart');
-    const routesFilePath = path.join(appRoutesPath, 'routes.dart');
+    const routerFilePath = path.join(appRouterPath, 'router_config.dart');
+    const routesFilePath = path.join(appRouterPath, 'routes_constants.dart');
 
-
-    if (!fs.existsSync(routerFilePath)) {
-        fs.writeFileSync(routerFilePath, routerContent, 'utf8');
-    }
-    if (!fs.existsSync(routesFilePath)) {
-        fs.writeFileSync(routesFilePath, routesContent, 'utf8');
-    }
+    createFile(routerFilePath, routerContent);
+    createFile(routesFilePath, routesContent);
 
     vscode.window.showInformationMessage('Папки и файлы для роутинга Flutter успешно созданы!');
 }

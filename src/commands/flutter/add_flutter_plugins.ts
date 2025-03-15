@@ -1,9 +1,10 @@
 import path from "path";
 import fs from "fs";
 import { executeCommand, writeToFile } from "../../utils";
-import { createFlutterRouterFiles } from "./create_folders";
+
 import { addGoRouterPackage } from "./flutter_content/flutter_commands";
-import { startApp, startAppWithRoute } from "./flutter_content/flutter_content";
+import { startApp } from "./flutter_content/flutter_content";
+import { createFlutterRouterFiles } from "./flutter_router_files";
 
 
 
