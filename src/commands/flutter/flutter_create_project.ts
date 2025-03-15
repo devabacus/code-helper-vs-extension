@@ -6,6 +6,7 @@ import { gitInit } from "../git_init";
 
 export async function flutterCreateNewProject(callback?:(fullProjectPath: string)=>void):Promise<void> {
     
+    // пользователь выбирает категории 
     const projectPath = await pickPath();
     if (!projectPath) {
         return;

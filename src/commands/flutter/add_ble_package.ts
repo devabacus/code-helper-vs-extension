@@ -34,7 +34,7 @@ export async function addBLePackage() {
                 fs.writeFileSync(pubspecPath, pubspecContent);
                 vscode.window.showInformationMessage('Добавлена зависимость ble_manager в pubspec.yaml.');
             } else {
-                vscode.window.showInformationMessage('Зависимость ble_manager уже присутствует в pubspec.yaml.');
+                vscode.window.showInformationMessage('Зависимость ble_manager уже присутствует в pubspec.yaml.');     
             }
         } else {
             vscode.window.showErrorMessage(`Файл pubspec.yaml не найден в ${projectPath}`);

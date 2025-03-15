@@ -35,6 +35,7 @@ export async function flutterHandler() {
 }
 
 
+// функция для создания простого приложения в main.dart
 export function startAppRoutine(fullProjectPath: string) {
     writeToFile(path.join(fullProjectPath, "lib", "main.dart"), startApp);
 }
