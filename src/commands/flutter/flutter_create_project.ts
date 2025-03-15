@@ -3,8 +3,12 @@ import { executeCommand } from "../../utils/terminal_handle";
 import { getUserInput, pickPath } from "../../utils/ui/ui_util";
 import { addFileFromSnippetFolder } from "../../utils";
 import { gitInit } from "../git_init";
+import { addDependecy } from "./flutter_menu";
+import { mLogger } from "./flutter_content/package_pubscpec";
 
 export async function flutterCreateNewProject(callback?:(fullProjectPath: string)=>void):Promise<void> {
+    
+    
     
     // пользователь выбирает категории 
     const projectPath = await pickPath();
@@ -20,6 +24,7 @@ export async function flutterCreateNewProject(callback?:(fullProjectPath: string
     const mainDartPath = path.join(fullProjectPath, 'lib', 'main.dart');
 
     await executeCommand(create_command, projectPath);
+    await addDependecy(mLogger,fullProjectPath);
     
     if(callback){
         callback(fullProjectPath);
@@ -32,6 +37,8 @@ export async function flutterCreateNewProject(callback?:(fullProjectPath: string
     const openCommand = `code -g "${mainDartPath}" "${fullProjectPath}"`;
     
     await executeCommand(openCommand, projectPath);
+
+
     
     // insertTextToFile(startApp, mainDartPath);
 
