@@ -5,6 +5,8 @@ export const startApp = `
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:talker_riverpod_logger/talker_riverpod_logger.dart';
+import '../core/routing/router_config.dart';
+
 
 void main() {
   runApp(
@@ -28,5 +30,5 @@ class MyApp extends ConsumerWidget {
 }
 
 
-`
+`;
 
