@@ -19,6 +19,14 @@
     "onLanguage:dart"
   ],
   "contributes": {
+    "views": {
+      "explorer": [
+        {
+          "id": "codeHelperTreeView",
+          "name": "Code Helper"
+        }
+      ]
+    },
     "commands": [
       {
         "command": "code-helper.snippet_generate",
@@ -60,7 +68,17 @@
         "key": "alt+ctrl+shift+i"
       }
     ]
+
   },
+  "menus": {
+      "view/title": [
+        {
+          "command": "code-helper.refreshTreeView",
+          "when": "view == codeHelperTreeView",
+          "group": "navigation"
+        }
+      ]
+    },
   "scripts": {
     "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",

@@ -10,10 +10,14 @@ import {
 import { flutterHandler } from "./commands/flutter/flutter_menu";
 import { pythonHandler } from "./commands/python/python_menu";
 import { vsCodeExtHandler } from "./commands/vs_code_ext/vs_code_menu";
+import { registerTreeViewProvider } from "./treeviews/codeHelperTreeView";
 
 
 
 export function activate(context: ExtensionContext) {
+
+	registerTreeViewProvider(context);
+
 
 	registerCodeActions(context);
 	context.subscriptions.push(
