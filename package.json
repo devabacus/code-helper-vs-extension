@@ -70,15 +70,7 @@
     ]
 
   },
-  "menus": {
-      "view/title": [
-        {
-          "command": "code-helper.refreshTreeView",
-          "when": "view == codeHelperTreeView",
-          "group": "navigation"
-        }
-      ]
-    },
+  
   "scripts": {
     "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",

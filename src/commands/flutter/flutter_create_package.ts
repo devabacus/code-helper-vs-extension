@@ -5,7 +5,7 @@ import { executeCommand } from '../../utils';
 import { addPubSpecDependency } from './flutter_add_pubspec';
 import { textValidator } from '../../utils/text_util';
 import { getRootWorkspaceFolders } from '../../utils/path_util';
-import { getUserInput } from '../../utils/ui/ui_util';
+import { getUserInput } from '../../utils/ui/ui_ask_folder';
 
 
 

@@ -1,10 +1,10 @@
 import * as path from "path";
 import { executeCommand } from "../../utils/terminal_handle";
-import { getUserInput, pickPath } from "../../utils/ui/ui_util";
 import { addFileFromSnippetFolder } from "../../utils";
 import { gitInit } from "../git_init";
 import { startDependency } from "./flutter_content/package_pubscpec";
 import { addDependecy } from "./flutter_add_pubspec";
+import { getUserInput, pickPath } from "../../utils/ui/ui_ask_folder";
 
 export async function flutterCreateNewProject(callback?:(fullProjectPath: string)=>void):Promise<void> {
     

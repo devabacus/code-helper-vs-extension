@@ -1,5 +1,5 @@
 import path from "path";
-import { OpenDialogOptions, window, workspace } from "vscode";
+import { window, workspace } from "vscode";
 
 // получение директории workspace
 export function getRootWorkspaceFolders() {

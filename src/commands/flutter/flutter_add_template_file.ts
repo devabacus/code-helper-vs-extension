@@ -22,9 +22,6 @@ export function createFile(path: string, content: string) {
 }
 
 
-
-
-
 export async function createTemplateFlutterFiles(rootPath: string) {
 
     const libPath = path.join(rootPath, 'lib');

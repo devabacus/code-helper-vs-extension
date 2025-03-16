@@ -28,12 +28,12 @@ export const folderOptions: Record<string, string[]> = {
         'domain/entries',
         'domain/repositories',
         'domain/usecases',
-        'presentation/bloc',
+        'presentation/providers',
         'presentation/pages',
         'presentation/widgets',
     ],
     "Presentation Only": [
-        'presentation/bloc',
+        'presentation/providers',
         'presentation/pages',
         'presentation/widgets',
     ]
