@@ -4,7 +4,7 @@ import { executeCommand, writeToFile } from "../../utils";
 
 import { addGoRouterPackage } from "./flutter_content/flutter_commands";
 import { startApp } from "./flutter_content/flutter_content";
-import { createFlutterRouterFiles } from "./flutter_router_files";
+import { createTemplateFlutterFiles } from "./flutter_router_files";
 
 
 
@@ -18,6 +18,6 @@ const devPLugin = "flutter pub add --dev riverpod_generator build_runner custom_
 export async function addRouterToProject(fullProjectPath: string) {
     const plugins = startCommands + "&&" + devPLugin;
     await executeCommand(plugins, fullProjectPath);
-    createFlutterRouterFiles(fullProjectPath);
+    createTemplateFlutterFiles(fullProjectPath);
     writeToFile(path.join(fullProjectPath, "lib", "main.dart"), startApp);
 }
