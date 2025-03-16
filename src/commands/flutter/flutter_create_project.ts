@@ -3,8 +3,8 @@ import { executeCommand } from "../../utils/terminal_handle";
 import { getUserInput, pickPath } from "../../utils/ui/ui_util";
 import { addFileFromSnippetFolder } from "../../utils";
 import { gitInit } from "../git_init";
-import { addDependecy } from "./flutter_menu";
-import { mLogger } from "./flutter_content/package_pubscpec";
+import { startDependency } from "./flutter_content/package_pubscpec";
+import { addDependecy } from "./flutter_add_pubspec";
 
 export async function flutterCreateNewProject(callback?:(fullProjectPath: string)=>void):Promise<void> {
     
@@ -24,7 +24,8 @@ export async function flutterCreateNewProject(callback?:(fullProjectPath: string
     const mainDartPath = path.join(fullProjectPath, 'lib', 'main.dart');
 
     await executeCommand(create_command, projectPath);
-    await addDependecy(mLogger,fullProjectPath);
+    await addDependecy(startDependency,fullProjectPath);
+    
     
     if(callback){
         callback(fullProjectPath);

@@ -9,20 +9,12 @@ import { startApp } from "./flutter_content/flutter_content";
 import { mLogger } from "./flutter_content/package_pubscpec";
 import { createFlutterPackage } from "./flutter_create_package";
 import { flutterCreateNewProject } from "./flutter_create_project";
+import { addDependecy } from "./flutter_add_pubspec";
 
 
 
 
 
-export async function addDependecy(newDependency: string, projectPath: string):Promise<void> {
-    
-    const pubspecFilePath = path.join(projectPath, "pubspec.yaml");
-    const content = fs.readFileSync(pubspecFilePath, { encoding: "utf-8" });        
-    const newContent = content.replace('dependencies:', `dependencies:\n${newDependency}`);
-    fs.writeFileSync(pubspecFilePath, newContent, { encoding: "utf-8" });
-    await executeCommand('flutter pub get', projectPath);
-    // console.log(content);
-}
 
 
 export async function flutterHandler() {
