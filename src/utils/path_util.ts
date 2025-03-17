@@ -12,6 +12,13 @@ export function getRootWorkspaceFolders() {
       return workspaceFolders[0].uri.fsPath;
   }
 
+export function getLibPath() {
+    return `${getRootWorkspaceFolders()}/lib`;
+    
+}
+
+
+
 export function getUserSnippetsPath(): string {
     return path.join(process.env.APPDATA || "", "Code", "User", "snippets");
 }
