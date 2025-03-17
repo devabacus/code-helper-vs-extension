@@ -1,6 +1,7 @@
+import fs from 'fs';
 import path from 'path';
 import vscode from 'vscode';
-import { createFile, createFolder, createFolders } from '../../utils';
+import { createFile, createFolder, createFolders, getFilesInDir } from '../../utils';
 import { home_page, routerConfigGenerator, routerContent, routesContent } from './flutter_content/flutter_constants';
 import { getUserInputWrapper } from '../../utils/ui/ui_ask_folder';
 
@@ -45,18 +46,29 @@ export async function addFeatureFolders(rootPath: string) {
     const featureName = await getUserInputWrapper(true, "type feature name");
     const featureFolders = createFullTemplatePaths(rootPath, `features/${featureName}`, featureFolderPaths);
     await createFolders(featureFolders);
-    const barrelFilePaths = featureFolders.map(function(path){
-      return `${path}/index.dart`;
-    });
-    for (var filePath of barrelFilePaths) {
-        createFile(filePath, "");
+
+    const testFilePath = `${rootPath}/lib/features/${featureName}/data/models`;
+    await createFile(`${testFilePath}/testfile.dart`, "//just comment" );
+
+    for (var folderPath of featureFolders) {
+        createFile(`${folderPath}/index.dart`, await createBarrelContent(folderPath));
     }         
     // добавить barrel файлы в каждую папку
 }
 
 
+export async function createBarrelContent(folderPath: string): Promise<string>{
+    // получаем все файлы по пути
+    // await createFile(`${folderPath}/testfile.dart`, "//just comment" );
 
+    const files = await getFilesInDir(folderPath);
+    // создаем содержимое для barrel файла по шаблону "export 'fileName.dart';"
+    return files.map(function(fileName){
+      return `export '${fileName}';`;
+    }).join('\n');
+    return `// export`;
 
+}
 
 
 export async function createTemplateFlutterFiles(rootPath: string) {

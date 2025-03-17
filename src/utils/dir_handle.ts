@@ -18,16 +18,21 @@ export async function createFolders(folderPaths: string[], errorHandler?: (error
 export async function createFolder(path: string) {
 
     if (!fs.existsSync(path)) {
-        fs.mkdirSync(path, { recursive: true });
+       await fs.promises.mkdir(path, { recursive: true });
     }
 
 }
 
 
-export function createFile(path: string, content: string) {
+export async function createFile(path: string, content: string) {
 
-    if (!fs.existsSync(path)) {
-        fs.writeFileSync(path, content, 'utf8');
-    }
+    await fs.promises.writeFile(path, content, 'utf8');
+
+}
+
+
+export async function getFilesInDir(path: string): Promise<string[]>{
+   
+    return await fs.promises.readdir(path);
 
 }
