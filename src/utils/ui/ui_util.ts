@@ -1,5 +1,5 @@
 import { OpenDialogOptions, window, workspace } from "vscode";
-import { createDirs } from "../dir_handle";
+import { createFolders } from "../dir_handle";
 
 
 // Открываем файл в VS Code
@@ -24,7 +24,7 @@ export async function addPickedFoldersSet(folderOptions: Record<string, string[]
 
     if (selectedOption) {
         const selectedFolders = folderOptions[selectedOption];
-        await createDirs(selectedFolders);
+        await createFolders(selectedFolders);
     }
 
 }

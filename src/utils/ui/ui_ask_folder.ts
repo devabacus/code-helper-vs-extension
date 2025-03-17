@@ -1,13 +1,14 @@
 import { OpenDialogOptions, window, workspace } from "vscode";
 
 
-// Получение пользовательского ввода
-export const getUserInputWrapper = async (userInputNeed: boolean): Promise<string | undefined> => {
+// ---------------------------------ввод пользователя-----------------------------------------
+
+export const getUserInputWrapper = async (userInputNeed: boolean, prompt: string): Promise<string | undefined> => {
     if (!userInputNeed) {
         return undefined;
     }
 
-    const userInput = await getUserInput("Введите название папки (или оставьте пустым)");
+    const userInput = await getUserInput(prompt);
     if (!userInput) {
         window.showErrorMessage("Название папки не может быть пустым.");
         return undefined;
@@ -23,7 +24,7 @@ export const getUserInput = async (prompt: string, placeHolder = "", validateInp
     return userInput?.trim() || undefined;
 };
 
-
+// ------------------------выбор папки----------------------------------------------------
 
 // Вспомогательная функция для выбора папки
 async function promptForTargetDirectory(): Promise<string | undefined> {

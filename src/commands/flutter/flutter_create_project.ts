@@ -6,7 +6,7 @@ import { startDependency } from "./flutter_content/package_pubscpec";
 import { addDependecy } from "./flutter_add_pubspec";
 import { getUserInput, pickPath } from "../../utils/ui/ui_ask_folder";
 
-export async function flutterCreateNewProject(callback?:(fullProjectPath: string)=>void):Promise<void> {
+export async function flutterCreateNewProject(addTemplateFolders?:(fullProjectPath: string)=>void):Promise<void> {
     
     
     
@@ -27,8 +27,8 @@ export async function flutterCreateNewProject(callback?:(fullProjectPath: string
     await addDependecy(startDependency,fullProjectPath);
     
     
-    if(callback){
-        callback(fullProjectPath);
+    if(addTemplateFolders){
+        addTemplateFolders(fullProjectPath);
     }
     addFileFromSnippetFolder("flutter_handle.ps1", fullProjectPath);
     addFileFromSnippetFolder("git_handle.ps1", fullProjectPath);

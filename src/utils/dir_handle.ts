@@ -1,17 +1,33 @@
-import { mkdirp } from "mkdirp";
-import { window } from "vscode";
-
-export const createDirectory = async (targetDirectory: string) => mkdirp(targetDirectory);
+import fs from 'fs';
 
 
-export const createDirs = async (paths: string[]): Promise<void> => {
-    for (const dirPath of paths) {
+export async function createFolders(folderPaths: string[], errorHandler?: (error: string) => void): Promise<void> {
+
+    
+
+    for (const dirPath of folderPaths) {
         try {
-            await createDirectory(dirPath);
+            await createFolder(dirPath);
         } catch (error) {
-            window.showErrorMessage(`Ошибка при создании папки: ${error}`);
+            errorHandler?.(String(error));
         }
     }
 };
 
 
+export async function createFolder(path: string) {
+
+    if (!fs.existsSync(path)) {
+        fs.mkdirSync(path, { recursive: true });
+    }
+
+}
+
+
+export function createFile(path: string, content: string) {
+
+    if (!fs.existsSync(path)) {
+        fs.writeFileSync(path, content, 'utf8');
+    }
+
+}

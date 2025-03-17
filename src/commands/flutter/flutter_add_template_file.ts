@@ -1,25 +1,63 @@
-import fs from 'fs';
 import path from 'path';
 import vscode from 'vscode';
+import { createFile, createFolder, createFolders } from '../../utils';
 import { home_page, routerConfigGenerator, routerContent, routesContent } from './flutter_content/flutter_constants';
+import { getUserInputWrapper } from '../../utils/ui/ui_ask_folder';
 
 
 
-export async function createFolder(path: string) {
 
-    if (!fs.existsSync(path)) {
-        fs.mkdirSync(path, { recursive: true });
-    }
+const coreFolderPaths = [
+    'core/routing',
+    'core/config',
+    'core/providers',
+    'core/services',
+    'core/theme',
+    'core/utils',
+];
+
+const featureFolderPaths = [
+    'data/models',
+    'data/repositories',
+    'data/datasources',
+    'domain/entities',
+    'domain/usecases',
+    'presentation/pages',
+    'presentation/widgets',
+    'presentation/routing',
+    'presentation/providers',
+];
+
+function createFullTemplatePaths(rootPath: string, secondRoot: string, folderPaths: string[]): string[] {
+    return folderPaths.map(function (path) {
+        return `${rootPath}/lib/${secondRoot}/${path}`;
+    });
+}
+
+export function addBaseTemplate(rootPath: string) {
+
+    const coreFolders = createFullTemplatePaths(rootPath, 'core', coreFolderPaths);
+    // const featureFolders = createFullTemplatePaths(rootPath, 'features/feature1', featureFolderPaths);
+
+    // const fullTemplateList = [...coreFolders, ...featureFolders];
+
+    createFolders(coreFolders);
 
 }
 
-export function createFile(path: string, content: string) {
+export async function addFeatureFolders(rootPath: string) {
 
-    if (!fs.existsSync(path)) {
-        fs.writeFileSync(path, content, 'utf8');
-    }
+    // нужно получить название фичи
+    const featureName = await getUserInputWrapper(true, "type feature name");
+    const featureFolders = createFullTemplatePaths(rootPath, `features/${featureName}`, featureFolderPaths);
+    // подставить в путь название фичи
+    createFolders(featureFolders);
 
+    // добавить barrel файлы в каждую папку
 }
+
+
+
 
 
 export async function createTemplateFlutterFiles(rootPath: string) {
