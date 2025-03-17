@@ -1,10 +1,10 @@
-import fs from 'fs';
 import path from 'path';
-import vscode from 'vscode';
-import { createFile, createFolder, createFolders, getFilesInDir } from '../../utils';
-import { home_page, routerConfigGenerator, routerContent, routesContent } from './flutter_content/flutter_constants';
+import { createFile, createFolders } from '../../utils';
 import { getUserInputWrapper } from '../../utils/ui/ui_ask_folder';
 import { createIndexDartFiles } from './add_barrel_files';
+import { routerConfigGenerator, routerContent, routesContent } from './flutter_content/flutter_constants';
+import { startApp } from './flutter_content/flutter_content';
+import { addStartPlugins } from './add_flutter_plugins';
 
 const baseTemplateFolders = [
     'core/routing',
@@ -15,12 +15,11 @@ const baseTemplateFolders = [
     'core/utils',
 ];
 
-const baseTemplateFiles = [
-    'core/routing/routes_constants.dart',
-    'core/routing/routes_config.dart',
-    'core/routing/router_config.g.dart',
-    'app.dart'
-];
+const templatefiles: Record<string, string> = {
+    'core/routing/routes_constants.dart': routesContent,
+    'core/routing/routes_config.dart': routerContent,
+    'core/routing/router_config.g.dart': routerConfigGenerator,
+};
 
 
 const featureFolderPaths = [
@@ -39,7 +38,6 @@ const featureFilesPaths = [
     'presentation/routing/router_config.dart',
 ];
 
-
 function createFullTemplatePaths(rootPath: string, secondRoot: string, folderPaths: string[]): string[] {
     return folderPaths.map(function (path) {
         return `${rootPath}/lib/${secondRoot}/${path}`;
@@ -47,15 +45,17 @@ function createFullTemplatePaths(rootPath: string, secondRoot: string, folderPat
 }
 
 export async function addBaseTemplate(rootPath: string) {
-        
-    // const coreFolders = createFullTemplatePaths(rootPath, 'core', baseTemplateFolders);
 
-    const coreFolders = baseTemplateFolders.map(function(path){
-      return `${rootPath}/lib/${path}`;
+    const coreFolders = baseTemplateFolders.map(function (path) {
+        return `${rootPath}/lib/${path}`;
     });
 
     await createFolders(coreFolders);
-    createIndexDartFiles(`${rootPath}/lib`);
+    await createTemplateFiles(rootPath);
+    await createFile(`${rootPath}/lib/main.dart`, startApp);
+    await createIndexDartFiles(`${rootPath}/lib`);
+    await addStartPlugins(rootPath);
+    
 }
 
 export async function addFeatureFolders(rootPath: string) {
@@ -63,35 +63,17 @@ export async function addFeatureFolders(rootPath: string) {
     const featureName = await getUserInputWrapper(true, "type feature name");
     const featureFolders = createFullTemplatePaths(rootPath, `features/${featureName}`, featureFolderPaths);
     await createFolders(featureFolders);
-
+    
     createIndexDartFiles(`${rootPath}/lib/features/${featureName}`);
-
 }
 
+export async function createTemplateFiles(rootPath: string) {
 
-export async function createTemplateFlutterFiles(rootPath: string) {
+    for (const [filePath, content] of Object.entries(templatefiles)) {
+        const fullPath = path.join(rootPath, "lib", filePath);
+        createFile(fullPath, content);
+    }
 
-    const libPath = path.join(rootPath, 'lib');
-    const appRouterPath = path.join(libPath, 'core', 'routing');
-    const presentationPath = path.join(libPath, 'presentation', 'pages');
-
-
-
-    await createFolder(appRouterPath);
-    await createFolder(presentationPath);
-
-    // Создаём файлы
-    const routerFilePath = path.join(appRouterPath, 'router_config.dart');
-    const routeGenerateFilePath = path.join(appRouterPath, 'router_config.g.dart');
-    const routesFilePath = path.join(appRouterPath, 'routes_constants.dart');
-    const homeFilePath = path.join(presentationPath, 'home_page.dart');
-
-    createFile(routerFilePath, routerContent);
-    createFile(routesFilePath, routesContent);
-    createFile(routeGenerateFilePath, routerConfigGenerator);
-    createFile(homeFilePath, home_page);
-
-    vscode.window.showInformationMessage('Папки и файлы для роутинга Flutter успешно созданы!');
 }
 
 
