@@ -6,7 +6,7 @@ import { home_page, routerConfigGenerator, routerContent, routesContent } from '
 import { getUserInputWrapper } from '../../utils/ui/ui_ask_folder';
 import { createIndexDartFiles } from './add_barrel_files';
 
-const coreFolderPaths = [
+const baseTemplateFolders = [
     'core/routing',
     'core/config',
     'core/providers',
@@ -14,6 +14,14 @@ const coreFolderPaths = [
     'core/theme',
     'core/utils',
 ];
+
+const baseTemplateFiles = [
+    'core/routing/routes_constants.dart',
+    'core/routing/routes_config.dart',
+    'core/routing/router_config.g.dart',
+    'app.dart'
+];
+
 
 const featureFolderPaths = [
     'data/models',
@@ -27,6 +35,11 @@ const featureFolderPaths = [
     'presentation/providers',
 ];
 
+const featureFilesPaths = [
+    'presentation/routing/router_config.dart',
+];
+
+
 function createFullTemplatePaths(rootPath: string, secondRoot: string, folderPaths: string[]): string[] {
     return folderPaths.map(function (path) {
         return `${rootPath}/lib/${secondRoot}/${path}`;
@@ -34,10 +47,10 @@ function createFullTemplatePaths(rootPath: string, secondRoot: string, folderPat
 }
 
 export async function addBaseTemplate(rootPath: string) {
+        
+    // const coreFolders = createFullTemplatePaths(rootPath, 'core', baseTemplateFolders);
 
-    // const coreFolders = createFullTemplatePaths(rootPath, 'core', coreFolderPaths);
-
-    const coreFolders = coreFolderPaths.map(function(path){
+    const coreFolders = baseTemplateFolders.map(function(path){
       return `${rootPath}/lib/${path}`;
     });
 
