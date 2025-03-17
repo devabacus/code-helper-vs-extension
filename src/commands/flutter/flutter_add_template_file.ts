@@ -44,14 +44,13 @@ export async function addFeatureFolders(rootPath: string) {
 
     const featureName = await getUserInputWrapper(true, "type feature name");
     const featureFolders = createFullTemplatePaths(rootPath, `features/${featureName}`, featureFolderPaths);
-    createFolders(featureFolders);
+    await createFolders(featureFolders);
     const barrelFilePaths = featureFolders.map(function(path){
       return `${path}/index.dart`;
     });
-    for (var filePath in barrelFilePaths) {
+    for (var filePath of barrelFilePaths) {
         createFile(filePath, "");
-    }
-
+    }         
     // добавить barrel файлы в каждую папку
 }
 
