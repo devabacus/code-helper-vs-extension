@@ -1,8 +1,9 @@
 import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
-import { BlePermissionsBlock } from './flutter_content/flutter_constants';
-import { executeCommand } from '../../utils';
+
+import { executeCommand } from '../../../utils';
+import { BlePermissionsBlock } from './contants';
 
 /**
  * Выполняет команду в терминале и возвращает промис.

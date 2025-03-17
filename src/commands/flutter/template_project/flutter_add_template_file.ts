@@ -1,9 +1,9 @@
 import path from 'path';
-import { createFile, createFolders } from '../../utils';
-import { getUserInputWrapper } from '../../utils/ui/ui_ask_folder';
-import { createIndexDartFiles } from './add_barrel_files';
-import { routerConfigGenerator, routerContent, routesContent } from './flutter_content/flutter_constants';
-import { startApp } from './flutter_content/flutter_content';
+import { createFile, createFolders } from '../../../utils';
+import { getUserInputWrapper } from '../../../utils/ui/ui_ask_folder';
+import { createIndexDartFiles } from '../add_barrel_files';
+import { routerConfigGenerator, routerContent, routesContent } from '../flutter_content/flutter_constants';
+import { startApp } from '../flutter_content/flutter_content';
 import { addStartPlugins } from './add_flutter_plugins';
 
 const baseTemplateFolders = [
@@ -17,7 +17,7 @@ const baseTemplateFolders = [
 
 const templatefiles: Record<string, string> = {
     'core/routing/routes_constants.dart': routesContent,
-    'core/routing/routes_config.dart': routerContent,
+    'core/routing/router_config.dart': routerContent,
     'core/routing/router_config.g.dart': routerConfigGenerator,
 };
 
@@ -54,8 +54,8 @@ export async function addBaseTemplate(rootPath: string) {
     await createTemplateFiles(rootPath);
     await createFile(`${rootPath}/lib/main.dart`, startApp);
     await createIndexDartFiles(`${rootPath}/lib`);
-    await addStartPlugins(rootPath);
-    
+    // await addStartPlugins(rootPath);
+
 }
 
 export async function addFeatureFolders(rootPath: string) {
@@ -63,7 +63,7 @@ export async function addFeatureFolders(rootPath: string) {
     const featureName = await getUserInputWrapper(true, "type feature name");
     const featureFolders = createFullTemplatePaths(rootPath, `features/${featureName}`, featureFolderPaths);
     await createFolders(featureFolders);
-    
+
     createIndexDartFiles(`${rootPath}/lib/features/${featureName}`);
 }
 
@@ -73,7 +73,6 @@ export async function createTemplateFiles(rootPath: string) {
         const fullPath = path.join(rootPath, "lib", filePath);
         createFile(fullPath, content);
     }
-
 }
 
 

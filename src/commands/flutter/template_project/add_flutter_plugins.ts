@@ -1,4 +1,4 @@
-import { executeCommand } from "../../utils";
+import { executeCommand } from "../../../utils";
 
 
 
@@ -9,5 +9,5 @@ const devPLugin = "flutter pub add --dev riverpod_generator build_runner custom_
 export async function addStartPlugins(fullProjectPath: string) {
     const plugins = startCommands + "&&" + devPLugin;
     await executeCommand(plugins, fullProjectPath);
-    
+
 }
