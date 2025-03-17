@@ -8,12 +8,12 @@ import { getUserInputWrapper } from '../../utils/ui/ui_ask_folder';
 
 
 const coreFolderPaths = [
-    'core/routing',
-    'core/config',
-    'core/providers',
-    'core/services',
-    'core/theme',
-    'core/utils',
+    'routing',
+    'config',
+    'providers',
+    'services',
+    'theme',
+    'utils',
 ];
 
 const featureFolderPaths = [
@@ -37,24 +37,24 @@ function createFullTemplatePaths(rootPath: string, secondRoot: string, folderPat
 export function addBaseTemplate(rootPath: string) {
 
     const coreFolders = createFullTemplatePaths(rootPath, 'core', coreFolderPaths);
-    // const featureFolders = createFullTemplatePaths(rootPath, 'features/feature1', featureFolderPaths);
-
-    // const fullTemplateList = [...coreFolders, ...featureFolders];
-
     createFolders(coreFolders);
-
 }
 
 export async function addFeatureFolders(rootPath: string) {
 
-    // нужно получить название фичи
     const featureName = await getUserInputWrapper(true, "type feature name");
     const featureFolders = createFullTemplatePaths(rootPath, `features/${featureName}`, featureFolderPaths);
-    // подставить в путь название фичи
     createFolders(featureFolders);
+    const barrelFilePaths = featureFolders.map(function(path){
+      return `${path}/index.dart`;
+    });
+    for (var filePath in barrelFilePaths) {
+        createFile(filePath, "");
+    }
 
     // добавить barrel файлы в каждую папку
 }
+
 
 
 
