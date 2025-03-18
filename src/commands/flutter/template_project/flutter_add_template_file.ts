@@ -2,7 +2,7 @@ import path from 'path';
 import { createFile, createFolders, executeCommand } from '../../../utils';
 import { insertAtFileStart, insertTextAfter } from '../../../utils/text_work/text_insert/basic-insertion';
 import { getUserInputWrapper } from '../../../utils/ui/ui_ask_folder';
-import { featureRoutesConstants, importFeatureRouter, routerFeatureFileContent } from '../flutter_content/files_content/files_contents';
+import { featureRoutesConstants, importFeatureRouter, routerContent, routerFeatureFileContent } from '../flutter_content/files_content/files_contents';
 import { appRouterConfigPath, baseTemplateFolders, featureFolderPaths, templatefiles } from '../flutter_content/template_paths';
 import { addStartPlugins } from '../flutter_content/terminal_commands';
 import { createIndexDartFiles } from './add_barrel_files';
@@ -17,6 +17,11 @@ export async function addBaseTemplate(rootPath: string) {
 
     await createFolders(coreFolders);
     await createTemplateFiles(rootPath);
+    await createFile(appRouterConfigPath(rootPath), routerContent);
+    addFeatureFolders(rootPath, 'home');
+    
+
+
     createIndexDartFiles(`${rootPath}/lib`);
     executeCommand(addStartPlugins, rootPath);
 }
@@ -29,9 +34,16 @@ export async function createTemplateFiles(rootPath: string) {
     }
 }
 
-export async function addFeatureFolders(rootPath: string) {
+export async function addFeatureFolders(rootPath: string, featureNameP: string = "") {
 
-    const featureName = await getUserInputWrapper(true, "type feature name");
+    let featureName = featureNameP;
+
+    if (featureNameP === '') {
+        featureName = await getUserInputWrapper(true, "type feature name") as string;
+    }
+
+    
+    
     const feauturePath = `${rootPath}/lib/features/${featureName}`;
     if (featureName === 'undefined') { return; }
 

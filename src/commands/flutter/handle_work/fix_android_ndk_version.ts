@@ -42,7 +42,7 @@ export async function fixAndroidNDKVersion() {
 
         fs.writeFileSync(buildGradlePath, buildGradleContent);
 
-        vscode.window.showInformationMessage('Android NDK версия исправлена на 27.0.12077973.');
+        // vscode.window.showInformationMessage('Android NDK версия исправлена на 27.0.12077973.');
 
     } catch (error) {
         vscode.window.showErrorMessage(`Ошибка: ${error}`);

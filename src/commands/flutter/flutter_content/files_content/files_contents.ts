@@ -4,7 +4,7 @@ import { capitalize } from "../../../../utils/text_work/text_util";
 export const importFeatureRouter = (featureName: string) => `import '../../features/${featureName}/presentation/routing/${featureName}_router_config.dart';\n`;
 
 
-export const routerContent = (featureName: string) =>
+export const routerContent = 
   `
 // ignore_for_file: unused_import
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -13,6 +13,7 @@ import 'package:mlogger/mlogger.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:talker_flutter/talker_flutter.dart';
 import './routes_constants.dart';
+import '../../features/home/presentation/routing/home_routes_constants.dart';
 
 part 'router_config.g.dart';
  
@@ -20,7 +21,7 @@ part 'router_config.g.dart';
 GoRouter appRouter(Ref ref) {
   return GoRouter(
     // observers: [TalkerRouteObserver(log.talker)],
-    initialLocation: AppRoutes.homePath,
+    initialLocation: HomeRoutes.homePath,
     routes: [
         
     ]); 
