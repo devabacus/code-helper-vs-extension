@@ -1,6 +1,6 @@
 import path from 'path';
 import { createFile, createFolders, executeCommand } from '../../../utils';
-import { insertAtFileStart } from '../../../utils/text_work/text_insert/basic-insertion';
+import { insertAtFileStart, insertTextAfter } from '../../../utils/text_work/text_insert/basic-insertion';
 import { getUserInputWrapper } from '../../../utils/ui/ui_ask_folder';
 import { featureRoutesConstants, importFeatureRouter, routerFeatureFileContent } from '../flutter_content/files_content/files_contents';
 import { appRouterConfigPath, baseTemplateFolders, featureFolderPaths, templatefiles } from '../flutter_content/template_paths';
@@ -8,6 +8,7 @@ import { addStartPlugins } from '../flutter_content/terminal_commands';
 import { createIndexDartFiles } from './add_barrel_files';
 import { featureMainPagePath, featureRouterConfigPath, featureRoutesConstantPath } from '../flutter_content/files_content/files_paths';
 import { featureMainPageContent } from '../flutter_content/files_content/root_files';
+import { capitalize } from '../../../utils/text_work/text_util';
 
 
 export async function addBaseTemplate(rootPath: string) {
@@ -65,8 +66,9 @@ export async function addFeatureFolders(rootPath: string) {
 
 
 function updateAppRouterConfig(featureName: string | undefined, rootPath: string) {
-
+// ...get${featureName}Routes() after routes: [
     const appRouterFilePath = appRouterConfigPath(rootPath);
     insertAtFileStart(appRouterFilePath, importFeatureRouter(featureName!));
+    insertTextAfter(appRouterFilePath, 'routes: [', `\t\t\t...get${capitalize(featureName!)}Routes(),`);
 }
 
