@@ -30,12 +30,13 @@ function getDirsPath(dirPath: string): string[]{
 async function createIndexFile(pathDir: string) {
 
   const isAccesptDir = (dir: string) => !['lib', 'features'].includes(dir);
+  const isAcceptFiles = (item: string): boolean => !item.includes('index.dart') && !item.includes('.g.dart');
   
   if (!isAccesptDir(path.basename(pathDir))) {return;}
 
   const pathItems = fs.readdirSync(pathDir);
   
-  const fileList = pathItems.filter((item) => !isDir(item) && !item.includes('index.dart'));
+  const fileList = pathItems.filter((item) => !isDir(item) && isAcceptFiles(item));
   const fileListModified = fileList.map((item) => `export '${item}';`);
   const filesContent = fileListModified.join('\n');
 

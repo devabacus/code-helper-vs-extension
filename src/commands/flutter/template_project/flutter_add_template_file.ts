@@ -5,18 +5,17 @@ import { createIndexDartFiles } from './add_barrel_files';
 import { baseTemplateFolders, featureFolderPaths, templatefiles } from '../flutter_content/template_paths';
 import { addStartPlugins } from '../flutter_content/terminal_commands';
 import { routerFeature } from '../flutter_content/files_content/routers_contents';
+import { getRootWorkspaceFolders } from '../../../utils/path_util';
 
 
 export async function addBaseTemplate(rootPath: string) {
 
-    const coreFolders = baseTemplateFolders.map(function (path) {
-        return `${rootPath}/lib/${path}`;
-    });
+    const coreFolders = baseTemplateFolders.map((path)=>`${rootPath}/lib/${path}`);
 
     await createFolders(coreFolders);
     await createTemplateFiles(rootPath);
-    await createIndexDartFiles(`${rootPath}/lib`);
-    await executeCommand(addStartPlugins, rootPath);
+    createIndexDartFiles(`${rootPath}/lib`);
+    executeCommand(addStartPlugins, rootPath);
 }
 
 export async function addFeatureFolders(rootPath: string) {
