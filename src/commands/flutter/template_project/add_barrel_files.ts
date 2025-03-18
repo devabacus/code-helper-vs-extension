@@ -3,7 +3,7 @@ import * as path from 'path';
 import { createFile } from '../../../utils';
 
 
-export async function createIndexDartFiles(dirPath: string, exludeDirs: string[] = []): Promise<void> {
+export async function createIndexDartFiles(dirPath: string): Promise<void> {
 
   const _dirPath = path.resolve(dirPath);
     recursiveDir(path.resolve(_dirPath));

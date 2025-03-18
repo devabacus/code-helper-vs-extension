@@ -15,12 +15,9 @@ export async function addBaseTemplate(rootPath: string) {
 
     await createFolders(coreFolders);
     await createTemplateFiles(rootPath);
-    // await createIndexDartFiles(`${rootPath}/lib`);
+    await createIndexDartFiles(`${rootPath}/lib`);
     await executeCommand(addStartPlugins, rootPath);
 }
-
-
-
 
 export async function addFeatureFolders(rootPath: string) {
 
@@ -33,7 +30,7 @@ export async function addFeatureFolders(rootPath: string) {
 
     await createFolders(featureFolders);
     await createFile(`${feauturePath}/presentation/routing/${featureName}_router.dart`, routerFeature);
-    // createIndexDartFiles(`${feauturePath}`);
+    createIndexDartFiles(`${feauturePath}`);
 }
 
 export async function createTemplateFiles(rootPath: string) {
