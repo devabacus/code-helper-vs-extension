@@ -33,9 +33,7 @@ GoRouter appRouter(Ref ref) {
 export const routesContent =
   `
 abstract class AppRoutes {
-  static const home = 'home';
-  static const homePath = '/';
-
+  
 }
 `;
 

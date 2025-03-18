@@ -8,6 +8,7 @@ import { flutterCreateNewProject } from "./template_project/flutter_create_proje
 import { createIndexDartFiles } from "./template_project/add_barrel_files";
 import { addStartPlugins } from "./flutter_content/terminal_commands";
 import { mainFile } from "./flutter_content/files_content/root_files";
+import { startAppFix } from "./handle_work/start_app_fix";
 
 
 
@@ -21,6 +22,7 @@ export async function flutterHandler() {
         'Обновить barrel': () => createIndexDartFiles(getLibPath()),
         'Новый базовый проект': () => flutterCreateNewProject(startAppRoutine),
         'Создать Flutter пакет': createFlutterPackage,
+        'start app fix': () => startAppFix(getRootWorkspaceFolders()),
     };
 
     const choice = await window.showQuickPick(Object.keys(options), {
