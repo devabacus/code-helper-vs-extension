@@ -1,17 +1,7 @@
 import {
-	commands,
-	ExtensionContext,
-	languages,
-	window,
-	workspace,
+    window
 } from "vscode";
-
-
 import { exec } from "child_process";
-import { promisify } from "util";
-
-const execAsync = promisify(exec);
-
 
 export async function writeToTerminal (command="whoami"){
     const terminal = window.createTerminal('My Terminal');
@@ -27,7 +17,6 @@ export async function terminalCommands(commands: string[], path: string):Promise
 
     }
 }
-
 
 export function executeCommand(command: string, cwd: string): Promise<void> {
     return new Promise((resolve, reject) => {

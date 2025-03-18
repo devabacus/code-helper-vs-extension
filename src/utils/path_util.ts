@@ -14,7 +14,6 @@ export function getRootWorkspaceFolders() {
 
 export function getLibPath() {
     return `${getRootWorkspaceFolders()}/lib`;
-    
 }
 
 

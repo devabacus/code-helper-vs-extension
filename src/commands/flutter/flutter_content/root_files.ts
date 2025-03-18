@@ -1,11 +1,9 @@
 
-
-
-export const startApp = `
+export const mainFile = `
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import './app.dart';
 import 'package:talker_riverpod_logger/talker_riverpod_logger.dart';
-import '../core/routing/router_config.dart';
 
 
 void main() {
@@ -14,13 +12,20 @@ void main() {
     observers: [
       TalkerRiverpodObserver(),
     ],
-    child: MyApp(),
+    child: App(),
   )
  );
 }
+`;
 
-class MyApp extends ConsumerWidget {
-  const MyApp({super.key});
+export const appFile = `
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../core/routing/router_config.dart';
+
+
+class App extends ConsumerWidget {
+  const App({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -28,7 +33,4 @@ class MyApp extends ConsumerWidget {
     return MaterialApp.router(routerConfig: router);
   }
 }
-
-
 `;
-

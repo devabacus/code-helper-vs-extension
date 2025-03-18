@@ -6,6 +6,4 @@ export function getFullRange(textEditor: TextEditor) {
         textEditor.document.positionAt(0),
         textEditor.document.positionAt(textEditor.document.getText().length),
     );
-    
-
 }

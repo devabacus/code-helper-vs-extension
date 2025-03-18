@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import * as fs from 'fs';
 import * as path from 'path';
-import { getRootWorkspaceFolders } from '../../utils/path_util';
+import { getRootWorkspaceFolders } from '../../../utils/path_util';
 
 /**
  * Исправляет версию Android NDK в build.gradle.kts, заменяя flutter.ndkVersion на конкретное значение.
