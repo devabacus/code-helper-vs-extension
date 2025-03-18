@@ -1,5 +1,11 @@
-export const routerContent = 
-`
+import { capitalize } from "../../../../utils/text_work/text_util";
+
+
+export const importFeatureRouter = (featureName: string) => `import '../../features/${featureName}/presentation/routing/${featureName}_router_config.dart';\n`;
+
+
+export const routerContent = (featureName: string) =>
+  `
 // ignore_for_file: unused_import
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -22,17 +28,22 @@ GoRouter appRouter(Ref ref) {
 
 `;
 
-export const routesContent = 
-`
+
+export const routesContent =
+  `
 abstract class AppRoutes {
   static const home = 'home';
   static const homePath = '/';
 
 }
 `;
-      
-export const routerConfigGenerator = 
-`
+
+
+
+
+
+export const routerConfigGenerator =
+  `
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
 part of 'router_config.dart';
@@ -63,6 +74,42 @@ typedef AppRouterRef = AutoDisposeProviderRef<GoRouter>;
 `;
 
 
-export const routerFeature = `
+export const routerFeatureFileContent = (featureName: string) =>
+  `
+import 'dart:core';
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
+import '${featureName}_routes_constants.dart';
+import '../../presentation/pages/${featureName}_page.dart';
+
+List<RouteBase> get${capitalize(featureName)}Routes() {
+  return [
+    GoRoute(
+      name: ${capitalize(featureName)}Routes.${featureName},
+      path: ${capitalize(featureName)}Routes.${featureName}Path,
+      builder: (BuildContext context, state) => ${capitalize(featureName)}Page(),
+    ),
+  ];
+}
 `;
+
+
+export const featureRoutesConstants = (featureName: string) => `
+abstract class ${capitalize(featureName)}Routes {
+    static const ${featureName} = '${featureName}';
+    static const ${featureName}Path = '/${featureName}';
+
+    static const detail = '${featureName}_detail';
+    static const detailPath = '/${featureName}/detail';  
+}
+`;
+
+
+
+
+
+
+
+
+

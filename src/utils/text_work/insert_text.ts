@@ -1,5 +1,5 @@
-import { Range, Uri, window, workspace } from "vscode";
 import * as fs from 'fs';
+import { Range, window } from "vscode";
 
 
 export function insertTextInDocument(text: string) {
@@ -25,16 +25,13 @@ export function insertTextToFile(newText: string, filePath: string) {
     fs.writeFileSync(filePath, newText, { encoding: "utf-8" });
 }
 
-
-
-
 const insertTextAfter = (searchText: string, insertText: string) => {
     const editor = window.activeTextEditor;
-    if (!editor) return;
+    if (!editor) {return;}
     const document = editor?.document;
     const text = document.getText();
     const index = text.indexOf(searchText);
-    if (index === -1) return;
+    if (index === -1) {return;}
 
     const position = document.positionAt(index + searchText.length);
     editor.edit(editBuilder => {

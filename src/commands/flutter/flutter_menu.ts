@@ -7,7 +7,7 @@ import { createFlutterPackage } from "./flutter_create_package";
 import { flutterCreateNewProject } from "./template_project/flutter_create_project";
 import { createIndexDartFiles } from "./template_project/add_barrel_files";
 import { addStartPlugins } from "./flutter_content/terminal_commands";
-import { mainFile } from "./flutter_content/root_files";
+import { mainFile } from "./flutter_content/files_content/root_files";
 
 
 

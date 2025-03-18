@@ -1,5 +1,6 @@
-import { routerConfigGenerator, routerContent, routesContent } from "./files_content/routers_contents";
-import { appFile, mainFile } from "./root_files";
+import path from "path";
+import { routerConfigGenerator, routerContent, routesContent } from "./files_content/files_contents";
+import { appFile, mainFile } from "./files_content/root_files";
 
 export const baseTemplateFolders = [
     'core/routing',
@@ -12,12 +13,12 @@ export const baseTemplateFolders = [
 
 export const templatefiles: Record<string, string> = {
     'core/routing/routes_constants.dart': routesContent,
-    'core/routing/router_config.dart': routerContent,
     'core/routing/router_config.g.dart': routerConfigGenerator,
     'main.dart': mainFile,
     'app.dart': appFile,
 };
 
+export const appRouterConfigPath = (rootPath: string) => path.join(rootPath, "lib", 'core/routing/router_config.dart');
 
 export const featureFolderPaths = [
     'data/models',
@@ -39,5 +40,4 @@ export const featureFilesPaths = [
 
 export const feautureRouterPath = (featureName: string) => [
     `presentation/routing/${featureName}_router.dart`,
-  ];
-  
+];

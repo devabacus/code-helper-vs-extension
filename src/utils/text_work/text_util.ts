@@ -5,3 +5,8 @@ export function textValidator(text: string): string | null {
         return 'Название должно содержать только маленькие буквы, цифры и _';
     }
 }
+
+
+export function capitalize(str: string): string {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+}
