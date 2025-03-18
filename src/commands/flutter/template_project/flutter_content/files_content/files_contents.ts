@@ -1,10 +1,10 @@
-import { capitalize } from "../../../../utils/text_work/text_util";
+import { capitalize } from "../../../../../utils/text_work/text_util";
 
 
 export const importFeatureRouter = (featureName: string) => `import '../../features/${featureName}/presentation/routing/${featureName}_router_config.dart';\n`;
 
 
-export const routerContent = 
+export const routerContent =
   `
 // ignore_for_file: unused_import
 import 'package:flutter_riverpod/flutter_riverpod.dart';

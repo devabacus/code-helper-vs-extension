@@ -2,12 +2,12 @@ import path from 'path';
 import { createFile, createFolders, executeCommand } from '../../../utils';
 import { insertAtFileStart, insertTextAfter } from '../../../utils/text_work/text_insert/basic-insertion';
 import { getUserInputWrapper } from '../../../utils/ui/ui_ask_folder';
-import { featureRoutesConstants, importFeatureRouter, routerContent, routerFeatureFileContent } from '../flutter_content/files_content/files_contents';
-import { appRouterConfigPath, baseTemplateFolders, featureFolderPaths, templatefiles } from '../flutter_content/template_paths';
-import { addStartPlugins } from '../flutter_content/terminal_commands';
+import { featureRoutesConstants, importFeatureRouter, routerContent, routerFeatureFileContent } from './flutter_content/files_content/files_contents';
+import { appRouterConfigPath, baseTemplateFolders, featureFolderPaths, templatefiles } from './flutter_content/template_paths';
+import { addStartPlugins } from './flutter_content/terminal_commands';
 import { createIndexDartFiles } from './add_barrel_files';
-import { featureMainPagePath, featureRouterConfigPath, featureRoutesConstantPath } from '../flutter_content/files_content/files_paths';
-import { featureMainPageContent } from '../flutter_content/files_content/root_files';
+import { featureMainPagePath, featureRouterConfigPath, featureRoutesConstantPath } from './flutter_content/files_content/files_paths';
+import { featureMainPageContent } from './flutter_content/files_content/root_files';
 import { capitalize } from '../../../utils/text_work/text_util';
 
 
@@ -19,7 +19,7 @@ export async function addBaseTemplate(rootPath: string) {
     await createTemplateFiles(rootPath);
     await createFile(appRouterConfigPath(rootPath), routerContent);
     addFeatureFolders(rootPath, 'home');
-    
+
 
 
     createIndexDartFiles(`${rootPath}/lib`);
@@ -42,8 +42,7 @@ export async function addFeatureFolders(rootPath: string, featureNameP: string =
         featureName = await getUserInputWrapper(true, "type feature name") as string;
     }
 
-    
-    
+
     const feauturePath = `${rootPath}/lib/features/${featureName}`;
     if (featureName === 'undefined') { return; }
 
@@ -52,33 +51,32 @@ export async function addFeatureFolders(rootPath: string, featureNameP: string =
     });
 
     await createFolders(featureFolders);
-
-    const featureConstantsFile = featureRoutesConstantPath(feauturePath, featureName!);
-    const featureRoutesContent = featureRoutesConstants(featureName!);
-
-
-    const featureConfigFile = featureRouterConfigPath(feauturePath, featureName!);
-    const featureRouterContent = routerFeatureFileContent(featureName!);
-
-    const featureMainPageFile = featureMainPagePath(feauturePath, featureName!);
-    const featureMainPage = featureMainPageContent(featureName!);
-
-    // featureMainPage
-    await createFile(featureConfigFile, featureRouterContent);
-    await createFile(featureConstantsFile, featureRoutesContent);
-    await createFile(featureMainPageFile, featureMainPage);
-    
+    await createTemplContentFiles(feauturePath, featureName);
     
     createIndexDartFiles(`${feauturePath}`);
 
-    // обновляем router_config.dart
     updateAppRouterConfig(featureName, rootPath);
 
 }
 
+export async function createTemplContentFiles(featurePath: string, featureName: string) {
+    const featureConstantsFile = featureRoutesConstantPath(featurePath, featureName!);
+    const featureRoutesContent = featureRoutesConstants(featureName!);
+
+    const featureConfigFile = featureRouterConfigPath(featurePath, featureName!);
+    const featureRouterContent = routerFeatureFileContent(featureName!);
+
+    const featureMainPageFile = featureMainPagePath(featurePath, featureName!);
+    const featureMainPage = featureMainPageContent(featureName!);
+
+    await createFile(featureConfigFile, featureRouterContent);
+    await createFile(featureConstantsFile, featureRoutesContent);
+    await createFile(featureMainPageFile, featureMainPage);
+}
+
 
 function updateAppRouterConfig(featureName: string | undefined, rootPath: string) {
-// ...get${featureName}Routes() after routes: [
+    // ...get${featureName}Routes() after routes: [
     const appRouterFilePath = appRouterConfigPath(rootPath);
     insertAtFileStart(appRouterFilePath, importFeatureRouter(featureName!));
     insertTextAfter(appRouterFilePath, 'routes: [', `\t\t\t...get${capitalize(featureName!)}Routes(),`);

@@ -1,4 +1,4 @@
-import { capitalize } from "../../../../utils/text_work/text_util";
+import { capitalize } from "../../../../../utils/text_work/text_util";
 
 export const mainFile = `
 import 'package:flutter/material.dart';
