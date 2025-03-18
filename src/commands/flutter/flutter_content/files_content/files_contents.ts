@@ -29,7 +29,6 @@ GoRouter appRouter(Ref ref) {
 
 `;
 
-
 export const routesContent =
   `
 abstract class AppRoutes {
