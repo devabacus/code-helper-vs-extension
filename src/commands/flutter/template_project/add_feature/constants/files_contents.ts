@@ -122,5 +122,4 @@ return `
     static const ${pageName}Path = '/${featureName}/${pageName}';
 `;};
 
-
 export const importPageFeatureRouter = (pageName: string) => `import '../../presentation/pages/${pageName}_page.dart';\n`;
