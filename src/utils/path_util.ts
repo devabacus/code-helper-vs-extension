@@ -21,3 +21,7 @@ export function getLibPath() {
 export function getUserSnippetsPath(): string {
     return path.join(process.env.APPDATA || "", "Code", "User", "snippets");
 }
+
+export function getActiveEditorPath(): string | undefined {
+    return window.activeTextEditor?.document.uri.fsPath;
+}
