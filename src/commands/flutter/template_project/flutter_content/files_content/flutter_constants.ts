@@ -1,9 +1,4 @@
 
-
-
-
-
-
 export const home_page = 
 `
 import 'package:flutter/material.dart';

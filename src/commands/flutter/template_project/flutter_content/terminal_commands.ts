@@ -9,6 +9,7 @@ const startPlugins = [
     "go_router",
     "talker_flutter",
     "talker_riverpod_logger",
+    "package_info_plus",
 ];
 
 const startDevPlugins = [

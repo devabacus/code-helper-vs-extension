@@ -37,20 +37,25 @@ class App extends ConsumerWidget {
 `;
 
 
-export const featureMainPageContent = (featureName: string) => `
+export const featureMainPageContent = (featureName: string) => {
+  const capFeature = capitalize(featureName);
+  
+return `
 import 'package:flutter/material.dart';
+import '../providers/${featureName}_navigation_provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ${capitalize(featureName)}Page extends StatelessWidget {
-  const ${capitalize(featureName)}Page({super.key});
+class ${capFeature}Page extends ConsumerWidget {
+  const ${capFeature}Page({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text("${capitalize(featureName)}Page"),
+            Text("${capFeature}Page"),
             SizedBox(height: 30),
             ElevatedButton(
               onPressed: () => {},
@@ -63,4 +68,4 @@ class ${capitalize(featureName)}Page extends StatelessWidget {
   }
 }
 
-`;
+`};
