@@ -21,7 +21,8 @@ export async function getConstructorData(): Promise<Record<string, any>> {
         }
     }
     const constrData = { pageName, params: paramList };
-    console.log(constrData);
+    
+    console.log(`page: ${constrData.pageName} params: ${constrData.params}`);
 
     return constrData;
 }
