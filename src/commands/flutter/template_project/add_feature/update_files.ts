@@ -6,8 +6,9 @@ import { importFeatureRouter } from '../flutter_content/files_content/files_cont
 import { featureNavServicePath } from '../flutter_content/files_content/files_path';
 import { featurePageContent } from '../flutter_content/files_content/root_files';
 import { appRouterConfigPath, appRouterNavServicePath } from '../flutter_content/template_paths';
-import { featureNavServiceMethod, featurePageNameAddConstants, featurePageNameRouterMethod, importFeatureRoutesConst, importPageFeatureRouter, navServiceMethod } from './constants/files_contents';
+import { featureNavServiceMethod, featurePageNameAddConstants, featureRouter, featureRouterParam, importFeatureRoutesConst, importPageFeatureRouter, navServiceMethod } from './constants/files_contents';
 import { featureRouterConfigPath, featureRoutesConstantPath } from './feature_files_paths';
+import { getConstructorData } from '../../utils/text_utils';
 
 
 export function updateAppRouterThings(featureName: string | undefined, rootPath: string) {
@@ -23,21 +24,54 @@ export function updateAppRouterThings(featureName: string | undefined, rootPath:
 
 export async function updateRoutingFiles(filePath: string) {
 
+    //  filePath = G:\Projects\Flutter\a15\lib\features\home\presentation\pages\auth_page.dart    
+    const featurePath = getFeaturePath(filePath);
     const featureName = getFeatureName(filePath);
-    const pageName = getPageName(filePath);
-    const featureRouterCongifFile = featureRouterConfigPath(getFeaturePath(filePath), getFeatureName(filePath));
-
+    let pageName = getPageName(filePath);
 
     insertAtFileStart(filePath, featurePageContent(featureName, pageName));
 
-    insertTextAfter(featureNavServicePath(getFeaturePath(filePath), getFeatureName(filePath)), 'NavigationService {', featureNavServiceMethod(featureName, pageName));
+    const constrData: Record<string, any> = getConstructorData();
+    pageName = constrData.pageName;
+    const params = constrData.params;
 
-    insertTextAfter(featureRouterCongifFile, 'return [', featurePageNameRouterMethod(featureName, pageName));
 
-    insertTextAfter(featureRoutesConstantPath(getFeaturePath(filePath), getFeatureName(filePath)), 'Routes {', featurePageNameAddConstants(featureName, pageName));
+    updateFeatureFiles(featurePath, featureName, pageName, params);
+
+}
+
+
+export function updateFeatureFiles(featurePath: string, featureName: string, pageName: string, params: string[] = []) {
+
+    const featureRouterCongifFile = featureRouterConfigPath(featurePath, featureName);
+
+    insertTextAfter(featureNavServicePath(featurePath, featureName), 'NavigationService {', featureNavServiceMethod(featureName, pageName, params));
+
+
+
+    insertTextAfter(featureRouterCongifFile, 'return [', featureRouterParam(featureName, pageName, params));
+
+
+    insertTextAfter(featureRoutesConstantPath(featurePath, featureName), 'Routes {', featurePageNameAddConstants(featureName, pageName, convertParams(params)));
 
     insertAtFileStart(featureRouterCongifFile, importPageFeatureRouter(pageName));
 }
+
+
+
+// final name = state.pathParameters['name'];
+// return AuthPage(name: name);
+
+
+function convertParams(params: string[]): string {
+    let paramsStr = '';
+    if (params.length > 0) {
+        const paramsList = (params.map((param) => `/:${param}`));
+        paramsStr = paramsList.join('');
+    }
+    return paramsStr;
+}
+
 
 export function getFeatureName(pth: string) {
     const filePathList = pth!.split(path.sep);

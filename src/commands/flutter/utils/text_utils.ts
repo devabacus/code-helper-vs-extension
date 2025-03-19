@@ -1,11 +1,12 @@
 import { getCurrentLineText } from "../../../utils/ui/ui_util";
 
 
-export async function getConstructorData(): Promise<Record<string, any>> {
+export function getConstructorData(): Record<string, any> {
 
     const lineText = getCurrentLineText();
     const regexMatch = lineText!.match(/(\w+)\s?\((.+)\)/)!;
-    const pageName = regexMatch[1].split('Page')[0];
+    const pageName = regexMatch[1].split('Page')[0].toLowerCase();
+
     const dirtyParamList = regexMatch[2].split(',');
     const paramList: string[] = [];
 

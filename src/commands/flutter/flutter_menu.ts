@@ -25,7 +25,7 @@ export async function flutterHandler() {
         'Новый базовый проект': () => flutterCreateNewProject(startAppRoutine),
         'Создать Flutter пакет': createFlutterPackage,
         'Создать навигацию для файла': () => updateRoutingFiles(getActiveEditorPath()!),
-        'Создать навигацию по конструктору': () => getConstructorData(),
+        // 'Создать навигацию по конструктору': () => getConstructorData(),
     };
 
     const choice = await window.showQuickPick(Object.keys(options), {
