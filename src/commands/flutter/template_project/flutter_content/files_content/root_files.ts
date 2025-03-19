@@ -43,14 +43,14 @@ export const featureMainPageContent = (featureName: string) => {
 return `
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../providers/${featureName}_navigation_provider.dart';
+// import '../providers/${featureName}_navigation_provider.dart';
 
 class ${capFeature}Page extends ConsumerWidget {
   const ${capFeature}Page({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final ${featureName}NavService = ref.read(${featureName}NavigationServiceProvider);
+    // final ${featureName}NavService = ref.read(${featureName}NavigationServiceProvider);
 
     return Scaffold(
       body: Center(

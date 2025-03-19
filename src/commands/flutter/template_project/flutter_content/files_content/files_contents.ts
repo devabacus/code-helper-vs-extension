@@ -70,7 +70,7 @@ export const routerFeatureFileContent = (featureName: string) => {
   const capitalizeName = capitalize(featureName);
   
   return `
-  import 'dart:core';
+import 'dart:core';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -83,10 +83,10 @@ List<RouteBase> get${capitalizeName}Routes() {
       name: ${capitalizeName}Routes.${featureName},
       path: ${capitalizeName}Routes.${featureName}Path,
       builder: (BuildContext context, state) => ${capitalizeName}Page(),
-      ),
-      ];
-      }
-      `;};
+    ),
+  ];
+}
+`;};
 
 export const featureRoutesConstants = (featureName: string) => `
 abstract class ${capitalize(featureName)}Routes {
