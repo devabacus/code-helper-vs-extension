@@ -69,8 +69,8 @@ typedef AppRouterRef = AutoDisposeProviderRef<GoRouter>;
 export const routerFeatureFileContent = (featureName: string) => {
   const capitalizeName = capitalize(featureName);
   
- return `
-import 'dart:core';
+  return `
+  import 'dart:core';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -83,10 +83,10 @@ List<RouteBase> get${capitalizeName}Routes() {
       name: ${capitalizeName}Routes.${featureName},
       path: ${capitalizeName}Routes.${featureName}Path,
       builder: (BuildContext context, state) => ${capitalizeName}Page(),
-    ),
-  ];
-}
-`};
+      ),
+      ];
+      }
+      `;};
 
 export const featureRoutesConstants = (featureName: string) => `
 abstract class ${capitalize(featureName)}Routes {
@@ -103,17 +103,8 @@ export const navigationService = `
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../features/auth/presentation/routing/auth_routes_constants.dart';
-import '../../features/home/presentation/routing/home_routes_constants.dart';
-
 class NavigationService {
-  void navigateToHome(BuildContext context) {
-    context.goNamed(HomeRoutes.home);
-  }
 
-  void navigateToAuth(BuildContext context) {
-    context.goNamed(AuthRoutes.auth);
-  }
 }
 
 `;
@@ -176,7 +167,7 @@ export const addMethodToNavService = (featureName: string) => {
 return `void navigateTo${capitalize(featureName)}(BuildContext context) {
     context.goNamed(${capitalize(featureName)}Routes.${featureName});
   }
-`};
+`;};
 
 
 export const featureNavService = (featureName: string) => {
@@ -196,7 +187,7 @@ class ${capFeature}NavigationService {
 
 }
 
-`};
+`;};
 
 
 export const featureNavServiceProviderGen = (featureName: string) => {
@@ -235,7 +226,7 @@ typedef ${capFeature}NavigationServiceRef =
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
 
-`};
+`;};
 
 export const featureNavServiceProvider = (featureName: string) => {
   const capFeature = capitalize(featureName);
@@ -254,14 +245,14 @@ ${capFeature}NavigationService ${featureName}NavigationService(Ref ref) {
 }
 
 
-`};
+`;};
 
 
 export const featureNavServicePath = (featurePath: string, featureName: string) => `${featurePath}/presentation/services/${featureName}_navigation_service.dart`;
 
-export const featureNavServiceProviderPath = (featurePath: string, featureName: string) => `${featurePath}/presentation/providers/${featureName}__navigation_provider.dart`;
+export const featureNavServiceProviderPath = (featurePath: string, featureName: string) => `${featurePath}/presentation/providers/${featureName}_navigation_provider.dart`;
 
-export const featureNavServiceProviderGenPath = (featurePath: string, featureName: string) => `${featurePath}/presentation/providers/${featureName}__navigation_provider.g.dart`;
+export const featureNavServiceProviderGenPath = (featurePath: string, featureName: string) => `${featurePath}/presentation/providers/${featureName}_navigation_provider.g.dart`;
 
 
 export const navServiceMethod = (featureName: string) => {
@@ -270,6 +261,6 @@ return `
   void navigateTo${capFeature}(BuildContext context) {
     context.goNamed(${capFeature}Routes.${featureName});
   }
-`};
+`;};
 
 

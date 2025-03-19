@@ -2,7 +2,7 @@ import path from 'path';
 import { createFile, createFolders, executeCommand } from '../../../utils';
 import { insertAtFileStart, insertTextAfter } from '../../../utils/text_work/text_insert/basic-insertion';
 import { getUserInputWrapper } from '../../../utils/ui/ui_ask_folder';
-import { featureNavService, featureNavServicePath, featureNavServiceProvider, featureNavServiceProviderGenPath, featureNavServiceProviderPath, featureRoutesConstants, importFeatureRouter, importFeatureRoutesConst, navServiceMethod, routerContent, routerFeatureFileContent } from './flutter_content/files_content/files_contents';
+import { featureNavService, featureNavServicePath, featureNavServiceProvider, featureNavServiceProviderGen, featureNavServiceProviderGenPath, featureNavServiceProviderPath, featureRoutesConstants, importFeatureRouter, importFeatureRoutesConst, navServiceMethod, routerContent, routerFeatureFileContent } from './flutter_content/files_content/files_contents';
 import { appRouterConfigPath, appRouterNavServicePath, baseTemplateFolders, featureFolderPaths, templatefiles } from './flutter_content/template_paths';
 import { addStartPlugins } from './flutter_content/terminal_commands';
 import { createIndexDartFiles } from './add_barrel_files';
@@ -81,7 +81,7 @@ export async function createTemplFeatureContentFiles(featurePath: string, featur
     await createFile(featureNavServiceProviderFile, featureNavServiceProviderContent!);
 
     const featureNavServiceProviderGenFile = featureNavServiceProviderGenPath(featurePath, featureName!);
-    const featureNavServiceProviderGenContent = featureNavServiceProvider(featureName!);
+    const featureNavServiceProviderGenContent = featureNavServiceProviderGen(featureName!);
     await createFile(featureNavServiceProviderGenFile, featureNavServiceProviderGenContent!);
 
 }
