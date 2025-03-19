@@ -1,14 +1,14 @@
 import path from 'path';
-import { getActiveEditorPath } from '../../../../utils/path_util';
 import { insertAtFileStart, insertTextAfter } from '../../../../utils/text_work/text_insert/basic-insertion';
 import { capitalize } from '../../../../utils/text_work/text_util';
 import { importFeatureRouter } from '../flutter_content/files_content/files_contents';
 
+import { getCurrentLineText } from '../../../../utils/ui/ui_util';
+import { featureNavServicePath } from '../flutter_content/files_content/files_path';
+import { featurePageContent } from '../flutter_content/files_content/root_files';
 import { appRouterConfigPath, appRouterNavServicePath } from '../flutter_content/template_paths';
 import { featureNavServiceMethod, featurePageNameAddConstants, featurePageNameRouterMethod, importFeatureRoutesConst, importPageFeatureRouter, navServiceMethod } from './constants/files_contents';
-import { featureNavServicePath } from '../flutter_content/files_content/files_path';
 import { featureRouterConfigPath, featureRoutesConstantPath } from './feature_files_paths';
-import { featurePageContent } from '../flutter_content/files_content/root_files';
 
 
 export function updateAppRouterThings(featureName: string | undefined, rootPath: string) {
@@ -54,5 +54,31 @@ export function getPageName(pth: string): string {
 export function getFeaturePath(pth: string): string {
     const featureName = getFeatureName(pth);
     return path.join(pth!.split(featureName)[0], featureName);
+}
+
+export async function getParamsFromConstructor() {
+    
+    const lineText = getCurrentLineText();
+    const regexMatch = lineText!.match(/(\w+)\s?\((.+)\)/)!;
+    const pageName = regexMatch[1].split('Page')[0];
+    console.log(pageName); 
+    // {required this.name, super.key}
+    const dirtyParamList = regexMatch[2].split(',');
+    const paramList = [];
+
+    const exludeChars = ['.','required','this','key','super','}','{'];
+
+    for (const dirtyParam of dirtyParamList) {
+        var param = dirtyParam;
+        for (const excl of exludeChars) {
+            param = param.replace(excl, '');
+        }
+        if (param !== '') {
+            paramList.push(param.trim());
+        }
+    }
+
+    console.log(pageName);
+    console.log(paramList);
 }
 

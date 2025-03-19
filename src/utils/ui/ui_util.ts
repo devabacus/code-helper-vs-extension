@@ -1,6 +1,6 @@
-import { OpenDialogOptions, window, workspace } from "vscode";
+import { OpenDialogOptions, Range, window, workspace, Position } from "vscode";
 import { createFolders } from "../dir_handle";
-
+import {} from 'vscode';
 
 // Открываем файл в VS Code
 export function openTextDocument(destinationPath: string) {
@@ -26,6 +26,22 @@ export async function addPickedFoldersSet(folderOptions: Record<string, string[]
         const selectedFolders = folderOptions[selectedOption];
         await createFolders(selectedFolders);
     }
-
 }
+
+export function getCurrectSelect():string {
+    const editor = window.activeTextEditor;
+    const document = editor?.document;
+    const selection = editor?.selection;
+    return document!.getText(selection);
+}
+
+export function getCurrentLineText() {
+    const editor = window.activeTextEditor;
+    const cursor = editor!.selection.active;
+    const line = cursor.line;
+    const lineRange = new Range(new Position(line, 0), new Position(line+1, 0));
+    return  editor?.document.getText(lineRange);
+}
+
+
         
