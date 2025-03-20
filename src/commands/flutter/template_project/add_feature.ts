@@ -5,10 +5,10 @@ import { crBarrelFls } from './add_barrel_files';
 
 import { fNavServBase, fNavServPath, fNavServProv, fNavServProvPath, fNavServProvGen, fNavServProvGenPth, fRouterPath, routerFFlCont, fRoutesConstPth, fRoutesConsts } from './navigation_files';
 
-import { fFoldPths } from './flutter_content/feat_folds_path';
+import {  } from './flutter_content/feat_folds_path';
 
 import { updRouterThings } from './update_files';
-import { fMainPgCont, fMainPgPth } from './flutter_content/files_content/feat_main_page_cont';
+import { fMainPgCont, fMainPgPth,fFoldPths } from './flutter_content';
 
 
 export async function addFeatureFolders(rootPath: string, featureNameP: string = "") {

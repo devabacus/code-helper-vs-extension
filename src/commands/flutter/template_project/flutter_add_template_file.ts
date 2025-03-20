@@ -2,10 +2,8 @@ import path from 'path';
 import { createFile, createFolders, executeCommand } from '../../../utils';
 import { crBarrelFls } from './add_barrel_files';
 import { addFeatureFolders } from './add_feature';
-import { } from './navigation_files/constants/nav_service_prov_get';
-import { routerPath, baseTemplateFolders, templatefiles } from './flutter_content/template_paths';
-import { addStartPlugins } from './flutter_content/terminal_commands';
 import { routerCont } from './navigation_files/router_config';
+import { routerPath, baseTemplateFolders, templatefiles, addStartPlugins } from './flutter_content/';
 
 
 export async function addBaseTemplate(rootPath: string) {
