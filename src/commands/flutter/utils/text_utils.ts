@@ -1,3 +1,4 @@
+import { cap } from "../../../utils/text_work/text_util";
 import { getCurrentLineText } from "../../../utils/ui/ui_util";
 
 
@@ -32,12 +33,22 @@ export function getWdgClPgData() {
     
 }
 
-interface ClsParams {
+export interface ClsParams {
     name: string;
     type: string;
     isNullable: boolean;
     isRequired: boolean;
 }
+
+export function getPgName(clsDeclaration: string) :string{
+    const fieldRegex = /class\s(\w+)\s/;
+    const clsName = clsDeclaration.match(fieldRegex)![1];
+    const pgName = clsName.split('Page')[0].toLowerCase();
+    return pgName;
+
+}
+
+
 
 export function parseClsParams(clsDeclaration: string): ClsParams[]{
     const dirty = clsDeclaration.match(/class[\s\S]*?(?=@)/g)![0];

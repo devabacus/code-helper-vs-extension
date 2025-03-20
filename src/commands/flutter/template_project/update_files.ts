@@ -2,7 +2,7 @@ import path from 'path';
 import { insAtFlStart, insertTextAfter } from '../../../utils/text_work/text_insert/basic-insertion';
 import { } from './navigation_files/constants/nav_service_prov_get';
 
-import { getConstrData, parseClsParams } from '../utils/text_utils';
+import { ClsParams, getConstrData, getPgName, parseClsParams } from '../utils/text_utils';
 import { } from './flutter_content/feat_folds_path';
 import { routerNavServPath, routerPath } from './flutter_content/template_paths';
 import { fNavServ, fNavServPath } from './navigation_files/feat_nav_service';
@@ -29,30 +29,36 @@ export async function updRoutingFls(filePath: string) {
     //  filePath = G:\Projects\Flutter\a15\lib\features\home\presentation\pages\auth_page.dart    
     const featurePath = getFeaturePath(filePath);
     const featureName = getFeatureName(filePath);
-    let pageName = getPageName(filePath);
+    // let pageName = getPageName(filePath);
 
     // insAtFlStart(filePath, featurePageContent(featureName, pageName));
 
-    const constrData: Record<string, any> = getConstrData();
-    pageName = constrData.pageName;
-    const params = constrData.params;
+    // const constrData: Record<string, any> = getConstrData();
+    // pageName = constrData.pageName;
+    // const params = constrData.params;
     
-    const clsParams = parseClsParams(getDocText());
+    const clsDeclaration = getDocText();
+    const pgName = getPgName(clsDeclaration);
 
-    updateFFiles(featurePath, featureName, pageName, params);
+
+    const clsParams: ClsParams[] = parseClsParams(getDocText());
+
+    updateFFiles(featurePath, featureName, pgName, clsParams);
 
 }
 
 
-export function updateFFiles(fPath: string, fName: string, pName: string, pms: string[] = []) {
+export function updateFFiles(fPath: string, fName: string, pName: string, fields: ClsParams[] = []) {
+    const names = fields.map((field) => field.name);
+
 
     const fRouterFile = fRouterPath(fPath, fName);
 
-    insertTextAfter(fNavServPath(fPath, fName), 'NavigationService {', fNavServ(fName, pName, pms));
+    insertTextAfter(fNavServPath(fPath, fName), 'NavigationService {', fNavServ(fName, pName, fields));
 
-    insertTextAfter(fRouterFile, 'return [', fRouterPm(fName, pName, pms));
+    insertTextAfter(fRouterFile, 'return [', fRouterPm(fName, pName, names));
 
-    insertTextAfter(fRoutesConstPth(fPath, fName), 'Routes {', fAddConst(fName, pName, convertParams(pms)));
+    insertTextAfter(fRoutesConstPth(fPath, fName), 'Routes {', fAddConst(fName, pName, convertParams(names)));
 
     insAtFlStart(fRouterFile, imPageFRouter(pName));
 }
