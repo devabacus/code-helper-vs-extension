@@ -44,14 +44,10 @@ export function constrpm(pms: string[], pName: string): string {
 }
 
 const getBody = (pms: string[], pName: string): string => {
-  if (pms.length > 0) {
     return `
       ${pmRowsCreater(pms)}
       ${constrpm(pms, pName)}
     `;
-  } else {
-    return '';
-  }
 };
 
 export const fRouterPm = (fName: string, pName: string, pms: string[]) => {
