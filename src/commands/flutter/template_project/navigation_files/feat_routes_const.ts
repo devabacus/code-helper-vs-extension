@@ -1,6 +1,6 @@
 import { cap } from "../../../../utils/text_work/text_util";
 
-export const fRoutesConstPath = (fPath: string, fName: string) => `${fPath}/presentation/routing/${fName}_routes_constants.dart`;
+export const fRoutesConstPth = (fPath: string, fName: string) => `${fPath}/presentation/routing/${fName}_routes_constants.dart`;
 
 
 export const fRoutesConsts = (fName: string) => `

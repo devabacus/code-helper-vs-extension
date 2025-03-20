@@ -2,17 +2,16 @@
 import { createFile, createFolders } from '../../../utils';
 import { getUserInputWrapper } from '../../../utils/ui/ui_ask_folder';
 import { crBarrelFls } from './add_barrel_files';
-import { fMainPgPth } from './navigation_files/feat_main_page';
 import { fNavServBase, fNavServPath } from './navigation_files/feat_nav_service';
 import { fNavServProv, fNavServProvPath } from './navigation_files/feat_nav_service_prov';
 import { fNavServProvGen, fNavServProvGenPth } from './navigation_files/feat_nav_service_prov_gen';
 import { fRouterPath, routerFFlCont } from './navigation_files/feat_router_config';
-import { fRoutesConstPath, fRoutesConsts } from './navigation_files/feat_routes_const';
+import { fRoutesConstPth, fRoutesConsts } from './navigation_files/feat_routes_const';
 import { } from './navigation_files/constants/nav_service_prov_get';
 import { fFoldPths } from './flutter_content/feat_folds_path';
 
 import { updRouterThings } from './update_files';
-import { fMainPgCont } from './flutter_content/files_content/feat_main_page_cont';
+import { fMainPgCont, fMainPgPth } from './flutter_content/files_content/feat_main_page_cont';
 
 
 export async function addFeatureFolders(rootPath: string, featureNameP: string = "") {
@@ -40,29 +39,29 @@ export async function addFeatureFolders(rootPath: string, featureNameP: string =
 
 }
 
-export async function createTemplFContFls(featurePath: string, featureName: string) {
-    const fConstFile = fRoutesConstPath(featurePath, featureName!);
-    const fRoutesCont = fRoutesConsts(featureName!);
+export async function createTemplFContFls(fPth: string, fNm: string) {
+    const fConstFile = fRoutesConstPth(fPth, fNm!);
+    const fRoutesCont = fRoutesConsts(fNm!);
     await createFile(fConstFile, fRoutesCont);
 
-    const fConfigFl = fRouterPath(featurePath, featureName!);
-    const fRouterCont = routerFFlCont(featureName!);
+    const fConfigFl = fRouterPath(fPth, fNm!);
+    const fRouterCont = routerFFlCont(fNm!);
     await createFile(fConfigFl, fRouterCont);
 
-    const fMainPgFl = fMainPgPth(featurePath, featureName!);
-    const fMainPg = fMainPgCont(featureName!);
+    const fMainPgFl = fMainPgPth(fPth, fNm!);
+    const fMainPg = fMainPgCont(fNm!);
     await createFile(fMainPgFl, fMainPg);
 
-    const fNavServFl = fNavServPath(featurePath, featureName!);
-    const fNavServCont = fNavServBase(featureName!);
+    const fNavServFl = fNavServPath(fPth, fNm!);
+    const fNavServCont = fNavServBase(fNm!);
     await createFile(fNavServFl, fNavServCont!);
 
-    const fNavServProvFl = fNavServProvPath(featurePath, featureName!);
-    const fNavServProvCont = fNavServProv(featureName!);
+    const fNavServProvFl = fNavServProvPath(fPth, fNm!);
+    const fNavServProvCont = fNavServProv(fNm!);
     await createFile(fNavServProvFl, fNavServProvCont!);
 
-    const fNavServProvGenFl = fNavServProvGenPth(featurePath, featureName!);
-    const fNavServProvGenCont = fNavServProvGen(featureName!);
+    const fNavServProvGenFl = fNavServProvGenPth(fPth, fNm!);
+    const fNavServProvGenCont = fNavServProvGen(fNm!);
     await createFile(fNavServProvGenFl, fNavServProvGenCont!);
 
 }

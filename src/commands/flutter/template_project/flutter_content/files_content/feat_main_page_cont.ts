@@ -1,5 +1,8 @@
 import { cap } from "../../../../../utils/text_work/text_util";
 
+export const fMainPgPth = (featurePath: string, featureName: string) => `${featurePath}/presentation/pages/${featureName}_page.dart`;
+
+
 export const fMainPgCont = (featureName: string) => {
   const capFeature = cap(featureName);
 

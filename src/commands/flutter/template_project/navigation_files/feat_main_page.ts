@@ -1,1 +1,0 @@
-export const fMainPgPth = (featurePath: string, featureName: string) => `${featurePath}/presentation/pages/${featureName}_page.dart`;

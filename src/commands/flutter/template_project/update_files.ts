@@ -7,7 +7,7 @@ import { } from './flutter_content/feat_folds_path';
 import { routerNavServPath, routerPath } from './flutter_content/template_paths';
 import { fNavServ, fNavServPath } from './navigation_files/feat_nav_service';
 import { fRouterPath, fRouterPm, imPageFRouter } from './navigation_files/feat_router_config';
-import { fAddConst, fRoutesConstPath } from './navigation_files/feat_routes_const';
+import { fAddConst, fRoutesConstPth } from './navigation_files/feat_routes_const';
 import { navServiceMethod } from './navigation_files/nav_service';
 import { appRouterAdd, imFRouter, imFRoutesConst } from './navigation_files/router_config';
 
@@ -50,7 +50,7 @@ export function updateFFiles(fPath: string, fName: string, pName: string, pms: s
 
     insertTextAfter(fRouterFile, 'return [', fRouterPm(fName, pName, pms));
 
-    insertTextAfter(fRoutesConstPath(fPath, fName), 'Routes {', fAddConst(fName, pName, convertParams(pms)));
+    insertTextAfter(fRoutesConstPth(fPath, fName), 'Routes {', fAddConst(fName, pName, convertParams(pms)));
 
     insAtFlStart(fRouterFile, imPageFRouter(pName));
 }
