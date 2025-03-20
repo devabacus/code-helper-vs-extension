@@ -21,8 +21,6 @@ export async function addFeatureFolders(rootPath: string, featureNameP: string =
     if (featureNameP === '') {
         featureName = await getUserInputWrapper(true, "type feature name") as string;
     }
-
-
     const feauturePath = `${rootPath}/lib/features/${featureName}`;
     if (featureName === 'undefined') { return; }
 
@@ -34,9 +32,7 @@ export async function addFeatureFolders(rootPath: string, featureNameP: string =
     await createTemplFContFls(feauturePath, featureName);
 
     crBarrelFls(`${feauturePath}`);
-
     updRouterThings(featureName, rootPath);
-
 }
 
 export async function createTemplFContFls(fPth: string, fNm: string) {
