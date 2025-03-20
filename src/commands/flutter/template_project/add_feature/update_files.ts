@@ -3,11 +3,11 @@ import { insAtFlStart, insertTextAfter } from '../../../../utils/text_work/text_
 import { importFeatureRouter } from '../flutter_content/files_content/files_contents';
 
 import { getConstrData } from '../../utils/text_utils';
-import { fNavServ, fNavServPath } from '../files_for_updates/feat_nav_service';
-import { fRouterPath, fRouterPm, imPageFRouter } from '../files_for_updates/feat_router_config';
-import { fAddConst, fRoutesConstPath } from '../files_for_updates/feat_routes_const';
-import { navServiceMethod } from '../files_for_updates/nav_service';
-import { appRouterAdd, imFRoutesConst } from '../files_for_updates/router_config';
+import { fNavServ, fNavServPath } from '../navigation_files/feat_nav_service';
+import { fRouterPath, fRouterPm, imPageFRouter } from '../navigation_files/feat_router_config';
+import { fAddConst, fRoutesConstPath } from '../navigation_files/feat_routes_const';
+import { navServiceMethod } from '../navigation_files/nav_service';
+import { appRouterAdd, imFRoutesConst } from '../navigation_files/router_config';
 import { } from '../flutter_content/files_content/files_path';
 import { featurePageContent } from '../flutter_content/files_content/root_files';
 import { routerPath, routerNavServPath } from '../flutter_content/template_paths';
