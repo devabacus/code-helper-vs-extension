@@ -28,7 +28,7 @@ export async function addFeatureFolders(rootPath: string, featureNameP: string =
     await createFolders(featureFolders);
     await createTemplFContFls(feauturePath, featureName);
 
-    crBarrelFls(`${feauturePath}`);
+    // crBarrelFls(`${feauturePath}`);
     updRouterThings(featureName, rootPath);
 }
 
