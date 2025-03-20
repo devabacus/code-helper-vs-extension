@@ -3,7 +3,7 @@ import { insAtFlStart, insertTextAfter } from '../../../utils/text_work/text_ins
 import { } from './navigation_files/constants/nav_service_prov_get';
 
 import { getConstrData } from '../utils/text_utils';
-import { } from './flutter_content/files_content/files_path';
+import { } from './flutter_content/feat_folds_path';
 import { routerNavServPath, routerPath } from './flutter_content/template_paths';
 import { fNavServ, fNavServPath } from './navigation_files/feat_nav_service';
 import { fRouterPath, fRouterPm, imPageFRouter } from './navigation_files/feat_router_config';

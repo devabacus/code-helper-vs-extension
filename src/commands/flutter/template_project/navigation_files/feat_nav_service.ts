@@ -3,7 +3,7 @@ import { cap } from "../../../../utils/text_work/text_util";
 export const fNavServPath = (fPath: string, fName: string) => `${fPath}/presentation/services/${fName}_navigation_service.dart`;
 
 
-export const featureNavService = (fName: string) => {
+export const fNavServBase = (fName: string) => {
   const capFeature = cap(fName);
 
   return `

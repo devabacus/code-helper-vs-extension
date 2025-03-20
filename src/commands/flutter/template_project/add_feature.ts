@@ -1,18 +1,18 @@
 
 import { createFile, createFolders } from '../../../utils';
 import { getUserInputWrapper } from '../../../utils/ui/ui_ask_folder';
-import { createIndexDartFiles } from './add_barrel_files';
-import { featureMainPagePath } from './navigation_files/feat_main_page';
-import { featureNavService, fNavServPath } from './navigation_files/feat_nav_service';
+import { crBarrelFls } from './add_barrel_files';
+import { fMainPgPth } from './navigation_files/feat_main_page';
+import { fNavServBase, fNavServPath } from './navigation_files/feat_nav_service';
 import { fNavServProv, fNavServProvPath } from './navigation_files/feat_nav_service_prov';
 import { fNavServProvGen, fNavServProvGenPth } from './navigation_files/feat_nav_service_prov_gen';
 import { fRouterPath, routerFFlCont } from './navigation_files/feat_router_config';
 import { fRoutesConstPath, fRoutesConsts } from './navigation_files/feat_routes_const';
 import { } from './navigation_files/constants/nav_service_prov_get';
-import { fFoldPths } from './flutter_content/files_content/files_path';
+import { fFoldPths } from './flutter_content/feat_folds_path';
 
-import { featureMainPageContent } from './flutter_content/files_content/root_files';
 import { updRouterThings } from './update_files';
+import { fMainPgCont } from './flutter_content/files_content/feat_main_page_cont';
 
 
 export async function addFeatureFolders(rootPath: string, featureNameP: string = "") {
@@ -34,7 +34,7 @@ export async function addFeatureFolders(rootPath: string, featureNameP: string =
     await createFolders(featureFolders);
     await createTemplFContFls(feauturePath, featureName);
 
-    createIndexDartFiles(`${feauturePath}`);
+    crBarrelFls(`${feauturePath}`);
 
     updRouterThings(featureName, rootPath);
 
@@ -49,12 +49,12 @@ export async function createTemplFContFls(featurePath: string, featureName: stri
     const fRouterCont = routerFFlCont(featureName!);
     await createFile(fConfigFl, fRouterCont);
 
-    const fMainPgFl = featureMainPagePath(featurePath, featureName!);
-    const fMainPg = featureMainPageContent(featureName!);
+    const fMainPgFl = fMainPgPth(featurePath, featureName!);
+    const fMainPg = fMainPgCont(featureName!);
     await createFile(fMainPgFl, fMainPg);
 
     const fNavServFl = fNavServPath(featurePath, featureName!);
-    const fNavServCont = featureNavService(featureName!);
+    const fNavServCont = fNavServBase(featureName!);
     await createFile(fNavServFl, fNavServCont!);
 
     const fNavServProvFl = fNavServProvPath(featurePath, featureName!);

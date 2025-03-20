@@ -1,10 +1,11 @@
 import path from "path";
 import { navServProvGen } from "../navigation_files/constants/nav_service_prov_get";
-import { appFile, mainFile } from "./files_content/root_files";
 import { routerGen } from "../navigation_files/constants/router_gen";
 import { routesCont } from "../navigation_files/constants/routes_consts";
 import { navServ } from "../navigation_files/nav_service";
 import { navServProv } from "../navigation_files/constants/nav_service_prov";
+import { mainFile } from "./files_content/main_file";
+import { appFile } from "./files_content/app_file";
 
 export const baseTemplateFolders = [
     'core/routing',
