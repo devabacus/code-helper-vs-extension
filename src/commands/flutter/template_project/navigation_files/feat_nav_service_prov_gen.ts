@@ -1,38 +1,45 @@
-import { capitalize } from "../../../../utils/text_work/text_util";
+import { cap } from "../../../../utils/text_work/text_util";
 
-export const featureNavServiceProviderGen = (featureName: string) => {
-  const capFeature = capitalize(featureName);
+
+
+
+export const fNavServProvGenPth = (fPth: string, fName: string) => `${fPth}/presentation/providers/${fName}_navigation_provider.g.dart`;
+
+
+
+export const fNavServProvGen = (fName: string) => {
+  const capF = cap(fName);
 
   return `
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of '${featureName}_navigation_provider.dart';
+part of '${fName}_navigation_provider.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$${featureName}NavigationServiceHash() =>
+String _$${fName}NavigationServiceHash() =>
     r'f03c14873caf1ce8f4f324ef853a3117d17c2276';
 
-/// See also [${featureName}NavigationService].
-@ProviderFor(${featureName}NavigationService)
-final ${featureName}NavigationServiceProvider =
-    AutoDisposeProvider<${capFeature}NavigationService>.internal(
-      ${featureName}NavigationService,
-      name: r'${featureName}NavigationServiceProvider',
+/// See also [${fName}NavigationService].
+@ProviderFor(${fName}NavigationService)
+final ${fName}NavigationServiceProvider =
+    AutoDisposeProvider<${capF}NavigationService>.internal(
+      ${fName}NavigationService,
+      name: r'${fName}NavigationServiceProvider',
       debugGetCreateSourceHash:
           const bool.fromEnvironment('dart.vm.product')
               ? null
-              : _$${featureName}NavigationServiceHash,
+              : _$${fName}NavigationServiceHash,
       dependencies: null,
       allTransitiveDependencies: null,
     );
 
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
-typedef ${capFeature}NavigationServiceRef =
-    AutoDisposeProviderRef<${capFeature}NavigationService>;
+typedef ${capF}NavigationServiceRef =
+    AutoDisposeProviderRef<${capF}NavigationService>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
 

@@ -1,4 +1,4 @@
-import { capitalize } from "../../../../../utils/text_work/text_util";
+import { cap } from "../../../../../utils/text_work/text_util";
 
 export const mainFile = `
 import 'package:flutter/material.dart';
@@ -38,9 +38,9 @@ class App extends ConsumerWidget {
 
 
 export const featureMainPageContent = (featureName: string) => {
-  const capFeature = capitalize(featureName);
-  
-return `
+  const capFeature = cap(featureName);
+
+  return `
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 // import '../providers/${featureName}_navigation_provider.dart';
@@ -70,14 +70,15 @@ class ${capFeature}Page extends ConsumerWidget {
   }
 }
 
-`;};
+`;
+};
 
 
 export const featurePageContent = (featureName: string, pageName: string) => {
   // const capFeature = capitalize(featureName);
-  const capPageName = capitalize(pageName);
-  
-return `
+  const capPageName = cap(pageName);
+
+  return `
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 // import '../providers/${featureName}_navigation_provider.dart';
@@ -107,4 +108,5 @@ class ${capPageName}Page extends ConsumerWidget {
   }
 }
 
-`;};
+`;
+};

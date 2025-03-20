@@ -1,24 +1,22 @@
 import path from 'path';
-import { insAtFlStart, insertTextAfter } from '../../../../utils/text_work/text_insert/basic-insertion';
-import { importFeatureRouter } from '../flutter_content/files_content/files_contents';
+import { insAtFlStart, insertTextAfter } from '../../../utils/text_work/text_insert/basic-insertion';
+import { } from './navigation_files/constants/nav_service_prov_get';
 
-import { getConstrData } from '../../utils/text_utils';
-import { fNavServ, fNavServPath } from '../navigation_files/feat_nav_service';
-import { fRouterPath, fRouterPm, imPageFRouter } from '../navigation_files/feat_router_config';
-import { fAddConst, fRoutesConstPath } from '../navigation_files/feat_routes_const';
-import { navServiceMethod } from '../navigation_files/nav_service';
-import { appRouterAdd, imFRoutesConst } from '../navigation_files/router_config';
-import { } from '../flutter_content/files_content/files_path';
-import { featurePageContent } from '../flutter_content/files_content/root_files';
-import { routerPath, routerNavServPath } from '../flutter_content/template_paths';
-import { } from './feature_files_paths';
+import { getConstrData } from '../utils/text_utils';
+import { } from './flutter_content/files_content/files_path';
+import { routerNavServPath, routerPath } from './flutter_content/template_paths';
+import { fNavServ, fNavServPath } from './navigation_files/feat_nav_service';
+import { fRouterPath, fRouterPm, imPageFRouter } from './navigation_files/feat_router_config';
+import { fAddConst, fRoutesConstPath } from './navigation_files/feat_routes_const';
+import { navServiceMethod } from './navigation_files/nav_service';
+import { appRouterAdd, imFRouter, imFRoutesConst } from './navigation_files/router_config';
 
 
 export function updRouterThings(featureName: string | undefined, rootPath: string) {
     const appRouterFilePath = routerPath(rootPath);
     const navServFlPath = routerNavServPath(rootPath);
 
-    insAtFlStart(appRouterFilePath, importFeatureRouter(featureName!));
+    insAtFlStart(appRouterFilePath, imFRouter(featureName!));
     insAtFlStart(navServFlPath, imFRoutesConst(featureName!));
 
     insertTextAfter(appRouterFilePath, 'routes: [', appRouterAdd(featureName!));

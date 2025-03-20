@@ -1,4 +1,4 @@
-export const featureFolderPaths = [
+export const fFoldPths = [
     'data/models',
     'data/repositories',
     'data/datasources',
@@ -14,6 +14,3 @@ export const featureFolderPaths = [
 
 
 
-export const featureNavServiceProviderPath = (featurePath: string, featureName: string) => `${featurePath}/presentation/providers/${featureName}_navigation_provider.dart`;
-
-export const featureNavServiceProviderGenPath = (featurePath: string, featureName: string) => `${featurePath}/presentation/providers/${featureName}_navigation_provider.g.dart`;

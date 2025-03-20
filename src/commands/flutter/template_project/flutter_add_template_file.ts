@@ -1,10 +1,11 @@
 import path from 'path';
 import { createFile, createFolders, executeCommand } from '../../../utils';
 import { createIndexDartFiles } from './add_barrel_files';
-import { addFeatureFolders } from './add_feature/add_feature';
-import { routerContent } from './flutter_content/files_content/files_contents';
+import { addFeatureFolders } from './add_feature';
+import { } from './navigation_files/constants/nav_service_prov_get';
 import { routerPath, baseTemplateFolders, templatefiles } from './flutter_content/template_paths';
 import { addStartPlugins } from './flutter_content/terminal_commands';
+import { routerCont } from './navigation_files/router_config';
 
 
 export async function addBaseTemplate(rootPath: string) {
@@ -13,11 +14,8 @@ export async function addBaseTemplate(rootPath: string) {
 
     await createFolders(coreFolders);
     await createTemplateFiles(rootPath);
-    await createFile(routerPath(rootPath), routerContent);
+    await createFile(routerPath(rootPath), routerCont);
     addFeatureFolders(rootPath, 'home');
-
-
-
     createIndexDartFiles(`${rootPath}/lib`);
     executeCommand(addStartPlugins, rootPath);
 }

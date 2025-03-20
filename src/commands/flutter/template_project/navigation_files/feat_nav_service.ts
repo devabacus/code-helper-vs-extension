@@ -1,10 +1,10 @@
-import { capitalize } from "../../../../utils/text_work/text_util";
+import { cap } from "../../../../utils/text_work/text_util";
 
 export const fNavServPath = (fPath: string, fName: string) => `${fPath}/presentation/services/${fName}_navigation_service.dart`;
 
 
 export const featureNavService = (fName: string) => {
-  const capFeature = capitalize(fName);
+  const capFeature = cap(fName);
 
   return `
 import 'package:flutter/material.dart';
@@ -39,8 +39,8 @@ export function pmForNavMethod(pms: string[]): string {
 
 export const fNavServ = (fName: string, pName: string, pms: string[]) => {
 
-  const capP = capitalize(pName);
-  const capF = capitalize(fName);
+  const capP = cap(pName);
+  const capF = cap(fName);
   return `
     void navigateTo${capP}(BuildContext context) {
       context.goNamed(${capF}Routes.${pName}${pmForNavMethod(pms)});
