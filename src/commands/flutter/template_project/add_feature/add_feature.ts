@@ -2,13 +2,17 @@
 import { createFile, createFolders } from '../../../../utils';
 import { getUserInputWrapper } from '../../../../utils/ui/ui_ask_folder';
 import { createIndexDartFiles } from '../add_barrel_files';
+import { featureMainPagePath } from '../files_for_updates/feat_main_page';
+import { featureNavService, fNavServPath } from '../files_for_updates/feat_nav_service';
+import { featureNavServiceProvider } from '../files_for_updates/feat_nav_service_prov';
+import { featureNavServiceProviderGen } from '../files_for_updates/feat_nav_service_prov_gen';
+import { fRouterPath } from '../files_for_updates/feat_router_config';
+import { fRoutesConstPath } from '../files_for_updates/feat_routes_const';
 import { featureRoutesConstants, routerFeatureFileContent } from '../flutter_content/files_content/files_contents';
+import { featureFolderPaths, featureNavServiceProviderGenPath, featureNavServiceProviderPath } from '../flutter_content/files_content/files_path';
 
-import { featureMainPagePath, featureRouterConfigPath, featureRoutesConstantPath } from './feature_files_paths';
 import { featureMainPageContent } from '../flutter_content/files_content/root_files';
-import { featureNavService, featureNavServiceProvider, featureNavServiceProviderGen } from './constants/files_contents';
-import { featureFolderPaths, featureNavServicePath, featureNavServiceProviderGenPath, featureNavServiceProviderPath } from '../flutter_content/files_content/files_path';
-import { updateAppRouterThings } from './update_files';
+import { updRouterThings } from './update_files';
 
 
 export async function addFeatureFolders(rootPath: string, featureNameP: string = "") {
@@ -32,16 +36,16 @@ export async function addFeatureFolders(rootPath: string, featureNameP: string =
 
     createIndexDartFiles(`${feauturePath}`);
 
-    updateAppRouterThings(featureName, rootPath);
+    updRouterThings(featureName, rootPath);
 
 }
 
 export async function createTemplFeatureContentFiles(featurePath: string, featureName: string) {
-    const featureConstantsFile = featureRoutesConstantPath(featurePath, featureName!);
+    const featureConstantsFile = fRoutesConstPath(featurePath, featureName!);
     const featureRoutesContent = featureRoutesConstants(featureName!);
     await createFile(featureConstantsFile, featureRoutesContent);
 
-    const featureConfigFile = featureRouterConfigPath(featurePath, featureName!);
+    const featureConfigFile = fRouterPath(featurePath, featureName!);
     const featureRouterContent = routerFeatureFileContent(featureName!);
     await createFile(featureConfigFile, featureRouterContent);
 
@@ -49,7 +53,7 @@ export async function createTemplFeatureContentFiles(featurePath: string, featur
     const featureMainPage = featureMainPageContent(featureName!);
     await createFile(featureMainPageFile, featureMainPage);
 
-    const featureNavServiceFile = featureNavServicePath(featurePath, featureName!);
+    const featureNavServiceFile = fNavServPath(featurePath, featureName!);
     const featureNavServiceContent = featureNavService(featureName!);
     await createFile(featureNavServiceFile, featureNavServiceContent!);
 

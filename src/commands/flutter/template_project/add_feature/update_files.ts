@@ -1,67 +1,61 @@
 import path from 'path';
-import { insertAtFileStart, insertTextAfter } from '../../../../utils/text_work/text_insert/basic-insertion';
-import { capitalize } from '../../../../utils/text_work/text_util';
+import { insAtFlStart, insertTextAfter } from '../../../../utils/text_work/text_insert/basic-insertion';
 import { importFeatureRouter } from '../flutter_content/files_content/files_contents';
 
-import { featureNavServicePath } from '../flutter_content/files_content/files_path';
+import { getConstrData } from '../../utils/text_utils';
+import { fNavServ, fNavServPath } from '../files_for_updates/feat_nav_service';
+import { fRouterPath, fRouterPm, imPageFRouter } from '../files_for_updates/feat_router_config';
+import { fAddConst, fRoutesConstPath } from '../files_for_updates/feat_routes_const';
+import { navServiceMethod } from '../files_for_updates/nav_service';
+import { appRouterAdd, imFRoutesConst } from '../files_for_updates/router_config';
+import { } from '../flutter_content/files_content/files_path';
 import { featurePageContent } from '../flutter_content/files_content/root_files';
-import { appRouterConfigPath, appRouterNavServicePath } from '../flutter_content/template_paths';
-import { featureNavServiceMethod, featurePageNameAddConstants, featureRouter, featureRouterParam, importFeatureRoutesConst, importPageFeatureRouter, navServiceMethod } from './constants/files_contents';
-import { featureRouterConfigPath, featureRoutesConstantPath } from './feature_files_paths';
-import { getConstructorData } from '../../utils/text_utils';
+import { routerPath, routerNavServPath } from '../flutter_content/template_paths';
+import { } from './feature_files_paths';
 
 
-export function updateAppRouterThings(featureName: string | undefined, rootPath: string) {
-    const appRouterFilePath = appRouterConfigPath(rootPath);
-    const appNavServiceFilePath = appRouterNavServicePath(rootPath);
+export function updRouterThings(featureName: string | undefined, rootPath: string) {
+    const appRouterFilePath = routerPath(rootPath);
+    const navServFlPath = routerNavServPath(rootPath);
 
-    insertAtFileStart(appRouterFilePath, importFeatureRouter(featureName!));
-    insertAtFileStart(appNavServiceFilePath, importFeatureRoutesConst(featureName!));
+    insAtFlStart(appRouterFilePath, importFeatureRouter(featureName!));
+    insAtFlStart(navServFlPath, imFRoutesConst(featureName!));
 
-    insertTextAfter(appRouterFilePath, 'routes: [', `\t\t\t...get${capitalize(featureName!)}Routes(),`);
-    insertTextAfter(appNavServiceFilePath, 'class NavigationService {', navServiceMethod(featureName!));
+    insertTextAfter(appRouterFilePath, 'routes: [', appRouterAdd(featureName!));
+    insertTextAfter(navServFlPath, 'class NavigationService {', navServiceMethod(featureName!));
 }
 
-export async function updateRoutingFiles(filePath: string) {
+export async function updRoutingFls(filePath: string) {
 
     //  filePath = G:\Projects\Flutter\a15\lib\features\home\presentation\pages\auth_page.dart    
     const featurePath = getFeaturePath(filePath);
     const featureName = getFeatureName(filePath);
     let pageName = getPageName(filePath);
 
-    insertAtFileStart(filePath, featurePageContent(featureName, pageName));
+    // insAtFlStart(filePath, featurePageContent(featureName, pageName));
 
-    const constrData: Record<string, any> = getConstructorData();
+    const constrData: Record<string, any> = getConstrData();
     pageName = constrData.pageName;
     const params = constrData.params;
 
 
-    updateFeatureFiles(featurePath, featureName, pageName, params);
+    updateFFiles(featurePath, featureName, pageName, params);
 
 }
 
 
-export function updateFeatureFiles(featurePath: string, featureName: string, pageName: string, params: string[] = []) {
+export function updateFFiles(fPath: string, fName: string, pName: string, pms: string[] = []) {
 
-    const featureRouterCongifFile = featureRouterConfigPath(featurePath, featureName);
+    const fRouterFile = fRouterPath(fPath, fName);
 
-    insertTextAfter(featureNavServicePath(featurePath, featureName), 'NavigationService {', featureNavServiceMethod(featureName, pageName, params));
+    insertTextAfter(fNavServPath(fPath, fName), 'NavigationService {', fNavServ(fName, pName, pms));
 
+    insertTextAfter(fRouterFile, 'return [', fRouterPm(fName, pName, pms));
 
+    insertTextAfter(fRoutesConstPath(fPath, fName), 'Routes {', fAddConst(fName, pName, convertParams(pms)));
 
-    insertTextAfter(featureRouterCongifFile, 'return [', featureRouterParam(featureName, pageName, params));
-
-
-    insertTextAfter(featureRoutesConstantPath(featurePath, featureName), 'Routes {', featurePageNameAddConstants(featureName, pageName, convertParams(params)));
-
-    insertAtFileStart(featureRouterCongifFile, importPageFeatureRouter(pageName));
+    insAtFlStart(fRouterFile, imPageFRouter(pName));
 }
-
-
-
-// final name = state.pathParameters['name'];
-// return AuthPage(name: name);
-
 
 function convertParams(params: string[]): string {
     let paramsStr = '';

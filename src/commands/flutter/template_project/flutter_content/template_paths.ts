@@ -21,7 +21,7 @@ export const templatefiles: Record<string, string> = {
     'app.dart': appFile,
 };
 
-export const appRouterConfigPath = (rootPath: string) => path.join(rootPath, "lib", 'core/routing/router_config.dart');
+export const routerPath = (rootPath: string) => path.join(rootPath, "lib", 'core/routing/router_config.dart');
 
-export const appRouterNavServicePath = (rootPath: string) => path.join(rootPath, "lib", 'core/services/navigation_service.dart');
+export const routerNavServPath = (rootPath: string) => path.join(rootPath, "lib", 'core/services/navigation_service.dart');
 

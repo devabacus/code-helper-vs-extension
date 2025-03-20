@@ -1,7 +1,7 @@
 import { getCurrentLineText } from "../../../utils/ui/ui_util";
 
 
-export function getConstructorData(): Record<string, any> {
+export function getConstrData(): Record<string, any> {
 
     const lineText = getCurrentLineText();
     const regexMatch = lineText!.match(/(\w+)\s?\((.+)\)/)!;
@@ -15,14 +15,14 @@ export function getConstructorData(): Record<string, any> {
     for (const dirtyParam of dirtyParamList) {
         let param = dirtyParam;
         for (const excl of exludeChars) {
-            param = param.replace(excl, '');
+            param = param.replace(excl, '').trim();
         }
         if (param !== '') {
             paramList.push(param.trim());
         }
     }
     const constrData = { pageName, params: paramList };
-    
+
     console.log(`page: ${constrData.pageName} params: ${constrData.params}`);
 
     return constrData;

@@ -5,12 +5,12 @@ import { getActiveEditorPath, getLibPath, getRootWorkspaceFolders } from "../../
 import { createFlutterPackage } from "./flutter_create_package";
 import { createIndexDartFiles } from "./template_project/add_barrel_files";
 import { addFeatureFolders } from "./template_project/add_feature/add_feature";
-import { updateRoutingFiles } from "./template_project/add_feature/update_files";
+import { updRoutingFls } from "./template_project/add_feature/update_files";
 import { addBaseTemplate, createTemplateFiles } from "./template_project/flutter_add_template_file";
 import { mainFile } from "./template_project/flutter_content/files_content/root_files";
 import { addStartPlugins } from "./template_project/flutter_content/terminal_commands";
 import { flutterCreateNewProject } from "./template_project/flutter_create_project";
-import { getConstructorData } from "./utils/text_utils";
+import { getConstrData } from "./utils/text_utils";
 
 
 
@@ -24,7 +24,7 @@ export async function flutterHandler() {
         'Обновить barrel': () => createIndexDartFiles(getLibPath()),
         'Новый базовый проект': () => flutterCreateNewProject(startAppRoutine),
         'Создать Flutter пакет': createFlutterPackage,
-        'Создать навигацию для файла': () => updateRoutingFiles(getActiveEditorPath()!),
+        'Создать навигацию для файла': () => updRoutingFls(getActiveEditorPath()!),
         // 'Создать навигацию по конструктору': () => getConstructorData(),
     };
 

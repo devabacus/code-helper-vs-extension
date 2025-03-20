@@ -12,7 +12,7 @@ export const featureFolderPaths = [
 ];
 
 
-export const featureNavServicePath = (featurePath: string, featureName: string) => `${featurePath}/presentation/services/${featureName}_navigation_service.dart`;
+
 
 export const featureNavServiceProviderPath = (featurePath: string, featureName: string) => `${featurePath}/presentation/providers/${featureName}_navigation_provider.dart`;
 
