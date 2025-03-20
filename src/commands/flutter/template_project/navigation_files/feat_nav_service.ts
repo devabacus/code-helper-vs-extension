@@ -24,16 +24,16 @@ class ${capFeature}NavigationService {
 `;
 };
 
+function pmForNavMethod(fields: ClsParams[]): string {
+  let mlist = [];
+  if (fields.length > 0) {
 
-
-function pmForNavMethod(pms: string[]): string {
-  if (pms.length > 0) {
-    const paramsMod = pms.map((param) => `'${param}': ${param}`);
-    const paramsStr = paramsMod.join(', ');
-
-
-
-    
+    for (const field of fields) {
+      // if (field.isNullable) {
+          mlist.push(`'${field.name}': ${field.name}`);
+      // }
+    }
+    const paramsStr = mlist.join(', ');
     return `, pathParameters: {${paramsStr}}`;
   }
   return '';
@@ -41,24 +41,19 @@ function pmForNavMethod(pms: string[]): string {
 
 export const paramHandle = (params: ClsParams[]): string => {
   if (params.length > 0) {
-    const paramList = params.map((param) => `, ${param.type} ${param.name}`);
+    const paramList = params.map((param) => `, ${param.type.split('?')[0]} ${param.name}`);
   return paramList.join('');
   }
   return '';
 };
 
-// const types = fields.map((field) => field.type);
-
-
-
 export const fNavServ = (fName: string, pName: string, fields: ClsParams[]) => {
-  const names = fields.map((field) => field.name);
 
   const capP = cap(pName);
   const capF = cap(fName);
   return `
     void navigateTo${capP}(BuildContext context${paramHandle(fields)}) {
-      context.goNamed(${capF}Routes.${pName}${pmForNavMethod(names)});
+      context.goNamed(${capF}Routes.${pName}${pmForNavMethod(fields)});
     }
   `;
 };
