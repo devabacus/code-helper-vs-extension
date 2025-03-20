@@ -14,7 +14,7 @@ export async function addBaseTemplate(rootPath: string) {
     await createTemplateFiles(rootPath);
     await createFile(routerPath(rootPath), routerCont);
     addFeatureFolders(rootPath, 'home');
-    crBarrelFls(`${rootPath}/lib`);
+    // crBarrelFls(`${rootPath}/lib`);
     executeCommand(addStartPlugins, rootPath);
 }
 
