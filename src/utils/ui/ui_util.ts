@@ -28,6 +28,14 @@ export async function addPickedFoldersSet(folderOptions: Record<string, string[]
     }
 }
 
+export function getDocText():string {
+    const doc = window.activeTextEditor;
+    return doc!.document.getText();
+}
+
+
+
+
 export function getCurrectSelect():string {
     const editor = window.activeTextEditor;
     const document = editor?.document;

@@ -2,7 +2,7 @@ import path from 'path';
 import { insAtFlStart, insertTextAfter } from '../../../utils/text_work/text_insert/basic-insertion';
 import { } from './navigation_files/constants/nav_service_prov_get';
 
-import { getConstrData } from '../utils/text_utils';
+import { getConstrData, parseClsParams } from '../utils/text_utils';
 import { } from './flutter_content/feat_folds_path';
 import { routerNavServPath, routerPath } from './flutter_content/template_paths';
 import { fNavServ, fNavServPath } from './navigation_files/feat_nav_service';
@@ -10,6 +10,7 @@ import { fRouterPath, fRouterPm, imPageFRouter } from './navigation_files/feat_r
 import { fAddConst, fRoutesConstPth } from './navigation_files/feat_routes_const';
 import { navServiceMethod } from './navigation_files/nav_service';
 import { appRouterAdd, imFRouter, imFRoutesConst } from './navigation_files/router_config';
+import { getDocText } from '../../../utils/ui/ui_util';
 
 
 export function updRouterThings(featureName: string | undefined, rootPath: string) {
@@ -35,7 +36,8 @@ export async function updRoutingFls(filePath: string) {
     const constrData: Record<string, any> = getConstrData();
     pageName = constrData.pageName;
     const params = constrData.params;
-
+    
+    const clsParams = parseClsParams(getDocText());
 
     updateFFiles(featurePath, featureName, pageName, params);
 
