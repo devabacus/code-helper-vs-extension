@@ -2,12 +2,9 @@
 import { createFile, createFolders } from '../../../utils';
 import { getUserInputWrapper } from '../../../utils/ui/ui_ask_folder';
 import { crBarrelFls } from './add_barrel_files';
-import { fNavServBase, fNavServPath } from './navigation_files/feat_nav_service';
-import { fNavServProv, fNavServProvPath } from './navigation_files/feat_nav_service_prov';
-import { fNavServProvGen, fNavServProvGenPth } from './navigation_files/feat_nav_service_prov_gen';
-import { fRouterPath, routerFFlCont } from './navigation_files/feat_router_config';
-import { fRoutesConstPth, fRoutesConsts } from './navigation_files/feat_routes_const';
-import { } from './navigation_files/constants/nav_service_prov_get';
+
+import { fNavServBase, fNavServPath, fNavServProv, fNavServProvPath, fNavServProvGen, fNavServProvGenPth, fRouterPath, routerFFlCont, fRoutesConstPth, fRoutesConsts } from './navigation_files';
+
 import { fFoldPths } from './flutter_content/feat_folds_path';
 
 import { updRouterThings } from './update_files';
