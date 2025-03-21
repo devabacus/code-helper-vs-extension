@@ -22,9 +22,9 @@ const startDevPlugins = [
 ];
 
 const pubAddComm = `flutter pub add `;
-const pubAddDevComm = `flutter pub add --dev `;
 
-const regularPluginsCommand = `${pubAddComm}${startPlugins.join(' ')}`;
-const devPluginsCommand = `${pubAddDevComm}${startDevPlugins.join(' ')}`;
-export const addStartPlugins = `${regularPluginsCommand} && ${devPluginsCommand}`;
+const regularPluginsCommand = `${startPlugins.join(' ')}`;
+const devPluginsCommand = `${startDevPlugins.map((item: string) => `dev:${item} `).join('')}`;
+
+export const addStartPlugins = `${pubAddComm}${regularPluginsCommand} ${devPluginsCommand}`;
 

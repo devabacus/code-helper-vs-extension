@@ -43,9 +43,6 @@ export async function flutterCreateNewProject(addTemplateFolders?: (fullProjectP
     const openCommand = `code -g "${homePagePath}" "${fullProjectPath}"`;
 
     await executeCommand(openCommand, projectPath);
-
-
-
     // insertTextToFile(startApp, mainDartPath);
 
 }
