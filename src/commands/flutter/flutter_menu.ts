@@ -10,6 +10,7 @@ import { mainFile } from "./template_project/flutter_content/files_content/main_
 import { addStartPlugins } from "./template_project/flutter_content/terminal_commands";
 import { flutterCreateNewProject } from "./template_project/flutter_create_project";
 import { updRoutingFls } from "./template_project/update_files";
+import { addDriftDB } from "./add_optional";
 
 
 
@@ -24,6 +25,7 @@ export async function flutterHandler() {
         'Новый базовый проект': () => flutterCreateNewProject(startAppRoutine),
         'Создать Flutter пакет': createFlutterPackage,
         'Создать навигацию для файла': () => updRoutingFls(getActiveEditorPath()!),
+        'добавить drift db': () => addDriftDB(getRootWorkspaceFolders()!),
         // 'Создать навигацию по конструктору': () => getConstructorData(),
     };
 

@@ -21,7 +21,10 @@ const startDevPlugins = [
     "json_serializable",
 ];
 
-const pubAddComm = `flutter pub add `;
+export const pubAddComm = `flutter pub add `;
+export const pubGet = `flutter pub get`;
+
+
 
 const regularPluginsCommand = `${startPlugins.join(' ')}`;
 const devPluginsCommand = `${startDevPlugins.map((item: string) => `dev:${item} `).join('')}`;

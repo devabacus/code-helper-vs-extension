@@ -1,14 +1,23 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { executeCommand } from '../../utils';
+import { createFile, executeCommand } from '../../utils';
+import { pubGet } from './template_project/flutter_content/terminal_commands';
 
 
-export async function addDependecy(newDependency: string, projectPath: string):Promise<void> {
+export async function addDependecy(newDependency: string, projectPath: string, isDev: boolean = false):Promise<void> {
     
     const pubspecFilePath = path.join(projectPath, "pubspec.yaml");
     const content = fs.readFileSync(pubspecFilePath, { encoding: "utf-8" });        
-    const newContent = content.replace('dependencies:', `dependencies:\n${newDependency}`);
-    fs.writeFileSync(pubspecFilePath, newContent, { encoding: "utf-8" });
-    await executeCommand('flutter pub get', projectPath);
+
+    let textAnchor = 'dependencies:';
+
+    if (isDev) {textAnchor = 'dev_dependencies:';}
+
+    const newContent = content.replace(textAnchor, `${textAnchor}\n${newDependency}`);
+    createFile(pubspecFilePath, newContent);
+
+    await executeCommand(pubGet, projectPath);
     // console.log(content);
 }
+
+

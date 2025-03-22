@@ -6,21 +6,21 @@ import { textValidator } from '../../utils/text_work/text_util';
 import { getRootWorkspaceFolders } from '../../utils/path_util';
 import { getUserInput, pickPath } from '../../utils/ui/ui_ask_folder';
 import { addDependecy } from './flutter_add_pubspec';
-import { new_package } from './template_project/flutter_content/package_pubscpec';
+import { new_local_package } from './template_project/flutter_content/package_pubscpec';
 
 
 export async function createFlutterPackage() {
 
     const workspaceFolder = await pickPath();
-    if (!workspaceFolder) {return;}
-    
+    if (!workspaceFolder) { return; }
+
     const packageName = await getUserInput(
         'Введите название пакета Flutter',
         'my_flutter_package',
         textValidator
     );
 
-    if (!packageName) {return;}
+    if (!packageName) { return; }
 
     // const workspaceFolder = getRootWorkspaceFolders();
 
@@ -36,7 +36,7 @@ export async function createFlutterPackage() {
         // Шаг 3: Создание Flutter приложения внутри example
         await executeCommand(`flutter create example`, projectPath);
 
-        addDependecy(new_package(packageName), examplePath);
+        addDependecy(new_local_package(packageName), examplePath);
         const pkgMainFlPth = path.join("lib", `${packageName}.dart`);
 
         const openCommand = `code -g "${pkgMainFlPth}" "${projectPath}"`;
