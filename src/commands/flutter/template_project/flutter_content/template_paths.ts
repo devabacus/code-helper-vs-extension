@@ -11,6 +11,7 @@ import { mainFile } from "./files_content/main_file";
 export const baseTemplateFolders = [
     'core/routing',
     'core/config',
+    'core/database',
     'core/providers',
     'core/services',
     'core/theme',

@@ -10,6 +10,7 @@ import { flutter_handle_ps1 } from "./service_files/flutter_handle_ps1";
 import { git_handle_ps1 } from "./service_files/git_handle_ps1";
 import { projectFiles } from "./flutter_content/template_paths";
 import { pubspec_yaml } from "./flutter_content/other_files/pubspec_yaml";
+import { pubGet } from "./flutter_content/terminal_commands";
 
 export async function flutterCreateNewProject(addTemplateFolders?: (fullProjectPath: string) => void): Promise<void> {
 
@@ -47,13 +48,14 @@ export async function flutterCreateNewProject(addTemplateFolders?: (fullProjectP
     
     gitInit(fullProjectPath);
 
-    // const mainDartPath = path.join(fullProjectPath, 'lib', 'main.dart');
+    // const mainDartPath = path.join(      fullProjectPath, 'lib', 'main.dart');
     // const openCommand = `code -g "${mainDartPath}" "${fullProjectPath}"`;
 
     const homePagePath = path.join(fullProjectPath, 'lib', 'features', 'home', 'presentation', 'pages', 'home_page.dart');
     const openCommand = `code -g "${homePagePath}" "${fullProjectPath}"`;
 
     await executeCommand(openCommand, projectPath);
+    await executeCommand(pubGet, fullProjectPath);
     // insertTextToFile(startApp, mainDartPath);
 
 }

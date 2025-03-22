@@ -10,6 +10,7 @@ const startPlugins = [
     "talker_flutter",
     "talker_riverpod_logger",
     "package_info_plus",
+    "path_provider"
 ];
 
 const startDevPlugins = [
