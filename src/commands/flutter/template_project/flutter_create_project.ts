@@ -34,7 +34,7 @@ export async function flutterCreateNewProject(addTemplateFolders?: (fullProjectP
 
     addFileFromSnippetFolder("flutter_handle.ps1", fullProjectPath);
     addFileFromSnippetFolder("git_handle.ps1", fullProjectPath);
-    createFile("shell_commands.ps1", fullProjectPath);
+    createFile(path.join(fullProjectPath, "shell_commands.ps1"),"//shell commands");
     gitInit(fullProjectPath);
 
     // const mainDartPath = path.join(fullProjectPath, 'lib', 'main.dart');
