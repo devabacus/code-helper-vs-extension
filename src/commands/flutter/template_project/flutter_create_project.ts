@@ -6,6 +6,8 @@ import { gitInit } from "../../git_init";
 import { addDependecy } from "../flutter_add_pubspec";
 import { startDependency } from "./flutter_content/package_pubscpec";
 import { startAppFix } from "../handle_work/start_app_fix";
+import { flutter_handle_ps1 } from "./service_files/flutter_handle_ps1";
+import { git_handle_ps1 } from "./service_files/git_handle_ps1";
 
 export async function flutterCreateNewProject(addTemplateFolders?: (fullProjectPath: string) => void): Promise<void> {
 
@@ -32,8 +34,8 @@ export async function flutterCreateNewProject(addTemplateFolders?: (fullProjectP
     }
     startAppFix(fullProjectPath);
 
-    addFileFromSnippetFolder("flutter_handle.ps1", fullProjectPath);
-    addFileFromSnippetFolder("git_handle.ps1", fullProjectPath);
+    createFile(path.join(fullProjectPath, "flutter_handle.ps1"),flutter_handle_ps1);
+    createFile(path.join(fullProjectPath, "git_handle.ps1"),git_handle_ps1);
     createFile(path.join(fullProjectPath, "shell_commands.ps1"),"//shell commands");
     gitInit(fullProjectPath);
 
