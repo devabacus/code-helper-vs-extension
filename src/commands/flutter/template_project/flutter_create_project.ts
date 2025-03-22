@@ -1,5 +1,5 @@
 import * as path from "path";
-import { addFileFromSnippetFolder, createFile } from "../../../utils";
+import { addFileFromSnippetFolder, createFile, createFolder } from "../../../utils";
 import { executeCommand } from "../../../utils/terminal_handle";
 import { getUserInput, pickPath } from "../../../utils/ui/ui_ask_folder";
 import { gitInit } from "../../git_init";
@@ -34,9 +34,12 @@ export async function flutterCreateNewProject(addTemplateFolders?: (fullProjectP
     }
     startAppFix(fullProjectPath);
 
-    createFile(path.join(fullProjectPath, "flutter_handle.ps1"),flutter_handle_ps1);
-    createFile(path.join(fullProjectPath, "git_handle.ps1"),git_handle_ps1);
-    createFile(path.join(fullProjectPath, "shell_commands.ps1"),"//shell commands");
+    const serviceFilesPth = path.join(fullProjectPath, "_service_files")
+    await createFolder(serviceFilesPth);
+
+    createFile(path.join(serviceFilesPth, "flutter_handle.ps1"),flutter_handle_ps1);
+    createFile(path.join(serviceFilesPth, "git_handle.ps1"),git_handle_ps1);
+    createFile(path.join(serviceFilesPth, "shell_commands.ps1"),"//shell commands");
     gitInit(fullProjectPath);
 
     // const mainDartPath = path.join(fullProjectPath, 'lib', 'main.dart');
