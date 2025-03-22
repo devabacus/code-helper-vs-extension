@@ -34,7 +34,8 @@ export async function flutterCreateNewProject(addTemplateFolders?: (fullProjectP
     }
     startAppFix(fullProjectPath);
 
-    const serviceFilesPth = path.join(fullProjectPath, "_service_files")
+    const serviceFilesPth = path.join(fullProjectPath, "_service_files");
+    
     await createFolder(serviceFilesPth);
 
     createFile(path.join(serviceFilesPth, "flutter_handle.ps1"),flutter_handle_ps1);
