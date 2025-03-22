@@ -17,7 +17,7 @@ const startDevPlugins = [
     "build_runner",
     "custom_lint",
     "riverpod_lint",
-    "freezed",
+    "freezed",   
     "json_serializable",
 ];
 
