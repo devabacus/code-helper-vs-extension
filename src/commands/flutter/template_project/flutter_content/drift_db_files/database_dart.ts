@@ -4,8 +4,6 @@ export const database_cont = (db_name: string) => {
 return `
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
-import 'package:path_provider/path_provider.dart';
-
 
 part 'database.g.dart';
 
@@ -19,7 +17,6 @@ class AppDatabase extends _$AppDatabase {
   static QueryExecutor _openConnection() {
     return driftDatabase(
       name: '${db_name}',
-      native: const DriftNativeOptions(databaseDirectory: getApplicationSupportDirectory),
     );
   }
 }
