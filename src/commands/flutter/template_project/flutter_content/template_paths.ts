@@ -1,12 +1,11 @@
 import path from "path";
-import { navServProv, navServProvGen, routerGen, routesCont } from '../navigation_files';
-import { navServ } from "../navigation_files/nav_service";
+import { navServProv, navServProvGen, routerGen, routesCont } from '../../add_feature/files';
 
-import { } from '../navigation_files';
-import { flutter_handle_ps1 } from "../service_files/flutter_handle_ps1";
-import { git_handle_ps1 } from "../service_files/git_handle_ps1";
+import { flutter_handle_ps1 } from "../../service_files/flutter_handle_ps1";
+import { git_handle_ps1 } from "../../service_files/git_handle_ps1";
 import { appFile } from "./files_content/app_file";
 import { mainFile } from "./files_content/main_file";
+import { navServ } from "../../add_feature/files/nav_service";
 
 export const baseTemplateFolders = [
     'core/routing',
@@ -17,9 +16,6 @@ export const baseTemplateFolders = [
     'core/theme',
     'core/utils',
 ];
-
-
-
 
 export const templatefiles: Record<string, string> = {
     'core/routing/routes_constants.dart': routesCont,
@@ -35,12 +31,10 @@ export const templatefiles: Record<string, string> = {
 type FuncAnyArgs<T> = (...args: string[]) => T
 
 export const projectFiles: Record<string, string> = {
-    'flutter_handle.ps1':flutter_handle_ps1,
-    'git_handle.ps1':git_handle_ps1,
-    'shell_commands.ps1':"",
+    'flutter_handle.ps1': flutter_handle_ps1,
+    'git_handle.ps1': git_handle_ps1,
+    'shell_commands.ps1': "",
 };
-
-
 
 
 export const routerPath = (rootPath: string) => path.join(rootPath, "lib", 'core/routing/router_config.dart');

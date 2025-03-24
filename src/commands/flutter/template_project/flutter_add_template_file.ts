@@ -1,11 +1,10 @@
 import path from 'path';
 import { createFile, createFolders, executeCommand } from '../../../utils';
-import { crBarrelFls } from './add_barrel_files';
-import { addFeatureFolders } from './add_feature';
-import { routerCont } from './navigation_files/router_config';
-import { routerPath, baseTemplateFolders, templatefiles, addStartPlugins } from './flutter_content/';
+import { addFeatureFolders } from '../add_feature/add_feature';
+import { baseTemplateFolders, routerPath, templatefiles } from './flutter_content/';
 import { projectFiles } from './flutter_content/template_paths';
 import { pubGet } from './flutter_content/terminal_commands';
+import { routerCont } from '../add_feature/files/router_config';
 
 
 export async function addBaseTemplate(rootPath: string) {
@@ -31,11 +30,11 @@ export async function createTemplateFiles(rootPath: string) {
 
 export async function createRootTemplateFiles(rootPath: string
 ) {
-     for (const [filePath, content] of Object.entries(projectFiles)) {
+    for (const [filePath, content] of Object.entries(projectFiles)) {
         const fullPath = path.join(rootPath, filePath);
         createFile(fullPath, content);
 
-     }       
+    }
 }
 
 

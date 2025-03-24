@@ -3,14 +3,14 @@ import { window } from "vscode";
 import { executeCommand, writeToFile } from "../../utils";
 import { getActiveEditorPath, getLibPath, getRootWorkspaceFolders } from "../../utils/path_util";
 import { createFlutterPackage } from "./flutter_create_package";
-import { crBarrelFls } from "./template_project/add_barrel_files";
-import { addFeatureFolders } from "./template_project/add_feature";
 import { addBaseTemplate, createTemplateFiles } from "./template_project/flutter_add_template_file";
 import { mainFile } from "./template_project/flutter_content/files_content/main_file";
 import { addStartPlugins } from "./template_project/flutter_content/terminal_commands";
 import { flutterCreateNewProject } from "./template_project/flutter_create_project";
 import { updRoutingFls } from "./template_project/update_files";
-import { addDriftDB } from "./add_optional";
+import { addDriftDB } from "./drift_db/add_drift_db";
+import { addFeatureFolders } from "./add_feature/add_feature";
+import { crBarrelFls } from "./add_barrel_files";
 
 
 

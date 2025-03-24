@@ -24,25 +24,32 @@ dependencies:
 
   flutter:
     sdk: flutter
-
+    
   cupertino_icons: ^1.0.8
+  
   flutter_riverpod: ^2.6.1
   riverpod_annotation: ^2.6.1
   hooks_riverpod: ^2.6.1
+  
   freezed_annotation: ^3.0.0
   json_annotation: ^4.9.0
+  
   go_router: ^14.8.1
+
+  package_info_plus: ^8.3.0
   talker_flutter: ^4.7.1
   talker_riverpod_logger: ^4.7.1
-  package_info_plus: ^8.3.0
+
+  chopper: ^8.1.0
+  chopper_generator: ^8.1.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
+  build_runner: ^2.4.15
   flutter_lints: ^5.0.0
   riverpod_generator: ^2.6.5
-  build_runner: ^2.4.15
   custom_lint: ^0.7.5
   riverpod_lint: ^2.6.5
   freezed: ^3.0.4

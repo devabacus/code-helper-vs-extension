@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { createFile } from '../../../utils';
+import { createFile } from '../../utils';
 
 
 export async function crBarrelFls(dirPath: string): Promise<void> {

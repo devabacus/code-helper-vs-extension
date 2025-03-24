@@ -1,4 +1,4 @@
-export * from "./snippet_generator/snippet_generate";
+export * from "../utils/snippet_generator/snippet_generate";
 export * from "./flutter/template_project/add_barrel_files";
 export * from "../utils/terminal_handle";
 export * from "../utils/file_handle";

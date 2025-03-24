@@ -5,7 +5,7 @@ import { createFolder, executeCommand } from '../../utils';
 import { textValidator } from '../../utils/text_work/text_util';
 import { getRootWorkspaceFolders } from '../../utils/path_util';
 import { getUserInput, pickPath } from '../../utils/ui/ui_ask_folder';
-import { addDependecy } from './flutter_add_pubspec';
+import { addDependecy } from './add_pubspec/flutter_add_pubspec';
 import { new_local_package } from './template_project/flutter_content/package_pubscpec';
 
 

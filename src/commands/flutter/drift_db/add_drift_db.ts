@@ -1,10 +1,10 @@
 import path from "path";
-import { createFile, executeCommand } from "../../utils";
-import { database_cont } from "./template_project/flutter_content/drift_db_files/database_dart";
-import { build_runner, pubAddComm } from "./template_project/flutter_content/terminal_commands";
-import { dbProvider } from "./template_project/flutter_content/drift_db_files/database_provider";
-import { db_provider_g } from "./template_project/flutter_content/drift_db_files/database_provider_g";
-import { database_g_cont } from "./template_project/flutter_content/drift_db_files/database_g_dart";
+import { createFile, executeCommand } from "../../../utils";
+import { database_cont } from "./database_dart";
+import { database_g_cont } from "./database_g_dart";
+import { dbProvider } from "./database_provider";
+import { db_provider_g } from "./database_provider_g";
+import { pubAddComm } from "../template_project/flutter_content/terminal_commands";
 
 
 export async function addDriftDB(rootPath: string): Promise<void> {

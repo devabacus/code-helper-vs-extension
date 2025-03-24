@@ -1,16 +1,15 @@
 import path from 'path';
 import { insAtFlStart, insertTextAfter } from '../../../utils/text_work/text_insert/basic-insertion';
-import { } from './navigation_files/constants/nav_service_prov_get';
+import { } from '../add_feature/files/constants/nav_service_prov_get';
 
 import { ClsParams, getConstrData, getPgName, parseClsParams } from '../utils/text_utils';
-import { } from './flutter_content/feat_folds_path';
+import { } from '../add_feature/feat_folds_path';
 import { routerNavServPath, routerPath } from './flutter_content/template_paths';
-import { fNavServ, fNavServPath } from './navigation_files/feat_nav_service';
-import { fRouterPath, fRouterPm, imPageFRouter } from './navigation_files/feat_router_config';
-import { fAddConst, fRoutesConstPth } from './navigation_files/feat_routes_const';
-import { navServiceMethod } from './navigation_files/nav_service';
-import { appRouterAdd, imFRouter, imFRoutesConst } from './navigation_files/router_config';
+import { fNavServ, fNavServPath, fRouterPath, fRouterPm, imPageFRouter,   fRoutesConstPth, } from '../add_feature/files';
 import { getDocText } from '../../../utils/ui/ui_util';
+import { appRouterAdd, imFRouter, imFRoutesConst } from '../add_feature/files/router_config';
+import { navServiceMethod } from '../add_feature/files/nav_service';
+import { fAddConst } from '../add_feature/files/feat_routes_const';
 
 
 export function updRouterThings(featureName: string | undefined, rootPath: string) {
@@ -36,7 +35,7 @@ export async function updRoutingFls(filePath: string) {
     // const constrData: Record<string, any> = getConstrData();
     // pageName = constrData.pageName;
     // const params = constrData.params;
-    
+
     const clsDeclaration = getDocText();
     const pgName = getPgName(clsDeclaration);
 

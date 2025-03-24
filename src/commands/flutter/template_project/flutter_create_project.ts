@@ -3,13 +3,13 @@ import { addFileFromSnippetFolder, createFile, createFolder } from "../../../uti
 import { executeCommand } from "../../../utils/terminal_handle";
 import { getUserInput, pickPath } from "../../../utils/ui/ui_ask_folder";
 import { gitInit } from "../../git_init";
-import { addDependecy } from "../flutter_add_pubspec";
+import { addDependecy } from "../add_pubspec/flutter_add_pubspec";
 import { startDependency } from "./flutter_content/package_pubscpec";
-import { startAppFix } from "../handle_work/start_app_fix";
-import { flutter_handle_ps1 } from "./service_files/flutter_handle_ps1";
-import { git_handle_ps1 } from "./service_files/git_handle_ps1";
+import { startAppFix } from "./start_app_fix";
+import { flutter_handle_ps1 } from "../service_files/flutter_handle_ps1";
+import { git_handle_ps1 } from "../service_files/git_handle_ps1";
 import { projectFiles } from "./flutter_content/template_paths";
-import { pubspec_yaml } from "./flutter_content/other_files/pubspec_yaml";
+import { pubspec_yaml } from "./flutter_content/files_content/pubspec_yaml";
 import { pubGet } from "./flutter_content/terminal_commands";
 
 export async function flutterCreateNewProject(addTemplateFolders?: (fullProjectPath: string) => void): Promise<void> {
@@ -40,12 +40,12 @@ export async function flutterCreateNewProject(addTemplateFolders?: (fullProjectP
     const serviceFilesPth = path.join(fullProjectPath, "_service_files");
     await createFolder(serviceFilesPth);
 
-    createFile(path.join(serviceFilesPth, "flutter_handle.ps1"),flutter_handle_ps1);
-    createFile(path.join(serviceFilesPth, "git_handle.ps1"),git_handle_ps1);
-    createFile(path.join(serviceFilesPth, "shell_commands.ps1"),"//shell commands");
-    
-    createFile(path.join(fullProjectPath, "pubspec.yaml"),pubspec_yaml(projectName));
-    
+    createFile(path.join(serviceFilesPth, "flutter_handle.ps1"), flutter_handle_ps1);
+    createFile(path.join(serviceFilesPth, "git_handle.ps1"), git_handle_ps1);
+    createFile(path.join(serviceFilesPth, "shell_commands.ps1"), "//shell commands");
+
+    createFile(path.join(fullProjectPath, "pubspec.yaml"), pubspec_yaml(projectName));
+
     gitInit(fullProjectPath);
 
     // const mainDartPath = path.join(      fullProjectPath, 'lib', 'main.dart');

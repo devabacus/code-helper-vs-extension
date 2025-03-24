@@ -1,14 +1,14 @@
 
-import { createFile, createFolders } from '../../../utils';
+import { createFile, createFolders } from '../utils';
 import { getUserInputWrapper } from '../../../utils/ui/ui_ask_folder';
 import { crBarrelFls } from './add_barrel_files';
 
-import { fNavServBase, fNavServPath, fNavServProv, fNavServProvPath, fNavServProvGen, fNavServProvGenPth, fRouterPath, routerFFlCont, fRoutesConstPth, fRoutesConsts } from './navigation_files';
+import { fNavServBase, fNavServPath, fNavServProv, fNavServProvPath, fNavServProvGen, fNavServProvGenPth, fRouterPath, routerFFlCont, fRoutesConstPth, fRoutesConsts } from './flutter_content/add_new_feature/files';
 
-import {  } from './flutter_content/feat_folds_path';
+import { } from './flutter_content/feat_folds_path';
 
 import { updRouterThings } from './update_files';
-import { fMainPgCont, fMainPgPth,fFoldPths } from './flutter_content';
+import { fMainPgCont, fMainPgPth, fFoldPths } from './flutter_content';
 
 
 export async function addFeatureFolders(rootPath: string, featureNameP: string = "") {
