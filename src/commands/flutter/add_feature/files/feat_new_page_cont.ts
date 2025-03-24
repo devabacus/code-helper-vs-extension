@@ -1,4 +1,4 @@
-import { cap } from "../../../../../utils/text_work/text_util";
+import { cap } from "../../../../utils/text_work/text_util";
 
 
 export const featurePageContent = (featureName: string, pageName: string) => {

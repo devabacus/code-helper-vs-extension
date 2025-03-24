@@ -43,6 +43,11 @@ dependencies:
   chopper: ^8.1.0
   chopper_generator: ^8.1.0
 
+  drift: ^2.26.0
+  drift_flutter: ^0.2.4
+  
+  path_provider: ^2.1.5
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -54,6 +59,8 @@ dev_dependencies:
   riverpod_lint: ^2.6.5
   freezed: ^3.0.4
   json_serializable: ^6.9.4
+
+  drift_dev: ^2.26.0
 
 flutter:
   uses-material-design: true

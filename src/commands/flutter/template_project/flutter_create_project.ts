@@ -1,16 +1,16 @@
 import * as path from "path";
-import { addFileFromSnippetFolder, createFile, createFolder } from "../../../utils";
+import { createFile, createFolder } from "../../../utils";
 import { executeCommand } from "../../../utils/terminal_handle";
 import { getUserInput, pickPath } from "../../../utils/ui/ui_ask_folder";
 import { gitInit } from "../../git_init";
-import { addDependecy } from "../add_pubspec/flutter_add_pubspec";
-import { startDependency } from "./flutter_content/package_pubscpec";
-import { startAppFix } from "./start_app_fix";
-import { flutter_handle_ps1 } from "../service_files/flutter_handle_ps1";
-import { git_handle_ps1 } from "../service_files/git_handle_ps1";
-import { projectFiles } from "./flutter_content/template_paths";
+import { addDependecy } from "./add_pubspec/flutter_add_pubspec";
 import { pubspec_yaml } from "./flutter_content/files_content/pubspec_yaml";
+import { startDependency } from "./flutter_content/package_pubscpec";
 import { pubGet } from "./flutter_content/terminal_commands";
+import { flutter_handle_ps1 } from "./service_files/flutter_handle_ps1";
+import { git_handle_ps1 } from "./service_files/git_handle_ps1";
+import { startAppFix } from "./start_app_fix";
+import { addDriftDB } from "./flutter_content/drift_db/add_drift_db";
 
 export async function flutterCreateNewProject(addTemplateFolders?: (fullProjectPath: string) => void): Promise<void> {
 
@@ -43,13 +43,11 @@ export async function flutterCreateNewProject(addTemplateFolders?: (fullProjectP
     createFile(path.join(serviceFilesPth, "flutter_handle.ps1"), flutter_handle_ps1);
     createFile(path.join(serviceFilesPth, "git_handle.ps1"), git_handle_ps1);
     createFile(path.join(serviceFilesPth, "shell_commands.ps1"), "//shell commands");
-
     createFile(path.join(fullProjectPath, "pubspec.yaml"), pubspec_yaml(projectName));
 
-    gitInit(fullProjectPath);
+    await addDriftDB(projectPath);
 
-    // const mainDartPath = path.join(      fullProjectPath, 'lib', 'main.dart');
-    // const openCommand = `code -g "${mainDartPath}" "${fullProjectPath}"`;
+    gitInit(fullProjectPath);
 
     const homePagePath = path.join(fullProjectPath, 'lib', 'features', 'home', 'presentation', 'pages', 'home_page.dart');
     const openCommand = `code -g "${homePagePath}" "${fullProjectPath}"`;

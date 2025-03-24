@@ -1,8 +1,8 @@
 import path from "path";
 import { navServProv, navServProvGen, routerGen, routesCont } from '../../add_feature/files';
 
-import { flutter_handle_ps1 } from "../../service_files/flutter_handle_ps1";
-import { git_handle_ps1 } from "../../service_files/git_handle_ps1";
+import { flutter_handle_ps1 } from "../service_files/flutter_handle_ps1";
+import { git_handle_ps1 } from "../service_files/git_handle_ps1";
 import { appFile } from "./files_content/app_file";
 import { mainFile } from "./files_content/main_file";
 import { navServ } from "../../add_feature/files/nav_service";

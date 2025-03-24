@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { createFile, executeCommand } from '../../../utils';
-import { pubGet } from '../template_project/flutter_content/terminal_commands';
+import { createFile, executeCommand } from '../../../../utils';
+import { pubGet } from '../flutter_content/terminal_commands';
 
 
 export async function addDependecy(newDependency: string, projectPath: string, isDev: boolean = false): Promise<void> {

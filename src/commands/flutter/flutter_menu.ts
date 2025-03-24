@@ -8,9 +8,9 @@ import { mainFile } from "./template_project/flutter_content/files_content/main_
 import { addStartPlugins } from "./template_project/flutter_content/terminal_commands";
 import { flutterCreateNewProject } from "./template_project/flutter_create_project";
 import { updRoutingFls } from "./template_project/update_files";
-import { addDriftDB } from "./drift_db/add_drift_db";
 import { addFeatureFolders } from "./add_feature/add_feature";
 import { crBarrelFls } from "./add_barrel_files";
+import { addDriftDB } from "./template_project/flutter_content/drift_db/add_drift_db";
 
 
 

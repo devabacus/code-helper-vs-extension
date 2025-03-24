@@ -1,10 +1,10 @@
 import path from "path";
-import { createFile, executeCommand } from "../../../utils";
 import { database_cont } from "./database_dart";
 import { database_g_cont } from "./database_g_dart";
 import { dbProvider } from "./database_provider";
 import { db_provider_g } from "./database_provider_g";
-import { pubAddComm } from "../template_project/flutter_content/terminal_commands";
+import { pubAddComm } from "../terminal_commands";
+import { createFile, executeCommand } from "../../../../../utils";
 
 
 export async function addDriftDB(rootPath: string): Promise<void> {
@@ -17,13 +17,11 @@ export async function addDriftDB(rootPath: string): Promise<void> {
     const database_provider_path = path.join(dbPath, "database_provider.dart");
     const database_provider_g_path = path.join(dbPath, "database_provider.g.dart");
 
-    await executeCommand(command, rootPath);
+    // await executeCommand(command, rootPath);
 
     await createFile(database_dart_path, database_cont(path.basename(rootPath)));
     await createFile(database_g_dart_path, database_g_cont());
     await createFile(database_provider_path, dbProvider);
     await createFile(database_provider_g_path, db_provider_g);
-
-
 }
 
