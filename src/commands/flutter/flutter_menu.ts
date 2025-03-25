@@ -13,6 +13,7 @@ import { addDriftDB } from "./template_project/flutter_content/drift_db/add_drif
 import { crBarrelFls } from "./template_project/add_barrel_files";
 import { addApiService } from "./add_api_service/add_api_service";
 import { setMainPage } from "./navigation/set_main_page";
+import { deleteFuture } from "./add_feature/delete_feature";
 
 
 
@@ -28,6 +29,7 @@ export async function flutterHandler() {
         'Создать навигацию для файла': () => updateRoutingFls(getActiveEditorPath()!),
         'Добавить api сервис в текущий файл': () => addApiService(getActiveEditorPath()!),
         'сделать главной': () => setMainPage(getActiveEditorPath()!),
+        'удалить feature': () => deleteFuture(getActiveEditorPath()!),
         
         // 'Создать навигацию по конструктору': () => getConstructorData(),
     };

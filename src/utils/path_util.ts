@@ -25,3 +25,26 @@ export function getUserSnippetsPath(): string {
 export function getActiveEditorPath(): string | undefined {
     return window.activeTextEditor?.document.uri.fsPath;
 }
+
+
+
+
+
+interface IPathHandle {
+    featName: string,
+    featurePath: string
+    rootPath: string
+}
+
+
+export function getPathData(filePath: string): IPathHandle {
+    const featureName = filePath.split('features')[1].split('\\')[1];
+    const _featurePath = filePath.split('presentation')[0];
+    const rootPath = filePath.split('lib')[0];
+    const featurePath = path.resolve(_featurePath);
+
+    
+    return { featName: featureName, featurePath: featurePath, rootPath: rootPath };
+
+}
+
