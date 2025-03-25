@@ -10,3 +10,7 @@ export function textValidator(text: string): string | null {
 export function cap(str: string): string {
     return str.charAt(0).toUpperCase() + str.slice(1);
 }
+
+export function unCap(str: string): string {
+    return str.charAt(0).toLowerCase() + str.slice(1);
+}

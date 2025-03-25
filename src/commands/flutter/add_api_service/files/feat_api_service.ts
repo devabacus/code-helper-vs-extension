@@ -12,6 +12,16 @@ abstract class ${servName} extends ChopperService {
   static ${servName} create([ChopperClient? client]) => _$${servName}(client);
     
   //TODO create service methods
+
 }
 
 `;};
+
+
+export const api_service_snippet = 
+
+`
+@GET(path: '\${1:}'),
+\tFuture<Response> \${2:getPost}(\${3:});    
+
+`;
