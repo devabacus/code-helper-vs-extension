@@ -5,7 +5,7 @@ import { } from '../add_feature/files/constants/nav_service_prov_get';
 import { ClsParams, getConstrData, getPgName, parseClsParams } from '../utils/text_utils';
 import { } from '../add_feature/feat_folds_path';
 import { routerNavServPath, routerPath } from './flutter_content/template_paths';
-import { fNavServ, fNavServPath, fRouterPath, fRouterPm, imPageFRouter,   fRoutesConstPth, } from '../add_feature/files';
+import { fNavServ, fNavServPath, fRouterPath, fRouterPm, imPageFRouter, fRoutesConstPth, } from '../add_feature/files';
 import { getDocText } from '../../../utils/ui/ui_util';
 import { appRouterAdd, imFRouter, imFRoutesConst } from '../add_feature/files/router_config';
 import { navServiceMethod } from '../add_feature/files/nav_service';
@@ -23,7 +23,7 @@ export function updRouterThings(featureName: string | undefined, rootPath: strin
     insertTextAfter(navServFlPath, 'class NavigationService {', navServiceMethod(featureName!));
 }
 
-export async function updRoutingFls(filePath: string) {
+export async function updateRoutingFls(filePath: string) {
 
     //  filePath = G:\Projects\Flutter\a15\lib\features\home\presentation\pages\auth_page.dart    
     const featurePath = getFeaturePath(filePath);

@@ -7,10 +7,11 @@ import { addBaseTemplate, createTemplateFiles } from "./template_project/flutter
 import { mainFile } from "./template_project/flutter_content/files_content/main_file";
 import { addStartPlugins } from "./template_project/flutter_content/terminal_commands";
 import { flutterCreateNewProject } from "./template_project/flutter_create_project";
-import { updRoutingFls } from "./template_project/update_files";
+import { updateRoutingFls } from "./template_project/update_files";
 import { addFeatureFolders } from "./add_feature/add_feature";
 import { addDriftDB } from "./template_project/flutter_content/drift_db/add_drift_db";
 import { crBarrelFls } from "./template_project/add_barrel_files";
+import { addApiService } from "./add_api_service/add_api_service";
 
 
 
@@ -21,11 +22,11 @@ export async function flutterHandler() {
         'Добавить template files': () => createTemplateFiles(getRootWorkspaceFolders()),
         'Добавить плагины': () => executeCommand(addStartPlugins, getRootWorkspaceFolders()),
         'Добавить feauture': () => addFeatureFolders(getRootWorkspaceFolders()),
-        'Обновить barrel': () => crBarrelFls(getLibPath()),
         'Новый базовый проект': () => flutterCreateNewProject(startAppRoutine),
         'Создать Flutter пакет': createFlutterPackage,
-        'Создать навигацию для файла': () => updRoutingFls(getActiveEditorPath()!),
-        'добавить drift db': () => addDriftDB(getRootWorkspaceFolders()!),
+        'Создать навигацию для файла': () => updateRoutingFls(getActiveEditorPath()!),
+        'Добавить api сервис в текущий файл': () => addApiService(getActiveEditorPath()!),
+        
         // 'Создать навигацию по конструктору': () => getConstructorData(),
     };
 

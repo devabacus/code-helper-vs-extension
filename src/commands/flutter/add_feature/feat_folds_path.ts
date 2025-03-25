@@ -8,7 +8,7 @@ export const fFoldPths = [
     'presentation/widgets',
     'presentation/routing',
     'presentation/providers',
-    'presentation/services',
+    'presentation/services/api',
 ];
 
 

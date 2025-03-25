@@ -10,11 +10,11 @@ import { updRouterThings } from '../template_project/update_files';
 import { fMainPgCont, fMainPgPth } from './files/feat_main_page_cont';
 
 
-export async function addFeatureFolders(rootPath: string, featureNameP: string = "") {
+export async function addFeatureFolders(rootPath: string, featName: string = "") {
 
-    let featureName = featureNameP;
+    let featureName = featName;
 
-    if (featureNameP === '') {
+    if (featName === '') {
         featureName = await getUserInputWrapper(true, "type feature name") as string;
     }
     const feauturePath = `${rootPath}/lib/features/${featureName}`;
@@ -32,6 +32,7 @@ export async function addFeatureFolders(rootPath: string, featureNameP: string =
 }
 
 export async function createTemplFContFls(fPth: string, fNm: string) {
+    // TODO вынести в отдельный метод
     const fConstFile = fRoutesConstPth(fPth, fNm!);
     const fRoutesCont = fRoutesConsts(fNm!);
     await createFile(fConstFile, fRoutesCont);
