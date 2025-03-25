@@ -12,6 +12,7 @@ import { addFeatureFolders } from "./add_feature/add_feature";
 import { addDriftDB } from "./template_project/flutter_content/drift_db/add_drift_db";
 import { crBarrelFls } from "./template_project/add_barrel_files";
 import { addApiService } from "./add_api_service/add_api_service";
+import { setMainPage } from "./navigation/set_main_page";
 
 
 
@@ -26,6 +27,7 @@ export async function flutterHandler() {
         'Создать Flutter пакет': createFlutterPackage,
         'Создать навигацию для файла': () => updateRoutingFls(getActiveEditorPath()!),
         'Добавить api сервис в текущий файл': () => addApiService(getActiveEditorPath()!),
+        'сделать главной': () => setMainPage(getActiveEditorPath()!),
         
         // 'Создать навигацию по конструктору': () => getConstructorData(),
     };

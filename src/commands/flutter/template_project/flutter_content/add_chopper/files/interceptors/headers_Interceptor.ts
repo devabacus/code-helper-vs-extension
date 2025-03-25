@@ -1,9 +1,9 @@
-export const headers_interceptor = `
+export const def_headers_interceptor = `
 import 'dart:async';
 
 import 'package:chopper/chopper.dart';
 
-class HeadersInterceptor implements Interceptor {
+class DefHeadersInterceptor implements Interceptor {
   @override
   FutureOr<Response<BodyType>> intercept<BodyType>(Chain<BodyType> chain) {
     Request request = chain.request;

@@ -24,7 +24,7 @@ export async function addApiService(filePath: string): Promise<void> {
 
     const serviceGetter = `${serviceName} get ${unCap(serviceName)} => _client.getService<${serviceName}>();`;
 
-    insertTextAfter(api_client_path, 'services: [', `${serviceName}.create()`);
+    insertTextAfter(api_client_path, 'services: [', `${serviceName}.create(),`);
 
     insertTextAfter(api_client_path, 'ApiClient(this._client);', serviceGetter);
     const _path1 = filePath.split('features')[1];

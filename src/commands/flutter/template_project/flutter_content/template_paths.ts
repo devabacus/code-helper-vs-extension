@@ -17,7 +17,7 @@ import { error_interceptor } from "./add_chopper/files/interceptors/error_interc
 import { api_provider } from "./add_chopper/files/providers/api_providers";
 import { api_provider_g } from "./add_chopper/files/providers/api_provider.g";
 import { menv } from "../service_files/m_env";
-import { headers_interceptor } from "./add_chopper/files/interceptors/headers_Interceptor";
+import { def_headers_interceptor } from "./add_chopper/files/interceptors/headers_Interceptor";
 
 export const baseTemplateFolders = [
     'core/routing',
@@ -46,7 +46,7 @@ export const templatefiles: Record<string, string> = {
     'core/services/interceptors/cache_interceptor.dart':cache_interceptor,
     'core/services/interceptors/retry_interceptor.dart':retry_interceptor,
     'core/services/interceptors/x_api_key_interceptor.dart':x_api_key_interceptor,
-    'core/services/interceptors/headers_Interceptor.dart': headers_interceptor,
+    'core/services/interceptors/def_headers_Interceptor.dart': def_headers_interceptor,
 
     'core/services/interceptors/error_interceptor/api_exception.dart':api_exception,
     'core/services/interceptors/error_interceptor/error_interceptor.dart':error_interceptor,
