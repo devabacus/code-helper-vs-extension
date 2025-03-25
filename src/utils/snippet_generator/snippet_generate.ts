@@ -38,7 +38,10 @@ export function snippetHandle() {
 function wrapSnippet(snippetBody: string): string {
   return (
     '"${1:snippet name}": {' +
-    '\n\t"scope": "${TM_FILENAME/.+\\.((py)|(php)|(go)|(js)|(dart)|(cs)|(cpp)|(java)|(ts)|(ps1)|(sh)|(ahk)|(md))$/${2:+python}${3:+php}${4:+go}${5:+javascript,javascriptreact}${6:+dart}${7:+csharp}${8:+cpp}${9:+java}${10:+typescript}${11:+powershell}${12:+shellscript}$  {13:+ahk}${14:+markdown}/}",' +
+    
+    '\n\t"scope": "${TM_FILENAME/.+\\.((py)|(php)|(go)|(js)|(dart)|(cs)|(cpp)|(java)|(ts)|(ps1)|(sh)|(ahk)|(md))$/${2:+python}${3:+php}${4:+go}${5:+javascript,javascriptreact}${6:+dart}${7:+csharp}${8:+cpp}${9:+java}${10:+typescript}${11:+powershell}${12:+shellscript}${13:+ahk}${14:+markdown}/}",' +
+
+
     '\n\t"prefix": "${2}",' +
     '\n\t"body": [' +
     '\n' + snippetBody +
