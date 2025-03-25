@@ -36,13 +36,13 @@ export async function flutterCreateNewProject(addTemplateFolders?: (fullProjectP
     }
     startAppFix(fullProjectPath);
     
-    insertAtFileEnd(projectPath,'.env');
+    insertAtFileEnd(path.join(fullProjectPath, '.gitignore'),'.env');
     
     const serviceFilesPth = path.join(fullProjectPath, "_service_files");
     await createFolder(serviceFilesPth);
 
 
-    createRootTemplateFiles(projectPath);
+    createRootTemplateFiles(fullProjectPath);
 
 
     // createFile(path.join(serviceFilesPth, "flutter_handle.ps1"), flutter_handle_ps1);

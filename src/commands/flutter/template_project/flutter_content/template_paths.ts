@@ -24,6 +24,9 @@ export const baseTemplateFolders = [
     'core/database',
     'core/providers',
     'core/services',
+    'core/services/interceptors',
+    'core/services/interceptors/error_interceptor',
+    'core/services/api',
     'core/theme',
     'core/utils',
 ];
@@ -37,7 +40,7 @@ export const templatefiles: Record<string, string> = {
     
     'core/config/config.dart': config_dart,
     // chopper
-    'core/services/api':api_client,
+    'core/services/api/api_client.dart':api_client,
     'core/services/interceptors/bearer_token_interceptor.dart':bearer_token_interceptor,
     'core/services/interceptors/cache_interceptor.dart':cache_interceptor,
     'core/services/interceptors/retry_interceptor.dart':retry_interceptor,

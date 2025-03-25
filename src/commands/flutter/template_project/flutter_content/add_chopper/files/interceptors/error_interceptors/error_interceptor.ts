@@ -3,7 +3,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:chopper/chopper.dart';
-import 'package:chopper_arch/core/services/interceptors/error_interceptor/api_exception.dart';
+import 'api_exception.dart';
 
 // Теперь исправленный ErrorInterceptor
 class ErrorInterceptor implements Interceptor {

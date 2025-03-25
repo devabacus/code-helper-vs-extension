@@ -47,6 +47,7 @@ dependencies:
   drift_flutter: ^0.2.4
   
   path_provider: ^2.1.5
+  flutter_dotenv: ^5.2.1
 
 dev_dependencies:
   flutter_test:
@@ -64,5 +65,7 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - .env
 
 `;};
