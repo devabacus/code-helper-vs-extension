@@ -1,16 +1,15 @@
 import * as path from "path";
 import { createFile, createFolder } from "../../../utils";
 import { executeCommand } from "../../../utils/terminal_handle";
+import { insertAtFileEnd } from "../../../utils/text_work/text_insert/basic-insertion";
 import { getUserInput, pickPath } from "../../../utils/ui/ui_ask_folder";
 import { gitInit } from "../../git_init";
 import { addDependecy } from "./add_pubspec/flutter_add_pubspec";
+import { createRootTemplateFiles } from "./flutter_add_template_file";
 import { pubspec_yaml } from "./flutter_content/files_content/pubspec_yaml";
 import { startDependency } from "./flutter_content/package_pubscpec";
 import { pubGet } from "./flutter_content/terminal_commands";
-import { flutter_handle_ps1 } from "./service_files/flutter_handle_ps1";
-import { git_handle_ps1 } from "./service_files/git_handle_ps1";
 import { startAppFix } from "./start_app_fix";
-import { addDriftDB } from "./flutter_content/drift_db/add_drift_db";
 
 export async function flutterCreateNewProject(addTemplateFolders?: (fullProjectPath: string) => void): Promise<void> {
 
@@ -36,16 +35,22 @@ export async function flutterCreateNewProject(addTemplateFolders?: (fullProjectP
         addTemplateFolders(fullProjectPath);
     }
     startAppFix(fullProjectPath);
-
+    
+    insertAtFileEnd(projectPath,'.env');
+    
     const serviceFilesPth = path.join(fullProjectPath, "_service_files");
     await createFolder(serviceFilesPth);
 
-    createFile(path.join(serviceFilesPth, "flutter_handle.ps1"), flutter_handle_ps1);
-    createFile(path.join(serviceFilesPth, "git_handle.ps1"), git_handle_ps1);
-    createFile(path.join(serviceFilesPth, "shell_commands.ps1"), "//shell commands");
+
+    createRootTemplateFiles(projectPath);
+
+
+    // createFile(path.join(serviceFilesPth, "flutter_handle.ps1"), flutter_handle_ps1);
+    // createFile(path.join(serviceFilesPth, "git_handle.ps1"), git_handle_ps1);
+    // createFile(path.join(serviceFilesPth, "shell_commands.ps1"), "//shell commands");
     createFile(path.join(fullProjectPath, "pubspec.yaml"), pubspec_yaml(projectName));
 
-    await addDriftDB(projectPath);
+    
 
     gitInit(fullProjectPath);
 

@@ -5,7 +5,9 @@ import './app.dart';
 import 'package:talker_riverpod_logger/talker_riverpod_logger.dart';
 
 
-void main() {
+void main() async{
+  WidgetsFlutterBinding.ensureInitialized(); 
+  await dotenv.load(fileName: ".env");
   runApp(
   ProviderScope(
     observers: [

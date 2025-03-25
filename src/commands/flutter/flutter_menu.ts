@@ -9,8 +9,8 @@ import { addStartPlugins } from "./template_project/flutter_content/terminal_com
 import { flutterCreateNewProject } from "./template_project/flutter_create_project";
 import { updRoutingFls } from "./template_project/update_files";
 import { addFeatureFolders } from "./add_feature/add_feature";
-import { crBarrelFls } from "./add_barrel_files";
 import { addDriftDB } from "./template_project/flutter_content/drift_db/add_drift_db";
+import { crBarrelFls } from "./template_project/add_barrel_files";
 
 
 
@@ -37,7 +37,6 @@ export async function flutterHandler() {
         await options[choice]();
     }
 }
-
 
 // функция для создания простого приложения в main.dart
 export function startAppRoutine(fullProjectPath: string) {
