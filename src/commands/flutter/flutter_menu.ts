@@ -7,7 +7,7 @@ import { addFeatureFolders } from "./add_feature/add_feature";
 import { deleteFuture } from "./add_feature/delete_feature";
 import { deletePage } from "./add_feature/delete_page";
 import { createFlutterPackage } from "./flutter_create_package";
-import { setMainPage } from "./navigation/set_main_page";
+import { setMainPage } from "./template_project/set_main_page";
 import { addBaseTemplate, createTemplateFiles } from "./template_project/flutter_add_template_file";
 import { mainFile } from "./template_project/flutter_content/files_content/main_file";
 import { addStartPlugins } from "./template_project/flutter_content/terminal_commands";
@@ -30,7 +30,7 @@ export async function flutterHandler() {
         'сделать главной': () => setMainPage(getActiveEditorPath()!),
         'удалить feature': () => deleteFuture(getActiveEditorPath()!),
         'удалить страницу': () => deletePage(getActiveEditorPath()!),
-        
+
         // 'Создать навигацию по конструктору': () => getConstructorData(),
     };
 

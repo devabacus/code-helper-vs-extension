@@ -3,8 +3,8 @@ import { insAtFlStart } from "../../../utils/text_work/text_insert/basic-inserti
 import { cap } from "../../../utils/text_work/text_util";
 import { fRoutesConstPth } from "../add_feature/files";
 import { imFRoutesConst } from "../add_feature/files/router_config";
-import { routerPath } from "../template_project/flutter_content/template_paths";
-import { updateRoutingFls } from "../template_project/update_files";
+import { routerPath } from "./flutter_content/template_paths";
+import { updateRoutingFls } from "./update_files";
 import { PathData } from "../utils/path_util";
 
 
@@ -13,8 +13,8 @@ export async function setMainPage(pagePath: string): Promise<void> {
 
     const p = new PathData(pagePath).data;
 
-    const fRoutesConstPath = fRoutesConstPth(p.featurePath,p.featName);
-    if(!isFileContains(fRoutesConstPath,p.pageName)){
+    const fRoutesConstPath = fRoutesConstPth(p.featurePath, p.featName);
+    if (!isFileContains(fRoutesConstPath, p.pageName)) {
         updateRoutingFls(pagePath);
     }
     console.log(p.pageName);
