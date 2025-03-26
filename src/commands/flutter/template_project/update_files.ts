@@ -1,16 +1,17 @@
-import path from 'path';
 import { insAtFlStart, insertTextAfter } from '../../../utils/text_work/text_insert/basic-insertion';
 import { } from '../add_feature/files/constants/nav_service_prov_get';
 
-import { ClsParams, getConstrData, getPgName, parseClsParams } from '../utils/text_utils';
-import { } from '../add_feature/feat_folds_path';
-import { routerNavServPath, routerPath } from './flutter_content/template_paths';
-import { fNavServ, fNavServPath, fRouterPath, fRouterPm, imPageFRouter, fRoutesConstPth, } from '../add_feature/files';
 import { getDocText } from '../../../utils/ui/ui_util';
-import { appRouterAdd, imFRouter, imFRoutesConst } from '../add_feature/files/router_config';
-import { navServiceMethod } from '../add_feature/files/nav_service';
+import { } from '../add_feature/feat_folds_path';
+import { fNavServ, fNavServPath, fRouterPath, fRouterPm, fRoutesConstPth, imPageFRouter, } from '../add_feature/files';
 import { fAddConst } from '../add_feature/files/feat_routes_const';
+import { navServiceMethod } from '../add_feature/files/nav_service';
+import { appRouterAdd, imFRouter, imFRoutesConst } from '../add_feature/files/router_config';
 import { PathData } from '../utils/path_util';
+import { ClsParams, parseClsParams } from '../utils/text_utils';
+import { routerNavServPath, routerPath } from './flutter_content/template_paths';
+import { createFile } from '../../../utils';
+import { new_page } from './flutter_content/files_content/new_page';
 
 
 export function updRouterThings(featureName: string | undefined, rootPath: string) {
@@ -26,23 +27,11 @@ export function updRouterThings(featureName: string | undefined, rootPath: strin
 
 export async function updateRoutingFls(filePath: string) {
 
-    const pathData  = new PathData(filePath);
-    const fPath = pathData.feauturePath;
-    const fName = pathData.featureName;
-
-    const clsDeclaration = getDocText();
-    const pgName = getPgName(clsDeclaration);
-
+    const p  = new PathData(filePath).data;
     const clsParams: ClsParams[] = parseClsParams(getDocText());
-
-    updateFFiles(fPath, fName, pgName, clsParams);
+    updateFFiles(p.featurePath, p.featName, p.pageName, clsParams);
 
 }
-
-
- 
-
-
 
 export function updateFFiles(fPath: string, fName: string, pName: string, fields: ClsParams[] = []) {
     const names = fields.map((field) => field.name);

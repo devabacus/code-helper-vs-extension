@@ -1,11 +1,12 @@
-export const new_page = (pageName: string) => {
-`
+export const new_page = (widgetName: string) => {
+
+return `
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ${pageName}Page extends ConsumerWidget {
-  const ${pageName}Page({super.key});
+class ${widgetName} extends ConsumerWidget {
+  const ${widgetName}({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -15,7 +16,7 @@ class ${pageName}Page extends ConsumerWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text("${pageName}Page"),
+            Text("${widgetName}"),
             SizedBox(height: 30),
             ElevatedButton(
               onPressed: () => {},

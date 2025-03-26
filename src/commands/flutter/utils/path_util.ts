@@ -8,6 +8,7 @@ interface IPathHandle {
     pageName: string,
     capPageName: string,
     isPage: boolean,
+    widgetPageName: string,
 }
 
 export class PathData {
@@ -31,6 +32,7 @@ export class PathData {
             pageName: this.pageName,
             capPageName: this.capPageName,
             isPage: this.isPage,
+            widgetPageName: this.widgetPageName,
         };
 
     }

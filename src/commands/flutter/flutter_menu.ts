@@ -1,20 +1,18 @@
 import path from "path";
 import { window } from "vscode";
 import { executeCommand, writeToFile } from "../../utils";
-import { getActiveEditorPath, getLibPath, getRootWorkspaceFolders } from "../../utils/path_util";
+import { getActiveEditorPath, getRootWorkspaceFolders } from "../../utils/path_util";
+import { addApiService } from "./add_api_service/add_api_service";
+import { addFeatureFolders } from "./add_feature/add_feature";
+import { deleteFuture } from "./add_feature/delete_feature";
+import { deletePage } from "./add_feature/delete_page";
 import { createFlutterPackage } from "./flutter_create_package";
+import { setMainPage } from "./navigation/set_main_page";
 import { addBaseTemplate, createTemplateFiles } from "./template_project/flutter_add_template_file";
 import { mainFile } from "./template_project/flutter_content/files_content/main_file";
 import { addStartPlugins } from "./template_project/flutter_content/terminal_commands";
 import { flutterCreateNewProject } from "./template_project/flutter_create_project";
 import { updateRoutingFls } from "./template_project/update_files";
-import { addFeatureFolders } from "./add_feature/add_feature";
-import { addDriftDB } from "./template_project/flutter_content/drift_db/add_drift_db";
-import { crBarrelFls } from "./template_project/add_barrel_files";
-import { addApiService } from "./add_api_service/add_api_service";
-import { setMainPage } from "./navigation/set_main_page";
-import { deleteFuture } from "./add_feature/delete_feature";
-import { deletePage } from "./add_feature/delete_page";
 
 
 

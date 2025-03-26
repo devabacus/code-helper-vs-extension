@@ -9,31 +9,35 @@ import { PathData } from "../utils/path_util";
 
 
 export async function deletePage(filePath: string): Promise<void> {
-    // if(confirmDialog('удалить'))
+    if(!await confirmDialog('удалить страницу', 'да', 'нет')){
+        return;
+    }
     const p = new PathData(filePath).data;
     if (!p.isPage) {
-        
+        return;
     }
 
-    const routerFile = fRouterPath(p.featurePath, p.featName);
+    const fRouterFile = fRouterPath(p.featurePath, p.featName);
     const routerConst = fRoutesConstPth(p.featurePath, p.featName);
     const navServ = fNavServPath(p.featurePath, p.featName);
     const regexImport = new RegExp(`.*${p.pageName}_page.*`);
-    const regexMethod = new RegExp(`[\\s\\n]*GoRoute.*[\\s\\S]*.*${p.pageName}.*[\\s\\S]*?\\),\\r`, 'g');
+    // const regexMethod = new RegExp(`[\\s\\n]*GoRoute.*[\\s\\S]*.*${p.pageName}.*[\\s\\S]*?\\),\\r`, 'g');
+    const regexMethod = new RegExp(`[\\s\\n]*GoRoute.*[\\s\\S]*.*${p.pageName}.*[\\s\\S]*?\\)[.\\s\\S]*?\\),\[\s\S]*?`, 'g');
+
 
     const regexConst = new RegExp(`.*${p.pageName}.*`, 'g');
     
     const regexNavServ = new RegExp(`\\s*.*${p.capPageName}.*\\{[\\s\\S]*?\\}`, 'g');
     const _routerPath = routerPath(p.rootPath);
     
-    if(isFileContains(_routerPath, `${p.pageName}Routes`)){
+    if(isFileContains(_routerPath, `${p.pageName}Path`)){
     replaceTextInFile(_routerPath, /initialLocation:.*/, `initialLocation: HomeRoutes.homePath,`);
     }
-    replaceTextInFile(routerFile,regexImport,'');
-    replaceTextInFile(routerFile,regexMethod,'');
+    replaceTextInFile(fRouterFile,regexImport,'');
+    replaceTextInFile(fRouterFile,regexMethod,'');
     replaceTextInFile(routerConst,regexConst,'');
 
     replaceTextInFile(navServ,regexNavServ,'');
 
-    
+    fs.rmSync(filePath);
 }

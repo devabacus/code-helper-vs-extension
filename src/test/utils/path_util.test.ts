@@ -44,6 +44,13 @@ suite('class path test', () => {
         assert.strictEqual(pathData3.isPage, false);
     });
 
+    test('widget name', () => {
+        assert.strictEqual(pathData1.widgetPageName, 'PagenamePage');
+        assert.strictEqual(pathData2.widgetPageName, 'PagenameNewPage');
+        assert.strictEqual(pathData3.widgetPageName, 'AuthRouterConfig');
+    });
+
+
 
     test('test interface return', () => {
         assert.strictEqual(pathData1.data.rootPath, 'g:\\Projects\\Flutter\\a25');
@@ -51,6 +58,7 @@ suite('class path test', () => {
         assert.strictEqual(pathData1.data.featName, 'feature_name');
         assert.strictEqual(pathData1.data.pageName, 'pagename');
         assert.strictEqual(pathData1.data.capPageName, 'Pagename');
+        assert.strictEqual(pathData1.data.widgetPageName, 'PagenamePage');
         assert.strictEqual(pathData1.data.isPage, true);
         assert.strictEqual(pathData3.data.isPage, false);
     });
