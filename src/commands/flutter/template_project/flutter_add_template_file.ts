@@ -1,8 +1,7 @@
 import path from 'path';
 import { createFile, createFolders, executeCommand } from '../../../utils';
 import { addFeatureFolders } from '../add_feature/add_feature';
-import { baseTemplateFolders, routerPath, templatefiles } from './flutter_content/';
-import { projectFiles } from './flutter_content/template_paths';
+import { baseTemplateFolders, projectFiles, routerPath, templatefiles } from './flutter_content/template_paths';
 import { pubGet } from './flutter_content/terminal_commands';
 import { routerCont } from '../add_feature/files/router_config';
 import { addDriftDB } from './flutter_content/drift_db/add_drift_db';

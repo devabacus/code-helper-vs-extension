@@ -1,11 +1,9 @@
-import path from "path";
-import { fNavServPath, fRouterPath, fRoutesConstPth } from "./files";
+import * as fs from 'fs';
 import { isFileContains, replaceTextInFile } from "../../../utils";
 import { confirmDialog } from "../../../utils/ui/ui_util";
-import { routerPath } from "../template_project/flutter_content";
-import { cap } from "../../../utils/text_work/text_util";
-import * as fs from 'fs';
 import { PathData } from "../utils/path_util";
+import { fNavServPath, fRouterPath, fRoutesConstPth } from "./files";
+import { routerPath } from '../template_project/flutter_content/template_paths';
 
 
 export async function deletePage(filePath: string): Promise<void> {
@@ -21,7 +19,6 @@ export async function deletePage(filePath: string): Promise<void> {
     const routerConst = fRoutesConstPth(p.featurePath, p.featName);
     const navServ = fNavServPath(p.featurePath, p.featName);
     const regexImport = new RegExp(`.*${p.pageName}_page.*`);
-    // const regexMethod = new RegExp(`[\\s\\n]*GoRoute.*[\\s\\S]*.*${p.pageName}.*[\\s\\S]*?\\),\\r`, 'g');
     const regexMethod = new RegExp(`[\\s\\n]*GoRoute.*[\\s\\S]*.*${p.pageName}.*[\\s\\S]*?\\)[.\\s\\S]*?\\),\[\s\S]*?`, 'g');
 
 
