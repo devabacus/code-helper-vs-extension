@@ -24,7 +24,6 @@ class ApiClient {
         DefHeadersInterceptor(),
         HttpLoggingInterceptor(),
         if (apiKey != null) ApiKeyInterceptor(apiKey: apiKey),
-        CacheInterceptor(),
         RetryInterceptor(maxRetries: 3),
         ErrorInterceptor(),
       ],
