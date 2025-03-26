@@ -10,6 +10,7 @@ import { getDocText } from '../../../utils/ui/ui_util';
 import { appRouterAdd, imFRouter, imFRoutesConst } from '../add_feature/files/router_config';
 import { navServiceMethod } from '../add_feature/files/nav_service';
 import { fAddConst } from '../add_feature/files/feat_routes_const';
+import { PathData } from '../utils/path_util';
 
 
 export function updRouterThings(featureName: string | undefined, rootPath: string) {
@@ -25,32 +26,26 @@ export function updRouterThings(featureName: string | undefined, rootPath: strin
 
 export async function updateRoutingFls(filePath: string) {
 
-    //  filePath = G:\Projects\Flutter\a15\lib\features\home\presentation\pages\auth_page.dart    
-    const featurePath = getFeaturePath(filePath);
-    const featureName = getFeatureName(filePath);
-    // let pageName = getPageName(filePath);
-
-    // insAtFlStart(filePath, featurePageContent(featureName, pageName));
-
-    // const constrData: Record<string, any> = getConstrData();
-    // pageName = constrData.pageName;
-    // const params = constrData.params;
+    const pathData  = new PathData(filePath);
+    const fPath = pathData.feauturePath;
+    const fName = pathData.featureName;
 
     const clsDeclaration = getDocText();
     const pgName = getPgName(clsDeclaration);
 
-
     const clsParams: ClsParams[] = parseClsParams(getDocText());
 
-    updateFFiles(featurePath, featureName, pgName, clsParams);
+    updateFFiles(fPath, fName, pgName, clsParams);
 
 }
 
 
+ 
+
+
+
 export function updateFFiles(fPath: string, fName: string, pName: string, fields: ClsParams[] = []) {
     const names = fields.map((field) => field.name);
-
-
     const fRouterFile = fRouterPath(fPath, fName);
 
     insertTextAfter(fNavServPath(fPath, fName), 'NavigationService {', fNavServ(fName, pName, fields));
@@ -69,23 +64,6 @@ function convertParams(params: string[]): string {
         paramsStr = paramsList.join('');
     }
     return paramsStr;
-}
-
-
-export function getFeatureName(pth: string) {
-    const filePathList = pth!.split(path.sep);
-    const featureNameIdx = filePathList.indexOf('features') + 1;
-    return filePathList[featureNameIdx];
-}
-
-export function getPageName(pth: string): string {
-    const fileName = path.parse(pth!).name;
-    return fileName.split('_')[0];
-}
-
-export function getFeaturePath(pth: string): string {
-    const featureName = getFeatureName(pth);
-    return path.join(pth!.split(featureName)[0], featureName);
 }
 
 

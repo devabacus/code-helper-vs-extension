@@ -13,3 +13,15 @@ suite('Extension Test Suite', () => {
 		assert.strictEqual(-1, [1, 2, 3].indexOf(0));
 	});
 });
+
+
+
+suite('get path data', () => {
+	// vscode.window.showInformationMessage('Start all tests.');
+
+	test('Sample test', () => {
+		assert.strictEqual(-5,-5);
+
+	});
+});
+

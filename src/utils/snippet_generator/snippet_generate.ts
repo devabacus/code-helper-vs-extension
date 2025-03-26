@@ -77,7 +77,9 @@ function addTabs(codeRow: string): string {
   if (spacesCount === -1) { return ''; } // Если строка пустая, вернуть ""
 
   let tabsCount = Math.floor(spacesCount / 2); // 2 пробела = 1 \t
+  if (tabsCount === 2 || tabsCount === 4) {tabsCount = tabsCount / 2;}; //хз но пока так
   let tabs = '\\t'.repeat(tabsCount); // Генерируем \t
+
   return tabs + codeRow.trim(); // Добавляем отступы и убираем лишние пробелы справа
 }
 

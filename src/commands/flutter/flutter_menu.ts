@@ -14,6 +14,7 @@ import { crBarrelFls } from "./template_project/add_barrel_files";
 import { addApiService } from "./add_api_service/add_api_service";
 import { setMainPage } from "./navigation/set_main_page";
 import { deleteFuture } from "./add_feature/delete_feature";
+import { deletePage } from "./add_feature/delete_page";
 
 
 
@@ -30,6 +31,7 @@ export async function flutterHandler() {
         'Добавить api сервис в текущий файл': () => addApiService(getActiveEditorPath()!),
         'сделать главной': () => setMainPage(getActiveEditorPath()!),
         'удалить feature': () => deleteFuture(getActiveEditorPath()!),
+        'удалить страницу': () => deletePage(getActiveEditorPath()!),
         
         // 'Создать навигацию по конструктору': () => getConstructorData(),
     };

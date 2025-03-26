@@ -4,36 +4,35 @@ import { cap } from "../../../utils/text_work/text_util";
 import { fRoutesConstPth } from "../add_feature/files";
 import { imFRoutesConst } from "../add_feature/files/router_config";
 import { routerPath } from "../template_project/flutter_content";
-import { getPageName, updateRoutingFls } from "../template_project/update_files";
+import { updateRoutingFls } from "../template_project/update_files";
 import { isFileContains, replaceTextInFile } from "../../../utils";
+import { PathData } from "../utils/path_util";
 
 
 
 export async function setMainPage(pagePath: string): Promise<void> {
 
-    // G:\Projects\Flutter\a23\lib\features\auth\presentation\pages\auth_page.dart
-    const featureName = pagePath.split('features')[1].split('\\')[1];
-    const rootPath = pagePath.split('lib')[0];
-    const pageName = getPageName(pagePath);
-    // const pageName = pageFile.split['_'][0]
-    const featureFolderPath = pagePath.split('presentation')[0];
+    const pathData = new PathData(pagePath);
+    const fName = pathData.featureName;
+    const rootPath = pathData.rootPath;
+    const pageName = pathData.pageName;
+    const fPath = pathData.feauturePath;
 
-    const fRoutesConstPath = fRoutesConstPth(featureFolderPath, featureName);
+
+    const fRoutesConstPath = fRoutesConstPth(fPath, fName);
     if(!isFileContains(fRoutesConstPath, pageName)){
         updateRoutingFls(pagePath);
     }
 
-
-
     console.log(pageName);
-    const route_const = `initialLocation: ${cap(featureName)}Routes.${pageName}Path,`;
+    const route_const = `initialLocation: ${cap(fName)}Routes.${pageName}Path,`;
     // if(!isFileContains(fRoutesConstPth))
     // HomeRoutes.homePath,
     const appRouterFilePath = routerPath(rootPath);
 
     // добавляем импорт если нет
-    if (!isFileContains(appRouterFilePath, imFRoutesConst(featureName!))) {
-        insAtFlStart(appRouterFilePath, imFRoutesConst(featureName!));
+    if (!isFileContains(appRouterFilePath, imFRoutesConst(fName!))) {
+        insAtFlStart(appRouterFilePath, imFRoutesConst(fName!));
     }
     replaceTextInFile(appRouterFilePath, /initialLocation:.*/, route_const);
 }

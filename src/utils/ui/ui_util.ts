@@ -53,3 +53,11 @@ export function getCurrentLineText() {
 
 
         
+export async function confirmDialog(askMsg: string, positive: string, negative: string): Promise<boolean> {
+
+    const answer = await window.showInformationMessage(askMsg, positive, negative);
+
+    if (answer) { return true; }
+
+    return false;
+}
