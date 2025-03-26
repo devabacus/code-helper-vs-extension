@@ -18,9 +18,7 @@ dependencies:
   simple_storage:
     path: ../Packages/simple_storage  
   mlogger:
-    git:
-      url: https://github.com/devabacus/mlogger.git
-      ref: v0.0.1
+    path: ../Packages/mlogger
 
   flutter:
     sdk: flutter
