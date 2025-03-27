@@ -18,7 +18,7 @@ export async function setMainPage(pagePath: string): Promise<void> {
         updateRoutingFls(pagePath);
     }
     console.log(p.pageName);
-    const route_const = `initialLocation: ${cap(p.featName)}Routes.${p.pageName}Path,`;
+    const route_const = `initialLocation: ${cap(p.featName)}Routes.${p.unCapPageName}Path,`;
     const appRouterFilePath = routerPath(p.rootPath);
     // добавляем импорт если нет
     if (!isFileContains(appRouterFilePath, imFRoutesConst(p.featName!))) {
