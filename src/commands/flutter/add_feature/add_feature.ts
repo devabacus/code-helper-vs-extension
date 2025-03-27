@@ -5,8 +5,8 @@ import { getUserInputWrapper } from '../../../utils/ui/ui_ask_folder';
 import { fNavServBase, fNavServPath, fNavServProv, fNavServProvPath, fNavServProvGen, fNavServProvGenPth, fRouterPath, routerFFlCont, fRoutesConstPth, fRoutesConsts } from '../add_feature/files';
 
 
-import { fFoldPths } from '../template_project/flutter_content';
 import { updRouterThings } from '../template_project/update_files';
+import { fFoldPths } from './feat_folds_path';
 import { fMainPgCont, fMainPgPth } from './files/feat_main_page_cont';
 
 

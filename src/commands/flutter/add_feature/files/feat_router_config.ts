@@ -43,21 +43,21 @@ export function constrpm(pms: string[], pName: string): string {
   return `return ${capPage}Page(${pmsStr});`;
 }
 
-const getBody = (pms: string[], pName: string): string => {
+const getBody = (pms: string[], unCapPageName: string): string => {
     return `
       ${pmRowsCreater(pms)}
-      ${constrpm(pms, pName)}
+      ${constrpm(pms, unCapPageName)}
     `;
 };
 
-export const fRouterPm = (fName: string, pName: string, pms: string[]) => {
+export const fRouterPm = (fName: string, unCapPageName: string, pms: string[]) => {
   const capF = cap(fName);
   return `
     GoRoute(
-      name: ${capF}Routes.${pName},
-      path: ${capF}Routes.${pName}Path,
+      name: ${capF}Routes.${unCapPageName},
+      path: ${capF}Routes.${unCapPageName}Path,
       builder: (BuildContext context, state) {
-        ${getBody(pms, pName)}
+        ${getBody(pms, unCapPageName)}
       }
   ),
   `;

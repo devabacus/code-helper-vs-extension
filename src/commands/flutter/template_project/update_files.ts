@@ -27,23 +27,29 @@ export function updRouterThings(featureName: string | undefined, rootPath: strin
 
 export async function updateRoutingFls(filePath: string) {
 
-    const p  = new PathData(filePath).data;
     const clsParams: ClsParams[] = parseClsParams(getDocText());
-    updateFFiles(p.featurePath, p.featName, p.pageName, clsParams);
+    updateFFiles(filePath, clsParams);
 
 }
 
-export function updateFFiles(fPath: string, fName: string, pName: string, fields: ClsParams[] = []) {
+export function updateFFiles(filePath: string, fields: ClsParams[] = []) {
+
+    const pathData = new PathData(filePath)
+    const p  = pathData.data;
+
     const names = fields.map((field) => field.name);
-    const fRouterFile = fRouterPath(fPath, fName);
+    const fRouterFile = fRouterPath(p.featurePath, p.featName);
 
-    insertTextAfter(fNavServPath(fPath, fName), 'NavigationService {', fNavServ(fName, pName, fields));
+    // [featureName]_navigation_servece.dart
+    insertTextAfter(fNavServPath(p.featurePath, p.featName), 'NavigationService {', fNavServ(p.featName, p.unCapPageName, fields));
 
-    insertTextAfter(fRouterFile, 'return [', fRouterPm(fName, pName, names));
+    // [featureName]_router_config.dart
+    insertTextAfter(fRouterFile, 'return [', fRouterPm(p.featName, p.unCapPageName, names));
 
-    insertTextAfter(fRoutesConstPth(fPath, fName), 'Routes {', fAddConst(fName, pName, convertParams(names)));
-
-    insAtFlStart(fRouterFile, imPageFRouter(pName));
+    // [featureName]_router_constants.dart
+    insertTextAfter(fRoutesConstPth(p.featurePath, p.featName), 'Routes {', fAddConst(pathData,  convertParams(names)));
+    //import
+    insAtFlStart(fRouterFile, imPageFRouter(p.pageName));
 }
 
 function convertParams(params: string[]): string {

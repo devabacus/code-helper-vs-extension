@@ -1,4 +1,5 @@
 import { cap } from "../../../../utils/text_work/text_util";
+import { PathData } from "../../utils/path_util";
 
 export const fRoutesConstPth = (fPath: string, fName: string) => `${fPath}/presentation/routing/${fName}_routes_constants.dart`;
 
@@ -10,11 +11,11 @@ abstract class ${cap(fName)}Routes {
 }
 `;
 
-export const fAddConst = (fName: string, pName: string, pms: string = '') => {
+export const fAddConst = (p: PathData, pms: string = '') => {
 
   return `
-    static const ${pName} = '${fName}_${pName}';
-    static const ${pName}Path = '/${fName}/${pName}${pms}';
+    static const ${p.unCapPageName} = '${p.featureName}_${p.pageName}';
+    static const ${p.unCapPageName}Path = '/${p.featureName}/${p.pageName}${pms}';
   `;
 };
 
