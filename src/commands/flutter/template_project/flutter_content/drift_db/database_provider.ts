@@ -7,6 +7,7 @@ part 'database_provider.g.dart';
 
 @riverpod
 AppDatabase appDatabase(Ref ref) {
+  ref.keepAlive();
   return AppDatabase();
 }
 `;
