@@ -31,6 +31,7 @@ dependencies:
   
   freezed_annotation: ^3.0.0
   json_annotation: ^4.9.0
+  equatable: ^2.0.7
   
   go_router: ^14.8.1
 
@@ -46,6 +47,7 @@ dependencies:
   
   path_provider: ^2.1.5
   flutter_dotenv: ^5.2.1
+
 
 dev_dependencies:
   flutter_test:
