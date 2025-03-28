@@ -10,6 +10,7 @@ import { pubspec_yaml } from "./flutter_content/files_content/pubspec_yaml";
 import { startDependency } from "./flutter_content/package_pubscpec";
 import { pubGet } from "./flutter_content/terminal_commands";
 import { startAppFix } from "./start_app_fix";
+import { gitignoreCont } from "./flutter_content/files_content/_gitignore";
 
 export async function flutterCreateNewProject(addTemplateFolders?: (fullProjectPath: string) => void): Promise<void> {
 
@@ -28,7 +29,9 @@ export async function flutterCreateNewProject(addTemplateFolders?: (fullProjectP
     const fullProjectPath = path.join(projectPath, projectName);
     // G:\Projects\Flutter\a14\lib\features\home\presentation\pages\home_page.dart
     await executeCommand(create_command, projectPath);
-    await addDependecy(startDependency, fullProjectPath);
+    
+    
+    // await addDependecy(startDependency, fullProjectPath);
 
 
     if (addTemplateFolders) {
@@ -36,7 +39,7 @@ export async function flutterCreateNewProject(addTemplateFolders?: (fullProjectP
     }
     startAppFix(fullProjectPath);
     
-    insertAtFileEnd(path.join(fullProjectPath, '.gitignore'),'.env');
+    insertAtFileEnd(path.join(fullProjectPath, '.gitignore'),gitignoreCont);
     
     const serviceFilesPth = path.join(fullProjectPath, "_service_files");
     await createFolder(serviceFilesPth);
