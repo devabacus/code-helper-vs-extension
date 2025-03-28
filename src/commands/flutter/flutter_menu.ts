@@ -1,7 +1,7 @@
 import path from "path";
 import { window } from "vscode";
 import { executeCommand, writeToFile } from "../../utils";
-import { getActiveEditorPath, getRootWorkspaceFolders } from "../../utils/path_util";
+import { getActiveEditorPath, getLibPath, getRootWorkspaceFolders } from "../../utils/path_util";
 import { addApiService } from "./add_api_service/add_api_service";
 import { addFeatureFolders } from "./add_feature/add_feature";
 import { deleteFuture } from "./add_feature/delete_feature";
@@ -13,6 +13,7 @@ import { mainFile } from "./template_project/flutter_content/files_content/main_
 import { addStartPlugins } from "./template_project/flutter_content/terminal_commands";
 import { flutterCreateNewProject } from "./template_project/flutter_create_project";
 import { updateRoutingFls } from "./template_project/update_files";
+import { crBarrelFls } from "./template_project/add_barrel_files";
 
 
 
@@ -30,6 +31,7 @@ export async function flutterHandler() {
         'сделать главной': () => setMainPage(getActiveEditorPath()!),
         'удалить feature': () => deleteFuture(getActiveEditorPath()!),
         'удалить страницу': () => deletePage(getActiveEditorPath()!),
+        'Обновить barrel': () => crBarrelFls(getLibPath()),
 
         // 'Создать навигацию по конструктору': () => getConstructorData(),
     };

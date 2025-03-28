@@ -22,10 +22,11 @@ import { def_headers_interceptor } from "./add_chopper/files/interceptors/header
 export const baseTemplateFolders = [
     'core/routing',
     'core/config',
-    'core/database',
+    'core/database/local/provider',
+    'core/database/local/tables',
+    'core/database/local/daos',
     'core/providers',
     'core/services',
-    'core/services/interceptors',
     'core/services/interceptors/error_interceptor',
     'core/services/api',
     'core/theme',
