@@ -1,7 +1,8 @@
 export const fFoldPths = [
     'data/models',
     'data/repositories',
-    'data/datasources',
+    'data/datasources/local/dao',
+    'data/datasources/local/tables',
     'domain/entities',
     'domain/usecases',
     'presentation/pages',
