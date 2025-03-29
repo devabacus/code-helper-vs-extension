@@ -34,7 +34,8 @@ export async function updateRoutingFls(filePath: string) {
 
 export function updateFFiles(filePath: string, fields: ClsParams[] = []) {
 
-    const pathData = new PathData(filePath)
+    const pathData = new PathData(filePath);
+    
     const p  = pathData.data;
 
     const names = fields.map((field) => field.name);

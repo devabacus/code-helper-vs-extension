@@ -52,6 +52,7 @@ export class PathData {
     get feauturePath(): string {
         const _featurePath = this.filePath.split('presentation')[0];
         return path.resolve(_featurePath);
+        // TODO не правильно опеределяет путь если файл не в presentation folder
     }
 
     get pageName(): string {

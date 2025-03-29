@@ -31,7 +31,7 @@ suite('parser drift test', () => {
             {name:"id", type: "Int"}, 
             {name:"title", type: "Text"},
             {name:"description", type: "Text"}, 
-            {name:"age", type: "In1t"}
+            {name:"age", type: "Int"}
         
         ]);
 

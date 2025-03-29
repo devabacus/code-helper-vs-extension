@@ -14,6 +14,7 @@ import { addStartPlugins } from "./template_project/flutter_content/terminal_com
 import { flutterCreateNewProject } from "./template_project/flutter_create_project";
 import { updateRoutingFls } from "./template_project/update_files";
 import { crBarrelFls } from "./template_project/add_barrel_files";
+import { createDataFiles } from "./data_routine/drift_class_parser";
 
 
 
@@ -32,6 +33,7 @@ export async function flutterHandler() {
         'удалить feature': () => deleteFuture(getActiveEditorPath()!),
         'удалить страницу': () => deletePage(getActiveEditorPath()!),
         'Обновить barrel': () => crBarrelFls(getLibPath()),
+        'Создать файлы данных': () => createDataFiles(),
 
         // 'Создать навигацию по конструктору': () => getConstructorData(),
     };
