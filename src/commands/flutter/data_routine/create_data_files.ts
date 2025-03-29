@@ -17,6 +17,9 @@ import { useCaseCreateCont, useCaseCreatePath } from "./files/usecases/use_case_
 import path from "path";
 import { useCaseDeleteCont, useCaseDeletePath } from "./files/usecases/use_case_delete";
 import { build_runner } from "../template_project/flutter_content/terminal_commands";
+import { useCaseUpdateCont, useCaseUpdatePath } from "./files/usecases/use_case_update";
+import { useCaseGetByIdCont, useCaseGetByIdPath } from "./files/usecases/use_case_get_by_id";
+import { useCaseGetAllCont, useCaseGetAllPath } from "./files/usecases/use_case_get_all";
 
 
 export async function createDataFiles() {
@@ -32,52 +35,67 @@ export async function createDataFiles() {
 
 
     const appDatabaseP = appDatabasePath(pathData.rootPath);
-    insAtFlStart(appDatabaseP, imAppDatabase(pathData.featName, driftClassName));
     const appDatabaseCont = fs.readFileSync(appDatabaseP, { encoding: "utf-8" });
     const isFirstTable = appDatabaseCont.match(/tables: \[\s*\]/);
     const _sep = isFirstTable?'':',';
-
-    insertTextAfter(appDatabaseP, 'tables: [', `${cap(driftClassName)}Table${_sep}`);
     
+    // await insAtFlStart(appDatabaseP, imAppDatabase(pathData.featName, driftClassName));
+    // await insertTextAfter(appDatabaseP, 'tables: [', `${cap(driftClassName)}Table${_sep}`);
+    // TODO  need to exchange method with await
     await executeCommand(build_runner, pathData.rootPath);
-
+    
 
 
     const domainFilePath = domainRepoPath(featurePath, driftClassName);
     const domainFileContent = domainRepoCont(driftClassName);
-    createFile(domainFilePath, domainFileContent);
+    await createFile(domainFilePath, domainFileContent);
 
     const entityPath = domainEntityPath(featurePath, driftClassName);
     const entityContent = domainEntityCont(parser);
-    createFile(entityPath, entityContent);
+    await createFile(entityPath, entityContent);
 
     const modelPath = dataModelPath(featurePath, driftClassName);
     const modelContent = dataModelCont(driftClassName, fields.fieldsRequired);
-    createFile(modelPath, modelContent);
+    await createFile(modelPath, modelContent);
 
     const _daoPath = daoPath(featurePath, driftClassName);
     const daoContent = daoLocalContent(driftClassName);
-    createFile(_daoPath, daoContent);
+    await createFile(_daoPath, daoContent);
 
     
     const localPath = localDataSourcePath(featurePath, driftClassName);
     const localContent = localDataSourceCont(parser);
-    createFile(localPath, localContent);
+    await createFile(localPath, localContent);
 
     const repoImplPath = repositoryImplPath(featurePath, driftClassName);
     const repoImplCont = repositoryImplContent(parser);
-    createFile(repoImplPath, repoImplCont);
+    await createFile(repoImplPath, repoImplCont);
 
     const _useCaseCreatePath = useCaseCreatePath(featurePath, driftClassName);
-    createFolder(path.dirname(_useCaseCreatePath));
+    await createFolder(path.dirname(_useCaseCreatePath));
     
     const _useCaseCreateCont = useCaseCreateCont(driftClassName);
-    createFile(_useCaseCreatePath, _useCaseCreateCont);
+    await createFile(_useCaseCreatePath, _useCaseCreateCont);
     
     const _useCaseDeleteCont = useCaseDeleteCont(driftClassName);
     const _useCaseDeletePath = useCaseDeletePath(featurePath, driftClassName);
-    createFile(_useCaseDeletePath, _useCaseDeleteCont);
+    await createFile(_useCaseDeletePath, _useCaseDeleteCont);
 
+
+    const _useCaseUpdateCont = useCaseUpdateCont(driftClassName);
+    const _useCaseUpdatePath = useCaseUpdatePath(featurePath, driftClassName);
+    await createFile(_useCaseUpdatePath, _useCaseUpdateCont);
+
+
+    const _useCaseGetByIdCont = useCaseGetByIdCont(driftClassName);
+    const _useCaseGetByIdPath = useCaseGetByIdPath(featurePath, driftClassName);
+    await createFile(_useCaseGetByIdPath, _useCaseGetByIdCont);
+
+    const _useCaseGetAllCont = useCaseGetAllCont(driftClassName);
+    const _useCaseGetAllPath = useCaseGetAllPath(featurePath, driftClassName);
+    await createFile(_useCaseGetAllPath, _useCaseGetAllCont);
+    
+    await executeCommand(build_runner, pathData.rootPath);
 }
 
 

@@ -10,6 +10,12 @@ import { DriftClassParser } from "../../commands/flutter/data_routine/drift_clas
 import { tableCategory } from "./file_example/drift_class_examples";
 import { useCaseDeleteExample } from "./file_example/use_cases/use_case_delete";
 import { useCaseDeleteCont } from "../../commands/flutter/data_routine/files/usecases/use_case_delete";
+import { useCaseUpdateExample } from "./file_example/use_cases/use_case_update";
+import { useCaseUpdateCont } from "../../commands/flutter/data_routine/files/usecases/use_case_update";
+import { useCaseGetByIdExample } from "./file_example/use_cases/use_case_get_by_id";
+import { useCaseGetByIdCont } from "../../commands/flutter/data_routine/files/usecases/use_case_get_by_id";
+import { useCaseGetAllCont } from "../../commands/flutter/data_routine/files/usecases/use_case_get_all";
+import { useCaseGetAllExample } from "./file_example/use_cases/use_case_get_all";
 
 suite('file generate test', () => {
 
@@ -26,7 +32,7 @@ suite('file generate test', () => {
 
     });
 
-});
+});       
 
 
 suite('use cases', () => {
@@ -38,6 +44,21 @@ suite('use cases', () => {
 
     test('delete', () => {
         assert.strictEqual(useCaseDeleteExample, useCaseDeleteCont('category'));
+
+    });
+
+    test('update', () => {
+        assert.strictEqual(useCaseUpdateExample, useCaseUpdateCont('category'));
+
+    });
+
+    test('getById', () => {
+        assert.strictEqual(useCaseGetByIdExample, useCaseGetByIdCont('category'));
+
+    });
+
+    test('getAll', () => {
+        assert.strictEqual(useCaseGetAllExample, useCaseGetAllCont('category'));
 
     });
 
