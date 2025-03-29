@@ -15,6 +15,7 @@ import * as fs from 'fs';
 import { repositoryImplContent, repositoryImplPath } from "./files/repository_impl_dart";
 import { useCaseCreateCont, useCaseCreatePath } from "./files/usecases/use_case_create";
 import path from "path";
+import { useCaseDeleteCont, useCaseDeletePath } from "./files/usecases/use_case_delete";
 
 
 export async function createDataFiles() {
@@ -45,14 +46,15 @@ export async function createDataFiles() {
     createFile(_daoPath, daoContent);
 
     const appDatabaseP = appDatabasePath(pathData.rootPath);
-
     insAtFlStart(appDatabaseP, imAppDatabase(pathData.featName, driftClassName));
-
     const appDatabaseCont = fs.readFileSync(appDatabaseP, { encoding: "utf-8" });
     const isFirstTable = appDatabaseCont.match(/tables: \[\s*\]/);
     const _sep = isFirstTable?'':',';
 
     insertTextAfter(appDatabaseP, 'tables: [', `${cap(driftClassName)}Table${_sep}`);
+
+
+
 
     const localPath = localDataSourcePath(featurePath, driftClassName);
     const localContent = localDataSourceCont(parser);
@@ -63,12 +65,15 @@ export async function createDataFiles() {
     createFile(repoImplPath, repoImplCont);
 
     const _useCaseCreatePath = useCaseCreatePath(featurePath, driftClassName);
-    const _useCaseCreateCont = useCaseCreateCont(driftClassName);
-    
     createFolder(path.dirname(_useCaseCreatePath));
-
+    
+    const _useCaseCreateCont = useCaseCreateCont(driftClassName);
     createFile(_useCaseCreatePath, _useCaseCreateCont);
     
+    const _useCaseDeleteCont = useCaseDeleteCont(driftClassName);
+    const _useCaseDeletePath = useCaseDeletePath(featurePath, driftClassName);
+    createFile(_useCaseDeletePath, _useCaseDeleteCont);
+
 }
 
 

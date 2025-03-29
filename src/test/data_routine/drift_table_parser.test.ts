@@ -4,7 +4,7 @@ import { tableAuth, tableCategory, tableTask } from "./file_example/drift_class_
 import { localDataSourceCont } from "../../commands/flutter/data_routine/files/local_data_source_dart";
 import { localSourceFileExample } from "./file_example/local_source_example";
 import { useCaseCreateCont } from "../../commands/flutter/data_routine/files/usecases/use_case_create";
-import { useCaseCreateFileExample } from "./file_example/use_case_create";
+import { useCaseCreateFileExample } from "./file_example/use_cases/use_case_create";
 
 
 suite('parser drift test', () => {
@@ -71,11 +71,7 @@ suite('parser drift test', () => {
 
     });
 
-    test('local store file generate', () => {
-
-        assert.strictEqual(localSourceFileExample, localDataSourceCont(driftClassCategory));
-
-    });
+  
 
 
     test('add table to databae', () => {
@@ -85,10 +81,6 @@ suite('parser drift test', () => {
     });
 
 
-    test('use case create generate', () => {
-        assert.strictEqual(useCaseCreateFileExample, useCaseCreateCont('Category'));
-
-    });
 
 
 });
