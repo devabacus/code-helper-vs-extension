@@ -15,7 +15,7 @@ export class DriftClassParser {
     constructor(driftClass: string) {
         this.driftClass = driftClass;
     }
-    get tableName(): string {
+    get driftClassName(): string {
         return this.driftClass.match(/\s(\w+)Table/)![1];
     }
 
@@ -65,6 +65,26 @@ export class DriftClassParser {
         return this.fieldsNameList.join(',');
     }
 
+    private fieldsParamList(instance: string): string[] {
+        return this.fieldsNameList.map((item) => `${item}: ${instance}.${item}`);
+    }
+
+    get paramsInstDrift(): string {
+        return this.fieldsParamList(unCap(this.driftClassName)).join(', ');
+    }
+
+    get paramsInstModel(): string {
+        return this.fieldsParamList(unCap('model')).join(', ');
+    }
+
+    paramsWithOutId(row: string): string {
+        return row.replace(/.*id,\s?/, '');
+    }
+
+    get paramWrapValue(): string {
+        return this.fieldsNameList.map((item) => 
+            `${item}: Value(${unCap(this.driftClassName)}.${item})`).join(', ');
+    }
 
     private driftTypeConverter(dType: string): string {
         if (dType === 'Text') {

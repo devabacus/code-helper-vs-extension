@@ -10,14 +10,15 @@ import { daoLocalContent, daoPath } from "./files/data_local_dao_dart";
 import { dataModelCont, dataModelPath } from "./files/data_model_dart";
 import { domainEntityCont, domainEntityPath } from "./files/domain_entity_dart";
 import { domainRepoCont, domainRepoPath } from "./files/domain_repository_dart";
-
+import { localDataSourceCont, localDataSourcePath } from "./files/local_data_source_dart";
+import * as fs from 'fs';
 
 
 export async function createDataFiles() {
     const driftClass = getDocText();
     const parser = new DriftClassParser(driftClass);
     const fields = parser;
-    const driftClassName = unCap(parser.tableName);
+    const driftClassName = unCap(parser.driftClassName);
 
     const currentFilePath = getActiveEditorPath()!;
     const pathData = new PathData(currentFilePath).data;
@@ -36,25 +37,24 @@ export async function createDataFiles() {
     const modelContent = dataModelCont(driftClassName, fields.fieldsRequired);
     createFile(modelPath, modelContent);
 
-    const dPath = daoPath(featurePath, driftClassName);
+    const _daoPath = daoPath(featurePath, driftClassName);
     const daoContent = daoLocalContent(driftClassName);
-    createFile(dPath, daoContent);
+    createFile(_daoPath, daoContent);
 
     const appDatabaseP = appDatabasePath(pathData.rootPath);
 
-    insAtFlStart(appDatabaseP, imAppDatabase(pathData.featName,driftClassName));
-    insertTextAfter(appDatabaseP, 'tables: [', `${cap(driftClassName)}Table,`);
+    insAtFlStart(appDatabaseP, imAppDatabase(pathData.featName, driftClassName));
 
-    console.log(fields, driftClassName);
+    const appDatabaseCont = fs.readFileSync(appDatabaseP, { encoding: "utf-8" });
+    const isFirstTable = appDatabaseCont.match(/tables: \[\s*\]/);
+    const _sep = isFirstTable?'':',';
 
+    insertTextAfter(appDatabaseP, 'tables: [', `${cap(driftClassName)}Table${_sep}`);
+
+    const localPath = localDataSourcePath(featurePath, driftClassName);
+    const localContent = localDataSourceCont(parser);
+    createFile(localPath, localContent);
 }
-
-
-
-
-
-
-
 
 class DataClassCreated {
     private parser: DriftClassParser;

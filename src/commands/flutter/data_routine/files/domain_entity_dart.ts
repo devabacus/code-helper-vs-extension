@@ -10,15 +10,16 @@ export const domainEntityCont = (parser: DriftClassParser) => {
     const fieldsClass = parser.fieldsClass;
     const fieldsReqThis = parser.fieldsReqThis;
     const fieldsComma = parser.fiedsComma;
+    const D = parser.driftClassName
 
     
 return `
 import 'package:equatable/equatable.dart';
 
-class CategoryEntity extends Equatable {
+class ${D}Entity extends Equatable {
   ${fieldsClass}
 
-  const CategoryEntity({
+  const ${D}Entity({
   ${fieldsReqThis}
   });
 
