@@ -3,7 +3,7 @@ import { DriftClassParser, Field } from "../drift_class_parser";
 
 
 
-export const domainEntityPath = (fPath: string, driftClass: string) => path.join(fPath, "domain", "entities", `${driftClass}_entity.dart`);
+export const domainEntityPath = (fPath: string, driftClass: string) => path.join(fPath, "domain", "entities", `${driftClass}.dart`);
 
 
 export const domainEntityCont = (parser: DriftClassParser) => {

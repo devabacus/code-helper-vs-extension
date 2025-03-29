@@ -1,8 +1,10 @@
 import assert from "assert";
 import { DriftClassParser } from "../../commands/flutter/data_routine/drift_class_parser";
-import { tableAuth, tableCategory, tableTask } from "./drift_class_examples";
+import { tableAuth, tableCategory, tableTask } from "./file_example/drift_class_examples";
 import { localDataSourceCont } from "../../commands/flutter/data_routine/files/local_data_source_dart";
-import { localSourceFileExample } from "./local_source_example";
+import { localSourceFileExample } from "./file_example/local_source_example";
+import { useCaseCreateCont } from "../../commands/flutter/data_routine/files/usecases/use_case_create";
+import { useCaseCreateFileExample } from "./file_example/use_case_create";
 
 
 suite('parser drift test', () => {
@@ -53,7 +55,7 @@ suite('parser drift test', () => {
 
     test('list without id', () => {
         const paramRows1 = `id: model.id, title: model.title`;
-        
+
         const paramRows = `title: model.title`;
 
         assert.strictEqual(driftClassCategory.paramsWithOutId(paramRows1), paramRows);
@@ -63,15 +65,15 @@ suite('parser drift test', () => {
     test('fields Value wrapper', () => {
         const result = `id: Value(category.id), title: Value(category.title)`;
         const result2 = `id: Value(task.id), title: Value(task.title), description: Value(task.description), age: Value(task.age)`;
-        
+
         assert.strictEqual(driftClassCategory.paramWrapValue, result);
         assert.strictEqual(driftClassTask.paramWrapValue, result2);
 
     });
 
     test('local store file generate', () => {
-        
-        assert.strictEqual(localDataSourceCont(driftClassCategory), localSourceFileExample);
+
+        assert.strictEqual(localSourceFileExample, localDataSourceCont(driftClassCategory));
 
     });
 
@@ -82,6 +84,12 @@ suite('parser drift test', () => {
         // assert.strictEqual(driftClassCategory.addTableToDb, [])
     });
 
+
+    test('use case create generate', () => {
+        assert.strictEqual(useCaseCreateFileExample, useCaseCreateCont('Category'));
+
+    });
+
+
 });
 
-     

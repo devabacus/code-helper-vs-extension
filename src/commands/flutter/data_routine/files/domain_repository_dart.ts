@@ -14,7 +14,7 @@ export const domainRepoCont = (driftClass: string) => {
     const D = cap(d);  
 
 return `
-import '../entities/${d}_entity.dart';
+import '../entities/${d}.dart';
 
 abstract class ${D}Repository {
   Future<List<${D}Entity>> get${Ds}();

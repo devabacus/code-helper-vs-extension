@@ -9,18 +9,15 @@ export const repositoryImplContent = (parser: DriftClassParser) => {
     const d = unCap(driftClassName);
     const D = driftClassName;
     const Ds = pluralConvert(D);
-    const ds = pluralConvert(d);
     const paramsDrift = parser.paramsInstDrift;
     const paramsModel = parser.paramsInstModel;
-    const paramsDriftWithOutId = parser.paramsWithOutId(paramsDrift);
-    const valueWrap = parser.paramWrapValue;
 
 
 return `
 import '../../data/datasources/local/sources/${d}_local_data_source.dart';
 
 import '../../domain/repositories/${d}_repository.dart';
-import '../../domain/entities/${d}_entity.dart';
+import '../../domain/entities/${d}.dart';
 import '../models/${d}_model.dart';
 
 class ${D}RepositoryImpl implements ${D}Repository {

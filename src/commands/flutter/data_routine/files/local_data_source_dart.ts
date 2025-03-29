@@ -58,7 +58,6 @@ class ${D}LocalDataSource {
     }
 
 }
-
 `;
 };
 // getCategories: id: ${d}.id, title: ${d}.title

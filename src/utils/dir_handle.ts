@@ -25,7 +25,7 @@ export async function createFolder(path: string) {
 
 
 export async function createFile(path: string, content: string) {
-
+// TODO if path doesn't exist it's need to create folders
     await fs.promises.writeFile(path, content, 'utf8');
 
 }
