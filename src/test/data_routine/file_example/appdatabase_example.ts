@@ -4,8 +4,6 @@ export const appDatabaseExampleFileEmpty = `
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 
-import '../../../features/tasks/data/datasources/local/tables/category_table.dart';
-
 part 'database.g.dart';
 
 @DriftDatabase(tables: [])
@@ -33,7 +31,7 @@ MigrationStrategy get migration => MigrationStrategy(
 
   static QueryExecutor _openConnection() {
     return driftDatabase(
-      name: 'dataroutine3',
+      name: 'data_routing3',
     );
   }
 }
@@ -44,8 +42,6 @@ MigrationStrategy get migration => MigrationStrategy(
 export const appDatabaseExampleFileOneTable = `
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
-
-import '../../../features/tasks/data/datasources/local/tables/category_table.dart';
 
 part 'database.g.dart';
 
@@ -74,7 +70,7 @@ MigrationStrategy get migration => MigrationStrategy(
 
   static QueryExecutor _openConnection() {
     return driftDatabase(
-      name: 'dataroutine3',
+      name: 'data_routing3',
     );
   }
 }
@@ -84,11 +80,9 @@ export const appDatabaseExampleFileTwoTable = `
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
 
-import '../../../features/tasks/data/datasources/local/tables/category_table.dart';
-
 part 'database.g.dart';
 
-@DriftDatabase(tables: [CategoryTable,TagTable])
+@DriftDatabase(tables: [CategoryTable, TagTable])
 class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? excutor]) : super(excutor ?? _openConnection());
 
@@ -113,7 +107,7 @@ MigrationStrategy get migration => MigrationStrategy(
 
   static QueryExecutor _openConnection() {
     return driftDatabase(
-      name: 'dataroutine3',
+      name: 'data_routing3',
     );
   }
 }

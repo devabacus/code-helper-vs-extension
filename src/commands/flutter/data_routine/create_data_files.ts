@@ -1,7 +1,7 @@
 import { createFile, createFolder, executeCommand } from "../../../utils";
 import { getActiveEditorPath } from "../../../utils/path_util";
 import { insAtFlStart, insertTextAfter } from "../../../utils/text_work/text_insert/basic-insertion";
-import { cap, unCap } from "../../../utils/text_work/text_util";
+import { cap, textGroupReplacer, unCap } from "../../../utils/text_work/text_util";
 import { getDocText } from "../../../utils/ui/ui_util";
 import { PathData } from "../utils/path_util";
 import { DriftClassParser } from "./drift_class_parser";
@@ -35,67 +35,73 @@ export async function createDataFiles() {
 
 
     const appDatabaseP = appDatabasePath(pathData.rootPath);
-    const appDatabaseCont = fs.readFileSync(appDatabaseP, { encoding: "utf-8" });
-    const isFirstTable = appDatabaseCont.match(/tables: \[\s*\]/);
-    const _sep = isFirstTable?'':',';
+    // const appDatabaseCont = fs.readFileSync(appDatabaseP, { encoding: "utf-8" });
+    // const isFirstTable = appDatabaseCont.match(/tables: \[\s*\]/);
+    // const _sep = isFirstTable?'':',';
     
+
+    // /tables: \[(.*)\]/g
+    const content = fs.readFileSync(appDatabaseP, { encoding: "utf-8" });
+    textGroupReplacer(content, /tables: \[(.*)\]/g, `${cap(driftClassName)}Table`);
+
+
     // await insAtFlStart(appDatabaseP, imAppDatabase(pathData.featName, driftClassName));
     // await insertTextAfter(appDatabaseP, 'tables: [', `${cap(driftClassName)}Table${_sep}`);
     // TODO  need to exchange method with await
-    await executeCommand(build_runner, pathData.rootPath);
+    // await executeCommand(build_runner, pathData.rootPath);
     
 
 
-    const domainFilePath = domainRepoPath(featurePath, driftClassName);
-    const domainFileContent = domainRepoCont(driftClassName);
-    await createFile(domainFilePath, domainFileContent);
+    // const domainFilePath = domainRepoPath(featurePath, driftClassName);
+    // const domainFileContent = domainRepoCont(driftClassName);
+    // await createFile(domainFilePath, domainFileContent);
 
-    const entityPath = domainEntityPath(featurePath, driftClassName);
-    const entityContent = domainEntityCont(parser);
-    await createFile(entityPath, entityContent);
+    // const entityPath = domainEntityPath(featurePath, driftClassName);
+    // const entityContent = domainEntityCont(parser);
+    // await createFile(entityPath, entityContent);
 
-    const modelPath = dataModelPath(featurePath, driftClassName);
-    const modelContent = dataModelCont(driftClassName, fields.fieldsRequired);
-    await createFile(modelPath, modelContent);
+    // const modelPath = dataModelPath(featurePath, driftClassName);
+    // const modelContent = dataModelCont(driftClassName, fields.fieldsRequired);
+    // await createFile(modelPath, modelContent);
 
-    const _daoPath = daoPath(featurePath, driftClassName);
-    const daoContent = daoLocalContent(driftClassName);
-    await createFile(_daoPath, daoContent);
+    // const _daoPath = daoPath(featurePath, driftClassName);
+    // const daoContent = daoLocalContent(driftClassName);
+    // await createFile(_daoPath, daoContent);
 
     
-    const localPath = localDataSourcePath(featurePath, driftClassName);
-    const localContent = localDataSourceCont(parser);
-    await createFile(localPath, localContent);
+    // const localPath = localDataSourcePath(featurePath, driftClassName);
+    // const localContent = localDataSourceCont(parser);
+    // await createFile(localPath, localContent);
 
-    const repoImplPath = repositoryImplPath(featurePath, driftClassName);
-    const repoImplCont = repositoryImplContent(parser);
-    await createFile(repoImplPath, repoImplCont);
+    // const repoImplPath = repositoryImplPath(featurePath, driftClassName);
+    // const repoImplCont = repositoryImplContent(parser);
+    // await createFile(repoImplPath, repoImplCont);
 
-    const _useCaseCreatePath = useCaseCreatePath(featurePath, driftClassName);
-    await createFolder(path.dirname(_useCaseCreatePath));
+    // const _useCaseCreatePath = useCaseCreatePath(featurePath, driftClassName);
+    // await createFolder(path.dirname(_useCaseCreatePath));
     
-    const _useCaseCreateCont = useCaseCreateCont(driftClassName);
-    await createFile(_useCaseCreatePath, _useCaseCreateCont);
+    // const _useCaseCreateCont = useCaseCreateCont(driftClassName);
+    // await createFile(_useCaseCreatePath, _useCaseCreateCont);
     
-    const _useCaseDeleteCont = useCaseDeleteCont(driftClassName);
-    const _useCaseDeletePath = useCaseDeletePath(featurePath, driftClassName);
-    await createFile(_useCaseDeletePath, _useCaseDeleteCont);
+    // const _useCaseDeleteCont = useCaseDeleteCont(driftClassName);
+    // const _useCaseDeletePath = useCaseDeletePath(featurePath, driftClassName);
+    // await createFile(_useCaseDeletePath, _useCaseDeleteCont);
 
 
-    const _useCaseUpdateCont = useCaseUpdateCont(driftClassName);
-    const _useCaseUpdatePath = useCaseUpdatePath(featurePath, driftClassName);
-    await createFile(_useCaseUpdatePath, _useCaseUpdateCont);
+    // const _useCaseUpdateCont = useCaseUpdateCont(driftClassName);
+    // const _useCaseUpdatePath = useCaseUpdatePath(featurePath, driftClassName);
+    // await createFile(_useCaseUpdatePath, _useCaseUpdateCont);
 
 
-    const _useCaseGetByIdCont = useCaseGetByIdCont(driftClassName);
-    const _useCaseGetByIdPath = useCaseGetByIdPath(featurePath, driftClassName);
-    await createFile(_useCaseGetByIdPath, _useCaseGetByIdCont);
+    // const _useCaseGetByIdCont = useCaseGetByIdCont(driftClassName);
+    // const _useCaseGetByIdPath = useCaseGetByIdPath(featurePath, driftClassName);
+    // await createFile(_useCaseGetByIdPath, _useCaseGetByIdCont);
 
-    const _useCaseGetAllCont = useCaseGetAllCont(driftClassName);
-    const _useCaseGetAllPath = useCaseGetAllPath(featurePath, driftClassName);
-    await createFile(_useCaseGetAllPath, _useCaseGetAllCont);
+    // const _useCaseGetAllCont = useCaseGetAllCont(driftClassName);
+    // const _useCaseGetAllPath = useCaseGetAllPath(featurePath, driftClassName);
+    // await createFile(_useCaseGetAllPath, _useCaseGetAllCont);
     
-    await executeCommand(build_runner, pathData.rootPath);
+    // await executeCommand(build_runner, pathData.rootPath);
 }
 
 

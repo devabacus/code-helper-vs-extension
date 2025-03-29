@@ -15,7 +15,13 @@ export function unCap(str: string): string {
     return str.charAt(0).toLowerCase() + str.slice(1);
 }
 
-export function pluralConvert(str: string):string {
+export function pluralConvert(str: string): string {
     // return str.replace(/(.*)y$/, '$1ies');
     return str.replace(/(.*)([^aeiou])y$/, '$1$2ies');
 }
+
+
+export const textGroupReplacer = (content: string, regex: RegExp, newTableName: string) => content.replace(regex, (match, p1) => {
+    const trimmedCont = p1.trim();
+    return `tables: [${trimmedCont ? trimmedCont + ', ' : ''}${newTableName}]`;
+});
