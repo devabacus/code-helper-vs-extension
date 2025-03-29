@@ -1,7 +1,7 @@
 import {
     window
 } from "vscode";
-import { exec } from "child_process";
+import { exec, execSync } from "child_process";
 
 export async function writeToTerminal (command="whoami"){
     const terminal = window.createTerminal('My Terminal');
@@ -18,7 +18,7 @@ export async function terminalCommands(commands: string[], path: string):Promise
     }
 }
 
-export function executeCommand(command: string, cwd: string): Promise<void> {
+export async function executeCommand(command: string, cwd: string): Promise<void> {
     return new Promise((resolve, reject) => {
         exec(command, { cwd }, (error, stdout, stderr) => {
             if (error) {
@@ -31,4 +31,16 @@ export function executeCommand(command: string, cwd: string): Promise<void> {
     });
 }
 
+export function executeCommandSync(command: string, cwd: string): void {
+        const execSync = require('child_process').execSync;
+        execSync(command, { cwd, stdio: 'inherit' });
+}
 
+// import { window } from 'vscode';
+
+export async function executeInTerminal(command: string): Promise<void> {
+    const terminal = window.createTerminal('Build Runner');
+    terminal.show();
+    terminal.sendText(command);
+
+}

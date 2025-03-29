@@ -10,7 +10,8 @@ export const domainEntityCont = (parser: DriftClassParser) => {
     const fieldsClass = parser.fieldsClass;
     const fieldsReqThis = parser.fieldsReqThis;
     const fieldsComma = parser.fiedsComma;
-    const D = parser.driftClassName
+    const D = parser.driftClassName;
+    
 
     
 return `
