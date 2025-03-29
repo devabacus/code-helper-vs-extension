@@ -14,7 +14,7 @@ export const domainEntityCont = (parser: DriftClassParser) => {
 
     
 return `
-import 'package:equatable/equatable.dart';
+import 'package:equatable/equatable.dart';          
 
 class ${D}Entity extends Equatable {
   ${fieldsClass}

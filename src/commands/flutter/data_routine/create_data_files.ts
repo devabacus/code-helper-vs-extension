@@ -12,6 +12,7 @@ import { domainEntityCont, domainEntityPath } from "./files/domain_entity_dart";
 import { domainRepoCont, domainRepoPath } from "./files/domain_repository_dart";
 import { localDataSourceCont, localDataSourcePath } from "./files/local_data_source_dart";
 import * as fs from 'fs';
+import { repositoryImplContent, repositoryImplPath } from "./files/repository_impl_dart";
 
 
 export async function createDataFiles() {
@@ -54,7 +55,19 @@ export async function createDataFiles() {
     const localPath = localDataSourcePath(featurePath, driftClassName);
     const localContent = localDataSourceCont(parser);
     createFile(localPath, localContent);
+
+    const repoImplPath = repositoryImplPath(featurePath, driftClassName);
+    const repoImplCont = repositoryImplContent(parser);
+    createFile(repoImplPath, repoImplCont);
 }
+
+
+
+
+
+
+
+
 
 class DataClassCreated {
     private parser: DriftClassParser;
