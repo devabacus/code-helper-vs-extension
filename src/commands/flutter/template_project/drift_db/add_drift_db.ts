@@ -25,8 +25,8 @@ export async function addDriftDB(rootPath: string): Promise<void> {
 
     // await createFile(database_dart_path, database_cont(path.basename(rootPath)));
     // await createFile(database_g_dart_path, database_g_cont()); // не срабатывает генерация с ним при первом запуске
-    await createFile(database_provider_path, dbProvider);
-    await createFile(database_provider_g_path, db_provider_g);
+    // await createFile(database_provider_path, dbProvider);
+    // await createFile(database_provider_g_path, db_provider_g);
     await createFile(databae_build_yaml_path, build_yaml);
 }
 
