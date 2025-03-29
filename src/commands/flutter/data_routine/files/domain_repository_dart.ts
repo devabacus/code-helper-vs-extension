@@ -1,7 +1,7 @@
 // G:\Projects\Flutter\dataroutine3\lib\features\tasks\domain\repositories\category_repository.dart
 
 import path from "path";
-import { cap } from "../../../../utils/text_work/text_util";
+import { cap, pluralConvert } from "../../../../utils/text_work/text_util";
 
     
 
@@ -25,12 +25,4 @@ abstract class ${D}Repository {
 }
 `;};
 
-
-
-
-
-export function pluralConvert(str: string):string {
-    // return str.replace(/(.*)y$/, '$1ies');
-    return str.replace(/(.*)([^aeiou])y$/, '$1$2ies');
-}
 

@@ -1,45 +1,9 @@
-import { createFile } from "../../../utils";
-import { getActiveEditorPath } from "../../../utils/path_util";
 import { unCap } from "../../../utils/text_work/text_util";
-import { getDocText } from "../../../utils/ui/ui_util";
-import { PathData } from "../utils/path_util";
-import { domainRepoCont, domainRepoPath } from "./files/domain_repository_dart";
 
 
-
-export async function createDataFiles() {
-    const driftClass = getDocText();
-    const pasrser = new DriftClassParser(driftClass);
-    const fields = pasrser.fields;
-    const driftClassName = unCap(pasrser.tableName);
-
-    // const pathData = new PathData().data;
-    const currentFilePath = getActiveEditorPath()!;
-    // return this.filePath.split('features')[1].split('\\')[1];
-    const featurePath = currentFilePath.split(/\Wdata\W/)[0];
-
-
-
-    const domainFilePath = domainRepoPath(featurePath, driftClassName);
-    const domainFileContent = domainRepoCont(driftClassName);
-
-    createFile(domainFilePath, domainFileContent);
-    console.log(fields, driftClassName);
-
-
-
-
-}
-
-class DataClassCreated {
-    private parser: DriftClassParser;
-
-    constructor(parser: DriftClassParser){
-        this.parser = parser;
-    }
-
-
-
+export interface Field {
+    type: string,
+    name: string
 }
 
 
@@ -50,26 +14,66 @@ export class DriftClassParser {
 
     constructor(driftClass: string) {
         this.driftClass = driftClass;
-
     }
-
-
     get tableName(): string {
         return this.driftClass.match(/\s(\w+)Table/)![1];
     }
 
-    get fields(): any[] {
+    get fields(): Field[] {
         const fieldsRegex = /(\w+)Column get (\w+)/g;
-        const fields = [];
+        const fields: Field[] = [];
         let fieldMatch;
         while ((fieldMatch = fieldsRegex.exec(this.driftClass)) !== null) {
+            const fieldType = this.driftTypeConverter(fieldMatch[1]);
+
             fields.push({
-                type: fieldMatch[1], // тип колонки (Int, Text и т.д.)
+                type: fieldType, // тип колонки (Int, Text и т.д.)
                 name: fieldMatch[2]  // имя колонки (id, title и т.д.)
             });
         }
         return fields;
+    }
+
+    private get fieldRows(): string[] {
+        return this.fields.map((item) => `${item.type} ${item.name}`);
+    }
+
+    private filedRowsModif(modifier: string, sep: string): string {
+        const field_list = this.fieldRows.map((item) => `${modifier} ${item}${sep}`);
+        return field_list.join('\n');
+    }
+
+
+    get fieldsClass(): string {
+        return this.filedRowsModif('final', ';');
+    }
+
+    get fieldsRequired(): string {
+        return this.filedRowsModif('required', ',');
+    }
+
+    get fieldsReqThis(): string {
+        return this.fieldsNameList.map((item) => `required this.${item},`).join('\n');
+    }
+
+    get fieldsNameList(): string[] {
+        return this.fields.map((field) => `${field.name}`);
 
     }
 
+    get fiedsComma(): string {
+        return this.fieldsNameList.join(',');
+    }
+
+
+    private driftTypeConverter(dType: string): string {
+        if (dType === 'Text') {
+            return 'String';
+        } else if (dType === 'Int') {
+            return unCap(dType);
+        }
+        return dType;
+    }
+
 }
+

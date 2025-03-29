@@ -14,7 +14,7 @@ import { addStartPlugins } from "./template_project/flutter_content/terminal_com
 import { flutterCreateNewProject } from "./template_project/flutter_create_project";
 import { updateRoutingFls } from "./template_project/update_files";
 import { crBarrelFls } from "./template_project/add_barrel_files";
-import { createDataFiles } from "./data_routine/drift_class_parser";
+import { createDataFiles } from "./data_routine/create_data_files";
 
 
 

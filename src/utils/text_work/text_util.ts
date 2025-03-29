@@ -14,3 +14,8 @@ export function cap(str: string): string {
 export function unCap(str: string): string {
     return str.charAt(0).toLowerCase() + str.slice(1);
 }
+
+export function pluralConvert(str: string):string {
+    // return str.replace(/(.*)y$/, '$1ies');
+    return str.replace(/(.*)([^aeiou])y$/, '$1$2ies');
+}
