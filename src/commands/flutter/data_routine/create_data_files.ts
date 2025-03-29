@@ -1,4 +1,4 @@
-import { createFile, createFolder } from "../../../utils";
+import { createFile, createFolder, executeCommand } from "../../../utils";
 import { getActiveEditorPath } from "../../../utils/path_util";
 import { insAtFlStart, insertTextAfter } from "../../../utils/text_work/text_insert/basic-insertion";
 import { cap, unCap } from "../../../utils/text_work/text_util";
@@ -16,6 +16,7 @@ import { repositoryImplContent, repositoryImplPath } from "./files/repository_im
 import { useCaseCreateCont, useCaseCreatePath } from "./files/usecases/use_case_create";
 import path from "path";
 import { useCaseDeleteCont, useCaseDeletePath } from "./files/usecases/use_case_delete";
+import { build_runner } from "../template_project/flutter_content/terminal_commands";
 
 
 export async function createDataFiles() {
@@ -28,6 +29,19 @@ export async function createDataFiles() {
     const pathData = new PathData(currentFilePath).data;
     // return this.filePath.split('features')[1].split('\\')[1];
     const featurePath = currentFilePath.split(/\Wdata\W/)[0];
+
+
+    const appDatabaseP = appDatabasePath(pathData.rootPath);
+    insAtFlStart(appDatabaseP, imAppDatabase(pathData.featName, driftClassName));
+    const appDatabaseCont = fs.readFileSync(appDatabaseP, { encoding: "utf-8" });
+    const isFirstTable = appDatabaseCont.match(/tables: \[\s*\]/);
+    const _sep = isFirstTable?'':',';
+
+    insertTextAfter(appDatabaseP, 'tables: [', `${cap(driftClassName)}Table${_sep}`);
+    
+    await executeCommand(build_runner, pathData.rootPath);
+
+
 
     const domainFilePath = domainRepoPath(featurePath, driftClassName);
     const domainFileContent = domainRepoCont(driftClassName);
@@ -45,17 +59,7 @@ export async function createDataFiles() {
     const daoContent = daoLocalContent(driftClassName);
     createFile(_daoPath, daoContent);
 
-    const appDatabaseP = appDatabasePath(pathData.rootPath);
-    insAtFlStart(appDatabaseP, imAppDatabase(pathData.featName, driftClassName));
-    const appDatabaseCont = fs.readFileSync(appDatabaseP, { encoding: "utf-8" });
-    const isFirstTable = appDatabaseCont.match(/tables: \[\s*\]/);
-    const _sep = isFirstTable?'':',';
-
-    insertTextAfter(appDatabaseP, 'tables: [', `${cap(driftClassName)}Table${_sep}`);
-
-
-
-
+    
     const localPath = localDataSourcePath(featurePath, driftClassName);
     const localContent = localDataSourceCont(parser);
     createFile(localPath, localContent);
