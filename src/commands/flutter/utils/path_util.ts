@@ -1,7 +1,7 @@
 import path from "path";
 import { cap, unCap } from "../../../utils/text_work/text_util";
 
-interface IPathHandle {
+export interface IPathHandle {
     featName: string,
     featurePath: string,
     rootPath: string,

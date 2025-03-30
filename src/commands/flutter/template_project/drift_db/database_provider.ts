@@ -1,3 +1,7 @@
+import path from "path";
+
+export const databaseProvPath = (rootPath: string) => path.join(rootPath, "lib", "core", "database", "local", "provider", "database_provider.dart");
+
 export const dbProvider = `
 import '../database.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
