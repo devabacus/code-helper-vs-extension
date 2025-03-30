@@ -3,10 +3,14 @@ import { executeCommand, terminalCommands } from "../../utils";
 import { getRootWorkspaceFolders } from "../../utils/path_util";
 
 
+// export type ActionMap = { [key: string]: () => Promise<void> };
+
 export async function vsCodeExtHandler() {
-    const options: { [key: string]: () => Promise<void> } = {
+    const options: Record<string, () => Promise<void>> = {
 
         'Переустановить расширение': reinstallExtension,
+        'Пересобрать': rebuildExtension,
+
     };
 
     const choice = await window.showQuickPick(Object.keys(options), {
@@ -25,7 +29,16 @@ async function reinstallExtension() {
         'code --uninstall-extension mrfrolk.code-helper',
         'code --install-extension code-helper-0.0.1.vsix'
     ];
-   await terminalCommands(reinstallExtCmds, getRootWorkspaceFolders());
-   window.showInformationMessage('✅ Расширение успешно обновлено!');
+    await terminalCommands(reinstallExtCmds, getRootWorkspaceFolders());
+    window.showInformationMessage('✅ Расширение успешно обновлено!');
 }
 
+
+async function rebuildExtension() {
+    const rebuildCmds :string[] = [
+        'npm update @vscode/test-cli @vscode/test-electron @types/mocha',
+        'npm run compile'
+    ];
+    await terminalCommands(rebuildCmds, getRootWorkspaceFolders());
+    window.showInformationMessage('✅ Пересобрано!');
+}

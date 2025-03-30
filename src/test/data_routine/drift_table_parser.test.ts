@@ -5,6 +5,7 @@ import { localDataSourceCont } from "../../commands/flutter/data_routine/files/l
 import { localSourceFileExample } from "./file_example/local_source_example";
 import { useCaseCreateCont } from "../../commands/flutter/data_routine/files/usecases/use_case_create";
 import { useCaseCreateFileExample } from "./file_example/use_cases/use_case_create";
+import { dataLayerProviderExample } from "./file_example/providers/data_layer_prov_example";
 
 
 suite('parser drift test', () => {
@@ -79,9 +80,6 @@ suite('parser drift test', () => {
         // mock нужен
         // assert.strictEqual(driftClassCategory.addTableToDb, [])
     });
-
-
-
 
 });
 

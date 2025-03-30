@@ -63,20 +63,14 @@ suite('use cases', () => {
 
     });
 
-});
-
-suite('providers', () => {
     
-    test('data/providers', () => {
 
-        const driftClassName = 'category';
+     
 
-
-        // assert.strictEqual(dataProvCont(driftClassName), dataLayerProviderExample);
-        assert.strictEqual('ivan', dataLayerProviderExample);
-
-    });
 });
+
+
+
 
 
 
