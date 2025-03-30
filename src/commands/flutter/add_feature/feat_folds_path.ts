@@ -1,6 +1,7 @@
 export const fFoldPths = [
     'data/models',
     'data/repositories',
+    'data/providers',
     'data/datasources/local/dao',
     'data/datasources/local/tables',
     'data/datasources/local/sources',
@@ -9,6 +10,7 @@ export const fFoldPths = [
     'domain/entities',
     'domain/usecases',
     'domain/repositories',
+    'domain/providers',
     'presentation/pages',
     'presentation/widgets',
     'presentation/routing',

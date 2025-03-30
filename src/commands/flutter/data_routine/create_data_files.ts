@@ -22,6 +22,7 @@ import { useCaseGetByIdCont, useCaseGetByIdPath } from "./files/usecases/use_cas
 import { useCaseGetAllCont, useCaseGetAllPath } from "./files/usecases/use_case_get_all";
 import { database_cont } from "../template_project/drift_db/database_dart";
 import { dbProvider } from "../template_project/drift_db/database_provider";
+import { addProviderFiles } from "./add_providers";
 
 
 export async function createDataFiles() {
@@ -106,8 +107,9 @@ export async function createDataFiles() {
     const _useCaseGetAllCont = useCaseGetAllCont(driftClassName);
     const _useCaseGetAllPath = useCaseGetAllPath(featurePath, driftClassName);
     await createFile(_useCaseGetAllPath, _useCaseGetAllCont);
-
-
+    
+    await addProviderFiles(featurePath, driftClassName);
+    
     await executeInTerminal(build_runner);
 }
 
