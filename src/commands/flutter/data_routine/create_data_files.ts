@@ -48,8 +48,6 @@ export async function createDataFiles() {
 
     }
 
-
-
     const content = fs.readFileSync(appDatabaseP, { encoding: "utf-8" });
     const newContent = textGroupReplacer(content, /tables: \[(.*)\]/g, `${cap(driftClassName)}Table`);
 

@@ -16,6 +16,7 @@ import { useCaseGetByIdExample } from "./file_example/use_cases/use_case_get_by_
 import { useCaseGetByIdCont } from "../../commands/flutter/data_routine/files/usecases/use_case_get_by_id";
 import { useCaseGetAllCont } from "../../commands/flutter/data_routine/files/usecases/use_case_get_all";
 import { useCaseGetAllExample } from "./file_example/use_cases/use_case_get_all";
+import { dataLayerProviderExample } from "./file_example/providers/data_layer_prov_example";
 
 suite('file generate test', () => {
 
@@ -63,5 +64,19 @@ suite('use cases', () => {
     });
 
 });
+
+suite('providers', () => {
+    
+    test('data/providers', () => {
+
+        const driftClassName = 'category';
+
+
+        // assert.strictEqual(dataProvCont(driftClassName), dataLayerProviderExample);
+        assert.strictEqual('ivan', dataLayerProviderExample);
+
+    });
+});
+
 
 
