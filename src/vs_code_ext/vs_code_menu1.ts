@@ -1,11 +1,11 @@
 import { window } from "vscode";
-import { executeCommand, executeInTerminal, terminalCommands } from "../../utils";
-import { getRootWorkspaceFolders } from "../../utils/path_util";
+import { getRootWorkspaceFolders } from "../utils/path_util";
+import { executeInTerminal, terminalCommands } from "../utils";
 
 
 // export type ActionMap = { [key: string]: () => Promise<void> };
 
-export async function vsCodeExtHandler() {
+export async function vsCodeExtHandler1() {
     const options: Record<string, () => Promise<void>> = {
 
         'Переустановить расширение': reinstallExtension,
@@ -32,6 +32,7 @@ async function reinstallExtension() {
     await terminalCommands(reinstallExtCmds, getRootWorkspaceFolders());
     window.showInformationMessage('✅ Расширение успешно обновлено!');
 }
+
 
 
 async function rebuildExtension() {

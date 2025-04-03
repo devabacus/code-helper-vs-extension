@@ -48,14 +48,14 @@
         "command": "code-helper.myFlutter",
         "title": "myFlutter"
       },
-
-      {
-        "command": "code-helper.myPython",
-        "title": "myPython"
-      },
+      
       {
         "command": "code-helper.vsCodeExtHandler",
         "title": "myExt"
+      },
+      {
+        "command": "code-helper.myPython",
+        "title": "myPython"
       }
     ],
     "keybindings": [
