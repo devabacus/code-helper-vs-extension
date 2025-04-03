@@ -1,5 +1,5 @@
 import assert from "assert";
-import { PathData } from "../../commands/flutter/utils/path_util";
+import { PathData } from "../../features/utils/path_util";
 
 
 suite('class path test', () => {
