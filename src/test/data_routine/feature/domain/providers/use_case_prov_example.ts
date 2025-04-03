@@ -44,7 +44,7 @@ GetCategoryByIdUseCase getCategoryByIdUseCase(Ref ref) {
 
 
 export const useCaseTagProviderExample = `
-import 'package:flutter_riverpod/flutter_riverpod.dart';ivan
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../usecases/tag/create.dart';
 import '../usecases/tag/delete.dart';

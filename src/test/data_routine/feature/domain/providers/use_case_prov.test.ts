@@ -9,11 +9,11 @@ suite('use cases', () => {
         const driftClassNameCategory = 'category';
         const driftClassNameTag = 'tag';
 
-        test('usecase/providers category', () => {
+        test('domain/providers usecases category', () => {
             assert.strictEqual(usecaseProvCont(driftClassNameCategory), useCaseCategoryProviderExample);
         });
     
-        test('usecase/providers tag', () => {
+        test('domain/providers usecases tag', () => {
             assert.strictEqual(usecaseProvCont(driftClassNameTag), useCaseTagProviderExample);
         });
 });

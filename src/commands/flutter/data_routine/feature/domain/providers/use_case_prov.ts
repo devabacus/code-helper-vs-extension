@@ -17,6 +17,7 @@ import '../usecases/${d}/create.dart';
 import '../usecases/${d}/delete.dart';
 import '../usecases/${d}/update.dart';
 import '../usecases/${d}/get_all.dart';
+import '../usecases/${d}/get_by_id.dart';
 import '../../data/providers/${d}_data_providers.dart';
 
 part '${d}_usecase_providers.g.dart';
@@ -44,4 +45,11 @@ Update${D}UseCase update${D}UseCase(Ref ref) {
   final repository = ref.read(${d}RepositoryProvider);
   return Update${D}UseCase(repository);
 }
+
+@riverpod
+Get${D}ByIdUseCase get${D}ByIdUseCase(Ref ref) {
+  final repository = ref.read(${d}RepositoryProvider);
+  return Get${D}ByIdUseCase(repository);
+}
+
 `;};
