@@ -2,9 +2,9 @@ import {
 	commands,
 	ExtensionContext
 } from "vscode";
-import { registerCodeActions } from "./ui/code_action_provider";
+import { registerCodeActions } from "../code_action_provider";
 import { preSnippetGenerate, snippetGenerate } from "@utils"
-import { vsCodeExtHandler } from "./utils/vs_code_ext/vs_code_menu";
+import { vsCodeExtHandler } from "../utils/vs_code_ext/vs_code_menu";
 import { flutterHandler } from "@ui";
 
 
