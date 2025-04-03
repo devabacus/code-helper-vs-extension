@@ -4,9 +4,9 @@ import * as vscode from 'vscode';
 
 import { addDependecy } from '../template_project/add_pubspec/flutter_add_pubspec';
 import { new_local_package } from '../template_project/flutter_content/package_pubscpec';
-import { textValidator } from '../../utils/text_work/text_util';
-import { createFolder, executeCommand } from '../../utils';
-import { getUserInput, pickPath } from '../../ui/ui_ask_folder';
+import { textValidator } from "@utils";
+import { createFolder, executeCommand } from "@utils";
+import { getUserInput, pickPath } from '@ui';
 
 
 export async function createFlutterPackage() {

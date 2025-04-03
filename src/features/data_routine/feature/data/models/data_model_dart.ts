@@ -1,5 +1,5 @@
 import path from "path";
-import { cap } from "../../../../../utils/text_work/text_util";
+import { cap } from "@utils";
 
 
 

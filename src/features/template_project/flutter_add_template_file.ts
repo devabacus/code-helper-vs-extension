@@ -1,10 +1,10 @@
 import path from 'path';
-import { createFile, createFolders, executeCommand } from '../../utils';
+import { createFile, createFolders, executeCommand } from "@utils";
 import { addFeatureFolders } from '../add_feature/add_feature';
 import { baseTemplateFolders, projectFiles, routerPath, templatefiles } from './flutter_content/template_paths';
 import { pubGet } from './flutter_content/terminal_commands';
 import { routerCont } from '../add_feature/files/router_config';
-import { addDriftDB } from './drift_db/add_drift_db';
+import { addDriftDB } from '../data_routine/core/database/local/migration_routine/add_build_yaml';
 
 
 export async function addBaseTemplate(rootPath: string) {

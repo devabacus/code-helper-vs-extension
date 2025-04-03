@@ -1,4 +1,4 @@
-import { cap } from "../../../utils/text_work/text_util";
+import { cap } from "@utils";
 
 export const imFRoutesConst = (featureName: string) => `import '../../features/${featureName}/presentation/routing/${featureName}_routes_constants.dart';\n`;
 

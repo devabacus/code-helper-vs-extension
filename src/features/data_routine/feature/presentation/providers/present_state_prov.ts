@@ -1,5 +1,5 @@
 import path from "path";
-import { cap, pluralConvert } from "../../../../../utils/text_work/text_util";
+import { cap, pluralConvert } from "@utils";
 
 
 export const presentProvFoldPath = (fPath: string, driftClassName: string) => path.join(fPath, "presentation", "providers", `${driftClassName}`);

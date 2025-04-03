@@ -1,7 +1,7 @@
 import * as fs from 'fs';
-import { isFileContains, replaceTextInFile } from "../../utils";
-import { confirmDialog } from "../../utils/ui/ui_util";
-import { PathData } from "../utils/path_util";
+import { isFileContains, replaceTextInFile } from "@utils";
+import { confirmDialog } from "@ui";
+import { PathData } from "@flutter_utils";
 import { fNavServPath, fRouterPath, fRoutesConstPth } from "./files";
 import { routerPath } from '../template_project/flutter_content/template_paths';
 

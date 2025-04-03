@@ -1,4 +1,4 @@
-import { window, commands, Position, OpenDialogOptions, SnippetString } from 'vscode';
+import { Position, SnippetString, window } from 'vscode';
 
 
 

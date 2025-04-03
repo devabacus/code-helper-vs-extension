@@ -1,5 +1,5 @@
-import { cap } from "../../../utils/text_work/text_util";
-import { ClsParams } from "../../utils/text_utils";
+import { cap } from "@utils";
+import { ClsParams } from "@flutter_utils";
 
 export const fNavServPath = (fPath: string, fName: string) => `${fPath}/presentation/services/${fName}_navigation_service.dart`;
 

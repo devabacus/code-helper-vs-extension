@@ -1,11 +1,11 @@
-import { isFileContains, replaceTextInFile } from "../../utils";
-import { insAtFlStart } from "../../utils/text_work/text_insert/basic-insertion";
-import { cap } from "../../utils/text_work/text_util";
+import { isFileContains, replaceTextInFile } from "@utils";
+import { insAtFlStart } from "@utils";
+import { cap } from "@utils";
 import { fRoutesConstPth } from "../add_feature/files";
 import { imFRoutesConst } from "../add_feature/files/router_config";
 import { routerPath } from "./flutter_content/template_paths";
 import { updateRoutingFls } from "./update_files";
-import { PathData } from "../utils/path_util";
+import { PathData } from "../../flutter_utils/path_util";
 
 
 

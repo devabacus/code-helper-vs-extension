@@ -1,5 +1,5 @@
-import { cap } from "../../../utils/text_work/text_util";
-import { PathData } from "../../utils/path_util";
+import { cap } from "@utils";
+import { PathData } from "@flutter_utils";
 
 export const fRoutesConstPth = (fPath: string, fName: string) => `${fPath}/presentation/routing/${fName}_routes_constants.dart`;
 

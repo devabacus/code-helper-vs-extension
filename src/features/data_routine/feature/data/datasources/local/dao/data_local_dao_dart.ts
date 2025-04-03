@@ -1,5 +1,5 @@
 import path from "path";
-import { cap, pluralConvert } from "../../../../../../../utils/text_work/text_util";
+import { cap, pluralConvert } from "@utils";
 
 
 export const daoPath = (fName: string, driftClassName: string) => path.join(fName, "data", "datasources", "local", "dao", `${driftClassName}_dao.dart`);
@@ -9,7 +9,7 @@ export const daoLocalContent = (driftClassName: string) => {
     const D = cap(driftClassName);
     const Ds = pluralConvert(D);
 
-return`
+    return `
 import 'package:drift/drift.dart';
 import '../../../../../../../core/database/local/database.dart';
 import '../tables/${d}_table.dart';
@@ -36,4 +36,5 @@ class ${D}Dao extends DatabaseAccessor<AppDatabase> with _$${D}DaoMixin {
       (delete(${d}Table)..where((t) => t.id.equals(id))).go();
 }
 
-`;};
+`;
+};

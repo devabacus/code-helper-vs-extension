@@ -2,10 +2,10 @@ import {
 	commands,
 	ExtensionContext
 } from "vscode";
-import { flutterHandler } from "./flutter_menu";
-import { registerCodeActions } from "./code_action_provider";
-import { preSnippetGenerate, snippetGenerate } from "./utils/snippet_generator/snippet_generate";
+import { registerCodeActions } from "./ui/code_action_provider";
+import { preSnippetGenerate, snippetGenerate } from "@utils"
 import { vsCodeExtHandler } from "./utils/vs_code_ext/vs_code_menu";
+import { flutterHandler } from "@ui";
 
 
 export function activate(context: ExtensionContext) {

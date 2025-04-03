@@ -1,4 +1,4 @@
-import { cap } from "../../../utils/text_work/text_util";
+import { cap } from "@utils";
 
 export const fRouterPath = (fPath: string, fName: string) => `${fPath}/presentation/routing/${fName}_router_config.dart`;
 

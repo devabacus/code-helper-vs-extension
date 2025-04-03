@@ -1,4 +1,4 @@
-import { unCap } from "../../../../../../../utils/text_work/text_util";
+import { unCap } from "@utils";
 
 
 export interface Field {

@@ -1,5 +1,5 @@
 import path from "path";
-import { cap, unCap } from "../../../../../utils/text_work/text_util";
+import { cap, unCap } from "@utils";
 
 
 export const useCaseUpdatePath = (fPath: string, driftClassName: string) => path.join(fPath, "domain", "usecases", unCap(driftClassName), "update.dart");

@@ -1,6 +1,6 @@
 import path from "path";
 import { DriftClassParser } from "../tables/drift_class_parser";
-import { cap, pluralConvert, unCap } from "../../../../../../../utils/text_work/text_util";
+import { cap, pluralConvert, unCap } from "@utils";
 
 export const localDataSourcePath = (fPath: string, driftClassName: string) => path.join(fPath, "data", "datasources", "local", "sources", `${driftClassName}_local_data_source.dart`);
 

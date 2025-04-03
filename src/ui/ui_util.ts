@@ -1,5 +1,5 @@
+import { createFolders } from "@utils/dir_handle";
 import { OpenDialogOptions, Range, window, workspace, Position } from "vscode";
-import { createFolders } from "../dir_handle";
 import {} from 'vscode';
 
 // Открываем файл в VS Code

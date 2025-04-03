@@ -1,4 +1,4 @@
-import { cap } from "../../../utils/text_work/text_util";
+import { cap } from "@utils";
 
 export const fMainPgPth = (featurePath: string, featureName: string) => `${featurePath}/presentation/pages/${featureName}_page.dart`;
 

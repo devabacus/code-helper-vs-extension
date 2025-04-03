@@ -1,5 +1,5 @@
 import path from "path";
-import { cap, pluralConvert } from "../../../../../utils/text_work/text_util";
+import { cap, pluralConvert } from "@utils";
 
 
 export const useCaseProvPath = (fPath: string, driftClassName: string) => path.join(fPath, "domain", "providers", `${driftClassName}_usecase_providers.dart`);

@@ -1,5 +1,5 @@
 import path from "path";
-import { createFile, createFolder } from "../../../../../utils";
+import { createFile, createFolder } from "@utils";
 import { useCaseCreateCont, useCaseCreatePath } from "./use_case_create";
 import { useCaseDeleteCont, useCaseDeletePath } from "./use_case_delete";
 import { useCaseUpdateCont, useCaseUpdatePath } from "./use_case_update";

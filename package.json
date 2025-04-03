@@ -50,10 +50,6 @@
       },
 
       {
-        "command": "code-helper.myPython",
-        "title": "myPython"
-      },
-      {
         "command": "code-helper.vsCodeExtHandler",
         "title": "myExt"
       }

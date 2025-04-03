@@ -1,5 +1,5 @@
 import path from "path";
-import { pluralConvert, unCap } from "../../../../../utils/text_work/text_util";
+import { pluralConvert, unCap } from "@utils";
 import { DriftClassParser } from "../datasources/local/tables/drift_class_parser";
 
 export const repositoryImplPath = (fPath: string, driftClassName: string) => path.join(fPath, "data", "repositories", `${driftClassName}_repository_impl.dart`);

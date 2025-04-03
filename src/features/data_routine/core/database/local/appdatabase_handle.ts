@@ -1,12 +1,12 @@
 import path from "path";
-import { database_cont } from "../../../../template_project/drift_db/database_dart";
-import { databaseProvPath, dbProvider } from "../../../../template_project/drift_db/database_provider";
+import { database_cont } from "./database_dart";
+import { databaseProvPath, dbProvider } from "./database_provider";
 import { appDatabasePath, imAppDatabase } from "./app_database_file_dart";
 import * as fs from 'fs';
 import { build_runner } from "../../../../template_project/flutter_content/terminal_commands";
-import { PathData } from "../../../../utils/path_util";
-import { createFile, executeInTerminal } from "../../../../../utils";
-import { cap, textGroupReplacer } from "../../../../../utils/text_work/text_util";
+import { PathData } from "../../../../../flutter_utils/path_util";
+import { createFile, executeInTerminal } from "@utils";
+import { cap, textGroupReplacer } from "@utils";
 
 
 

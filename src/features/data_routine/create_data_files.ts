@@ -1,7 +1,7 @@
-import { createFile, executeInTerminal } from "../../utils";
-import { getActiveEditorPath } from "../../utils/path_util";
-import { unCap } from "../../utils/text_work/text_util";
-import { getDocText } from "../../utils/ui/ui_util";
+import { createFile, executeInTerminal } from "@utils";
+import { getActiveEditorPath } from "@utils";
+import { unCap } from "@utils";
+import { getDocText } from "@ui";
 import { build_runner } from "../template_project/flutter_content/terminal_commands";
 import { addProviderFiles } from "./add_providers";
 import { addUseCases } from "./feature/domain/usecases/add_usecases";

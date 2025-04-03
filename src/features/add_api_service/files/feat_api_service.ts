@@ -17,7 +17,6 @@ abstract class ${servName} extends ChopperService {
 
 `;};
 
-
 export const api_service_snippet = 
 
 `

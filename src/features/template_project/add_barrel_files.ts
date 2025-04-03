@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { createFile } from '../../utils';
+import { createFile } from "@utils";
 
 
 export async function crBarrelFls(dirPath: string): Promise<void> {
@@ -49,34 +49,3 @@ async function createIndexFile(pathDir: string) {
   createFile(`${pathDir}/index.dart`, indexFileContent);
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-// for (var folderPath of featureFolders) {
-//   createFile(`${folderPath}/index.dart`, await createBarrelContent(folderPath));
-// }
-// // добавить barrel файлы в каждую папку
-// }
-
-
-// export async function createBarrelContent(folderPath: string): Promise<string>{
-// // получаем все файлы по пути
-// // await createFile(`${folderPath}/testfile.dart`, "//just comment" );
-
-// const files = await getFilesInDir(folderPath);
-// // создаем содержимое для barrel файла по шаблону "export 'fileName.dart';"
-// return files.map(function(fileName){
-// return `export '${fileName}';`;
-// }).join('\n');
-// return `// export`;
-
-// }

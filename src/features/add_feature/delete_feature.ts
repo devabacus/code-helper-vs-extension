@@ -1,9 +1,9 @@
 import * as fs from 'fs';
-import { isFileContains, replaceTextInFile } from "../../utils";
-import { cap } from "../../utils/text_work/text_util";
-import { confirmDialog } from "../../utils/ui/ui_util";
+import { isFileContains, replaceTextInFile } from "@utils";
+import { cap } from "@utils";
+import { confirmDialog } from "@ui";
 import { routerNavServPath, routerPath } from "../template_project/flutter_content/template_paths";
-import { PathData } from '../utils/path_util';
+import { PathData } from '../../flutter_utils/path_util';
 
 export async function deleteFuture(filePath: string): Promise<void> {
   if (!await confirmDialog('удалить фичу?', 'да', 'нет')) { return; }

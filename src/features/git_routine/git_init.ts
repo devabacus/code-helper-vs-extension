@@ -1,5 +1,5 @@
 import { window } from "vscode";
-import { terminalCommands } from "../../utils";
+import { terminalCommands } from "@utils";
 
 export async function gitInit(path: string) {
     const gitInitSet = [
@@ -7,6 +7,6 @@ export async function gitInit(path: string) {
         'git add .',
         'git commit -m "init"'
     ];
-   await terminalCommands(gitInitSet, path);
-   window.showInformationMessage('✅ Git инициализирован!');
+    await terminalCommands(gitInitSet, path);
+    window.showInformationMessage('✅ Git инициализирован!');
 }

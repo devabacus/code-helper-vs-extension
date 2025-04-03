@@ -1,4 +1,4 @@
-import { cap } from "../../../utils/text_work/text_util";
+import { cap } from "@utils";
 
 export const fNavServProvPath = (featurePath: string, featureName: string) => `${featurePath}/presentation/providers/${featureName}_navigation_provider.dart`;
 

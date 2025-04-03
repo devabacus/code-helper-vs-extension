@@ -1,8 +1,8 @@
 
-import { createFile, createFolders } from '../../utils';
-import { getUserInputWrapper } from '../../utils/ui/ui_ask_folder';
+import { createFile, createFolders } from '@utils';
+import { getUserInputWrapper } from '@ui';
 
-import { fNavServBase, fNavServPath, fNavServProv, fNavServProvPath, fNavServProvGen, fNavServProvGenPth, fRouterPath, routerFFlCont, fRoutesConstPth, fRoutesConsts } from '../add_feature/files';
+import { fNavServBase, fNavServPath, fNavServProv, fNavServProvPath, fRouterPath, routerFFlCont, fRoutesConstPth, fRoutesConsts } from '../add_feature/files';
 
 
 import { updRouterThings } from '../template_project/update_files';
@@ -52,10 +52,6 @@ export async function createTemplFContFls(fPth: string, fNm: string) {
     const fNavServProvFl = fNavServProvPath(fPth, fNm!);
     const fNavServProvCont = fNavServProv(fNm!);
     await createFile(fNavServProvFl, fNavServProvCont!);
-
-    const fNavServProvGenFl = fNavServProvGenPth(fPth, fNm!);
-    const fNavServProvGenCont = fNavServProvGen(fNm!);
-    await createFile(fNavServProvGenFl, fNavServProvGenCont!);
 
 }
 

@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { createFile, executeCommand } from '../../../utils';
+import { createFile, executeCommand } from "@utils";
 import { pubGet } from '../flutter_content/terminal_commands';
 
 

@@ -1,7 +1,7 @@
 // G:\Projects\Flutter\dataroutine3\lib\features\tasks\domain\repositories\category_repository.dart
 
 import path from "path";
-import { cap, pluralConvert } from "../../../../../utils/text_work/text_util";
+import { cap, pluralConvert } from "@utils";
 
 
 

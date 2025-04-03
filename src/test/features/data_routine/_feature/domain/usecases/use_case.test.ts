@@ -1,0 +1,38 @@
+import assert from "assert";
+import { useCaseCreateFileExample } from "./use_case_create";
+import { useCaseDeleteExample } from "./use_case_delete";
+import { useCaseUpdateExample } from "./use_case_update";
+import { useCaseGetByIdExample } from "./use_case_get_by_id";
+import { useCaseGetAllExample } from "./use_case_get_all";
+import { useCaseCreateCont } from "src/features/data_routine/feature/domain/usecases/use_case_create";
+import { useCaseDeleteCont } from "src/features/data_routine/feature/domain/usecases/use_case_delete";
+import { useCaseUpdateCont } from "src/features/data_routine/feature/domain/usecases/use_case_update";
+import { useCaseGetByIdCont } from "src/features/data_routine/feature/domain/usecases/use_case_get_by_id";
+import { useCaseGetAllCont } from "src/features/data_routine/feature/domain/usecases/use_case_get_all";
+
+
+
+
+suite('use cases', () => {
+
+    test('create', () => {
+        assert.strictEqual(useCaseCreateFileExample, useCaseCreateCont('category'));
+    });
+
+    test('delete', () => {
+        assert.strictEqual(useCaseDeleteExample, useCaseDeleteCont('category'));
+    });
+
+    test('update', () => {
+        assert.strictEqual(useCaseUpdateExample, useCaseUpdateCont('category'));
+    });
+
+    test('getById', () => {
+        assert.strictEqual(useCaseGetByIdExample, useCaseGetByIdCont('category'));
+    });
+
+    test('getAll', () => {
+        assert.strictEqual(useCaseGetAllExample, useCaseGetAllCont('category'));
+    });
+
+});
