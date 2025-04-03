@@ -1,10 +1,6 @@
 import path from "path";
-import { build_yaml } from "./build_yaml";
-import { database_cont } from "./database_dart";
-import { database_g_cont } from "./database_g_dart";
-import { dbProvider } from "./database_provider";
-import { db_provider_g } from "./database_provider_g";
 import { createFile } from "../../../../utils";
+import { build_yaml } from "./build_yaml";
 
 
 export async function addDriftDB(rootPath: string): Promise<void> {

@@ -4,15 +4,15 @@ import { unCap } from "../../../utils/text_work/text_util";
 import { getDocText } from "../../../utils/ui/ui_util";
 import { build_runner } from "../template_project/flutter_content/terminal_commands";
 import { addProviderFiles } from "./add_providers";
-import { addUseCases } from "./add_usecases";
-import { appDatabaseRoutine } from './appdatabase_handle';
-import { DriftClassParser } from "./drift_class_parser";
-import { daoLocalContent, daoPath } from "./files/data_local_dao_dart";
-import { dataModelCont, dataModelPath } from "./files/data_model_dart";
-import { domainRepoCont, domainRepoPath } from "./files/domain_repository_dart";
-import { domainEntityCont, domainEntityPath } from "./files/entity";
-import { localDataSourceCont, localDataSourcePath } from "./files/local_data_source_dart";
-import { repositoryImplContent, repositoryImplPath } from "./files/repository_impl_dart";
+import { addUseCases } from "./feature/domain/usecases/add_usecases";
+import { appDatabaseRoutine } from './core/database/local/appdatabase_handle';
+import { DriftClassParser } from "./feature/data/datasources/local/tables/drift_class_parser";
+import { dataModelCont, dataModelPath } from "./feature/data/models/data_model_dart";
+import { localDataSourceCont, localDataSourcePath } from "./feature/data/datasources/local/sources/local_data_source_dart";
+import { repositoryImplContent, repositoryImplPath } from "./feature/data/repositories/repository_impl_dart";
+import { domainRepoCont, domainRepoPath } from "./feature/domain/repositories/domain_repository_dart";
+import { domainEntityCont, domainEntityPath } from "./entity/entity";
+import { daoLocalContent, daoPath } from "./feature/data/datasources/local/dao/data_local_dao_dart";
 
 
 export async function createDataFiles() {
@@ -38,7 +38,7 @@ export async function createDataFiles() {
     // usecases files
     await addUseCases(featurePath, driftClassName);
 
-    
+
     // data layer
     const modelPath = dataModelPath(featurePath, driftClassName);
     const modelContent = dataModelCont(driftClassName, fields.fieldsRequired);
@@ -58,6 +58,6 @@ export async function createDataFiles() {
 
     // providers files for all layers
     await addProviderFiles(featurePath, driftClassName);
-    
+
     await executeInTerminal(build_runner);
 }
