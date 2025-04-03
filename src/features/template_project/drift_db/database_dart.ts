@@ -25,8 +25,7 @@ MigrationStrategy get migration => MigrationStrategy(
       onUpgrade: (Migrator m, int from, int to) async {
             
         if (from < 2) {
-          //await m.addColumn(taskItems, taskItems.createAt);
-          //TODO
+
         }        
         
       },
