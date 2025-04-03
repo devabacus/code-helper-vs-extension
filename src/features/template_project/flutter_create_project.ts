@@ -42,7 +42,9 @@ export async function flutterCreateNewProject(addTemplateFolders?: (fullProjectP
     insertAtFileEnd(path.join(fullProjectPath, '.gitignore'),gitignoreCont);
     
     const serviceFilesPth = path.join(fullProjectPath, "_service_files");
+    const vscodePth = path.join(fullProjectPath, ".vscode");
     await createFolder(serviceFilesPth);
+    await createFolder(vscodePth);
 
 
     createRootTemplateFiles(fullProjectPath);

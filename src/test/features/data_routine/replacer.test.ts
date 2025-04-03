@@ -1,7 +1,6 @@
 import assert from "assert";
-import { replaceTextInFile } from "../../utils";
 import { appDatabaseExampleFileEmpty, appDatabaseExampleFileOneTable, appDatabaseExampleFileTwoTable } from "./core/database/local/appdatabase_example";
-import { textGroupReplacer } from "../../utils/text_work/text_util";
+import { textGroupReplacer } from "../../../utils/text_work/text_util";
 
 
 suite('app database', () => {

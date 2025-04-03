@@ -1,6 +1,6 @@
 import assert from "assert";
 import { tableAuth, tableCategory, tableTask } from "../../../../../file_example/drift_class_examples";
-import { DriftClassParser } from "../../../../../../../features/data_routine/feature/data/datasources/local/tables/drift_class_parser";
+import { DriftClassParser } from "../../../../../../../../features/data_routine/feature/data/datasources/local/tables/drift_class_parser";
 
 
 suite('parser drift test', () => {

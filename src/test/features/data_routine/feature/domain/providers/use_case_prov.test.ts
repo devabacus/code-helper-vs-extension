@@ -1,6 +1,6 @@
 import assert from "assert";
 import { useCaseCategoryProviderExample, useCaseTagProviderExample } from "./use_case_prov_example";
-import { usecaseProvCont } from "../../../../../features/data_routine/feature/domain/providers/use_case_prov";
+import { usecaseProvCont } from "../../../../../../features/data_routine/feature/domain/providers/use_case_prov";
 
 
 

@@ -18,6 +18,7 @@ import { api_provider } from "./add_chopper/files/providers/api_providers";
 import { api_provider_g } from "./add_chopper/files/providers/api_provider.g";
 import { menv } from "../service_files/m_env";
 import { def_headers_interceptor } from "./add_chopper/files/interceptors/headers_Interceptor";
+import { settingsJson } from "../service_files/settings_json";
 
 export const baseTemplateFolders = [
     'core/routing',
@@ -67,6 +68,7 @@ type FuncAnyArgs<T> = (...args: string[]) => T
 export const projectFiles: Record<string, string> = {
 
     '.env': menv,
+    '.vscode/settings.json': settingsJson,
     '_service_files/flutter_handle.ps1': flutter_handle_ps1,
     '_service_files/git_handle.ps1': git_handle_ps1,
     '_service_files/shell_commands.ps1': "",
