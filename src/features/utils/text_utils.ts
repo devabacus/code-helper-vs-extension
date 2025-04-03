@@ -1,5 +1,5 @@
+import { getCurrentLineText } from "../../ui/ui_util";
 import { cap } from "../../utils/text_work/text_util";
-import { getCurrentLineText } from "../../utils/ui/ui_util";
 
 
 export function getConstrData(): Record<string, any> {

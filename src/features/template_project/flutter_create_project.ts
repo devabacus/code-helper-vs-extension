@@ -2,17 +2,15 @@ import * as path from "path";
 import { createFile, createFolder } from "../../utils";
 import { executeCommand } from "../../utils/terminal_handle";
 import { insertAtFileEnd } from "../../utils/text_work/text_insert/basic-insertion";
-import { getUserInput, pickPath } from "../../utils/ui/ui_ask_folder";
 import { createRootTemplateFiles } from "./flutter_add_template_file";
 import { gitignoreCont } from "./flutter_content/files_content/_gitignore";
 import { pubspec_yaml } from "./flutter_content/files_content/pubspec_yaml";
 import { pubGet } from "./flutter_content/terminal_commands";
 import { startAppFix } from "./start_app_fix";
 import { gitInit } from "../git_routine/git_init";
+import { getUserInput, pickPath } from "../../ui/ui_ask_folder";
 
 export async function flutterCreateNewProject(addTemplateFolders?: (fullProjectPath: string) => void): Promise<void> {
-
-
 
     // пользователь выбирает категории 
     const projectPath = await pickPath();
