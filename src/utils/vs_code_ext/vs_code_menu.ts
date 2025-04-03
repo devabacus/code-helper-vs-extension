@@ -1,5 +1,5 @@
 import { window } from "vscode";
-import { executeCommand, terminalCommands } from "../../utils";
+import { executeCommand, executeInTerminal, terminalCommands } from "../../utils";
 import { getRootWorkspaceFolders } from "../../utils/path_util";
 
 
@@ -39,6 +39,8 @@ async function rebuildExtension() {
         'npm update @vscode/test-cli @vscode/test-electron @types/mocha',
         'npm run compile'
     ];
-    await terminalCommands(rebuildCmds, getRootWorkspaceFolders());
+    // await terminalCommands(rebuildCmds, getRootWorkspaceFolders());
+    await executeInTerminal('npm update @vscode/test-cli @vscode/test-electron @types/mocha',);
+    await executeInTerminal('npm run watch');
     window.showInformationMessage('✅ Пересобрано!');
 }

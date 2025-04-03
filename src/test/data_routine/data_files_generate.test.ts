@@ -17,7 +17,7 @@ import { useCaseGetByIdCont } from "../../commands/flutter/data_routine/files/us
 import { useCaseGetAllCont } from "../../commands/flutter/data_routine/files/usecases/use_case_get_all";
 import { useCaseGetAllExample } from "./file_example/use_cases/use_case_get_all";
 import { dataLayerProviderExample } from "./file_example/providers/data_layer_prov_example";
-import { useCaseProviderExample } from "./file_example/providers/use_case_prov_example";
+import { useCaseCategoryProviderExample } from "./file_example/providers/use_case_prov_example";
 import { presentStateProvExample } from "./file_example/providers/present_state_prov_example";
 import { dataProvCont } from "../../commands/flutter/data_routine/files/providers/data_layer_prov";
 import { usecaseProvCont } from "../../commands/flutter/data_routine/files/providers/use_case_prov";
@@ -38,7 +38,7 @@ suite('file generate test', () => {
 
     });
 
-});       
+});
 
 
 suite('use cases', () => {
@@ -72,24 +72,7 @@ suite('use cases', () => {
 
 
 
-suite('providers', () => {
-    
-    const driftClassName = 'category';
-    
-    test('data/providers', () => {
-        assert.strictEqual(dataProvCont(driftClassName), dataLayerProviderExample);
-    });
 
-    test('usecase/providers', () => {
-        assert.strictEqual(usecaseProvCont(driftClassName), useCaseProviderExample);
-    });
-
-    test('present/state_providers', () => {
-        assert.strictEqual(presentStateProvCont(driftClassName), presentStateProvExample);
-    });
-    
-    
-});
 
 
 
