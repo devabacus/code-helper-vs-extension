@@ -1,5 +1,5 @@
 import { window } from "vscode";
-import { terminalCommands } from "../utils";
+import { terminalCommands } from "../../utils";
 
 export async function gitInit(path: string) {
     const gitInitSet = [

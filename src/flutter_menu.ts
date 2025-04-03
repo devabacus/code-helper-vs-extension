@@ -1,20 +1,20 @@
 import path from "path";
 import { window } from "vscode";
-import { executeCommand, writeToFile } from "../utils";
-import { getActiveEditorPath, getLibPath, getRootWorkspaceFolders } from "../utils/path_util";
-import { addApiService } from "./add_api_service/add_api_service";
-import { addFeatureFolders } from "./add_feature/add_feature";
-import { deleteFuture } from "./add_feature/delete_feature";
-import { deletePage } from "./add_feature/delete_page";
-import { createFlutterPackage } from "./flutter_create_package";
-import { setMainPage } from "./template_project/set_main_page";
-import { addBaseTemplate, createTemplateFiles } from "./template_project/flutter_add_template_file";
-import { mainFile } from "./template_project/flutter_content/files_content/main_file";
-import { addStartPlugins } from "./template_project/flutter_content/terminal_commands";
-import { flutterCreateNewProject } from "./template_project/flutter_create_project";
-import { updateRoutingFls } from "./template_project/update_files";
-import { crBarrelFls } from "./template_project/add_barrel_files";
-import { createDataFiles } from "./data_routine/create_data_files";
+import { executeCommand, writeToFile } from "./utils";
+import { getActiveEditorPath, getLibPath, getRootWorkspaceFolders } from "./utils/path_util";
+import { addApiService } from "./features/add_api_service/add_api_service";
+import { addFeatureFolders } from "./features/add_feature/add_feature";
+import { deleteFuture } from "./features/add_feature/delete_feature";
+import { deletePage } from "./features/add_feature/delete_page";
+import { createFlutterPackage } from "./features/package_routine/flutter_create_package";
+import { setMainPage } from "./features/template_project/set_main_page";
+import { addBaseTemplate, createTemplateFiles } from "./features/template_project/flutter_add_template_file";
+import { mainFile } from "./features/template_project/flutter_content/files_content/main_file";
+import { addStartPlugins } from "./features/template_project/flutter_content/terminal_commands";
+import { flutterCreateNewProject } from "./features/template_project/flutter_create_project";
+import { updateRoutingFls } from "./features/template_project/update_files";
+import { crBarrelFls } from "./features/template_project/add_barrel_files";
+import { createDataFiles } from "./features/data_routine/create_data_files";
 
 
 
