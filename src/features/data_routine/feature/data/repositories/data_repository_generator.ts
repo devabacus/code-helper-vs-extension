@@ -1,19 +1,18 @@
 
 import path from "path";
-import { DriftClassParser, IDriftClassParser } from "../feature/data/datasources/local/tables/drift_class_parser";
-import { pluralConvert, unCap } from "../../../utils/text_work/text_util";
-import { BaseGenerator } from "./base_generator";
+import { BaseGenerator } from "../../../generators/base_generator";
+import { IDriftClassParser } from "../datasources/local/tables/drift_class_parser";
+import { pluralConvert } from "../../../../../utils/text_work/text_util";
 
 
-export class RepositoryGenerator extends BaseGenerator {
+export class DataRepositoryGenerator extends BaseGenerator {
 
   protected getPath(featurePath: string, entityName: string): string {
     return path.join(featurePath, "data", "repositories", `${entityName}_repository_impl.dart`);
   }
   protected getContent(parser: IDriftClassParser): string {
-    const driftClassName = parser.driftClassNameUpper;
-    const d = unCap(driftClassName);
-    const D = driftClassName;
+    const D = parser.driftClassNameUpper;
+    const d = parser.driftClassNameLower;
     const Ds = pluralConvert(D);
     const paramsDrift = parser.paramsInstDrift;
     const paramsModel = parser.paramsInstModel;

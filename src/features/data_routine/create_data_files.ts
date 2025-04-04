@@ -12,7 +12,6 @@ import { localDataSourceCont, localDataSourcePath } from "./feature/data/datasou
 import { DriftClassParser } from "./feature/data/datasources/local/tables/drift_class_parser";
 import { dataModelCont, dataModelPath } from "./feature/data/models/data_model_dart";
 import { repositoryImplContent, repositoryImplPath } from "./feature/data/repositories/repository_impl_dart";
-import { domainRepoCont, domainRepoPath } from "./feature/domain/repositories/domain_repository_dart";
 import { addUseCases } from "./feature/domain/usecases/add_usecases";
 import { GeneratorFactory } from "./factories/generator_factory";
 import { GenerateAllFilesCommand } from "./commands/generate_all_files_command";
@@ -32,7 +31,8 @@ export async function createDataFiles() {
 
     const generatorFactory = new GeneratorFactory(fileSystem);
 
-    const generatorCommands = new GenerateAllFilesCommand(generatorFactory,featurePath,driftClassName,parser)
+    const generatorCommands = new GenerateAllFilesCommand(generatorFactory,featurePath,driftClassName,parser);
+    
     generatorCommands.execute();
 
     
@@ -46,20 +46,16 @@ export async function createDataFiles() {
     // await createFile(repoImplPath, repoImplCont);
     // generatorFactory.createRepositoryGenerator().generate(featurePath, driftClassName, parser);
 
-
     // appdatabase routine
     await appDatabaseRoutine(currentFilePath, driftClassName);
 
-
     // domain layer
-    const domainFilePath = domainRepoPath(featurePath, driftClassName);
-    const domainFileContent = domainRepoCont(driftClassName);
-    await createFile(domainFilePath, domainFileContent);
-
+    // const domainFilePath = domainRepoPath(featurePath, driftClassName);
+    // const domainFileContent = domainRepoCont(driftClassName);
+    // await createFile(domainFilePath, domainFileContent);
 
     // usecases files
     await addUseCases(featurePath, driftClassName);
-
 
     // data layer
     const modelPath = dataModelPath(featurePath, driftClassName);
@@ -73,8 +69,6 @@ export async function createDataFiles() {
     const localPath = localDataSourcePath(featurePath, driftClassName);
     const localContent = localDataSourceCont(parser);
     await createFile(localPath, localContent);
-
-
 
     // providers files for all layers
 
