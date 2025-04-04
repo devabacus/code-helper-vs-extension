@@ -15,10 +15,7 @@ import { repositoryImplContent, repositoryImplPath } from "./feature/data/reposi
 import { domainRepoCont, domainRepoPath } from "./feature/domain/repositories/domain_repository_dart";
 import { addUseCases } from "./feature/domain/usecases/add_usecases";
 import { GeneratorFactory } from "./factories/generator_factory";
-
-
-
-
+import { GenerateAllFilesCommand } from "./commands/generate_all_files_command";
 
 export async function createDataFiles() {
     const driftClass = getDocText();
@@ -35,15 +32,19 @@ export async function createDataFiles() {
 
     const generatorFactory = new GeneratorFactory(fileSystem);
 
+    const generatorCommands = new GenerateAllFilesCommand(generatorFactory,featurePath,driftClassName,parser)
+    generatorCommands.execute();
+
+    
     // const entityPath = domainEntityPath(featurePath, driftClassName);
     // const entityContent = domainEntityCont(parser);
     // await createFile(entityPath, entityContent); 
-    generatorFactory.createEntityGenerator().generate(featurePath, driftClassName, parser);
+    // generatorFactory.createEntityGenerator().generate(featurePath, driftClassName, parser);
 
     // const repoImplPath = repositoryImplPath(featurePath, driftClassName);
     // const repoImplCont = repositoryImplContent(parser);
     // await createFile(repoImplPath, repoImplCont);
-    generatorFactory.createRepositoryGenerator().generate(featurePath, driftClassName, parser);
+    // generatorFactory.createRepositoryGenerator().generate(featurePath, driftClassName, parser);
 
 
     // appdatabase routine
