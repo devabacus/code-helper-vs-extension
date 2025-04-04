@@ -1,5 +1,5 @@
 import assert from "assert";
-import { tableAuth, tableCategory, tableTask } from "../../../../../file_example/drift_class_examples";
+import { tableAuth, tableCategory, tableTask } from "../../../../../fixtures/drift_class_examples";
 import { DriftClassParser } from "../../../../../../../../features/data_routine/feature/data/datasources/local/tables/drift_class_parser";
 
 
@@ -24,8 +24,8 @@ suite('parser drift test', () => {
     });
 
     test('fields comma', () => {
-        assert.strictEqual(driftClassCategory.fiedsComma, 'id,title');
-        assert.strictEqual(driftClassTask.fiedsComma, 'id,title,description,age');
+        assert.strictEqual(driftClassCategory.fieldsComma, 'id,title');
+        assert.strictEqual(driftClassTask.fieldsComma, 'id,title,description,age');
     });
 
 
@@ -63,8 +63,8 @@ suite('parser drift test', () => {
         const result = `id: Value(category.id), title: Value(category.title)`;
         const result2 = `id: Value(task.id), title: Value(task.title), description: Value(task.description), age: Value(task.age)`;
 
-        assert.strictEqual(driftClassCategory.paramWrapValue, result);
-        assert.strictEqual(driftClassTask.paramWrapValue, result2);
+        assert.strictEqual(driftClassCategory.paramsWrapValue, result);
+        assert.strictEqual(driftClassTask.paramsWrapValue, result2);
 
     });
 

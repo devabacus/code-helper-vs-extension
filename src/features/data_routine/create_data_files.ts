@@ -14,6 +14,7 @@ import { dataModelCont, dataModelPath } from "./feature/data/models/data_model_d
 import { repositoryImplContent, repositoryImplPath } from "./feature/data/repositories/repository_impl_dart";
 import { domainRepoCont, domainRepoPath } from "./feature/domain/repositories/domain_repository_dart";
 import { addUseCases } from "./feature/domain/usecases/add_usecases";
+import { GeneratorFactory } from "./factories/generator_factory";
 
 
 
@@ -27,6 +28,24 @@ export async function createDataFiles() {
     const currentFilePath = getActiveEditorPath()!;
     const featurePath = currentFilePath.split(/\Wdata\W/)[0];
 
+
+    // получаем файловую систему через ServiceLocator
+    const serviceLocator  = ServiceLocator.getInstance();
+    const fileSystem = serviceLocator.getFileSystem();
+
+    const generatorFactory  = new GeneratorFactory(fileSystem);
+ 
+    // const entityPath = domainEntityPath(featurePath, driftClassName);
+    // const entityContent = domainEntityCont(parser);
+    // await createFile(entityPath, entityContent); 
+    generatorFactory.createEntityGenerator().generate(featurePath, driftClassName, parser);
+ 
+    // const repoImplPath = repositoryImplPath(featurePath, driftClassName);
+    // const repoImplCont = repositoryImplContent(parser);
+    // await createFile(repoImplPath, repoImplCont);
+    generatorFactory.createRepositoryGenerator().generate(featurePath, driftClassName, parser);
+
+
     // appdatabase routine
     await appDatabaseRoutine(currentFilePath, driftClassName);
 
@@ -36,9 +55,7 @@ export async function createDataFiles() {
     const domainFileContent = domainRepoCont(driftClassName);
     await createFile(domainFilePath, domainFileContent);
 
-    const entityPath = domainEntityPath(featurePath, driftClassName);
-    const entityContent = domainEntityCont(parser);
-    await createFile(entityPath, entityContent);
+
     // usecases files
     await addUseCases(featurePath, driftClassName);
 
@@ -56,12 +73,10 @@ export async function createDataFiles() {
     const localContent = localDataSourceCont(parser);
     await createFile(localPath, localContent);
 
-    const repoImplPath = repositoryImplPath(featurePath, driftClassName);
-    const repoImplCont = repositoryImplContent(parser);
-    await createFile(repoImplPath, repoImplCont);
+
 
     // providers files for all layers
-    const serviceLocator  = ServiceLocator.getInstance();
+    
     const providerGenerator = serviceLocator.getProviderFilesGenerator();
     providerGenerator.addProviderFiles(featurePath, driftClassName);
     

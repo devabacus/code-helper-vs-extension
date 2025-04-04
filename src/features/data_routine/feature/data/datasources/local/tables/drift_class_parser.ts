@@ -7,7 +7,21 @@ export interface Field {
 }
 
 
-export class DriftClassParser {
+export interface IDriftClassParser {
+    readonly driftClassName: string;
+    readonly fields: Field[];
+    readonly fieldsClass: string;
+    readonly fieldsRequired: string;
+    readonly fieldsNameList: string[];
+    readonly fieldsComma: string;
+    readonly paramsInstDrift: string;
+    readonly paramsInstModel: string;
+    paramsWithOutId(row: string): string;
+    readonly paramsWrapValue: string;
+}
+
+
+export class DriftClassParser implements IDriftClassParser{
 
     private driftClass: string;
 
@@ -15,6 +29,29 @@ export class DriftClassParser {
     constructor(driftClass: string) {
         this.driftClass = driftClass;
     }
+
+    private get fieldRows(): string[] {
+        return this.fields.map((item) => `${item.type} ${item.name}`);
+    }
+
+    private filedRowsModif(modifier: string, sep: string): string {
+        const field_list = this.fieldRows.map((item) => `${modifier} ${item}${sep}`);
+        return field_list.join('\n');
+    }
+
+    private fieldsParamList(instance: string): string[] {
+        return this.fieldsNameList.map((item) => `${item}: ${instance}.${item}`);
+    }
+
+    private driftTypeConverter(dType: string): string {
+        if (dType === 'Text') {
+            return 'String';
+        } else if (dType === 'Int') {
+            return unCap(dType);
+        }
+        return dType;
+    }
+
     get driftClassName(): string {
         return this.driftClass.match(/\s(\w+)Table/)![1];
     }
@@ -33,17 +70,7 @@ export class DriftClassParser {
         }
         return fields;
     }
-
-    private get fieldRows(): string[] {
-        return this.fields.map((item) => `${item.type} ${item.name}`);
-    }
-
-    private filedRowsModif(modifier: string, sep: string): string {
-        const field_list = this.fieldRows.map((item) => `${modifier} ${item}${sep}`);
-        return field_list.join('\n');
-    }
-
-
+       
     get fieldsClass(): string {
         return this.filedRowsModif('final', ';');
     }
@@ -61,14 +88,10 @@ export class DriftClassParser {
 
     }
 
-    get fiedsComma(): string {
+    get fieldsComma(): string {
         return this.fieldsNameList.join(',');
     }
-
-    private fieldsParamList(instance: string): string[] {
-        return this.fieldsNameList.map((item) => `${item}: ${instance}.${item}`);
-    }
-
+ 
     get paramsInstDrift(): string {
         return this.fieldsParamList(unCap(this.driftClassName)).join(', ');
     }
@@ -81,19 +104,12 @@ export class DriftClassParser {
         return row.replace(/.*id,\s?/, '');
     }
 
-    get paramWrapValue(): string {
+    get paramsWrapValue(): string {
         return this.fieldsNameList.map((item) =>
             `${item}: Value(${unCap(this.driftClassName)}.${item})`).join(', ');
     }
 
-    private driftTypeConverter(dType: string): string {
-        if (dType === 'Text') {
-            return 'String';
-        } else if (dType === 'Int') {
-            return unCap(dType);
-        }
-        return dType;
-    }
+ 
 
 }
 

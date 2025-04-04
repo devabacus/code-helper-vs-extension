@@ -13,7 +13,7 @@ export const localDataSourceCont = (parser: DriftClassParser) => {
   const ds = pluralConvert(d);
   const paramsDrift = parser.paramsInstDrift;
   const paramsDriftWithOutId = parser.paramsWithOutId(paramsDrift);
-  const valueWrap = parser.paramWrapValue;
+  const valueWrap = parser.paramsWrapValue;
 
 
   return `

@@ -9,7 +9,7 @@ export const domainEntityPath = (fPath: string, driftClass: string) => path.join
 export const domainEntityCont = (parser: DriftClassParser) => {
   const fieldsClass = parser.fieldsClass;
   const fieldsReqThis = parser.fieldsReqThis;
-  const fieldsComma = parser.fiedsComma;
+  const fieldsComma = parser.fieldsComma;
   const D = parser.driftClassName;
 
 
