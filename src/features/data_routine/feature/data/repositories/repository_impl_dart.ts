@@ -5,7 +5,7 @@ import { DriftClassParser } from "../datasources/local/tables/drift_class_parser
 export const repositoryImplPath = (fPath: string, driftClassName: string) => path.join(fPath, "data", "repositories", `${driftClassName}_repository_impl.dart`);
 
 export const repositoryImplContent = (parser: DriftClassParser) => {
-  const driftClassName = parser.driftClassName;
+  const driftClassName = parser.driftClassNameUpper;
   const d = unCap(driftClassName);
   const D = driftClassName;
   const Ds = pluralConvert(D);

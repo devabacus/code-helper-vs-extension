@@ -8,7 +8,8 @@ export interface Field {
 
 
 export interface IDriftClassParser {
-    readonly driftClassName: string;
+    readonly driftClassNameUpper: string;
+    readonly driftClassNameLower: string;
     readonly fields: Field[];
     readonly fieldsClass: string;
     readonly fieldsRequired: string;
@@ -21,7 +22,7 @@ export interface IDriftClassParser {
 }
 
 
-export class DriftClassParser implements IDriftClassParser{
+export class DriftClassParser implements IDriftClassParser {
 
     private driftClass: string;
 
@@ -52,9 +53,15 @@ export class DriftClassParser implements IDriftClassParser{
         return dType;
     }
 
-    get driftClassName(): string {
+    get driftClassNameUpper(): string {
         return this.driftClass.match(/\s(\w+)Table/)![1];
     }
+
+    get driftClassNameLower(): string {
+        return unCap(this.driftClassNameUpper);
+
+    }
+
 
     get fields(): Field[] {
         const fieldsRegex = /(\w+)Column get (\w+)/g;
@@ -70,7 +77,7 @@ export class DriftClassParser implements IDriftClassParser{
         }
         return fields;
     }
-       
+
     get fieldsClass(): string {
         return this.filedRowsModif('final', ';');
     }
@@ -91,9 +98,9 @@ export class DriftClassParser implements IDriftClassParser{
     get fieldsComma(): string {
         return this.fieldsNameList.join(',');
     }
- 
+
     get paramsInstDrift(): string {
-        return this.fieldsParamList(unCap(this.driftClassName)).join(', ');
+        return this.fieldsParamList(unCap(this.driftClassNameUpper)).join(', ');
     }
 
     get paramsInstModel(): string {
@@ -106,10 +113,10 @@ export class DriftClassParser implements IDriftClassParser{
 
     get paramsWrapValue(): string {
         return this.fieldsNameList.map((item) =>
-            `${item}: Value(${unCap(this.driftClassName)}.${item})`).join(', ');
+            `${item}: Value(${unCap(this.driftClassNameUpper)}.${item})`).join(', ');
     }
 
- 
+
 
 }
 

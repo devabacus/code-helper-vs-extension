@@ -24,22 +24,22 @@ export async function createDataFiles() {
     const driftClass = getDocText();
     const parser = new DriftClassParser(driftClass);
     const fields = parser;
-    const driftClassName = unCap(parser.driftClassName);
+    const driftClassName = unCap(parser.driftClassNameUpper);
     const currentFilePath = getActiveEditorPath()!;
     const featurePath = currentFilePath.split(/\Wdata\W/)[0];
 
 
     // получаем файловую систему через ServiceLocator
-    const serviceLocator  = ServiceLocator.getInstance();
+    const serviceLocator = ServiceLocator.getInstance();
     const fileSystem = serviceLocator.getFileSystem();
 
-    const generatorFactory  = new GeneratorFactory(fileSystem);
- 
+    const generatorFactory = new GeneratorFactory(fileSystem);
+
     // const entityPath = domainEntityPath(featurePath, driftClassName);
     // const entityContent = domainEntityCont(parser);
     // await createFile(entityPath, entityContent); 
     generatorFactory.createEntityGenerator().generate(featurePath, driftClassName, parser);
- 
+
     // const repoImplPath = repositoryImplPath(featurePath, driftClassName);
     // const repoImplCont = repositoryImplContent(parser);
     // await createFile(repoImplPath, repoImplCont);
@@ -76,10 +76,10 @@ export async function createDataFiles() {
 
 
     // providers files for all layers
-    
+
     const providerGenerator = serviceLocator.getProviderFilesGenerator();
     providerGenerator.addProviderFiles(featurePath, driftClassName);
-    
+
     // await addProviderFiles(featurePath, driftClassName);
     await executeInTerminal(build_runner);
 }

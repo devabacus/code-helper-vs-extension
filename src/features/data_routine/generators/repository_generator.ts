@@ -6,20 +6,20 @@ import { BaseGenerator } from "./base_generator";
 
 
 export class RepositoryGenerator extends BaseGenerator {
-        
-    protected getPath(featurePath: string, entityName: string): string {
-        return path.join(featurePath, "data", "repositories", `${entityName}_repository_impl.dart`);
-    }
-    protected getContent(parser: IDriftClassParser): string {
-        const driftClassName = parser.driftClassName;
-        const d = unCap(driftClassName);
-        const D = driftClassName;
-        const Ds = pluralConvert(D);
-        const paramsDrift = parser.paramsInstDrift;
-        const paramsModel = parser.paramsInstModel;
-      
-      
-        return `
+
+  protected getPath(featurePath: string, entityName: string): string {
+    return path.join(featurePath, "data", "repositories", `${entityName}_repository_impl.dart`);
+  }
+  protected getContent(parser: IDriftClassParser): string {
+    const driftClassName = parser.driftClassNameUpper;
+    const d = unCap(driftClassName);
+    const D = driftClassName;
+    const Ds = pluralConvert(D);
+    const paramsDrift = parser.paramsInstDrift;
+    const paramsModel = parser.paramsInstModel;
+
+
+    return `
       import '../../data/datasources/local/sources/${d}_local_data_source.dart';
       
       import '../../domain/repositories/${d}_repository.dart';
@@ -67,6 +67,6 @@ export class RepositoryGenerator extends BaseGenerator {
           //custom methods
       }
       `;
-    }
-    
+  }
+
 }

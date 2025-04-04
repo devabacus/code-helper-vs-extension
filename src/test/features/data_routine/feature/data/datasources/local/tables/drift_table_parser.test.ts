@@ -12,9 +12,9 @@ suite('parser drift test', () => {
 
     test('get table name', () => {
 
-        assert.strictEqual(driftClassCategory.driftClassName, "Category");
-        assert.strictEqual(driftClassAuth.driftClassName, "Auth");
-        assert.strictEqual(driftClassTask.driftClassName, "Task");
+        assert.strictEqual(driftClassCategory.driftClassNameUpper, "Category");
+        assert.strictEqual(driftClassAuth.driftClassNameUpper, "Auth");
+        assert.strictEqual(driftClassTask.driftClassNameUpper, "Task");
 
     });
 

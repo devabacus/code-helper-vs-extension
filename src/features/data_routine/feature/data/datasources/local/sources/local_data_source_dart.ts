@@ -6,7 +6,7 @@ export const localDataSourcePath = (fPath: string, driftClassName: string) => pa
 
 
 export const localDataSourceCont = (parser: DriftClassParser) => {
-  const driftClassName = parser.driftClassName;
+  const driftClassName = parser.driftClassNameUpper;
   const d = unCap(driftClassName);
   const D = driftClassName;
   const Ds = pluralConvert(D);

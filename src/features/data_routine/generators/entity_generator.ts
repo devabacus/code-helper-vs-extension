@@ -2,33 +2,44 @@
 import { BaseGenerator } from "./base_generator";
 import * as path from "path";
 import { DriftClassParser } from "../feature/data/datasources/local/tables/drift_class_parser";
+import { ProjectStructure } from "../../../core/interfaces/project_structure";
+import { DefaultProjectStructure } from "../../../core/implementations/default_project_structure";
+import { FileSystem } from "../../../core/interfaces/file_system";
 
 export class EntityGenerator extends BaseGenerator {
 
+    private structure: ProjectStructure;
+
+  constructor(fileSystem: FileSystem, structure?: ProjectStructure){
+    super(fileSystem);
+    this.structure = structure || new DefaultProjectStructure();
+
+  }
+
     protected getPath(featurePath: string, entityName: string): string {
-        return path.join(featurePath, "domain", "entities", `${entityName}.dart`);
+        // return path.join(featurePath, "domain", "entities", `${entityName}.dart`);
+        return path.join(this.structure.getEntityPath(featurePath), `${entityName}.dart`);
     }
+    
     protected getContent(parser: DriftClassParser): string {
-        const fieldsClass = parser.fieldsClass;
-        const fieldsReqThis = parser.fieldsReqThis;
-        const fieldsComma = parser.fieldsComma;
-        const D = parser.driftClassName;
+        const fields = parser.fieldsRequired;
+        const D = parser.driftClassNameUpper;
+        const d = parser.driftClassNameLower;
 
         return `
-import 'package:equatable/equatable.dart';          
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-class ${D}Entity extends Equatable {
-  ${fieldsClass}
+part '${d}.freezed.dart';
+part '${d}.g.dart';
 
-  const ${D}Entity({
-  ${fieldsReqThis}
-  });
+@freezed
+abstract class ${D}Entity with _$${D}Entity {
+  const factory ${D}Entity({
+    ${fields}
+  }) = _${D}Entity;
 
-  @override
-  List<Object?> get props => [${fieldsComma}];
+  factory ${D}Entity.fromJson(Map<String, dynamic> json) => _$${D}EntityFromJson(json);
 }
-
 `;
-    };
+    }
 }
-
