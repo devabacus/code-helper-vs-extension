@@ -1,7 +1,4 @@
 import { FileSystem } from "../../core/interfaces/file_system";
-import { dataProvCont, dataProvPath } from "./feature/data/providers/data_layer_prov_templ";
-import { usecaseProvCont, useCaseProvPath } from "./feature/domain/providers/use_case_prov";
-import { presentProvFoldPath, presentProvPath, presentStateProvCont } from "./feature/presentation/providers/present_state_prov";
 
 
 
@@ -30,8 +27,8 @@ export class ProviderFilesGenerator {
 
 import { DefaultFileSystem } from "../../core/implementations/default_file_system";
 import { DataProviderGenerator } from "./feature/data/providers/data_provider_generator";
-import { PresentationProviderGenerator } from "./feature/presentation/providers/presentation_provider_generator";
 import { DomainProviderGenerator } from "./feature/domain/providers/domain_provider_generator";
+import { PresentationProviderGenerator } from "./feature/presentation/providers/presentation_provider_generator";
 
 export async function addProviderFiles(featurePath: string, driftClassName: string) {
     const fileSystem = new DefaultFileSystem()
