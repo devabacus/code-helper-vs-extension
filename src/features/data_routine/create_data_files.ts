@@ -3,7 +3,8 @@ import { getActiveEditorPath } from "../../utils/path_util";
 import { unCap } from "../../utils/text_work/text_util";
 import { getDocText } from "../../utils/ui/ui_util";
 import { build_runner } from "../template_project/flutter_content/terminal_commands";
-import { addProviderFiles } from "./add_providers";
+// import { addProviderFiles } from "./add_providers";
+import { ProviderFileGenerator } from "./add_providers";
 import { addUseCases } from "./feature/domain/usecases/add_usecases";
 import { appDatabaseRoutine } from './core/database/local/appdatabase_handle';
 import { DriftClassParser } from "./feature/data/datasources/local/tables/drift_class_parser";
@@ -13,6 +14,11 @@ import { repositoryImplContent, repositoryImplPath } from "./feature/data/reposi
 import { domainRepoCont, domainRepoPath } from "./feature/domain/repositories/domain_repository_dart";
 import { domainEntityCont, domainEntityPath } from "./entity/entity";
 import { daoLocalContent, daoPath } from "./feature/data/datasources/local/dao/data_local_dao_dart";
+import { DefaultFileSystem } from "../../core/implementations/default_file_system";
+import { ServiceLocator } from "../../core/services/service_locator";
+
+
+
 
 
 export async function createDataFiles() {
@@ -57,7 +63,10 @@ export async function createDataFiles() {
     await createFile(repoImplPath, repoImplCont);
 
     // providers files for all layers
-    await addProviderFiles(featurePath, driftClassName);
-
+    const serviceLocator  = ServiceLocator.getInstance();
+    const providerGenerator = serviceLocator.getProviderFilesGenerator();
+    providerGenerator.addProviderFiles(featurePath, driftClassName);
+    
+    // await addProviderFiles(featurePath, driftClassName);
     await executeInTerminal(build_runner);
 }

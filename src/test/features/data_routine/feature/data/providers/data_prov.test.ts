@@ -6,6 +6,14 @@ import { dataProvCont } from "../../../../../../features/data_routine/feature/da
 
 
 
-test('data/providers', () => {
-    assert.strictEqual(dataProvCont(driftClassNameCategory), dataProviderExample);
+suite('data providers', () => {
+    test('data/providers', () => {
+        assert.strictEqual(dataProvCont(driftClassNameCategory), dataProviderExample);
+    });
+    
 });
+
+
+
+
+

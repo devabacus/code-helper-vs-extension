@@ -16,8 +16,15 @@ export function unCap(str: string): string {
 }
 
 export function pluralConvert(str: string): string {
-    // return str.replace(/(.*)y$/, '$1ies');
-    return str.replace(/(.*)([^aeiou])y$/, '$1$2ies');
+    if (str.match(/[sxz]$/) || str.match(/[cs]h$/)) {
+        return str + 'es';
+
+    } else if (str.match(/.*y$/)) {
+        return str.replace(/(.*)([^aeiou])y$/, '$1$2ies');
+    }
+    return str + 's';
+
+
 }
 
 

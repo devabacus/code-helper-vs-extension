@@ -56,9 +56,9 @@ import '../../data/providers/tag_data_providers.dart';
 part 'tag_usecase_providers.g.dart';
 
 @riverpod
-GetTagUseCase getTagUseCase(Ref ref) {
+GetTagsUseCase getTagsUseCase(Ref ref) {
   final repository = ref.read(tagRepositoryProvider);
-  return GetTagUseCase(repository);
+  return GetTagsUseCase(repository);
 }
 
 @riverpod
