@@ -31,7 +31,8 @@ import { DomainProviderGenerator } from "./feature/domain/providers/domain_provi
 import { PresentationProviderGenerator } from "./feature/presentation/providers/presentation_provider_generator";
 
 export async function addProviderFiles(featurePath: string, driftClassName: string) {
-    const fileSystem = new DefaultFileSystem()
+    const fileSystem = new DefaultFileSystem();
+    
     const generator = new ProviderFilesGenerator(fileSystem);
     generator.addProviderFiles(featurePath, driftClassName);
 }
