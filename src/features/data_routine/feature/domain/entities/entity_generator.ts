@@ -16,7 +16,7 @@ export class EntityGenerator extends BaseGenerator {
   }
 
   protected getPath(featurePath: string, entityName: string): string {
-    return path.join(this.structure.getEntityPath(featurePath), `${entityName}.dart`);
+    return path.join(this.structure.getEntityPath(featurePath), entityName, `${entityName}.dart`);
   }
 
   protected getContent(parser: DriftClassParser): string {

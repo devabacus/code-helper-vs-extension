@@ -27,9 +27,9 @@ export async function createFolder(path: string) {
 
 export async function createFile(mpath: string, content: string) {
     if (!fs.existsSync(path.dirname(mpath))) {
-        await fs.promises.mkdir(mpath, { recursive: true });
+        await fs.promises.mkdir(path.dirname(mpath), { recursive: true });
     }
-    await fs.promises.writeFile(path.dirname(mpath), content, 'utf8');
+    await fs.promises.writeFile(mpath, content, 'utf8');
 }
 
 

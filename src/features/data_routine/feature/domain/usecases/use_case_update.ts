@@ -9,7 +9,7 @@ export const useCaseUpdateCont = (driftClassName: string) => {
   const D = cap(driftClassName);
 
   return `
-import '../../entities/${d}.dart';
+import '../../entities/${d}/${d}.dart';
 import '../../repositories/${d}_repository.dart';
 
 class Update${D}UseCase {

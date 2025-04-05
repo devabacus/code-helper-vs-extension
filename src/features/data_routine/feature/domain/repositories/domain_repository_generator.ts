@@ -29,7 +29,7 @@ export class DomainRepositoryGenerator extends BaseGenerator {
     const Ds = pluralConvert(D);
 
     return `
-import '../entities/${d}.dart';
+import '../entities/${d}/${d}.dart';
 
 abstract class ${D}Repository {
   Future<List<${D}Entity>> get${Ds}();

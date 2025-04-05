@@ -22,7 +22,7 @@ export class DataRepositoryGenerator extends BaseGenerator {
       import '../../data/datasources/local/sources/${d}_local_data_source.dart';
       
       import '../../domain/repositories/${d}_repository.dart';
-      import '../../domain/entities/${d}.dart';
+      import '../../domain/entities/${d}/${d}.dart';
       import '../models/${d}_model.dart';
       
       class ${D}RepositoryImpl implements ${D}Repository {

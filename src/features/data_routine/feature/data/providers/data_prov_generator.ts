@@ -15,7 +15,7 @@ export class DataProviderGenerator extends BaseGenerator {
   }
 
   protected getPath(featurePath: string, entityName: string): string {
-    return path.join(this.structure.getDataProvderPath(featurePath), `${entityName}_data_providers.dart`);
+    return path.join(this.structure.getDataProvderPath(featurePath),  entityName, `${entityName}_data_providers.dart`);
   }
 
   protected getContent(parser: DriftClassParser): string {
@@ -25,10 +25,10 @@ export class DataProviderGenerator extends BaseGenerator {
     return `
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import '../datasources/local/sources/${d}_local_data_source.dart';
-import '../repositories/${d}_repository_impl.dart';
-import '../../../../core/database/local/provider/database_provider.dart';
-import '../../domain/repositories/${d}_repository.dart';
+import '../../datasources/local/sources/${d}_local_data_source.dart';
+import '../../repositories/${d}_repository_impl.dart';
+import '../../../../../core/database/local/provider/database_provider.dart';
+import '../../../domain/repositories/${d}_repository.dart';
 
 part '${d}_data_providers.g.dart';
 

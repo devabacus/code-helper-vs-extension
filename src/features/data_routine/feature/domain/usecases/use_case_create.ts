@@ -10,7 +10,7 @@ export const useCaseCreateCont = (driftClassName: string) => {
 
   return `
 import '../../repositories/${d}_repository.dart';
-import '../../entities/${d}.dart';
+import '../../entities/${d}/${d}.dart';
 
 class Create${D}UseCase {
   final ${D}Repository _repository;

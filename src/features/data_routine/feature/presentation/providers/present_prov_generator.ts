@@ -16,7 +16,7 @@ export class PresentProviderGenerator extends BaseGenerator {
   }
 
   protected getPath(featurePath: string, entityName: string): string {
-    return path.join(this.structure.getPresentationProviderPath(featurePath), `${entityName}_state_providers.dart`);
+    return path.join(this.structure.getPresentationProviderPath(featurePath),  entityName, `${entityName}_state_providers.dart`);
   }
 
   protected getContent(parser: DriftClassParser): string {
@@ -26,8 +26,8 @@ export class PresentProviderGenerator extends BaseGenerator {
   
     return `
   import 'package:riverpod_annotation/riverpod_annotation.dart';
-  import '../../../domain/entities/${d}.dart';
-  import '../../../domain/providers/${d}_usecase_providers.dart';
+  import '../../../domain/entities/${d}/${d}.dart';
+  import '../../../domain/providers/${d}/${d}_usecase_providers.dart';
   
   part '${d}_state_providers.g.dart';
   
