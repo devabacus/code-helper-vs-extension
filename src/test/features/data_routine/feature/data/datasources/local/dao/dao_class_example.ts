@@ -2,7 +2,7 @@ export const daoClassExample =
 `
 import 'package:drift/drift.dart';
 import '../../../../../../../core/database/local/database.dart';
-import '../tables/category_table.dart';
+import '../../tables/category_table.dart';
 
 part 'category_dao.g.dart';
 

@@ -1,9 +1,9 @@
 import assert from "assert";
-import { daoClassExample } from "../sources/dao_class_example";
+import { daoClassExample } from "./dao_class_example";
 
 
 
-    test('dao test', () => {
-        // assert.strictEqual(daoClassExample, daoLocalContent("category"));
+test('dao test', () => {
+    // assert.strictEqual(daoClassExample, daoLocalContent("category"));
 
-    });
+});

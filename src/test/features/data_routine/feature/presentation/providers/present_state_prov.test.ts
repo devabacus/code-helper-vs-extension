@@ -1,6 +1,6 @@
 import assert from "assert";
 import { driftClassNameCategory } from "../../../constants/drift_class_names";
-import { presentStateProvExample } from "./present_state_prov_example";
+import { presentStateProvCategoryExample } from "./present_state_prov_example";
 
 
 

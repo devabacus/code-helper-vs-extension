@@ -2,7 +2,7 @@
 
 export const useCaseGetByIdExample = `
 import '../../repositories/category_repository.dart';
-import '../../entities/category.dart';
+import '../../entities/category/category.dart';
 
 class GetCategoryByIdUseCase {
   final CategoryRepository _repository;

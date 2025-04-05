@@ -2,7 +2,7 @@ import path from "path";
 import { DriftClassParser } from "../../../../../../features/data_routine/feature/data/datasources/local/tables/drift_class_parser";
 import { EntityGenerator } from "../../../../../../features/data_routine/feature/domain/entities/entity_generator";
 import { MockFileSystem } from "../../../../../mocks/mock_file_system";
-import { tableCategory } from "../../../fixtures/drift_class_examples";
+import { tableCategory } from "../../data/datasources/local/tables/drift_class_examples";
 import assert from "assert";
 import { entityCategoryExample } from "./entity_example";
 

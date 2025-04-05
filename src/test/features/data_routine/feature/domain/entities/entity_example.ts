@@ -13,4 +13,5 @@ required String title,
 
   factory CategoryEntity.fromJson(Map<String, dynamic> json) => _$CategoryEntityFromJson(json);
 }
+
 `;

@@ -1,7 +1,7 @@
-export const presentStateProvExample = `
+export const presentStateProvCategoryExample = `
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import '../../../domain/entities/category.dart';
-import '../../../domain/providers/category_usecase_providers.dart';
+import '../../../domain/entities/category/category.dart';
+import '../../../domain/providers/category/category_usecase_providers.dart';
 
 part 'category_state_providers.g.dart';
 
@@ -33,4 +33,5 @@ class Categories extends _$Categories {
     });
   }
 }
+
 `;

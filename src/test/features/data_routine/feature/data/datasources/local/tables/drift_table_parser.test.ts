@@ -1,5 +1,5 @@
 import assert from "assert";
-import { tableAuth, tableCategory, tableTask } from "../../../../../fixtures/drift_class_examples";
+import { tableAuth, tableCategory, tableTask } from "./drift_class_examples";
 import { DriftClassParser } from "../../../../../../../../features/data_routine/feature/data/datasources/local/tables/drift_class_parser";
 
 
