@@ -9,6 +9,7 @@ export interface ProjectStructure{
     modelsPath: string;
     
     domainPath: string;
+    usecasesPath: string;
     entitiesPath: string;
 
     presentationPath: string;
@@ -26,6 +27,9 @@ export interface ProjectStructure{
     getEntityPath(featurePath: string): string;
     getDomainRepositoryPath(featurePath: string): string;
     getDomainUseCaseProviderPath(featurePath: string): string;
+    
+    getDomainUseCasesPath(featurePath: string): string;
+
    
     getPresentationPath(featurePath: string): string;
     getPresentationProviderPath(featurePath: string): string;

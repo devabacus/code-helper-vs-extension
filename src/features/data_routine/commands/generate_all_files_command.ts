@@ -27,6 +27,20 @@ export class GenerateAllFilesCommand implements Command {
 
         await this.generatorFactory.createDomainProviderGenerator().generate(this.featurePath, this.driftClassName, this.parser);
 
+        // domain layer use_cases
+        await this.generatorFactory.createUseCaseCreateGenerator().generate(this.featurePath, this.driftClassName, this.parser);
+
+        await this.generatorFactory.createUseCaseUpdateGenerator().generate(this.featurePath, this.driftClassName, this.parser);
+
+        await this.generatorFactory.createUseCaseDeleteGenerator().generate(this.featurePath, this.driftClassName, this.parser);
+
+        await this.generatorFactory.createUseCaseGetByIdGenerator().generate(this.featurePath, this.driftClassName, this.parser);
+
+        await this.generatorFactory.createUseCaseGetAllGenerator().generate(this.featurePath, this.driftClassName, this.parser);
+
+
+
+
         //presentation layer
         await this.generatorFactory.createPresentProviderGenerator().generate(this.featurePath, this.driftClassName, this.parser);
 

@@ -12,6 +12,7 @@ export class DefaultProjectStructure implements ProjectStructure {
     sourcesPath: string = "sources";
     
     domainPath: string = "domain";
+    usecasesPath: string = "usecases";
     entitiesPath: string = "entities";
     
     presentationPath: string = "presentation";
@@ -56,6 +57,9 @@ export class DefaultProjectStructure implements ProjectStructure {
     }
     getDomainUseCaseProviderPath(featurePath: string):string {
         return path.join(featurePath, this.domainPath, this.providersPath);
+    }
+    getDomainUseCasesPath(featurePath: string):string {
+        return path.join(featurePath, this.domainPath, this.usecasesPath);
     }
 
    

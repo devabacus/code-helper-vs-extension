@@ -21,9 +21,7 @@ export async function createFolder(path: string) {
     if (!fs.existsSync(path)) {
        await fs.promises.mkdir(path, { recursive: true });
     }
-
 }
-
 
 export async function createFile(mpath: string, content: string) {
     if (!fs.existsSync(path.dirname(mpath))) {
@@ -32,9 +30,6 @@ export async function createFile(mpath: string, content: string) {
     await fs.promises.writeFile(mpath, content, 'utf8');
 }
 
-
 export async function getFilesInDir(path: string): Promise<string[]>{
-   
-    return await fs.promises.readdir(path);
-
-}
+   return await fs.promises.readdir(path);
+        }
