@@ -9,7 +9,8 @@ export abstract class BaseDataRoutineGeneratorTest {
    
     protected mockFileSystem!: MockFileSystem;
     protected abstract createGenerator(fileSystem: IFileSystem): FileGenerator
-
+    protected abstract getExpectedPath(featurePath: string, entityName: string): string;
+    
     setup(){
         this.mockFileSystem = new MockFileSystem();
     }
@@ -25,5 +26,5 @@ export abstract class BaseDataRoutineGeneratorTest {
         assert.strictEqual(this.mockFileSystem.createdFiles[expectedPath].trim(), expectedContent.trim());
     }
     
-    protected abstract getExpectedPath(featurePath: string, entityName: string): string;
+    
 }

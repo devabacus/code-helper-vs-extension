@@ -8,6 +8,7 @@ import { BaseDataRoutineGeneratorTest } from "../../../generators/data_routine_g
 
 suite('UseCaseCreateGenerator', () => {
   class UseCaseCreateGeneratorTest extends BaseDataRoutineGeneratorTest {
+   
     protected createGenerator(fileSystem: IFileSystem): FileGenerator {
       return new UseCaseCreateGenerator(fileSystem);
     }

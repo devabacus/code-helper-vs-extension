@@ -25,18 +25,18 @@ export class UseCaseCreateGenerator extends DataRoutineGenerator {
     const D = parser.driftClassNameUpper;
 
     return `
-  import '../../repositories/${d}_repository.dart';
-  import '../../entities/${d}/${d}.dart';
+import '../../repositories/${d}_repository.dart';
+import '../../entities/${d}/${d}.dart';
+
+class Create${D}UseCase {
+  final ${D}Repository _repository;
   
-  class Create${D}UseCase {
-    final ${D}Repository _repository;
-    
-    Create${D}UseCase(this._repository);
-    
-    Future<int> call(${D}Entity ${d}) {
-      return _repository.create${D}(${d});
-    }
+  Create${D}UseCase(this._repository);
+  
+  Future<int> call(${D}Entity ${d}) {
+    return _repository.create${D}(${d});
   }
+}
   `;
   }
 }

@@ -4,11 +4,11 @@ import { DriftClassParser } from "../../../../features/data_routine/feature/data
 import { tableCategory, tableTask, tableAuth } from "../feature/data/datasources/local/tables/drift_class_examples";
 
 import { entityCategoryExample } from "../feature/domain/entities/entity_example";
-import { useCaseCreateFileExample } from "../feature/domain/usecases/use_case_create";
-import { useCaseDeleteExample } from "../feature/domain/usecases/use_case_delete";
-import { useCaseUpdateExample } from "../feature/domain/usecases/use_case_update";
-import { useCaseGetAllExample } from "../feature/domain/usecases/use_case_get_all";
-import { useCaseGetByIdExample } from "../feature/domain/usecases/use_case_get_by_id";
+import { useCaseCreateFileExample } from "../feature/domain/usecases/use_case_create_example";
+import { useCaseDeleteExample } from "../feature/domain/usecases/use_case_delete_example";
+import { useCaseUpdateExample } from "../feature/domain/usecases/use_case_update_example";
+import { useCaseGetAllExample } from "../feature/domain/usecases/use_case_get_all_example";
+import { useCaseGetByIdExample } from "../feature/domain/usecases/use_case_get_by_id_example";
 
 
 import { daoClassExample } from "../feature/data/datasources/local/dao/dao_class_example";
@@ -16,6 +16,7 @@ import { localSourceFileExample } from "../feature/data/datasources/local/source
 import { dataProviderExample } from "../feature/data/providers/data_prov_example";
 
 import { presentStateProvCategoryExample } from "../feature/presentation/providers/present_state_prov_example";
+import { modelCategoryExample } from "../feature/data/models/model_example";
 
 
 
@@ -59,13 +60,15 @@ export class TestDataFactory {
       case 'usecase_get_by_id_category':
         return useCaseGetByIdExample;
 
-      // DAO генераторы
+
       case 'dao_category':
         return daoClassExample;
 
-      // LocalDataSource генераторы
       case 'local_data_source_category':
         return localSourceFileExample;
+
+      case 'model_category':
+        return modelCategoryExample;
 
       // Provider генераторы
       case 'data_provider_category':

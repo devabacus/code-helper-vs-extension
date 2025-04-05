@@ -4,31 +4,32 @@ import { FileGenerator } from "../../../../../../core/interfaces/file_generator"
 import { IFileSystem } from "../../../../../../core/interfaces/file_system";
 import { TestDataFactory } from "../../../fixtures/test_data_factory";
 import { BaseDataRoutineGeneratorTest } from "../../../generators/data_routine_generator.test";
-import { EntityGenerator } from "../../../../../../features/data_routine/feature/domain/entities/entity_generator";
+import { ModelGenerator } from "../../../../../../features/data_routine/feature/data/models/data_model_generator";
 
-suite('EntityGenerator', () => {
-  class EntityGeneratorTest extends BaseDataRoutineGeneratorTest {
+
+suite('ModelGenerator', () => {
+  class ModelGeneratorTest extends BaseDataRoutineGeneratorTest {
    
     protected createGenerator(fileSystem: IFileSystem): FileGenerator {
-      return new EntityGenerator(fileSystem);
+      return new ModelGenerator(fileSystem);
     }
     
     protected getExpectedPath(featurePath: string, entityName: string): string {
-      return path.join(featurePath, "domain", "entities", entityName, `${entityName}.dart`);
+      return path.join(featurePath, "data", "models", entityName, `${entityName}_model.dart`);
     }
   }
   
 
-  const testInstance = new EntityGeneratorTest();
+  const testInstance = new ModelGeneratorTest();
   
   setup(() => {
     testInstance.setup();
   });
   
-  test('должен сгенерировать use_case_delete файл с правильным контентом', async () => {
+  test('должен сгенерировать model файл с правильным контентом', async () => {
     const featurePath = path.join("test", "feature");
     const entityName = "category";
-    const expectedContent = TestDataFactory.getExpectedContent('entity', 'category');
+    const expectedContent = TestDataFactory.getExpectedContent('model', 'category');
     
     await testInstance.testGenerator(featurePath, entityName, expectedContent);
   });

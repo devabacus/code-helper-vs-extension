@@ -2,7 +2,7 @@ import { FileGenerator } from "../../../core/interfaces/file_generator";
 import { IFileSystem } from "../../../core/interfaces/file_system";
 import { DataDaoGenerator } from "../feature/data/datasources/local/dao/data_local_dao_generator";
 import { DataSourcesGenerator } from "../feature/data/datasources/local/sources/local_data_source_dart";
-import { DataModelGenerator } from "../feature/data/models/data_model_generator";
+import { ModelGenerator } from "../feature/data/models/data_model_generator";
 import { DataExtensionModelGenerator } from "../feature/data/models/extension_model_generator";
 import { DataExtensionTableGenerator } from "../feature/data/models/extension_table_generator";
 import { DataProviderGenerator } from "../feature/data/providers/data_prov_generator";
@@ -14,7 +14,7 @@ import { DomainRepositoryGenerator } from "../feature/domain/repositories/domain
 import { UseCaseCreateGenerator } from "../feature/domain/usecases/use_case_create_generator";
 import { UseCaseDeleteGenerator } from "../feature/domain/usecases/use_case_delete_generator";
 import { UseCaseGetByIdGenerator } from "../feature/domain/usecases/use_case_get_by_id_generator";
-import { UseCaseGetAllGenerator } from "../feature/domain/usecases/use_case_get_generator copy";
+import { UseCaseGetAllGenerator } from "../feature/domain/usecases/use_case_get_all_generator";
 import { UseCaseUpdateGenerator } from "../feature/domain/usecases/use_case_update_generator";
 import { PresentProviderGenerator } from "../feature/presentation/providers/present_prov_generator";
 
@@ -24,7 +24,7 @@ export class GeneratorFactory {
 
     // data layer
     createModelGenerator(): FileGenerator {
-        return new DataModelGenerator(this.fileSystem);
+        return new ModelGenerator(this.fileSystem);
     }
 
     createDaoGenerator(): FileGenerator {
@@ -50,8 +50,8 @@ export class GeneratorFactory {
     createDataModelExtensionGenerator(): FileGenerator {
         return new DataExtensionModelGenerator(this.fileSystem);
     }
-    
-    
+
+
     // domain layer
     createEntityGenerator(): FileGenerator {
         return new EntityGenerator(this.fileSystem);
@@ -69,28 +69,28 @@ export class GeneratorFactory {
 
     // domain layer / usecases
 
-    createUseCaseCreateGenerator():FileGenerator {
-       return new UseCaseCreateGenerator(this.fileSystem);              
+    createUseCaseCreateGenerator(): FileGenerator {
+        return new UseCaseCreateGenerator(this.fileSystem);
     }
-    createUseCaseUpdateGenerator():FileGenerator {
-        return new UseCaseUpdateGenerator(this.fileSystem);              
-     }
-     createUseCaseGetByIdGenerator():FileGenerator {
-        return new UseCaseGetByIdGenerator(this.fileSystem);              
-     }
-     createUseCaseGetAllGenerator():FileGenerator {
-        return new UseCaseGetAllGenerator(this.fileSystem);              
-     }
-     createUseCaseDeleteGenerator():FileGenerator {
-        return new UseCaseDeleteGenerator(this.fileSystem);              
-     }
+    createUseCaseUpdateGenerator(): FileGenerator {
+        return new UseCaseUpdateGenerator(this.fileSystem);
+    }
+    createUseCaseGetByIdGenerator(): FileGenerator {
+        return new UseCaseGetByIdGenerator(this.fileSystem);
+    }
+    createUseCaseGetAllGenerator(): FileGenerator {
+        return new UseCaseGetAllGenerator(this.fileSystem);
+    }
+    createUseCaseDeleteGenerator(): FileGenerator {
+        return new UseCaseDeleteGenerator(this.fileSystem);
+    }
 
     // presentation layer
     createPresentProviderGenerator(): FileGenerator {
         return new PresentProviderGenerator(this.fileSystem);
     }
-    
-    
+
+
 }
 
 

@@ -2,34 +2,34 @@
 import path from "path";
 import { FileGenerator } from "../../../../../../core/interfaces/file_generator";
 import { IFileSystem } from "../../../../../../core/interfaces/file_system";
+import { UseCaseCreateGenerator } from "../../../../../../features/data_routine/feature/domain/usecases/use_case_create_generator";
 import { TestDataFactory } from "../../../fixtures/test_data_factory";
 import { BaseDataRoutineGeneratorTest } from "../../../generators/data_routine_generator.test";
-import { EntityGenerator } from "../../../../../../features/data_routine/feature/domain/entities/entity_generator";
+import { UseCaseGetByIdGenerator } from "../../../../../../features/data_routine/feature/domain/usecases/use_case_get_by_id_generator";
 
-suite('EntityGenerator', () => {
-  class EntityGeneratorTest extends BaseDataRoutineGeneratorTest {
-   
+suite('UseCaseGetByIdGenerator', () => {
+  class UseCaseGetByIdGeneratorTest extends BaseDataRoutineGeneratorTest {
+
     protected createGenerator(fileSystem: IFileSystem): FileGenerator {
-      return new EntityGenerator(fileSystem);
+      return new UseCaseGetByIdGenerator(fileSystem);
     }
-    
+
     protected getExpectedPath(featurePath: string, entityName: string): string {
-      return path.join(featurePath, "domain", "entities", entityName, `${entityName}.dart`);
+      return path.join(featurePath, "domain", "usecases", entityName, "get_by_id.dart");
     }
   }
-  
 
-  const testInstance = new EntityGeneratorTest();
-  
+  const testInstance = new UseCaseGetByIdGeneratorTest();
+
   setup(() => {
     testInstance.setup();
   });
-  
-  test('должен сгенерировать use_case_delete файл с правильным контентом', async () => {
+
+  test('должен сгенерировать use_case_create файл с правильным контентом', async () => {
     const featurePath = path.join("test", "feature");
     const entityName = "category";
-    const expectedContent = TestDataFactory.getExpectedContent('entity', 'category');
-    
+    const expectedContent = TestDataFactory.getExpectedContent('usecase_get_by_id', 'category');
+
     await testInstance.testGenerator(featurePath, entityName, expectedContent);
   });
 });

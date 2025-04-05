@@ -5,7 +5,7 @@ import { ProjectStructure } from "../../../../../core/interfaces/project_structu
 import { DataRoutineGenerator } from "../../../generators/data_routine_generator";
 import { DriftClassParser } from "../datasources/local/tables/drift_class_parser";
 
-export class DataModelGenerator extends DataRoutineGenerator {
+export class ModelGenerator extends DataRoutineGenerator {
 
   private structure: ProjectStructure;
 
@@ -24,20 +24,21 @@ export class DataModelGenerator extends DataRoutineGenerator {
     const fields = parser.fieldsRequired;
 
     return `
-  import 'package:freezed_annotation/freezed_annotation.dart';
-  
-  part '${d}_model.freezed.dart';
-  part '${d}_model.g.dart';
-  
-  @freezed
-  abstract class ${D}Model with _$${D}Model {
-    const factory ${D}Model({
-      ${fields}
-    }) = _${D}Model;
-  
-    factory ${D}Model.fromJson(Map<String, dynamic> json) => _$${D}ModelFromJson(json);
-  }
-  `;
+import 'package:freezed_annotation/freezed_annotation.dart';
+
+part '${d}_model.freezed.dart';
+part '${d}_model.g.dart';
+
+@freezed
+abstract class ${D}Model with _$${D}Model {
+  const factory ${D}Model({
+    ${fields}
+  }) = _${D}Model;
+
+  factory ${D}Model.fromJson(Map<String, dynamic> json) => _$${D}ModelFromJson(json);
+}
+
+`;
   }
 
 }
