@@ -1,19 +1,19 @@
 // Place your settings in this file to overwrite default and user settings.
 {
 	"files.exclude": {
-		"out": true,
-		"tsconfig.json": true,
-		"package-lock.json": true,
-		"eslint.config.mjs": true,
-		"*.vsix": true,
-		".gitignore": true,
-		".vscode-test*": true,
-		"*.md": true,
-		".vscodeignore": true,
-		"node_modules": true,
-		"media": true,
-		".vscode": true,
-		"package.json": true,
+		// // "out": true,
+		// "tsconfig.json": true,
+		// "package-lock.json": true,
+		// "eslint.config.mjs": true,
+		// "*.vsix": true,
+		// ".gitignore": true,
+		// ".vscode-test*": true,
+		// "*.md": true,
+		// ".vscodeignore": true,
+		// "node_modules": true,
+		// "media": true,
+		// // ".vscode": true,
+		// "package.json": true,
 	
 	},
 	"search.exclude": {
