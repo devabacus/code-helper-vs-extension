@@ -1,5 +1,5 @@
-export const daoClassExample = 
-`
+export const dataDaoExample =
+    `
 import 'package:drift/drift.dart';
 import '../../../../../../../core/database/local/database.dart';
 import '../../tables/category_table.dart';

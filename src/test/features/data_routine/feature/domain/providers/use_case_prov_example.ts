@@ -1,12 +1,12 @@
 export const useCaseCategoryProviderExample = `
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import '../usecases/category/create.dart';
-import '../usecases/category/delete.dart';
-import '../usecases/category/update.dart';
-import '../usecases/category/get_all.dart';
-import '../usecases/category/get_by_id.dart';
-import '../../data/providers/category_data_providers.dart';
+import '../../usecases/category/create.dart';
+import '../../usecases/category/delete.dart';
+import '../../usecases/category/update.dart';
+import '../../usecases/category/get_all.dart';
+import '../../usecases/category/get_by_id.dart';
+import '../../../data/providers/category/category_data_providers.dart';
 
 part 'category_usecase_providers.g.dart';
 

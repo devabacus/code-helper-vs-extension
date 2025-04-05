@@ -60,8 +60,8 @@ suite('parser drift test', () => {
     });
 
     test('fields Value wrapper', () => {
-        const result = `id: Value(category.id), title: Value(category.title)`;
-        const result2 = `id: Value(task.id), title: Value(task.title), description: Value(task.description), age: Value(task.age)`;
+        const result = `id: Value(id), title: Value(title)`;
+        const result2 = `id: Value(id), title: Value(title), description: Value(description), age: Value(age)`;
 
         assert.strictEqual(driftClassCategory.paramsWrapValue, result);
         assert.strictEqual(driftClassTask.paramsWrapValue, result2);

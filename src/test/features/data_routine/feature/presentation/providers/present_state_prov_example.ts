@@ -1,4 +1,4 @@
-export const presentStateProvCategoryExample = `
+export const presentStateProviderCategoryExample = `
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../domain/entities/category/category.dart';
 import '../../../domain/providers/category/category_usecase_providers.dart';

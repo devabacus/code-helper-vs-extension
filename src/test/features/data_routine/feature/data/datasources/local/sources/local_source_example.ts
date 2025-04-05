@@ -1,4 +1,4 @@
-export const localSourceFileExample = `
+export const localDataSourceFileExample = `
 import '../../../models/extensions/category/category_model_extension.dart';
 import '../../../models/extensions/category/category_table_extension.dart';
 import '../../../../../../core/database/local/database.dart';

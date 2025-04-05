@@ -25,40 +25,40 @@ export class PresentProviderGenerator extends DataRoutineGenerator {
     const Ds = pluralConvert(D);
 
     return `
-  import 'package:riverpod_annotation/riverpod_annotation.dart';
-  import '../../../domain/entities/${d}/${d}.dart';
-  import '../../../domain/providers/${d}/${d}_usecase_providers.dart';
-  
-  part '${d}_state_providers.g.dart';
-  
-  @riverpod
-  class ${Ds} extends _$${Ds} {
-    @override
-    Future<List<${D}Entity>> build() {
-      return ref.read(get${Ds}UseCaseProvider)();
-    }
-  
-    Future<void> add${D}(${D}Entity ${d}) async {
-      state = await AsyncValue.guard(() async {
-        await ref.read(create${D}UseCaseProvider)(${d});
-        return ref.read(get${Ds}UseCaseProvider)();
-      });
-    }
-  
-    Future<void> update${D}(${D}Entity ${d}) async {
-      state = await AsyncValue.guard(() async {
-        await ref.read(update${D}UseCaseProvider)(${d});
-        return ref.read(get${Ds}UseCaseProvider)();
-      });
-    }
-  
-    Future<void> delete${D}(int id) async {
-      state = await AsyncValue.guard(() async {
-        await ref.read(delete${D}UseCaseProvider)(id);
-        return ref.read(get${Ds}UseCaseProvider)();
-      });
-    }
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+import '../../../domain/entities/${d}/${d}.dart';
+import '../../../domain/providers/${d}/${d}_usecase_providers.dart';
+
+part '${d}_state_providers.g.dart';
+
+@riverpod
+class ${Ds} extends _$${Ds} {
+  @override
+  Future<List<${D}Entity>> build() {
+    return ref.read(get${Ds}UseCaseProvider)();
   }
+
+  Future<void> add${D}(${D}Entity ${d}) async {
+    state = await AsyncValue.guard(() async {
+      await ref.read(create${D}UseCaseProvider)(${d});
+      return ref.read(get${Ds}UseCaseProvider)();
+    });
+  }
+
+  Future<void> update${D}(${D}Entity ${d}) async {
+    state = await AsyncValue.guard(() async {
+      await ref.read(update${D}UseCaseProvider)(${d});
+      return ref.read(get${Ds}UseCaseProvider)();
+    });
+  }
+
+  Future<void> delete${D}(int id) async {
+    state = await AsyncValue.guard(() async {
+      await ref.read(delete${D}UseCaseProvider)(id);
+      return ref.read(get${Ds}UseCaseProvider)();
+    });
+  }
+}
   `;
   }
 }
