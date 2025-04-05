@@ -13,7 +13,6 @@ export class EntityGenerator extends BaseGenerator {
   constructor(fileSystem: FileSystem, structure?: ProjectStructure) {
     super(fileSystem);
     this.structure = structure || new DefaultProjectStructure();
-
   }
 
   protected getPath(featurePath: string, entityName: string): string {
