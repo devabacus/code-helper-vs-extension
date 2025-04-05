@@ -22,6 +22,7 @@ import { tableExtensionCategoryExample } from "../feature/data/models/extensions
 import { entityExtensionCategoryExample } from "../feature/domain/entities/extensions/entity_extension_example";
 import { domainRepostitoryExample } from "../feature/domain/repositories/domain_repository_example";
 import { useCaseCategoryProviderExample } from "../feature/domain/providers/use_case_prov_example";
+import { dataRepositoryImplCategoryExample } from "../feature/data/repositories/data_repository_impl_example";
 
 
 
@@ -82,7 +83,7 @@ export class TestDataFactory {
         return localDataSourceFileExample;
 
       case 'data_repository_impl_category':
-        return domainRepostitoryExample;
+        return dataRepositoryImplCategoryExample;
 
       case 'model_category':
         return modelCategoryExample;
