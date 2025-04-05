@@ -16,7 +16,7 @@ export class DataModelGenerator extends BaseGenerator {
   }
 
   protected getPath(featurePath: string, entityName: string): string {
-    return path.join(this.structure.getDataModelPath(featurePath), `${entityName}_model.dart`);
+    return path.join(this.structure.getDataModelPath(featurePath), entityName, `${entityName}_model.dart`);
   }
   protected getContent(parser: DriftClassParser): string {
     const d = parser.driftClassNameLower;

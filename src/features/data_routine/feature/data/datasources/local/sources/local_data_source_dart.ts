@@ -33,7 +33,7 @@ export class DataSourcesGenerator extends BaseGenerator {
     return `
   import '../../../../../../core/database/local/database.dart';
   import '../../local/dao/${d}_dao.dart';
-  import '../../../../data/models/${d}_model.dart';
+  import '../../../../data/models/${d}/${d}_model.dart';
   import 'package:drift/drift.dart';
   
   class ${D}LocalDataSource {
