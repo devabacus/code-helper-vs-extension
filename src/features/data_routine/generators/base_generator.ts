@@ -10,7 +10,7 @@ export abstract class BaseGenerator implements FileGenerator {
     constructor(protected fileSystem: IFileSystem) { }
 
     protected abstract getPath(featurePath: string, entityName: string): string;
-    protected abstract getContent(data?: any): string;
+    protected abstract getContent(data: any): string;
 
     async generate(featurePath: string, entityName: string, data?: any): Promise<void> {
         try {
