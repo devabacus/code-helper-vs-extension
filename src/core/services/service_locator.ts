@@ -1,4 +1,3 @@
-import { ProviderFilesGenerator } from "../../features/data_routine/provider_files_generator";
 import { DefaultFileSystem } from "../implementations/default_file_system";
 import { IFileSystem } from "../interfaces/file_system";
 
@@ -29,8 +28,5 @@ export class ServiceLocator {
         return this.services.get("fileSystem");
     }
 
-    getProviderFilesGenerator(): ProviderFilesGenerator {
-        const fileSystem = this.getFileSystem();
-        return new ProviderFilesGenerator(fileSystem);
-    }
+
 }

@@ -1,4 +1,5 @@
 import fs from 'fs';
+import path from 'path';
 
 
 export async function createFolders(folderPaths: string[], errorHandler?: (error: string) => void): Promise<void> {
@@ -24,10 +25,11 @@ export async function createFolder(path: string) {
 }
 
 
-export async function createFile(path: string, content: string) {
-// TODO if path doesn't exist it's need to create folders
-    await fs.promises.writeFile(path, content, 'utf8');
-
+export async function createFile(mpath: string, content: string) {
+    if (!fs.existsSync(path.dirname(mpath))) {
+        await fs.promises.mkdir(mpath, { recursive: true });
+    }
+    await fs.promises.writeFile(path.dirname(mpath), content, 'utf8');
 }
 
 

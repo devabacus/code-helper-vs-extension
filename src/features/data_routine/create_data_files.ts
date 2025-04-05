@@ -33,16 +33,10 @@ export async function createDataFiles() {
     // appdatabase routine
     await appDatabaseRoutine(currentFilePath, driftClassName);
 
-
     // usecases files
     await addUseCases(featurePath, driftClassName);
 
-
     // providers files for all layers
-
-    const providerGenerator = serviceLocator.getProviderFilesGenerator();
-    providerGenerator.addProviderFiles(featurePath, driftClassName);
-
     // await addProviderFiles(featurePath, driftClassName);
     await executeInTerminal(build_runner);
 }
