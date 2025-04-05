@@ -1,4 +1,4 @@
-import { BaseGenerator } from "../../../generators/base_generator";
+import { DataRoutineGenerator } from "../../../generators/data_routine_generator";
 import * as path from "path";
 import { DriftClassParser } from "../../data/datasources/local/tables/drift_class_parser";
 import { ProjectStructure } from "../../../../../core/interfaces/project_structure";
@@ -6,7 +6,7 @@ import { DefaultProjectStructure } from "../../../../../core/implementations/def
 import { IFileSystem } from "../../../../../core/interfaces/file_system";
 import { pluralConvert } from "../../../../../utils/text_work/text_util";
 
-export class DomainProviderGenerator extends BaseGenerator {
+export class DomainProviderGenerator extends DataRoutineGenerator {
 
   private structure: ProjectStructure;
 
@@ -23,7 +23,7 @@ export class DomainProviderGenerator extends BaseGenerator {
     const d = parser.driftClassNameLower;
     const D = parser.driftClassNameUpper;
     const Ds = pluralConvert(D);
-  
+
     return `
   import 'package:flutter_riverpod/flutter_riverpod.dart';
   import 'package:riverpod_annotation/riverpod_annotation.dart';

@@ -2,10 +2,10 @@ import path from "path";
 import { DefaultProjectStructure } from "../../../../../core/implementations/default_project_structure";
 import { IFileSystem } from "../../../../../core/interfaces/file_system";
 import { ProjectStructure } from "../../../../../core/interfaces/project_structure";
-import { BaseGenerator } from "../../../generators/base_generator";
+import { DataRoutineGenerator } from "../../../generators/data_routine_generator";
 import { DriftClassParser } from "../../data/datasources/local/tables/drift_class_parser";
 
-export class DomainExtensionEntityGenerator extends BaseGenerator {
+export class DomainExtensionEntityGenerator extends DataRoutineGenerator {
 
   private structure: ProjectStructure;
 

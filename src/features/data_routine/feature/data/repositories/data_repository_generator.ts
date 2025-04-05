@@ -1,11 +1,11 @@
 
 import path from "path";
-import { BaseGenerator } from "../../../generators/base_generator";
+import { DataRoutineGenerator } from "../../../generators/data_routine_generator";
 import { IDriftClassParser } from "../datasources/local/tables/drift_class_parser";
 import { pluralConvert } from "../../../../../utils/text_work/text_util";
 
 
-export class DataRepositoryGenerator extends BaseGenerator {
+export class DataRepositoryGenerator extends DataRoutineGenerator {
 
   protected getPath(featurePath: string, entityName: string): string {
     return path.join(featurePath, "data", "repositories", `${entityName}_repository_impl.dart`);

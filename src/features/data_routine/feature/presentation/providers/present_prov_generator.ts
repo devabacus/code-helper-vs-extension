@@ -1,4 +1,4 @@
-import { BaseGenerator } from "../../../generators/base_generator";
+import { DataRoutineGenerator } from "../../../generators/data_routine_generator";
 import * as path from "path";
 import { DriftClassParser } from "../../data/datasources/local/tables/drift_class_parser";
 import { ProjectStructure } from "../../../../../core/interfaces/project_structure";
@@ -6,7 +6,7 @@ import { DefaultProjectStructure } from "../../../../../core/implementations/def
 import { IFileSystem } from "../../../../../core/interfaces/file_system";
 import { pluralConvert } from "../../../../../utils/text_work/text_util";
 
-export class PresentProviderGenerator extends BaseGenerator {
+export class PresentProviderGenerator extends DataRoutineGenerator {
 
   private structure: ProjectStructure;
 
@@ -16,14 +16,14 @@ export class PresentProviderGenerator extends BaseGenerator {
   }
 
   protected getPath(featurePath: string, entityName: string): string {
-    return path.join(this.structure.getPresentationProviderPath(featurePath),  entityName, `${entityName}_state_providers.dart`);
+    return path.join(this.structure.getPresentationProviderPath(featurePath), entityName, `${entityName}_state_providers.dart`);
   }
 
   protected getContent(parser: DriftClassParser): string {
     const d = parser.driftClassNameLower;
     const D = parser.driftClassNameUpper;
     const Ds = pluralConvert(D);
-  
+
     return `
   import 'package:riverpod_annotation/riverpod_annotation.dart';
   import '../../../domain/entities/${d}/${d}.dart';

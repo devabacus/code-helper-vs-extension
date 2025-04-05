@@ -3,11 +3,11 @@ import { DefaultProjectStructure } from "../../../../../../../core/implementatio
 import { IFileSystem } from "../../../../../../../core/interfaces/file_system";
 import { ProjectStructure } from "../../../../../../../core/interfaces/project_structure";
 import { pluralConvert } from "../../../../../../../utils/text_work/text_util";
-import { BaseGenerator } from "../../../../../generators/base_generator";
+import { DataRoutineGenerator } from "../../../../../generators/data_routine_generator";
 import { DriftClassParser } from "../tables/drift_class_parser";
 
 
-export class DataDaoGenerator extends BaseGenerator {
+export class DataDaoGenerator extends DataRoutineGenerator {
 
     private structure: ProjectStructure;
 

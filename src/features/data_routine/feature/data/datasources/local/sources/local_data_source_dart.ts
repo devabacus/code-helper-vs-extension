@@ -3,11 +3,11 @@ import { DefaultProjectStructure } from "../../../../../../../core/implementatio
 import { IFileSystem } from "../../../../../../../core/interfaces/file_system";
 import { ProjectStructure } from "../../../../../../../core/interfaces/project_structure";
 import { pluralConvert } from "../../../../../../../utils/text_work/text_util";
-import { BaseGenerator } from "../../../../../generators/base_generator";
+import { DataRoutineGenerator } from "../../../../../generators/data_routine_generator";
 import { DriftClassParser } from "../tables/drift_class_parser";
 
 
-export class DataSourcesGenerator extends BaseGenerator {
+export class DataSourcesGenerator extends DataRoutineGenerator {
 
   private structure: ProjectStructure;
 
@@ -24,7 +24,7 @@ export class DataSourcesGenerator extends BaseGenerator {
     const D = parser.driftClassNameUpper;
     const d = parser.driftClassNameLower;
     const Ds = pluralConvert(D);
-        
+
     return `
 import '../../../models/extensions/${d}/${d}_model_extension.dart';
 import '../../../models/extensions/${d}/${d}_table_extension.dart';

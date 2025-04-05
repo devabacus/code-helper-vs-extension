@@ -4,17 +4,17 @@ import { DefaultProjectStructure } from "../../../../../core/implementations/def
 import { IFileSystem } from "../../../../../core/interfaces/file_system";
 import { ProjectStructure } from "../../../../../core/interfaces/project_structure";
 import { pluralConvert } from "../../../../../utils/text_work/text_util";
-import { BaseGenerator } from "../../../generators/base_generator";
+import { DataRoutineGenerator } from "../../../generators/data_routine_generator";
 import { DriftClassParser } from "../../data/datasources/local/tables/drift_class_parser";
 
 
-export class UseCaseGetAllGenerator extends BaseGenerator{
+export class UseCaseGetAllGenerator extends DataRoutineGenerator {
   private structure: ProjectStructure;
-    
-  constructor(fileSystem: IFileSystem, structure?: ProjectStructure){
+
+  constructor(fileSystem: IFileSystem, structure?: ProjectStructure) {
     super(fileSystem);
-    
-    this.structure = structure || new DefaultProjectStructure();       
+
+    this.structure = structure || new DefaultProjectStructure();
   }
 
   protected getPath(featurePath: string, entityName: string): string {
@@ -24,7 +24,7 @@ export class UseCaseGetAllGenerator extends BaseGenerator{
     const d = parser.driftClassNameLower;
     const D = parser.driftClassNameUpper;
     const Ds = pluralConvert(D);
-      
+
     return `
 import '../../repositories/${d}_repository.dart';
 import '../../entities/${d}/${d}.dart';
