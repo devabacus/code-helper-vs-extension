@@ -23,7 +23,7 @@ import '../../domain/repositories/${d}_repository.dart';
 import '../../domain/entities/${d}/${d}.dart';
 
 class ${D}RepositoryImpl implements ${D}Repository {
-  final ${D}LocalDataSource _localDataSource;
+  final ${D}LocalDataSource _localDataSource; 
 
   ${D}RepositoryImpl(this._localDataSource);
 
