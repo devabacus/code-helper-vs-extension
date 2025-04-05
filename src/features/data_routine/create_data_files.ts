@@ -31,7 +31,7 @@ export async function createDataFiles() {
     // запускаем генерацию
     generatorCommands.execute();
 
-
+    
 
     // appdatabase routine
     await appDatabaseRoutine(currentFilePath, driftClassName);
