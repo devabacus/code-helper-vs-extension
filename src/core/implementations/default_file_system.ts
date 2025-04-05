@@ -1,7 +1,7 @@
 import { createFile as utilCreateFile, createFolder as utilCreateFolder } from "../../utils";
-import { FileSystem } from "../interfaces/file_system";
+import { IFileSystem } from "../interfaces/file_system";
 
-export class DefaultFileSystem implements FileSystem {
+export class DefaultFileSystem implements IFileSystem {
 
   async createFile(path: string, content: string): Promise<void> {
     return utilCreateFile(path, content);

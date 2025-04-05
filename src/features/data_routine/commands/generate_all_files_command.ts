@@ -13,5 +13,7 @@ export class GenerateAllFilesCommand implements Command {
         await this.generatorFactory.createDataRepositoryGenerator().generate(this.featurePath, this.driftClassName, this.parser);
 
         await this.generatorFactory.createDomainRepositoryGenerator().generate(this.featurePath, this.driftClassName, this.parser);
+
+        await this.generatorFactory.createModelGenerator().generate(this.featurePath, this.driftClassName, this.parser);        
     }
 }

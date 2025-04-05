@@ -1,13 +1,13 @@
 import { GenerationError } from "../../../core/error/generation_error";
 import { FileGenerator } from "../../../core/interfaces/file_generator";
-import { FileSystem } from "../../../core/interfaces/file_system";
+import { IFileSystem } from "../../../core/interfaces/file_system";
 
 
 
 
 export abstract class BaseGenerator implements FileGenerator {
 
-    constructor(protected fileSystem: FileSystem) { }
+    constructor(protected fileSystem: IFileSystem) { }
 
     protected abstract getPath(featurePath: string, entityName: string): string;
     protected abstract getContent(data?: any): string;

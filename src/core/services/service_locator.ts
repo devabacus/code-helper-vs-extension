@@ -1,6 +1,6 @@
 import { ProviderFilesGenerator } from "../../features/data_routine/provider_files_generator";
 import { DefaultFileSystem } from "../implementations/default_file_system";
-import { FileSystem } from "../interfaces/file_system";
+import { IFileSystem } from "../interfaces/file_system";
 
 
 
@@ -21,11 +21,11 @@ export class ServiceLocator {
         return ServiceLocator.instance;
     }
 
-    registerFileSystem(fileSystem: FileSystem): void {
+    registerFileSystem(fileSystem: IFileSystem): void {
         this.services.set("fileSystem", fileSystem);
     }
 
-    getFileSystem(): FileSystem {
+    getFileSystem(): IFileSystem {
         return this.services.get("fileSystem");
     }
 

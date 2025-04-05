@@ -1,8 +1,8 @@
-import { FileSystem } from "../../core/interfaces/file_system";
+import { IFileSystem } from "../../core/interfaces/file_system";
 
 
-export class MockFileSystem implements FileSystem {
-    
+export class MockFileSystem implements IFileSystem {
+
     createdFiles: Record<string, string> = {};
     createdFolders: string[] = [];
 
@@ -17,8 +17,8 @@ export class MockFileSystem implements FileSystem {
     reset(): void {
         this.createdFiles = {};
         this.createdFolders = [];
-          }
-    
+    }
+
 }
 
 

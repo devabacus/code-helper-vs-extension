@@ -4,19 +4,18 @@ import * as path from "path";
 import { DriftClassParser } from "../../data/datasources/local/tables/drift_class_parser";
 import { ProjectStructure } from "../../../../../core/interfaces/project_structure";
 import { DefaultProjectStructure } from "../../../../../core/implementations/default_project_structure";
-import { FileSystem } from "../../../../../core/interfaces/file_system";
+import { IFileSystem } from "../../../../../core/interfaces/file_system";
 
 export class EntityGenerator extends BaseGenerator {
 
   private structure: ProjectStructure;
 
-  constructor(fileSystem: FileSystem, structure?: ProjectStructure) {
+  constructor(fileSystem: IFileSystem, structure?: ProjectStructure) {
     super(fileSystem);
     this.structure = structure || new DefaultProjectStructure();
   }
 
   protected getPath(featurePath: string, entityName: string): string {
-    // return path.join(featurePath, "domain", "entities", `${entityName}.dart`);
     return path.join(this.structure.getEntityPath(featurePath), `${entityName}.dart`);
   }
 

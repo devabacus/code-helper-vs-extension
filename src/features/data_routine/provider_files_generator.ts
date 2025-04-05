@@ -1,4 +1,4 @@
-import { FileSystem } from "../../core/interfaces/file_system";
+import { IFileSystem } from "../../core/interfaces/file_system";
 
 
 
@@ -10,7 +10,7 @@ export interface ProviderGenerator {
 export class ProviderFilesGenerator {
     private generators: ProviderGenerator[];
 
-    constructor(fileSystem: FileSystem) {
+    constructor(fileSystem: IFileSystem) {
         this.generators = [
             new DataProviderGenerator(fileSystem),
             new DomainProviderGenerator(fileSystem),
@@ -32,7 +32,7 @@ import { PresentationProviderGenerator } from "./feature/presentation/providers/
 
 export async function addProviderFiles(featurePath: string, driftClassName: string) {
     const fileSystem = new DefaultFileSystem();
-    
+
     const generator = new ProviderFilesGenerator(fileSystem);
     generator.addProviderFiles(featurePath, driftClassName);
 }

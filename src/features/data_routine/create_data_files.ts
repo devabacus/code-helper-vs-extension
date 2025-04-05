@@ -40,11 +40,6 @@ export async function createDataFiles() {
     // usecases files
     await addUseCases(featurePath, driftClassName);
 
-    // data layer
-    const modelPath = dataModelPath(featurePath, driftClassName);
-    const modelContent = dataModelCont(driftClassName, fields.fieldsRequired);
-    await createFile(modelPath, modelContent);
-
     const _daoPath = daoPath(featurePath, driftClassName);
     const daoContent = daoLocalContent(driftClassName);
     await createFile(_daoPath, daoContent);
