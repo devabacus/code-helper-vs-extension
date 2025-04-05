@@ -21,7 +21,6 @@ import '../../domain/entities/extensions/${d}_entity_extension.dart';
 import '../../data/datasources/local/sources/${d}_local_data_source.dart';
 import '../../domain/repositories/${d}_repository.dart';
 import '../../domain/entities/${d}/${d}.dart';
-import '../models/${d}/${d}_model.dart';
 
 class ${D}RepositoryImpl implements ${D}Repository {
   final ${D}LocalDataSource _localDataSource;
