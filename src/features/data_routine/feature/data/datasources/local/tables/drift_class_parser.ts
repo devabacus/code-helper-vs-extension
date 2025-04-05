@@ -92,15 +92,30 @@ export class DriftClassParser implements IDriftClassParser {
 
     get fieldsNameList(): string[] {
         return this.fields.map((field) => `${field.name}`);
-
     }
 
+    private get fieldsSimpleList() : string[] {
+        return this.fieldsNameList.map((field)=>`${field}: ${field}`);
+
+    }
+    // id : id, title : title .....
+    get fieldsSimple() : string {
+        return this.fieldsSimpleList.join(', ');
+    }
+
+    get fieldsSimpleWithoutId() : string {
+        const newList = this.fieldsSimpleList;
+        newList.shift();
+        return newList.join(', ');
+    }
+
+    // id,title
     get fieldsComma(): string {
         return this.fieldsNameList.join(',');
     }
 
     get paramsInstDrift(): string {
-        return this.fieldsParamList(unCap(this.driftClassNameUpper)).join(', ');
+        return this.fieldsParamList(this.driftClassNameLower).join(', ');
     }
 
     get paramsInstModel(): string {
@@ -112,8 +127,8 @@ export class DriftClassParser implements IDriftClassParser {
     }
 
     get paramsWrapValue(): string {
-        return this.fieldsNameList.map((item) =>
-            `${item}: Value(${unCap(this.driftClassNameUpper)}.${item})`).join(', ');
+        return this.fieldsNameList.map((item) =>`${item}: Value(${item})`).join(', ');
+            // `${item}: Value(${unCap(this.driftClassNameUpper)}.${item})`).join(', ');
     }
 
 

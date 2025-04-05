@@ -1,11 +1,14 @@
 import { FileGenerator } from "../../../core/interfaces/file_generator";
 import { IFileSystem } from "../../../core/interfaces/file_system";
-import { DataDaoGenerator } from "../feature/data/datasources/local/dao/data_local_dao_dart";
+import { DataDaoGenerator } from "../feature/data/datasources/local/dao/data_local_dao_generator";
 import { DataSourcesGenerator } from "../feature/data/datasources/local/sources/local_data_source_dart";
 import { DataModelGenerator } from "../feature/data/models/data_model_generator";
+import { DataExtensionModelGenerator } from "../feature/data/models/extension_model_generator";
+import { DataExtensionTableGenerator } from "../feature/data/models/extension_table_generator";
 import { DataProviderGenerator } from "../feature/data/providers/data_prov_generator";
 import { DataRepositoryGenerator } from "../feature/data/repositories/data_repository_generator";
 import { EntityGenerator } from "../feature/domain/entities/entity_generator";
+import { DomainExtensionEntityGenerator } from "../feature/domain/entities/extension_entity_generator";
 import { DomainProviderGenerator } from "../feature/domain/providers/domain_prov_generator";
 import { DomainRepositoryGenerator } from "../feature/domain/repositories/domain_repository_generator";
 import { UseCaseCreateGenerator } from "../feature/domain/usecases/use_case_create_generator";
@@ -34,11 +37,18 @@ export class GeneratorFactory {
 
     createDataProviderGenerator(): FileGenerator {
         return new DataProviderGenerator(this.fileSystem);
-
     }
 
     createDataRepositoryGenerator(): FileGenerator {
         return new DataRepositoryGenerator(this.fileSystem);
+    }
+
+    createDataTableExtensionGenerator(): FileGenerator {
+        return new DataExtensionTableGenerator(this.fileSystem);
+    }
+
+    createDataModelExtensionGenerator(): FileGenerator {
+        return new DataExtensionModelGenerator(this.fileSystem);
     }
     
     
@@ -52,6 +62,9 @@ export class GeneratorFactory {
 
     createDomainProviderGenerator(): FileGenerator {
         return new DomainProviderGenerator(this.fileSystem);
+    }
+    createDomainEntityExtensionGenerator(): FileGenerator {
+        return new DomainExtensionEntityGenerator(this.fileSystem);
     }
 
     // domain layer / usecases

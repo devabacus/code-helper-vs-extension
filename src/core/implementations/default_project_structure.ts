@@ -21,6 +21,11 @@ export class DefaultProjectStructure implements ProjectStructure {
     
     providersPath: string = "providers";
     
+    
+    extensionsPath: string = "extensions";
+
+
+    
     // data 
 
     getDaoPath(featurePath: string):string {
@@ -46,6 +51,10 @@ export class DefaultProjectStructure implements ProjectStructure {
         return path.join(featurePath, this.dataPath, this.providersPath);
     }
 
+    getDataExtensionPath(featurePath: string):string {
+        return path.join(featurePath, this.dataPath, this.modelsPath, this.extensionsPath);
+    }
+
 
     // domain     
     getEntityPath(featurePath: string):string {
@@ -62,6 +71,9 @@ export class DefaultProjectStructure implements ProjectStructure {
         return path.join(featurePath, this.domainPath, this.usecasesPath);
     }
 
+    getDomainExtensionPath(featurePath: string):string {
+        return path.join(featurePath, this.domainPath, this.entitiesPath, this.extensionsPath);
+    }
    
     // presentation 
     getPresentationPath(featurePath: string):string {

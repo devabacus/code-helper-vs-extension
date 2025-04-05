@@ -17,7 +17,7 @@ export class DataDaoGenerator extends BaseGenerator {
     }
 
     protected getPath(featurePath: string, entityName: string): string {
-        return path.join(this.structure.getDaoPath(featurePath), `${entityName}_dao.dart`);
+        return path.join(this.structure.getDaoPath(featurePath), entityName, `${entityName}_dao.dart`);
     }
     protected getContent(parser: DriftClassParser): string {
         const d = parser.driftClassNameLower;
@@ -27,7 +27,7 @@ export class DataDaoGenerator extends BaseGenerator {
         return `
 import 'package:drift/drift.dart';
 import '../../../../../../../core/database/local/database.dart';
-import '../tables/${d}_table.dart';
+import '../../tables/${d}_table.dart';
 
 part '${d}_dao.g.dart';
 

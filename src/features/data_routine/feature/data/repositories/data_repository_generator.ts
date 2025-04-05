@@ -14,57 +14,50 @@ export class DataRepositoryGenerator extends BaseGenerator {
     const D = parser.driftClassNameUpper;
     const d = parser.driftClassNameLower;
     const Ds = pluralConvert(D);
-    const paramsDrift = parser.paramsInstDrift;
-    const paramsModel = parser.paramsInstModel;
-
 
     return `
-      import '../../data/datasources/local/sources/${d}_local_data_source.dart';
-      
-      import '../../domain/repositories/${d}_repository.dart';
-      import '../../domain/entities/${d}/${d}.dart';
-      import '../models/${d}/${d}_model.dart';
-      
-      class ${D}RepositoryImpl implements ${D}Repository {
-        final ${D}LocalDataSource _localDataSource;
-      
-        ${D}RepositoryImpl(this._localDataSource);
-      // ---------auto generated------------------//
-        @override
-        Future<List<${D}Entity>> get${Ds}() async {
-          final ${d}Models = await _localDataSource.get${Ds}();
-          return ${d}Models
-              .map((model) => ${D}Entity(${paramsModel}))
-              .toList();
-        }
-      
-        @override
-        Future<${D}Entity> get${D}ById(int id) async {
-          final model = await _localDataSource.get${D}ById(id);
-          return ${D}Entity(${paramsModel});
-        }
-      
-        @override
-        Future<int> create${D}(${D}Entity ${d}) {
-          return _localDataSource.create${D}(
-            ${D}Model(${paramsDrift}),
-          );
-        }
-      
-        @override
-        Future<void> delete${D}(int id) async {
-          _localDataSource.delete${D}(id);
-        }
-      
-        @override
-        Future<void> update${D}(${D}Entity ${d}) async {
-          _localDataSource.update${D}(
-            ${D}Model(${paramsDrift}),
-          );
-        }
-          // ---------auto generated------------------//
-          //custom methods
-      }
+import '../models/extensions/${d}/${d}_model_extension.dart';
+import '../../domain/entities/extensions/${d}_entity_extension.dart';
+import '../../data/datasources/local/sources/${d}_local_data_source.dart';
+import '../../domain/repositories/${d}_repository.dart';
+import '../../domain/entities/${d}/${d}.dart';
+import '../models/${d}/${d}_model.dart';
+
+class ${D}RepositoryImpl implements ${D}Repository {
+  final ${D}LocalDataSource _localDataSource;
+
+  ${D}RepositoryImpl(this._localDataSource);
+
+  @override
+  Future<List<${D}Entity>> get${Ds}() async {
+    final ${d}Models = await _localDataSource.get${Ds}();
+    return ${d}Models.toEntities();
+
+  }
+
+  @override
+  Future<${D}Entity> get${D}ById(int id) async {
+    final model = await _localDataSource.get${D}ById(id);
+    return model.toEntity();
+
+  }
+
+  @override
+  Future<int> create${D}(${D}Entity ${d}) {
+    return _localDataSource.create${D}(${d}.toModel()
+    );
+  }
+
+  @override
+  Future<void> delete${D}(int id) async {
+    _localDataSource.delete${D}(id);
+  }
+
+  @override
+  Future<void> update${D}(${D}Entity ${d}) async {
+    _localDataSource.update${D}(${d}.toModel(),);
+  }
+}
       `;
   }
 

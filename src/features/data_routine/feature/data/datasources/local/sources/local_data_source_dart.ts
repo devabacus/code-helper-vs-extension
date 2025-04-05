@@ -24,54 +24,42 @@ export class DataSourcesGenerator extends BaseGenerator {
     const D = parser.driftClassNameUpper;
     const d = parser.driftClassNameLower;
     const Ds = pluralConvert(D);
-    const ds = pluralConvert(d);
-    const paramsDrift = parser.paramsInstDrift;
-    const paramsDriftWithOutId = parser.paramsWithOutId(paramsDrift);
-    const valueWrap = parser.paramsWrapValue;
-      
-  
+        
     return `
-  import '../../../../../../core/database/local/database.dart';
-  import '../../local/dao/${d}_dao.dart';
-  import '../../../../data/models/${d}/${d}_model.dart';
-  import 'package:drift/drift.dart';
-  
-  class ${D}LocalDataSource {
-    final ${D}Dao _${d}Dao;
-  
-    ${D}LocalDataSource(AppDatabase db) : _${d}Dao = ${D}Dao(db);
-  
+import '../../../models/extensions/${d}/${d}_model_extension.dart';
+import '../../../models/extensions/${d}/${d}_table_extension.dart';
+import '../../../../../../core/database/local/database.dart';
+import '../../../../data/models/${d}/${d}_model.dart';
+import '../../local/dao/${d}/${d}_dao.dart';
+
+class ${D}LocalDataSource {
+  final ${D}Dao _${d}Dao;
+
+  ${D}LocalDataSource(AppDatabase db) : _${d}Dao = ${D}Dao(db);
+
     Future<List<${D}Model>> get${Ds}() async {
-      final ${ds} = await _${d}Dao.get${Ds}();
-      return ${ds}
-          .map(
-            (${d}) => ${D}Model(${paramsDrift}),
-          )
-          .toList();
-    }
-  
-    Future<${D}Model> get${D}ById(int id) async {
-      final ${d} = await _${d}Dao.get${D}ById(id);
-      return ${D}Model(${paramsDrift});
-    }
-  
-    Future<int> create${D}(${D}Model ${d}) {
-      return _${d}Dao.create${D}(
-        ${D}TableCompanion.insert(${paramsDriftWithOutId}),
-      );
-    }
-  
-    Future<void> update${D}(${D}Model ${d}) {
-      return _${d}Dao.update${D}(
-        ${D}TableCompanion(${valueWrap}),
-      );
-    }
-  
-    Future<void> delete${D}(int id) async {
-        _${d}Dao.delete${D}(id);
-      }
-  
+    final categories = await _${d}Dao.get${Ds}();
+    return categories.toModels();
   }
+
+  Future<${D}Model> get${D}ById(int id) async {
+    final ${d} = await _${d}Dao.get${D}ById(id);
+    return ${d}.toModel();
+  }
+
+  Future<int> create${D}(${D}Model ${d}) {
+    return _${d}Dao.create${D}(${d}.toCompanion());
+  }
+
+  Future<void> update${D}(${D}Model ${d}) {
+    return _${d}Dao.update${D}(${d}.toCompanionWithId());
+  }
+
+  Future<void> delete${D}(int id) async {
+      await _${d}Dao.delete${D}(id);
+    }
+}
+
   `;
   }
 

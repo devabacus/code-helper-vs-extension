@@ -12,6 +12,8 @@ export interface ProjectStructure{
     usecasesPath: string;
     entitiesPath: string;
 
+    extensionsPath: string;
+
     presentationPath: string;
 
     repositoryPath: string;
@@ -23,13 +25,15 @@ export interface ProjectStructure{
     getDaoPath(featurePath: string): string;
     getLocalDataSourcePath(featurePath: string): string;
     getDataProvderPath(featurePath: string): string;
+    getDataExtensionPath(featurePath: string): string;
+
     
     getEntityPath(featurePath: string): string;
     getDomainRepositoryPath(featurePath: string): string;
     getDomainUseCaseProviderPath(featurePath: string): string;
+    getDomainExtensionPath(featurePath: string): string;
     
     getDomainUseCasesPath(featurePath: string): string;
-
    
     getPresentationPath(featurePath: string): string;
     getPresentationProviderPath(featurePath: string): string;
