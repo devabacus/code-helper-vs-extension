@@ -1,15 +1,30 @@
 import path from "path";
-import { cap, pluralConvert } from "../../../../../../../utils/text_work/text_util";
+import { DefaultProjectStructure } from "../../../../../../../core/implementations/default_project_structure";
+import { IFileSystem } from "../../../../../../../core/interfaces/file_system";
+import { ProjectStructure } from "../../../../../../../core/interfaces/project_structure";
+import { pluralConvert } from "../../../../../../../utils/text_work/text_util";
+import { BaseGenerator } from "../../../../../generators/base_generator";
+import { DriftClassParser } from "../tables/drift_class_parser";
 
 
-export const daoPath = (fName: string, driftClassName: string) => path.join(fName, "data", "datasources", "local", "dao", `${driftClassName}_dao.dart`);
+export class DataDaoGenerator extends BaseGenerator {
 
-export const daoLocalContent = (driftClassName: string) => {
-    const d = driftClassName;
-    const D = cap(driftClassName);
-    const Ds = pluralConvert(D);
+    private structure: ProjectStructure;
 
-return`
+    constructor(fileSystem: IFileSystem, structure?: ProjectStructure) {
+        super(fileSystem);
+        this.structure = structure || new DefaultProjectStructure();
+    }
+
+    protected getPath(featurePath: string, entityName: string): string {
+        return path.join(this.structure.getDaoPath(featurePath), `${entityName}_dao.dart`);
+    }
+    protected getContent(parser: DriftClassParser): string {
+        const d = parser.driftClassNameLower;
+        const D = parser.driftClassNameUpper;
+        const Ds = pluralConvert(D);
+
+        return `
 import 'package:drift/drift.dart';
 import '../../../../../../../core/database/local/database.dart';
 import '../tables/${d}_table.dart';
@@ -36,4 +51,8 @@ class ${D}Dao extends DatabaseAccessor<AppDatabase> with _$${D}DaoMixin {
       (delete(${d}Table)..where((t) => t.id.equals(id))).go();
 }
 
-`;};
+`;
+    }
+
+}
+

@@ -8,10 +8,7 @@ import { ServiceLocator } from "../../core/services/service_locator";
 import { GenerateAllFilesCommand } from "./commands/generate_all_files_command";
 import { appDatabaseRoutine } from './core/database/local/appdatabase_handle';
 import { GeneratorFactory } from "./factories/generator_factory";
-import { daoLocalContent, daoPath } from "./feature/data/datasources/local/dao/data_local_dao_dart";
-import { localDataSourceCont, localDataSourcePath } from "./feature/data/datasources/local/sources/local_data_source_dart";
 import { DriftClassParser } from "./feature/data/datasources/local/tables/drift_class_parser";
-import { dataModelCont, dataModelPath } from "./feature/data/models/data_model_dart";
 import { addUseCases } from "./feature/domain/usecases/add_usecases";
 
 export async function createDataFiles() {
@@ -40,13 +37,6 @@ export async function createDataFiles() {
     // usecases files
     await addUseCases(featurePath, driftClassName);
 
-    const _daoPath = daoPath(featurePath, driftClassName);
-    const daoContent = daoLocalContent(driftClassName);
-    await createFile(_daoPath, daoContent);
-
-    const localPath = localDataSourcePath(featurePath, driftClassName);
-    const localContent = localDataSourceCont(parser);
-    await createFile(localPath, localContent);
 
     // providers files for all layers
 
