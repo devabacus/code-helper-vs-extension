@@ -42,12 +42,22 @@ export class TestDataFactory {
         throw new Error(`Неизвестный тип сущности: ${entityType}`);
     }
   }
+  
+  private static customContent: Record<string, string> = {};
 
+  
+  static addExpectedContent(generatorType: string, entityType: string, content: string): void {
+    TestDataFactory.customContent[`${generatorType}_${entityType}`] = content;
+  }
   /**
    * Возвращает ожидаемый контент для заданного типа генератора и сущности
    */
   static getExpectedContent(generatorType: string, entityType: string): string {
     const key = `${generatorType}_${entityType}`;
+
+    if (TestDataFactory.customContent[key]) {
+      return TestDataFactory.customContent[key];
+    }
 
     switch (key) {
       // Entity генераторы
@@ -105,4 +115,8 @@ export class TestDataFactory {
         throw new Error(`Неизвестная комбинация генератора и сущности: ${key}`);
     }
   }
+
+
+
+
 }

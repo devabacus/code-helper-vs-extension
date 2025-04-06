@@ -17,6 +17,7 @@ import { UseCaseGetByIdGenerator } from "../feature/domain/usecases/use_case_get
 import { UseCaseGetAllGenerator } from "../feature/domain/usecases/use_case_get_all_generator";
 import { UseCaseUpdateGenerator } from "../feature/domain/usecases/use_case_update_generator";
 import { PresentProviderGenerator } from "../feature/presentation/providers/present_prov_generator";
+import { RelationDaoGenerator } from "../feature/data/datasources/local/dao/relation_dao_generator";
 
 
 export class GeneratorFactory {
@@ -91,6 +92,10 @@ export class GeneratorFactory {
     }
 
 
+
+    createRelationDaoGenerator(): FileGenerator {
+        return new RelationDaoGenerator(this.fileSystem);
+      }
 }
 
 

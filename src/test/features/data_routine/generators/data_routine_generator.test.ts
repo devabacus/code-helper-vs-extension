@@ -7,7 +7,8 @@ import { TestDataFactory } from "../fixtures/test_data_factory";
 
 export abstract class BaseDataRoutineGeneratorTest {
    
-    protected mockFileSystem!: MockFileSystem;
+    // Изменяем с protected на public
+    public mockFileSystem!: MockFileSystem;
     protected abstract createGenerator(fileSystem: IFileSystem): FileGenerator
     protected abstract getExpectedPath(featurePath: string, entityName: string): string;
     
@@ -26,5 +27,13 @@ export abstract class BaseDataRoutineGeneratorTest {
         assert.strictEqual(this.mockFileSystem.createdFiles[expectedPath].trim(), expectedContent.trim());
     }
     
-    
+    // Добавляем публичный метод для проверки
+    public assertFileCreated(expectedPath: string, expectedContent: string): void {
+      assert.ok(this.mockFileSystem.createdFiles[expectedPath], 'Файл должен быть создан');
+      assert.strictEqual(
+        this.mockFileSystem.createdFiles[expectedPath].trim(), 
+        expectedContent.trim(),
+        'Содержимое файла не соответствует ожидаемому'
+      );
+    }
 }
