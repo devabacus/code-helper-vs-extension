@@ -1,11 +1,13 @@
-import { unCap } from "../../../../../../../utils/text_work/text_util";
+// src/features/data_routine/feature/data/datasources/local/tables/drift_class_parser.ts
 
+import { unCap } from "../../../../../../../utils/text_work/text_util";
+import { DriftCodeFormatter } from "../../../../../formatters/drift_code_formatter";
+import { IDriftCodeFormatter } from "../../../../../formatters/drift_code_formatter.interface";
 
 export interface Field {
     type: string,
     name: string
 }
-
 
 export interface IDriftClassParser {
     readonly driftClassNameUpper: string;
@@ -21,27 +23,13 @@ export interface IDriftClassParser {
     readonly paramsWrapValue: string;
 }
 
-
 export class DriftClassParser implements IDriftClassParser {
-
     private driftClass: string;
+    private formatter: IDriftCodeFormatter;
 
-
-    constructor(driftClass: string) {
+    constructor(driftClass: string, formatter?: IDriftCodeFormatter) {
         this.driftClass = driftClass;
-    }
-
-    private get fieldRows(): string[] {
-        return this.fields.map((item) => `${item.type} ${item.name}`);
-    }
-
-    private filedRowsModif(modifier: string, sep: string): string {
-        const field_list = this.fieldRows.map((item) => `${modifier} ${item}${sep}`);
-        return field_list.join('\n');
-    }
-
-    private fieldsParamList(instance: string): string[] {
-        return this.fieldsNameList.map((item) => `${item}: ${instance}.${item}`);
+        this.formatter = formatter || new DriftCodeFormatter();
     }
 
     private driftTypeConverter(dType: string): string {
@@ -59,9 +47,7 @@ export class DriftClassParser implements IDriftClassParser {
 
     get driftClassNameLower(): string {
         return unCap(this.driftClassNameUpper);
-
     }
-
 
     get fields(): Field[] {
         const fieldsRegex = /(\w+)Column get (\w+)/g;
@@ -79,47 +65,39 @@ export class DriftClassParser implements IDriftClassParser {
     }
 
     get fieldsClass(): string {
-        return this.filedRowsModif('final', ';');
+        return this.formatter.formatClassFields(this.fields);
     }
 
     get fieldsRequired(): string {
-        return this.filedRowsModif('required', ',');
+        return this.formatter.formatRequiredFields(this.fields);
     }
 
     get fieldsReqThis(): string {
-        return this.fieldsNameList.map((item) => `required this.${item},`).join('\n');
+        return this.formatter.formatRequiredFields(this.fields);
     }
 
     get fieldsNameList(): string[] {
-        return this.fields.map((field) => `${field.name}`);
+        return this.fields.map((field) => field.name);
     }
 
-    private get fieldsSimpleList() : string[] {
-        return this.fieldsNameList.map((field)=>`${field}: ${field}`);
-
-    }
-    // id : id, title : title .....
-    get fieldsSimple() : string {
-        return this.fieldsSimpleList.join(', ');
+    get fieldsSimple(): string {
+        return this.formatter.formatSimpleFields(this.fields);
     }
 
-    get fieldsSimpleWithoutId() : string {
-        const newList = this.fieldsSimpleList;
-        newList.shift();
-        return newList.join(', ');
+    get fieldsSimpleWithoutId(): string {
+        return this.formatter.formatSimpleFieldsWithoutId(this.fields);
     }
 
-    // id,title
     get fieldsComma(): string {
-        return this.fieldsNameList.join(',');
+        return this.formatter.formatFieldsComma(this.fields);
     }
 
     get paramsInstDrift(): string {
-        return this.fieldsParamList(this.driftClassNameLower).join(', ');
+        return this.formatter.formatConstructorParams(this.fields, this.driftClassNameLower);
     }
 
     get paramsInstModel(): string {
-        return this.fieldsParamList(unCap('model')).join(', ');
+        return this.formatter.formatConstructorParams(this.fields, unCap('model'));
     }
 
     paramsWithOutId(row: string): string {
@@ -127,11 +105,6 @@ export class DriftClassParser implements IDriftClassParser {
     }
 
     get paramsWrapValue(): string {
-        return this.fieldsNameList.map((item) =>`${item}: Value(${item})`).join(', ');
-            // `${item}: Value(${unCap(this.driftClassNameUpper)}.${item})`).join(', ');
+        return this.formatter.formatValueWrappedFields(this.fields);
     }
-
-
-
 }
-

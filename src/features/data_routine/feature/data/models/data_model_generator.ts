@@ -1,9 +1,11 @@
 import path from "path";
+
 import { DefaultProjectStructure } from "../../../../../core/implementations/default_project_structure";
 import { IFileSystem } from "../../../../../core/interfaces/file_system";
 import { ProjectStructure } from "../../../../../core/interfaces/project_structure";
 import { DataRoutineGenerator } from "../../../generators/data_routine_generator";
 import { DriftClassParser } from "../datasources/local/tables/drift_class_parser";
+import { DriftCodeFormatter } from "../../../formatters/drift_code_formatter";
 
 export class ModelGenerator extends DataRoutineGenerator {
 
@@ -21,7 +23,11 @@ export class ModelGenerator extends DataRoutineGenerator {
   protected getContent(parser: DriftClassParser): string {
     const d = parser.driftClassNameLower;
     const D = parser.driftClassNameUpper;
-    const fields = parser.fieldsRequired;
+
+    const formatter = new DriftCodeFormatter();
+    // const fields = parser.fieldsRequired;
+    const formattedFields = formatter.formatRequiredTypeFields(parser.fields);
+
 
     return `
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -32,7 +38,7 @@ part '${d}_model.g.dart';
 @freezed
 abstract class ${D}Model with _$${D}Model {
   const factory ${D}Model({
-    ${fields}
+    ${formattedFields}
   }) = _${D}Model;
 
   factory ${D}Model.fromJson(Map<String, dynamic> json) => _$${D}ModelFromJson(json);

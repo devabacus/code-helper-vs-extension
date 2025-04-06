@@ -1,6 +1,6 @@
 import { Field } from '../../features/data_routine/feature/data/datasources/local/tables/drift_class_parser';
 
-export interface IDriftCodeFormatter {
+export interface _IDriftCodeFormatter {
   getFieldsClass(fields: Field[]): string;
   getFieldsRequired(fields: Field[]): string;
   getFieldsReqThis(fields: Field[]): string;
@@ -9,4 +9,5 @@ export interface IDriftCodeFormatter {
   getParamsInstModel(fields: string[]): string;
   getParamsWithOutId(row: string): string;
   getParamsWrapValue(fields: string[]): string;
+  formatRequiredTypeFields(fields: { type: string, name: string }[]): string;
 }

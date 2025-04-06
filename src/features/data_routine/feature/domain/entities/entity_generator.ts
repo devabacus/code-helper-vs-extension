@@ -5,6 +5,7 @@ import { DriftClassParser } from "../../data/datasources/local/tables/drift_clas
 import { ProjectStructure } from "../../../../../core/interfaces/project_structure";
 import { DefaultProjectStructure } from "../../../../../core/implementations/default_project_structure";
 import { IFileSystem } from "../../../../../core/interfaces/file_system";
+import { DriftCodeFormatter } from "../../../formatters/drift_code_formatter";
 
 export class EntityGenerator extends DataRoutineGenerator {
 
@@ -20,9 +21,14 @@ export class EntityGenerator extends DataRoutineGenerator {
   }
 
   protected getContent(parser: DriftClassParser): string {
-    const fields = parser.fieldsRequired;
     const D = parser.driftClassNameUpper;
     const d = parser.driftClassNameLower;
+    // const fields = parser.fieldsRequired;
+
+    // Создаем форматтер
+  const formatter = new DriftCodeFormatter();
+  // Используем метод formatRequiredTypeFields для получения полей в правильном формате
+  const formattedFields = formatter.formatRequiredTypeFields(parser.fields);
 
     return `
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -33,7 +39,7 @@ part '${d}.g.dart';
 @freezed
 abstract class ${D}Entity with _$${D}Entity {
   const factory ${D}Entity({
-    ${fields}
+    ${formattedFields}
   }) = _${D}Entity;
 
   factory ${D}Entity.fromJson(Map<String, dynamic> json) => _$${D}EntityFromJson(json);
