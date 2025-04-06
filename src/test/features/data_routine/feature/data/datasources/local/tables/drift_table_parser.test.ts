@@ -2,6 +2,7 @@ import assert from "assert";
 import { tableCategory, tableTask } from "./drift_class_examples";
 import { DriftTableParser } from "../../../../../../../../features/data_routine/feature/data/datasources/local/tables/drift_table_parser";
 import { tableTaskTagMapExample } from "./drift_relation_examples";
+import { RelationType } from "../../../../../../../../features/data_routine/interfaces/table_relation.interface";
 
 suite('DriftTableParser Tests', () => {
   
@@ -57,4 +58,50 @@ suite('DriftTableParser Tests', () => {
     assert.strictEqual(relatedTables[0], "Task");
     assert.strictEqual(relatedTables[1], "Tag");
   });
+
+
+
+  test('должен корректно возвращать TableRelation для one-to-many связи', () => {
+    const taskTableCode = `
+    class TaskTable extends Table {
+      IntColumn get id => integer().autoIncrement()();
+      TextColumn get title => text()();
+      IntColumn get categoryId => integer().references(CategoryTable, #id)();
+    }
+    `;
+    
+    const parser = new DriftTableParser(taskTableCode);
+    const relations = parser.getTableRelations();
+    
+    assert.strictEqual(relations.length, 1);
+    assert.strictEqual(relations[0].sourceTable, 'Task');
+    assert.strictEqual(relations[0].targetTable, 'Category');
+    assert.strictEqual(relations[0].relationType, RelationType.ONE_TO_MANY);
+    assert.strictEqual(relations[0].sourceField, 'categoryId');
+    assert.strictEqual(relations[0].targetField, 'id');
+  });
+  
+  test('должен корректно возвращать TableRelation для many-to-many связи', () => {
+    const taskTagMapTableCode = `
+    class TaskTagMapTable extends Table {
+      IntColumn get taskId => integer().references(TaskTable, #id)();
+      IntColumn get tagId => integer().references(TagTable, #id)();
+      
+      @override
+      Set<Column> get primaryKey => {taskId, tagId};
+    }
+    `;
+    
+    const parser = new DriftTableParser(taskTagMapTableCode);
+    const relations = parser.getTableRelations();
+    
+    assert.strictEqual(relations.length, 1);
+    assert.strictEqual(relations[0].sourceTable, 'Task');
+    assert.strictEqual(relations[0].targetTable, 'Tag');
+    assert.strictEqual(relations[0].relationType, RelationType.MANY_TO_MANY);
+    assert.strictEqual(relations[0].intermediateTable, 'TaskTagMap');
+    assert.strictEqual(relations[0].sourceField, 'taskId');
+    assert.strictEqual(relations[0].targetField, 'tagId');
+  });
+
 });

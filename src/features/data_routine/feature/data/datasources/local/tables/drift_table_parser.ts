@@ -1,6 +1,8 @@
 import { IDriftTableParser, Reference } from "../../../../../../../core/interfaces/drift_table_parser";
 import { Field } from "./drift_class_parser";
 import { unCap } from "../../../../../../../utils/text_work/text_util";
+import { RelationType, TableRelation } from "../../../../../../../features/data_routine/interfaces/table_relation.interface";
+
 
 export class DriftTableParser implements IDriftTableParser {
   private driftClass: string;
@@ -122,5 +124,46 @@ export class DriftTableParser implements IDriftTableParser {
       return 'int';
     }
     return driftType.toLowerCase();
+  }
+
+
+  getTableRelations(): TableRelation[] {
+    const relations: TableRelation[] = [];
+    
+    // Если это связующая таблица для many-to-many
+    if (this.isRelationTable()) {
+      // Здесь мы создаем связь many-to-many между двумя таблицами
+      const refs = this.getReferences();
+      if (refs.length === 2) {
+        const firstTable = refs[0].referencedTable.replace('Table', '');
+        const firstField = refs[0].columnName;
+        const secondTable = refs[1].referencedTable.replace('Table', '');
+        const secondField = refs[1].columnName;
+        
+        relations.push({
+          sourceTable: firstTable,
+          targetTable: secondTable,
+          relationType: RelationType.MANY_TO_MANY,
+          intermediateTable: this.getClassName(),
+          sourceField: firstField,
+          targetField: secondField
+        });
+      }
+    } else {
+      // Обрабатываем one-to-many связи
+      for (const ref of this.getReferences()) {
+        const targetTable = ref.referencedTable.replace('Table', '');
+        
+        relations.push({
+          sourceTable: this.getClassName(),
+          targetTable: targetTable,
+          relationType: RelationType.ONE_TO_MANY,
+          sourceField: ref.columnName,
+          targetField: ref.referencedColumn
+        });
+      }
+    }
+    
+    return relations;
   }
 }
