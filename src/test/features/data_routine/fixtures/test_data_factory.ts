@@ -23,6 +23,7 @@ import { entityExtensionCategoryExample } from "../feature/domain/entities/exten
 import { domainRepostitoryExample } from "../feature/domain/repositories/domain_repository_example";
 import { useCaseCategoryProviderExample } from "../feature/domain/providers/use_case_prov_example";
 import { dataRepositoryImplCategoryExample } from "../feature/data/repositories/data_repository_impl_example";
+import { relationRepositoryImplTaskTagMapExample } from "../feature/data/repositories/relation_repository_impl_example";
 
 
 
@@ -91,6 +92,9 @@ export class TestDataFactory {
 
       case 'local_data_source_category':
         return localDataSourceFileExample;
+
+      case 'relation_repository_impl_taskTagMap':
+      return relationRepositoryImplTaskTagMapExample;
 
       case 'data_repository_impl_category':
         return dataRepositoryImplCategoryExample;
