@@ -24,6 +24,8 @@ dependencies:
     sdk: flutter
     
   cupertino_icons: ^1.0.8
+
+  intl: ^0.20.2
   
   flutter_riverpod: ^2.6.1
   riverpod_annotation: ^2.6.1
@@ -47,6 +49,8 @@ dependencies:
   
   path_provider: ^2.1.5
   flutter_dotenv: ^5.2.1
+
+  mockito: ^5.4.5
 
 
 dev_dependencies:
