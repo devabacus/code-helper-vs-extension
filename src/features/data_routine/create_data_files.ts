@@ -1,4 +1,4 @@
-import { createFile, executeInTerminal } from "../../utils";
+import { executeInTerminal } from "../../utils";
 import { getActiveEditorPath } from "../../utils/path_util";
 import { unCap } from "../../utils/text_work/text_util";
 import { getDocText } from "../../utils/ui/ui_util";
@@ -13,7 +13,6 @@ import { DriftClassParser } from "./feature/data/datasources/local/tables/drift_
 export async function createDataFiles() {
     const driftClass = getDocText();
     const parser = new DriftClassParser(driftClass);
-    const fields = parser;
     const driftClassName = unCap(parser.driftClassNameUpper);
     const currentFilePath = getActiveEditorPath()!;
     const featurePath = currentFilePath.split(/\Wdata\W/)[0];

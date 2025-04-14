@@ -23,7 +23,7 @@ export class ServiceLocator {
     registerFileSystem(fileSystem: IFileSystem): void {
         this.services.set("fileSystem", fileSystem);
     }
-
+                  
     getFileSystem(): IFileSystem {
         return this.services.get("fileSystem");
     }
