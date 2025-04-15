@@ -7,7 +7,8 @@ export interface ProjectStructure{
     sourcesPath: string;
     localPath: string;
     modelsPath: string;
-    
+    interfacesPath: string;
+        
     domainPath: string;
     usecasesPath: string;
     entitiesPath: string;
@@ -26,7 +27,8 @@ export interface ProjectStructure{
     getLocalDataSourcePath(featurePath: string): string;
     getDataProvderPath(featurePath: string): string;
     getDataExtensionPath(featurePath: string): string;
-
+    getDataLocalInterfacesPath(featurePath: string): string;
+    
     
     getEntityPath(featurePath: string): string;
     getDomainRepositoryPath(featurePath: string): string;

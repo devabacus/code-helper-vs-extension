@@ -4,7 +4,7 @@ import { IFileSystem } from "../../../core/interfaces/file_system";
 
 export abstract class DataRoutineGenerator extends BaseGenerator<any> {
 
-    constructor(fileSystem: IFileSystem) {super(fileSystem)}
+    constructor(fileSystem: IFileSystem) {super(fileSystem);}
 
 
     protected abstract getPath(featurePath: string, entityName: string): string;

@@ -34,6 +34,9 @@ export class GenerateAllFilesCommand implements Command {
 
         await this.generatorFactory.createDomainEntityExtensionGenerator().generate(this.featurePath, this.driftClassName, this.parser);
 
+        await this.generatorFactory.createLocalDataSourceServiceGenerator().generate(this.featurePath, this.driftClassName, this.parser);
+        
+
         // domain layer use_cases
         await this.generatorFactory.createUseCaseCreateGenerator().generate(this.featurePath, this.driftClassName, this.parser);
 

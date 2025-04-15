@@ -18,9 +18,10 @@ suite('DataDaoGenerator', () => {
     protected getExpectedPath(featurePath: string, entityName: string): string {
       return path.join(featurePath, "data", "datasources", "local", "dao", entityName, `${entityName}_dao.dart`);
     }
-  }
-  
+  } 
 
+
+  
   const testInstance = new DataDaoGeneratorTest();
   
   setup(() => {
@@ -30,8 +31,7 @@ suite('DataDaoGenerator', () => {
   test('должен сгенерировать data dao файл с правильным контентом', async () => {
     const featurePath = path.join("test", "feature");
     const entityName = "category";
-    const expectedContent = TestDataFactory.getExpectedContent('data_dao', 'category');
-    
+    const expectedContent = TestDataFactory.getExpectedContent('data_dao', 'category');    
     await testInstance.testGenerator(featurePath, entityName, expectedContent);
   });
-});
+});;  

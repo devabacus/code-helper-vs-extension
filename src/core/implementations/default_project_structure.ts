@@ -4,12 +4,14 @@ import { ProjectStructure } from "../interfaces/project_structure";
 
 export class DefaultProjectStructure implements ProjectStructure {
     
+    
     dataPath: string = "data";
     daoPath: string = "dao";
     localPath: string = "local";
     modelsPath: string = "models";
     dataSourcesPath: string = "datasources";
     sourcesPath: string = "sources";
+
     
     domainPath: string = "domain";
     usecasesPath: string = "usecases";
@@ -20,9 +22,11 @@ export class DefaultProjectStructure implements ProjectStructure {
     repositoryPath: string = "repositories";
     
     providersPath: string = "providers";
-    
-    
+       
     extensionsPath: string = "extensions";
+
+    interfacesPath: string = "interfaces";
+
 
 
     
@@ -55,6 +59,9 @@ export class DefaultProjectStructure implements ProjectStructure {
         return path.join(featurePath, this.dataPath, this.modelsPath, this.extensionsPath);
     }
 
+    getDataLocalInterfacesPath(featurePath: string): string {
+        return path.join(featurePath, this.dataPath, this.dataSourcesPath, this.localPath, this.interfacesPath);
+    }
 
     // domain     
     getEntityPath(featurePath: string):string {
