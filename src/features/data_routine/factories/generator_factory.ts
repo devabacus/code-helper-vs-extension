@@ -17,6 +17,7 @@ import { UseCaseGetByIdGenerator } from "../feature/domain/usecases/use_case_get
 import { UseCaseGetAllGenerator } from "../feature/domain/usecases/use_case_get_all_generator";
 import { UseCaseUpdateGenerator } from "../feature/domain/usecases/use_case_update_generator";
 import { PresentProviderGenerator } from "../feature/presentation/providers/present_prov_generator";
+import { LocalDataSourceServiceGenerator } from "../feature/data/datasources/local/interfaces/i_local_datasource_service";
 
 
 export class GeneratorFactory {
@@ -50,6 +51,11 @@ export class GeneratorFactory {
     createDataModelExtensionGenerator(): FileGenerator {
         return new DataExtensionModelGenerator(this.fileSystem);
     }
+
+    createLocalDataSourceServiceGenerator(): FileGenerator {
+        return new LocalDataSourceServiceGenerator(this.fileSystem);
+    }
+    
 
 
     // domain layer

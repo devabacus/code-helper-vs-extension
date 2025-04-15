@@ -1,4 +1,3 @@
-// G:\Projects\Flutter\dataroutine3\lib\features\tasks\domain\repositories\category_repository.dart
 
 import path from "path";
 import { DefaultProjectStructure } from "../../../../../core/implementations/default_project_structure";

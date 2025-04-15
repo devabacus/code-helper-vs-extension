@@ -25,13 +25,11 @@ export async function createDataFiles() {
     const generatorFactory = new GeneratorFactory(fileSystem);
 
     // инициализируем команду "запустить генерацию всех файлов"
-    const generatorCommands = new GenerateAllFilesCommand(generatorFactory,featurePath,driftClassName,parser);
+    const generatorCommands = new GenerateAllFilesCommand(generatorFactory, featurePath,driftClassName, parser);
     
     // запускаем генерацию
     generatorCommands.execute();
-
-    
-
+   
     // appdatabase routine
     await appDatabaseRoutine(currentFilePath, driftClassName);
 

@@ -23,6 +23,7 @@ import { entityExtensionCategoryExample } from "../feature/domain/entities/exten
 import { domainRepostitoryExample } from "../feature/domain/repositories/domain_repository_example";
 import { useCaseCategoryProviderExample } from "../feature/domain/providers/use_case_prov_example";
 import { dataRepositoryImplCategoryExample } from "../feature/data/repositories/data_repository_impl_example";
+import { iLocalDatasourceServiceExample } from "../feature/data/datasources/local/interfaces/i_local_datasource_service_example";
 
 
 
@@ -75,9 +76,12 @@ export class TestDataFactory {
       case 'usecase_providers_category':
         return useCaseCategoryProviderExample;
 
-
+      // data layer
       case 'data_dao_category':
         return dataDaoExample;
+
+      case 'data_local_data_source_service_category':
+        return iLocalDatasourceServiceExample;
 
       case 'local_data_source_category':
         return localDataSourceFileExample;
