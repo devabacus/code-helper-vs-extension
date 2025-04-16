@@ -1,7 +1,7 @@
 export const domainRepostitoryExample = `
 import '../entities/category/category.dart';
 
-abstract class CategoryRepository {
+abstract class ICategoryRepository {
   Future<List<CategoryEntity>> getCategories();
   Future<CategoryEntity> getCategoryById(int id);
   Future<int> createCategory(CategoryEntity category);

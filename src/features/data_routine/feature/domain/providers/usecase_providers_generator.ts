@@ -24,14 +24,13 @@ export class UseCaseProvidersGenerator extends DataRoutineGenerator {
     const D = parser.driftClassNameUpper;
     const Ds = pluralConvert(D);
 
-    return `
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+    return `import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../usecases/${d}/create.dart';
 import '../../usecases/${d}/delete.dart';
+import '../../usecases/${d}/get_by_id.dart';
 import '../../usecases/${d}/update.dart';
 import '../../usecases/${d}/get_all.dart';
-import '../../usecases/${d}/get_by_id.dart';
 import '../../../data/providers/${d}/${d}_data_providers.dart';
 
 part '${d}_usecase_providers.g.dart';

@@ -6,7 +6,7 @@ import { DefaultProjectStructure } from "../../../../../core/implementations/def
 import { IFileSystem } from "../../../../../core/interfaces/file_system";
 import { pluralConvert } from "../../../../../utils/text_work/text_util";
 
-export class PresentProviderGenerator extends DataRoutineGenerator {
+export class PresentStateProviderGenerator extends DataRoutineGenerator {
 
   private structure: ProjectStructure;
 

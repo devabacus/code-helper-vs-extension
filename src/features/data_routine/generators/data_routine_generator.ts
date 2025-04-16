@@ -2,7 +2,7 @@ import { BaseGenerator } from "../../../core/generators/base_generator";
 import { IFileSystem } from "../../../core/interfaces/file_system";
 
 
-export abstract class DataRoutineGenerator extends BaseGenerator<any> {
+export abstract class DataRoutineGenerator extends BaseGenerator {
 
     constructor(fileSystem: IFileSystem) {super(fileSystem);}
 

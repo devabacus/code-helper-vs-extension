@@ -5,7 +5,7 @@ import '../../repositories/category_repository.dart';
 import '../../entities/category/category.dart';
 
 class GetCategoryByIdUseCase {
-  final CategoryRepository _repository;
+  final ICategoryRepository _repository;
 
   GetCategoryByIdUseCase(this._repository);
 

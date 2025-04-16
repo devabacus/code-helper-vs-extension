@@ -2,13 +2,15 @@ export const dataDaoExample =
     `
 import 'package:drift/drift.dart';
 import '../../../../../../../core/database/local/database.dart';
+import '../../../../../../../core/database/local/interface/i_database_service.dart';
 import '../../tables/category_table.dart';
 
 part 'category_dao.g.dart';
 
 @DriftAccessor(tables: [CategoryTable])
 class CategoryDao extends DatabaseAccessor<AppDatabase> with _$CategoryDaoMixin {
-  CategoryDao(super.db);
+  
+  CategoryDao(IDatabaseService databaseService): super(databaseService.database);
 
   Future<List<CategoryTableData>> getCategories() => select(categoryTable).get();
   
@@ -25,5 +27,4 @@ class CategoryDao extends DatabaseAccessor<AppDatabase> with _$CategoryDaoMixin 
   Future<void> deleteCategory(int id) =>
       (delete(categoryTable)..where((t) => t.id.equals(id))).go();
 }
-
 `;

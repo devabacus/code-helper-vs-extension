@@ -28,7 +28,7 @@ import '../../entities/${d}/${d}.dart';
 import '../../repositories/${d}_repository.dart';
 
 class Update${D}UseCase {
-  final ${D}Repository _repository;
+  final I${D}Repository _repository;
 
   Update${D}UseCase(this._repository);
 

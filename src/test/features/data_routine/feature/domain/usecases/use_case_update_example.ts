@@ -4,7 +4,7 @@ import '../../entities/category/category.dart';
 import '../../repositories/category_repository.dart';
 
 class UpdateCategoryUseCase {
-  final CategoryRepository _repository;
+  final ICategoryRepository _repository;
 
   UpdateCategoryUseCase(this._repository);
 

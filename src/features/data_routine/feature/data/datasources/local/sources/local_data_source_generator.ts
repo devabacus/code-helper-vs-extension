@@ -26,38 +26,43 @@ export class DataSourcesGenerator extends DataRoutineGenerator {
     const Ds = pluralConvert(D);
 
     return `
-import '../../../models/extensions/${d}/${d}_model_extension.dart';
-import '../../../models/extensions/${d}/${d}_table_extension.dart';
-import '../../../../../../core/database/local/database.dart';
-import '../../../../data/models/${d}/${d}_model.dart';
-import '../../local/dao/${d}/${d}_dao.dart';
+import '../tables/extensions/${d}_table_extension.dart';
+import '../../../models/extensions/${d}_model_extension.dart';
+import '../../../models/${d}/${d}_model.dart';
+import '../dao/${d}/${d}_dao.dart';
+import '../interfaces/${d}_local_datasource_service.dart';
 
-class ${D}LocalDataSource {
-  final ${D}Dao _${d}Dao;
+class ${D}LocalDataSource implements I${D}LocalDataSource {
+  final ${D}Dao ${d}Dao;
 
-  ${D}LocalDataSource(AppDatabase db) : _${d}Dao = ${D}Dao(db);
+  ${D}LocalDataSource(this.${d}Dao);
 
-    Future<List<${D}Model>> get${Ds}() async {
-    final categories = await _${d}Dao.get${Ds}();
+  @override
+  Future<List<${D}Model>> get${Ds}() async {
+    final categories = await ${d}Dao.get${Ds}();
     return categories.toModels();
   }
 
+  @override
   Future<${D}Model> get${D}ById(int id) async {
-    final ${d} = await _${d}Dao.get${D}ById(id);
+    final ${d} = await ${d}Dao.get${D}ById(id);
     return ${d}.toModel();
   }
 
+  @override
   Future<int> create${D}(${D}Model ${d}) {
-    return _${d}Dao.create${D}(${d}.toCompanion());
+    return ${d}Dao.create${D}(${d}.toCompanion());
   }
 
+  @override
   Future<void> update${D}(${D}Model ${d}) {
-    return _${d}Dao.update${D}(${d}.toCompanionWithId());
+    return ${d}Dao.update${D}(${d}.toCompanionWithId());
   }
 
+  @override
   Future<void> delete${D}(int id) async {
-      await _${d}Dao.delete${D}(id);
-    }
+    await ${d}Dao.delete${D}(id);
+  }
 }
 
   `;

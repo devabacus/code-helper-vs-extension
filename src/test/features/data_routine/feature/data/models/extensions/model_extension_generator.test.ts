@@ -15,7 +15,7 @@ suite('DataExtensionModelGenerator', () => {
     }
 
     protected getExpectedPath(featurePath: string, entityName: string): string {
-      return path.join(featurePath, "data", "models", "extensions", entityName, `${entityName}_model_extension.dart`);
+      return path.join(featurePath, "data", "models", "extensions", `${entityName}_model_extension.dart`);
     }
   }
 

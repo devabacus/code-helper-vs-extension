@@ -1,7 +1,3 @@
-
-
-
-
 export const database_cont = (db_name: string) => {
     
 return `

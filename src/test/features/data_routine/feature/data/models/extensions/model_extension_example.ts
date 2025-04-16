@@ -1,8 +1,8 @@
 export const modelExtensionCategoryExample = `
 import 'package:drift/drift.dart';
 import '../../../../../../core/database/local/database.dart';
-import '../../../../domain/entities/category/category.dart';
-import '../../category/category_model.dart';
+import '../../../domain/entities/category/category.dart';
+import '../category/category_model.dart';
 
 extension CategoryModelExtension on CategoryModel {
   CategoryEntity toEntity() => CategoryEntity(id: id, title: title);

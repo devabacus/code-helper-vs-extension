@@ -16,7 +16,7 @@ export class DataExtensionModelGenerator extends DataRoutineGenerator {
     }
 
     protected getPath(featurePath: string, entityName: string): string {
-        return path.join(this.structure.getDataExtensionPath(featurePath), entityName, `${entityName}_model_extension.dart`);
+        return path.join(this.structure.getDataExtensionPath(featurePath), `${entityName}_model_extension.dart`);
     }
     protected getContent(parser: DriftClassParser): string {
         const d = parser.driftClassNameLower;
@@ -28,8 +28,8 @@ export class DataExtensionModelGenerator extends DataRoutineGenerator {
         return `
 import 'package:drift/drift.dart';
 import '../../../../../../core/database/local/database.dart';
-import '../../../../domain/entities/${d}/${d}.dart';
-import '../../${d}/${d}_model.dart';
+import '../../../domain/entities/${d}/${d}.dart';
+import '../${d}/${d}_model.dart';
 
 extension ${D}ModelExtension on ${D}Model {
   ${D}Entity toEntity() => ${D}Entity(${fieldsSimple});

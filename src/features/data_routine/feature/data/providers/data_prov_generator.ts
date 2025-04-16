@@ -22,27 +22,36 @@ export class DataProviderGenerator extends DataRoutineGenerator {
     const d = parser.driftClassNameLower;
     const D = parser.driftClassNameUpper;
 
-    return `
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+return `import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import '../../datasources/local/sources/${d}_local_data_source.dart';
-import '../../repositories/${d}_repository_impl.dart';
+
 import '../../../../../core/database/local/provider/database_provider.dart';
 import '../../../domain/repositories/${d}_repository.dart';
+import '../../datasources/local/dao/${d}/${d}_dao.dart';
+import '../../datasources/local/interfaces/${d}_local_datasource_service.dart';
+import '../../datasources/local/sources/${d}_local_data_source.dart';
+import '../../repositories/${d}_repository_impl.dart';
 
 part '${d}_data_providers.g.dart';
 
 @riverpod
-${D}LocalDataSource ${d}LocalDataSource(Ref ref) {
-  final db = ref.read(appDatabaseProvider);
-  return ${D}LocalDataSource(db);
+${D}Dao ${d}Dao(Ref ref) {
+  final databaseService = ref.read(databaseServiceProvider);
+  return ${D}Dao(databaseService);
 }
 
 @riverpod
-${D}Repository ${d}Repository(Ref ref) {
+I${D}LocalDataSource ${d}LocalDataSource(Ref ref) {
+  final ${d}Dao = ref.read(${d}DaoProvider);
+  return ${D}LocalDataSource(${d}Dao);
+}
+
+@riverpod
+I${D}Repository ${d}Repository(Ref ref) {
   final localDataSource = ref.read(${d}LocalDataSourceProvider);
   return ${D}RepositoryImpl(localDataSource);
 }
+
 `;
   }
 }

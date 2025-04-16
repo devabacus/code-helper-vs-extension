@@ -30,7 +30,7 @@ export class DomainRepositoryGenerator extends DataRoutineGenerator {
     return `
 import '../entities/${d}/${d}.dart';
 
-abstract class ${D}Repository {
+abstract class I${D}Repository {
   Future<List<${D}Entity>> get${Ds}();
   Future<${D}Entity> get${D}ById(int id);
   Future<int> create${D}(${D}Entity ${d});

@@ -1,23 +1,24 @@
 import { FileGenerator } from "../../../core/interfaces/file_generator";
 import { IFileSystem } from "../../../core/interfaces/file_system";
 import { DataDaoGenerator } from "../feature/data/datasources/local/dao/data_local_dao_generator";
+import { LocalDataSourceServiceGenerator } from "../feature/data/datasources/local/interfaces/i_local_datasource_service";
 import { DataSourcesGenerator } from "../feature/data/datasources/local/sources/local_data_source_generator";
+import { TableExtensionGenerator } from "../feature/data/datasources/local/tables/extensions/table_extension_generator";
 import { ModelGenerator } from "../feature/data/models/data_model_generator";
 import { DataExtensionModelGenerator } from "../feature/data/models/extension_model_generator";
-import { DataExtensionTableGenerator } from "../feature/data/models/extension_table_generator";
 import { DataProviderGenerator } from "../feature/data/providers/data_prov_generator";
 import { DataRepositoryGenerator } from "../feature/data/repositories/data_repository_generator";
-import { EntityGenerator } from "../feature/domain/entities/entity_generator";
 import { DomainExtensionEntityGenerator } from "../feature/domain/entities/entity_extension_generator";
+import { EntityGenerator } from "../feature/domain/entities/entity_generator";
 import { UseCaseProvidersGenerator } from "../feature/domain/providers/usecase_providers_generator";
 import { DomainRepositoryGenerator } from "../feature/domain/repositories/domain_repository_generator";
 import { UseCaseCreateGenerator } from "../feature/domain/usecases/use_case_create_generator";
 import { UseCaseDeleteGenerator } from "../feature/domain/usecases/use_case_delete_generator";
-import { UseCaseGetByIdGenerator } from "../feature/domain/usecases/use_case_get_by_id_generator";
 import { UseCaseGetAllGenerator } from "../feature/domain/usecases/use_case_get_all_generator";
+import { UseCaseGetByIdGenerator } from "../feature/domain/usecases/use_case_get_by_id_generator";
 import { UseCaseUpdateGenerator } from "../feature/domain/usecases/use_case_update_generator";
-import { PresentProviderGenerator } from "../feature/presentation/providers/present_prov_generator";
-import { LocalDataSourceServiceGenerator } from "../feature/data/datasources/local/interfaces/i_local_datasource_service";
+import { PresentGetByIdProviderGenerator } from "../feature/presentation/providers/present_get_by_id_prov_generator";
+import { PresentStateProviderGenerator } from "../feature/presentation/providers/present_state_prov_generator";
 
 
 export class GeneratorFactory {
@@ -45,7 +46,7 @@ export class GeneratorFactory {
     }
 
     createDataTableExtensionGenerator(): FileGenerator {
-        return new DataExtensionTableGenerator(this.fileSystem);
+        return new TableExtensionGenerator(this.fileSystem);
     }
 
     createDataModelExtensionGenerator(): FileGenerator {
@@ -55,8 +56,6 @@ export class GeneratorFactory {
     createLocalDataSourceServiceGenerator(): FileGenerator {
         return new LocalDataSourceServiceGenerator(this.fileSystem);
     }
-    
-
 
     // domain layer
     createEntityGenerator(): FileGenerator {
@@ -92,9 +91,14 @@ export class GeneratorFactory {
     }
 
     // presentation layer
-    createPresentProviderGenerator(): FileGenerator {
-        return new PresentProviderGenerator(this.fileSystem);
+    createPresentStateProviderGenerator(): FileGenerator {
+        return new PresentStateProviderGenerator(this.fileSystem);
     }
+
+    createPresentGetByIdProviderGenerator(): FileGenerator {
+        return new PresentGetByIdProviderGenerator(this.fileSystem);
+    }
+
 
 
 }

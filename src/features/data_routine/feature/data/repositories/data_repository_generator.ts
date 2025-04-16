@@ -15,36 +15,33 @@ export class DataRepositoryGenerator extends DataRoutineGenerator {
     const d = parser.driftClassNameLower;
     const Ds = pluralConvert(D);
 
-    return `
-import '../models/extensions/${d}/${d}_model_extension.dart';
+    return `import '../datasources/local/interfaces/${d}_local_datasource_service.dart';
+import '../models/extensions/${d}_model_extension.dart';
+import '../models/${d}/${d}_model.dart';
 import '../../domain/entities/extensions/${d}_entity_extension.dart';
-import '../../data/datasources/local/sources/${d}_local_data_source.dart';
-import '../../domain/repositories/${d}_repository.dart';
 import '../../domain/entities/${d}/${d}.dart';
+import '../../domain/repositories/${d}_repository.dart';
 
-class ${D}RepositoryImpl implements ${D}Repository {
-  final ${D}LocalDataSource _localDataSource; 
+class ${D}RepositoryImpl implements I${D}Repository {
+  final I${D}LocalDataSource _localDataSource;
 
   ${D}RepositoryImpl(this._localDataSource);
-
+  
   @override
   Future<List<${D}Entity>> get${Ds}() async {
     final ${d}Models = await _localDataSource.get${Ds}();
     return ${d}Models.toEntities();
-
   }
 
   @override
   Future<${D}Entity> get${D}ById(int id) async {
     final model = await _localDataSource.get${D}ById(id);
     return model.toEntity();
-
   }
 
   @override
   Future<int> create${D}(${D}Entity ${d}) {
-    return _localDataSource.create${D}(${d}.toModel()
-    );
+    return _localDataSource.create${D}(${d}.toModel());
   }
 
   @override
@@ -54,9 +51,12 @@ class ${D}RepositoryImpl implements ${D}Repository {
 
   @override
   Future<void> update${D}(${D}Entity ${d}) async {
-    _localDataSource.update${D}(${d}.toModel(),);
+    _localDataSource.update${D}(
+      ${D}Model(id: ${d}.id, title: ${d}.title),
+    );
   }
 }
+
       `;
   }
 

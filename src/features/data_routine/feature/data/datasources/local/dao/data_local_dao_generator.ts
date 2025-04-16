@@ -27,13 +27,15 @@ export class DataDaoGenerator extends DataRoutineGenerator {
         return `
 import 'package:drift/drift.dart';
 import '../../../../../../../core/database/local/database.dart';
+import '../../../../../../../core/database/local/interface/i_database_service.dart';
 import '../../tables/${d}_table.dart';
 
 part '${d}_dao.g.dart';
 
 @DriftAccessor(tables: [${D}Table])
 class ${D}Dao extends DatabaseAccessor<AppDatabase> with _$${D}DaoMixin {
-  ${D}Dao(super.db);
+  
+  ${D}Dao(IDatabaseService databaseService): super(databaseService.database);
 
   Future<List<${D}TableData>> get${Ds}() => select(${d}Table).get();
   
@@ -50,7 +52,6 @@ class ${D}Dao extends DatabaseAccessor<AppDatabase> with _$${D}DaoMixin {
   Future<void> delete${D}(int id) =>
       (delete(${d}Table)..where((t) => t.id.equals(id))).go();
 }
-
 `;
     }
 

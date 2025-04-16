@@ -28,7 +28,7 @@ export class UseCaseDeleteGenerator extends DataRoutineGenerator {
 import '../../repositories/${d}_repository.dart';
 
 class Delete${D}UseCase {
-  final ${D}Repository _repository;
+  final I${D}Repository _repository;
 
   Delete${D}UseCase(this._repository);
 

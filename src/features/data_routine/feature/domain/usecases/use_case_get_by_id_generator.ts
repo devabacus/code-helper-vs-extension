@@ -28,7 +28,7 @@ import '../../repositories/${d}_repository.dart';
 import '../../entities/${d}/${d}.dart';
 
 class Get${D}ByIdUseCase {
-  final ${D}Repository _repository;
+  final I${D}Repository _repository;
 
   Get${D}ByIdUseCase(this._repository);
 

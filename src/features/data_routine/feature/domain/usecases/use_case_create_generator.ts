@@ -29,7 +29,7 @@ import '../../repositories/${d}_repository.dart';
 import '../../entities/${d}/${d}.dart';
 
 class Create${D}UseCase {
-  final ${D}Repository _repository;
+  final I${D}Repository _repository;
   
   Create${D}UseCase(this._repository);
   
