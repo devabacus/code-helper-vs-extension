@@ -27,9 +27,9 @@ export abstract class BaseDataRoutineGeneratorTest {
         this.mockFileSystem = new MockFileSystem();
     }
 
-    async testGenerator(basePath: string, entityName: string, expectedContent: string) {
+    async testGenerator(featurePath: string, entityName: string, expectedContent: string) {
 
-        const effectiveBasePath = basePath || this.defaultFeaturePath;
+        const effectiveBasePath = featurePath || this.defaultFeaturePath;
         
 
         const generator = this.createGenerator(this.mockFileSystem);

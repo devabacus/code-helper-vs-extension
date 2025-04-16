@@ -1,21 +1,17 @@
 import { Command } from "../../../core/interfaces/command";
-import { GeneratorFactory } from "../factories/generator_factory";
 import { DartTestGeneratorFactory } from "../factories/test_generator_factory";
+import { DriftClassParser } from "../feature/data/datasources/local/tables/drift_class_parser";
 
+export class GenerateTestFilesCommand implements Command {
+    
+    constructor(private testGeneratorFactory: DartTestGeneratorFactory, private featureTestPath: string, private driftClassName: string, private parser: DriftClassParser) { }
 
-
-// export class GenerateTestFilesCommand implements Command {
+    async execute(): Promise<void> {
+        await this.testGeneratorFactory.createTestDaoGenerator().generate(this.featureTestPath, this.driftClassName, this.parser);
+    }
     
     
-//     constructor(private generatorFactory: DartTestGeneratorFactory){}
-
-//     execute(): Promise<void> {
-      
-
-//     }
-    
-    
-// }
+}
 
 
 

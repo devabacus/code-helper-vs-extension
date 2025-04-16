@@ -1,9 +1,9 @@
 export const testCategoryDaoExample = `import 'package:project_name/core/database/local/database.dart';
-import 'package:project_name/features/feature_name/data/datasources/local/dao/category_dao.dart';
+import 'package:project_name/features/feature_name/data/datasources/local/dao/category/category_dao.dart';
 import 'package:drift/drift.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../../../../../core/database/local/test_database_service.dart';
+import '../../../../../../core/database/local/test_database_service.dart';
 
 void main() {
   late TestDatabaseService databaseService;

@@ -23,8 +23,10 @@ suite('TestDaoGeneratorTest', () => {
   
   test('TestDaoGeneratorTest', async () => {
     testInstance.setup();
-    const testPath = `G:\\Projects\\Flutter\\project_name\\test\\feature_name\\data\\datasources\\local\\sources\\category_local_data_source_test.dart`;
+    
+    const featureTestPath = `"g:\\Projects\\Flutter\\project_name\\test\\features\\feature_name\\data\\datasources\\local\\dao\\category_dao_test.dart"`;
 
-    await testInstance.testGenerator(testPath, "category", testCategoryDaoExample);
+    await testInstance.testGenerator(featureTestPath, "category", testCategoryDaoExample);
   });
 });
+

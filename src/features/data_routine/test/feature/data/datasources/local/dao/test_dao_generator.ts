@@ -26,14 +26,19 @@ export class TestDaoGenerator extends BaseGenerator {
         const projectPath = basePath.split('test');
         const projectName = path.basename(projectPath[0]);
         
-        const featureName = (projectPath[1]).split(path.sep)[1];
+        const featureName = (projectPath[1]).split(path.sep)[2];
+// import 'package:a13/core/database/local/database.dart';
+// import 'package:a13/features/home/data/datasources/local/dao/category/category_dao.dart';
+// import 'package:drift/drift.dart';
+// import 'package:flutter_test/flutter_test.dart';
 
+// import '../../../../../../core/database/local/test_database_service.dart';
     return `import 'package:${projectName}/core/database/local/database.dart';
-import 'package:${projectName}/features/${featureName}/data/datasources/local/dao/${d}_dao.dart';
+import 'package:${projectName}/features/${featureName}/data/datasources/local/dao/${d}/${d}_dao.dart';
 import 'package:drift/drift.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../../../../../core/database/local/test_database_service.dart';
+import '../../../../../../core/database/local/test_database_service.dart';
 
 void main() {
   late TestDatabaseService databaseService;
