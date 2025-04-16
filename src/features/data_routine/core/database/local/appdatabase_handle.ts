@@ -10,8 +10,7 @@ import { DatabaseService } from "../../../../template_project/drift_db/database_
 import { DefaultFileSystem } from "../../../../../core/implementations/default_file_system";
 import { DatabaseInterface } from "../../../../template_project/drift_db/database_interface";
 import { DatabaseProvider } from "../../../../template_project/drift_db/database_provider";
-
-
+import { TestDatabaseService } from "../../../test/core/database/local/test_database_service_generator";
 
 
 export async function appDatabaseRoutine(currentFilePath: string, driftClassName: string) {
@@ -30,6 +29,10 @@ export async function appDatabaseRoutine(currentFilePath: string, driftClassName
      
         const databaseProvider = new DatabaseProvider(new DefaultFileSystem);
         databaseProvider.generate(pathData.rootPath);
+
+        const testDatabaseService = new TestDatabaseService(new DefaultFileSystem);
+        testDatabaseService.generate(pathData.rootPath, pathData.projectName);
+        
     }
 
     const content = fs.readFileSync(appDatabaseP, { encoding: "utf-8" });

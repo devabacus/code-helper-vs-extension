@@ -10,6 +10,7 @@ export interface IPathHandle {
     unCapPageName: string,
     isPage: boolean,
     widgetPageName: string,
+    projectName: string,
 }
 
 export class PathData {
@@ -35,10 +36,14 @@ export class PathData {
             unCapPageName: this.unCapPageName,
             isPage: this.isPage,
             widgetPageName: this.widgetPageName,
+            projectName: this.projectName,
         };
 
     }
 
+    get projectName() : string {
+        return path.basename(this.rootPath);
+    }
 
     get rootPath(): string {
         const _rootPath = this.filePath.split('lib')[0];
