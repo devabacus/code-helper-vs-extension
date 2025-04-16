@@ -1,8 +1,8 @@
 import assert from "assert";
 import path from "path";
 import { testDatabaseServiceExample } from "./test_database_service_example";
-import { TestDatabaseService } from "../../../../../../../../features/data_routine/test/core/database/local/test_database_service_generator";
-import { MockFileSystem } from "../../../../../../../mocks/mock_file_system";
+import { MockFileSystem } from "../../../../../../mocks/mock_file_system";
+import { TestDatabaseService } from "../../../../../../../features/data_routine/test/core/database/local/test_database_service_generator";
 
 suite('TestDatabaseServiceGenerator', () => {
 

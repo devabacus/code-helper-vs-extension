@@ -8,18 +8,18 @@ import { PresentGetByIdProviderGenerator } from "../../../../../../features/data
 
 suite('PresentGetByIdProviderGenerator', () => {
   class PresentGetByIdProviderGeneratorTest extends BaseDataRoutineGeneratorTest {
-   
+
     protected createGenerator(fileSystem: IFileSystem): FileGenerator {
       return new PresentGetByIdProviderGenerator(fileSystem);
     }
-    
+
     protected getExpectedPath(featurePath: string, entityName: string): string {
       return path.join(featurePath, "presentation", "providers", entityName, `${entityName}_get_by_id_provider.dart`);
     }
   }
-  
+
   const testInstance = new PresentGetByIdProviderGeneratorTest();
-  
+
   test('PresentGetByIdProviderGenerator', async () => {
     testInstance.setup();
     await testInstance.testGenerator(testInstance.defaultFeaturePath, "category", PresentGetByIdProviderExample);

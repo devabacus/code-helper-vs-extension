@@ -10,7 +10,7 @@ import { categoryTabeExtension } from "./table_extensions_example";
 suite('table extension generator', () => {
 
     class TableExtensionGeneratorTest extends BaseDataRoutineGeneratorTest {
-        
+
         protected createGenerator(fileSystem: IFileSystem): FileGenerator {
             return new TableExtensionGenerator(fileSystem);
         }

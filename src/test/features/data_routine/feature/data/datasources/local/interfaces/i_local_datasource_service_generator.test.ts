@@ -8,16 +8,16 @@ import { iLocalDatasourceServiceExample } from "./i_local_datasource_service_exa
 
 
 suite('LocalDataSourceService', () => {
-    
+
     class LocalDataSourceServiceTest extends BaseDataRoutineGeneratorTest {
-        
+
         protected createGenerator(fileSystem: IFileSystem): FileGenerator {
             return new LocalDataSourceServiceGenerator(fileSystem);
         }
         protected getExpectedPath(featurePath: string, entityName: string): string {
             return path.join(featurePath, "data", "datasources", "local", "interfaces", `${entityName}_local_datasource_service.dart`);
         }
-        
+
     }
     const testInstance = new LocalDataSourceServiceTest();
 

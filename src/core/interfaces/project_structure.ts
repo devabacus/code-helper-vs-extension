@@ -41,6 +41,7 @@ export interface ProjectStructure {
 
     getPresentationPath(featurePath: string): string;
     getPresentationProviderPath(featurePath: string): string;
+
 }
 
 
