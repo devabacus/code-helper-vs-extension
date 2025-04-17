@@ -57,7 +57,7 @@ class ${D}RepositoryImpl implements I${D}Repository {
   }
 }
 
-      `;
+`;
   }
 
 }
