@@ -13,7 +13,7 @@ void main() {
     databaseService = TestDatabaseService();
     categoryDao = CategoryDao(databaseService);
   });
-
+ 
   tearDown(() async {
     await databaseService.close();
   });
