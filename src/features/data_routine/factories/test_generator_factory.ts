@@ -1,7 +1,7 @@
 import { FileGenerator } from "../../../core/interfaces/file_generator";
 import { IFileSystem } from "../../../core/interfaces/file_system";
-import { TestDatabaseService } from "../test/core/database/local/test_database_service_generator";
 import { TestDaoGenerator } from "../test/feature/data/datasources/local/dao/test_dao_generator";
+import { TestLocalSourceGenerator } from "../test/feature/data/datasources/local/sources/test_local_source_generator";
 
 
 
@@ -18,5 +18,9 @@ export class DartTestGeneratorFactory {
         return new TestDaoGenerator(this.fileSystem);
     }
 
+    createTestLocalSourceGenerator(): FileGenerator {
+        return new TestLocalSourceGenerator(this.fileSystem);
+        
+    }
 
 }

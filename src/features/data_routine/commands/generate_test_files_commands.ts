@@ -7,14 +7,10 @@ export class GenerateTestFilesCommand implements Command {
     constructor(private testGeneratorFactory: DartTestGeneratorFactory, private featureTestPath: string, private driftClassName: string, private parser: DriftClassParser) { }
 
     async execute(): Promise<void> {
+
         await this.testGeneratorFactory.createTestDaoGenerator().generate(this.featureTestPath, this.driftClassName, this.parser);
+
+        await this.testGeneratorFactory.createTestLocalSourceGenerator().generate(this.featureTestPath, this.driftClassName, this.parser);
     }
-    
-    
 }
-
-
-
-
-
 
