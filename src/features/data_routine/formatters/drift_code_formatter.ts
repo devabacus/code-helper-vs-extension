@@ -1,6 +1,9 @@
 // src/features/data_routine/formatters/drift_code_formatter.ts
 
+import { TcpSocketConnectOpts } from 'net';
 import { IDriftCodeFormatter } from './drift_code_formatter.interface';
+import { Field, FieldValue } from '../feature/data/datasources/local/tables/drift_class_parser';
+import { prepareFieldsForTest } from './drift_prepare_fields_for_test';
 
 export class DriftCodeFormatter implements IDriftCodeFormatter {
   formatClassFields(fields: { type: string, name: string }[]): string {
@@ -45,4 +48,16 @@ export class DriftCodeFormatter implements IDriftCodeFormatter {
   getParamsWithOutId(row: string): string {
     return row.replace(/.*id,\s?/, '');
   }
+
+
+  getFieldsValueForTest(fields: Field[]): string[] {
+    const fieldsList: FieldValue[] = prepareFieldsForTest(fields);
+    const firstRow = fieldsList.map((item) => `${item.name}: ${item.value}`).join(', ');
+    const secondRow = firstRow.replaceAll('1', '2').replace('false', 'true');
+    let wrapped = secondRow.replaceAll(/(\w+):\s*(.*?)(?:,|$)/g, '$1: Value($2),');
+    wrapped = `id: Value(1), ` + wrapped.slice(0, -1);
+
+    return [firstRow, secondRow, wrapped];
+  }
+
 }

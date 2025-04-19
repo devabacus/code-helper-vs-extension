@@ -16,7 +16,7 @@ export class TestLocalSourceGenerator extends BaseGenerator {
       }
 
     protected getPath(featureTestPath: string, entityName: string): string {
-        return path.join(this.structure.getLocalDataSourcePath(featureTestPath), `${entityName}_local_data_source_test.dart`);
+        return path.join(this.structure.getLocalDataSourcePath(featureTestPath), entityName, `${entityName}_local_data_source_test.dart`);
     }
     
     protected getContent(parser: DriftClassParser, name: '', basePath: string): string {
@@ -126,5 +126,3 @@ void main() {
 `;
     }
 }
-
-

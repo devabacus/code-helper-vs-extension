@@ -11,6 +11,8 @@ export class GenerateTestFilesCommand implements Command {
         await this.testGeneratorFactory.createTestDaoGenerator().generate(this.featureTestPath, this.driftClassName, this.parser);
 
         await this.testGeneratorFactory.createTestLocalSourceGenerator().generate(this.featureTestPath, this.driftClassName, this.parser);
+
+        await this.testGeneratorFactory.createTestRepositoryImplGenerator().generate(this.featureTestPath, this.driftClassName, this.parser);
     }
 }
 

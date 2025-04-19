@@ -51,9 +51,7 @@ class ${D}RepositoryImpl implements I${D}Repository {
 
   @override
   Future<void> update${D}(${D}Entity ${d}) async {
-    _localDataSource.update${D}(
-      ${D}Model(id: ${d}.id, title: ${d}.title),
-    );
+    _localDataSource.update${D}(${d}.toModel());
   }
 }
 

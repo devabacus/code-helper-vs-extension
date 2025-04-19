@@ -1,5 +1,7 @@
 // src/features/data_routine/formatters/drift_code_formatter.interface.ts
 
+import { Field } from "../feature/data/datasources/local/tables/drift_class_parser";
+
 export interface IDriftCodeFormatter {
     // Форматирование полей класса
     formatClassFields(fields: { type: string, name: string }[]): string;
@@ -27,4 +29,10 @@ export interface IDriftCodeFormatter {
     
     // Извлечение параметров без id
     getParamsWithOutId(row: string): string;
+
+    // Параметры для тестов
+    // paramsForTest()
+    getFieldsValueForTest(fields: Field[]): string[];
+    
+    
   }

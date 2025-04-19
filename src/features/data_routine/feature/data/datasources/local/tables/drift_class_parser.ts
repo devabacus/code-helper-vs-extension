@@ -9,6 +9,11 @@ export interface Field {
     name: string
 }
 
+export interface FieldValue {
+    name: string, 
+    value: string
+}
+
 export interface IDriftClassParser {
     readonly driftClassNameUpper: string;
     readonly driftClassNameLower: string;
@@ -35,7 +40,7 @@ export class DriftClassParser implements IDriftClassParser {
     private driftTypeConverter(dType: string): string {
         if (dType === 'Text') {
             return 'String';
-        } else if (dType === 'Int') {
+        } else if (dType === 'Int' || dType === 'Bool') {
             return unCap(dType);
         }
         return dType;
@@ -106,5 +111,10 @@ export class DriftClassParser implements IDriftClassParser {
 
     get paramsWrapValue(): string {
         return this.formatter.formatValueWrappedFields(this.fields);
+    }
+
+    get fieldsForTest() : string[] {
+        return this.formatter.getFieldsValueForTest(this.fields);
+        
     }
 }

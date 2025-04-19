@@ -35,9 +35,7 @@ class CategoryRepositoryImpl implements ICategoryRepository {
 
   @override
   Future<void> updateCategory(CategoryEntity category) async {
-    _localDataSource.updateCategory(
-      CategoryModel(id: category.id, title: category.title),
-    );
+    _localDataSource.updateCategory(category.toModel());
   }
 }
 

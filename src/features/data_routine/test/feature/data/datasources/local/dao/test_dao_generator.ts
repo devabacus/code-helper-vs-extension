@@ -23,8 +23,10 @@ export class TestDaoGenerator extends BaseGenerator {
         const d = parser.driftClassNameLower;
         const D = parser.driftClassNameUpper;
         const ds = pluralConvert(d);
+        const Ds = pluralConvert(D);
         const projectPath = basePath.split('test');
         const projectName = path.basename(projectPath[0]);
+        const fields = parser.fieldsForTest;
         
         const featureName = (projectPath[1]).split(path.sep)[2];
     return `import 'package:${projectName}/core/database/local/database.dart';
@@ -60,13 +62,13 @@ void main() {
 
     test('should get all ${ds}', () async {
       await ${d}Dao.create${D}(
-        ${D}TableCompanion.insert(title: 'Test ${D} 1'),
+        ${D}TableCompanion.insert(${fields[0]}),
       );
       await ${d}Dao.create${D}(
-        ${D}TableCompanion.insert(title: 'Test ${D} 2'),
+        ${D}TableCompanion.insert(${fields[1]}),
       );
 
-      final ${ds} = await ${d}Dao.getCategories();
+      final ${ds} = await ${d}Dao.get${Ds}();
 
       expect(${ds}.length, 2);
       expect(${ds}[0].title, 'Test ${D} 1');
@@ -75,7 +77,7 @@ void main() {
 
     test('should get ${d} by id', () async {
       await ${d}Dao.create${D}(
-        ${D}TableCompanion.insert(title: 'Test ${D} 1'),
+        ${D}TableCompanion.insert(${fields[0]}),
       );
 
       final ${d} = await ${d}Dao.get${D}ById(1);

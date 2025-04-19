@@ -11,9 +11,28 @@ suite('DriftCodeFormatter', () => {
     { type: 'String', name: 'description' }
   ];
 
+  const testFieldsFull = [
+    { type: 'int', name: 'id' },
+    { type: 'String', name: 'title' },
+    { type: 'DateTime', name: 'createdAt' },
+    { type: 'bool', name: 'isCompleted' },
+    { type: 'int', name: 'categoryId' },
+  ];
+
   setup(() => {
     formatter = new DriftCodeFormatter();
   });
+
+  test('formatFieldsForTest', () => {
+    const expected1 = `title: 'title 1', createdAt: DateTime(1), isCompleted: false, categoryId: 1`;
+    const expected2 = `title: 'title 2', createdAt: DateTime(2), isCompleted: true, categoryId: 2`;
+    const expected3 = `id: Value(1), title: Value('title 2'), createdAt: Value(DateTime(2)), isCompleted: Value(true), categoryId: Value(2)`;
+    assert.strictEqual(formatter.getFieldsValueForTest(testFieldsFull)[0], expected1);
+    assert.strictEqual(formatter.getFieldsValueForTest(testFieldsFull)[1], expected2);
+    assert.strictEqual(formatter.getFieldsValueForTest(testFieldsFull)[2], expected3);
+
+  });
+
 
   test('formatClassFields должен корректно форматировать поля класса', () => {
     const expected = 'final int id;\nfinal String title;\nfinal String description;';
