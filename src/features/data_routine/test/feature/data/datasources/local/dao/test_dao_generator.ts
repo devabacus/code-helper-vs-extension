@@ -77,7 +77,7 @@ void main() {
 
     test('should get ${d} by id', () async {
       await ${d}Dao.create${D}(
-        ${D}TableCompanion.insert(${fields[0]}),
+        ${D}TableCompanion.insert(${fields[1]}),
       );
 
       final ${d} = await ${d}Dao.get${D}ById(1);
@@ -105,7 +105,7 @@ void main() {
 
     test('should delete ${d}', () async {
       await ${d}Dao.create${D}(
-        ${D}TableCompanion.insert(title: 'Test ${D}'),
+        ${D}TableCompanion.insert(${fields[0]}),
       );
 
       await ${d}Dao.delete${D}(1);
