@@ -23,15 +23,17 @@ export class TestLocalSourceGenerator extends BaseGenerator {
         const d = parser.driftClassNameLower;
         const D = parser.driftClassNameUpper;
         const Ds = pluralConvert(D);
+        const fieldsRow = parser.fieldsForTest;
+        const firstRow = parser.fields[1].name;
         const projectPath = basePath.split('test');
-        const projectName = path.basename(projectPath[0]);
-        
+        const projectName = path.basename(projectPath[0]);        
         const featureName = (projectPath[1]).split(path.sep)[2];
+
     return `import 'package:${projectName}/core/database/local/database.dart';
 import 'package:${projectName}/features/${featureName}/data/datasources/local/dao/${d}/${d}_dao.dart';
 import 'package:${projectName}/features/${featureName}/data/datasources/local/sources/${d}_local_data_source.dart';
 import 'package:${projectName}/features/${featureName}/data/models/${d}/${d}_model.dart';
-import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_test/flutter_test.dart';    
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 
@@ -48,22 +50,14 @@ void main() {
   });
 
   group('${D}LocalDataSource', () {
-    final test${D}TableData = ${D}TableData(
-      id: 1,
-      title: 'Test ${D}',
-    );
-
-    final test${D}Model = ${D}Model(id: 1, title: 'Test ${D}');
-
-    final test${D}ModelCompanion = ${D}TableCompanion.insert(
-      title: 'Test ${D}',
-    );
-
-    final test${D}ModelWithId = ${D}Model(
-      id: 1,
-      title: 'Test ${D}',
-    );
-
+    final test${D}TableData = ${D}TableData(id: 1, ${fieldsRow[0]});
+   
+    final test${D}Model = ${D}Model(id: 1, ${fieldsRow[0]});
+   
+    final test${D}ModelCompanion = ${D}TableCompanion.insert(${fieldsRow[0]});
+   
+    final test${D}ModelWithId = ${D}Model(id: 1, ${fieldsRow[0]});
+   
     final test${D}TableDataList = [test${D}TableData];
 
     test('get${Ds} должен вернуть list of ${D}Model', () async {
@@ -76,7 +70,7 @@ void main() {
       verify(mock${D}Dao.get${Ds}()).called(1);
       expect(result.length, equals(1));
       expect(result[0].id, equals(test${D}Model.id));
-      expect(result[0].title, equals(test${D}Model.title));
+      expect(result[0].${firstRow}, equals(test${D}Model.${firstRow}));
     });
 
     test('get${D}ById должен вернуть ${D}Model', () async {
@@ -88,7 +82,7 @@ void main() {
 
       verify(mock${D}Dao.get${D}ById(1)).called(1);
       expect(result.id, equals(test${D}Model.id));
-      expect(result.title, equals(test${D}Model.title));
+      expect(result.${firstRow}, equals(test${D}Model.${firstRow}));
     });
 
     test(

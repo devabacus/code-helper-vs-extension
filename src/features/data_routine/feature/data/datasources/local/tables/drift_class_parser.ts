@@ -117,4 +117,9 @@ export class DriftClassParser implements IDriftClassParser {
         return this.formatter.getFieldsValueForTest(this.fields);
         
     }
+
+    get fieldsExpectedForTest() : string[] {
+        return this.formatter.getFieldsExpectValueTest(this.fields);
+        
+    }
 }

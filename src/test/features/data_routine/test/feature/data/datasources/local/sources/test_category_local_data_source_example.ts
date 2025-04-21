@@ -1,4 +1,4 @@
-export const testCategorLocalSourceExample = `import 'package:project_name/core/database/local/database.dart';
+export const testCategoryLocalSourceExample = `import 'package:project_name/core/database/local/database.dart';
 import 'package:project_name/features/feature_name/data/datasources/local/dao/category/category_dao.dart';
 import 'package:project_name/features/feature_name/data/datasources/local/sources/category_local_data_source.dart';
 import 'package:project_name/features/feature_name/data/models/category/category_model.dart';
@@ -19,22 +19,14 @@ void main() {
   });
 
   group('CategoryLocalDataSource', () {
-    final testCategoryTableData = CategoryTableData(
-      id: 1,
-      title: 'Test Category',
-    );
-
-    final testCategoryModel = CategoryModel(id: 1, title: 'Test Category');
-
-    final testCategoryModelCompanion = CategoryTableCompanion.insert(
-      title: 'Test Category',
-    );
-
-    final testCategoryModelWithId = CategoryModel(
-      id: 1,
-      title: 'Test Category',
-    );
-
+    final testCategoryTableData = CategoryTableData(id: 1, title: 'title 1');
+   
+    final testCategoryModel = CategoryModel(id: 1, title: 'title 1');
+   
+    final testCategoryModelCompanion = CategoryTableCompanion.insert(title: 'title 1');
+   
+    final testCategoryModelWithId = CategoryModel(id: 1, title: 'title 1');
+   
     final testCategoryTableDataList = [testCategoryTableData];
 
     test('getCategories должен вернуть list of CategoryModel', () async {
@@ -93,6 +85,5 @@ void main() {
     });
   });
 }
-
 
 `;

@@ -6,6 +6,7 @@ import { Field, FieldValue } from '../feature/data/datasources/local/tables/drif
 import { prepareFieldsForTest } from './drift_prepare_fields_for_test';
 
 export class DriftCodeFormatter implements IDriftCodeFormatter {
+
   formatClassFields(fields: { type: string, name: string }[]): string {
     const fieldRows = fields.map(field => `final ${field.type} ${field.name};`);
     return fieldRows.join('\n');
@@ -60,4 +61,10 @@ export class DriftCodeFormatter implements IDriftCodeFormatter {
     return [firstRow, secondRow, wrapped];
   }
 
+  getFieldsExpectValueTest(fields: Field[]): string[] {
+    const fieldsList: FieldValue[] = prepareFieldsForTest(fields);
+    const firstRow = `.${fieldsList[0].name}, ${fieldsList[0].value}`;
+    const secondRow = firstRow.replace('1', '2');
+    return [firstRow, secondRow];
+  }
 }

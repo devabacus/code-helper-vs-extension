@@ -5,6 +5,7 @@ import { FileGenerator } from "../../../../../../../../../core/interfaces/file_g
 import { testCategoryDaoExample } from "./category_test_dao_example";
 import { TestDaoGenerator } from "../../../../../../../../../features/data_routine/test/feature/data/datasources/local/dao/test_dao_generator";
 import { PathData } from "../../../../../../../../../features/utils/path_util";
+import { testTaskDaoExample } from "./task_test_dao_example";
 
 
 suite('TestDaoGeneratorTest', () => {
@@ -24,9 +25,11 @@ suite('TestDaoGeneratorTest', () => {
   test('TestDaoGeneratorTest', async () => {
     testInstance.setup();
     
-    const featureTestPath = `"g:\\Projects\\Flutter\\project_name\\test\\features\\feature_name\\data\\datasources\\local\\dao\\category\\category_dao_test.dart"`;
+    const featureCategoryTestPath = `"g:\\Projects\\Flutter\\project_name\\test\\features\\feature_name\\data\\datasources\\local\\dao\\category\\category_dao_test.dart"`;
+    const featureTaskTestPath = `"g:\\Projects\\Flutter\\project_name\\test\\features\\feature_name\\data\\datasources\\local\\dao\\task\\task_dao_test.dart"`;
 
-    await testInstance.testGenerator(featureTestPath, "category", testCategoryDaoExample);
+    await testInstance.testGenerator(featureCategoryTestPath, "category", testCategoryDaoExample);
+    await testInstance.testGenerator(featureTaskTestPath, "task", testTaskDaoExample);
   });
 });
 

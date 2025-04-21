@@ -17,7 +17,7 @@ export async function createDataFiles() {
     const driftClass = getDocText();
     const parser = new DriftClassParser(driftClass);
     const driftClassName = unCap(parser.driftClassNameUpper);
-    const currentFilePath = getActiveEditorPath()!;
+       const currentFilePath = getActiveEditorPath()!;
     const featurePath = currentFilePath.split(/\Wdata\W/)[0];
     const projectPath = currentFilePath.split(/\Wlib\W/)[0];
     const featureTestPath = path.join(projectPath, "test", featurePath.split('lib')[1]);

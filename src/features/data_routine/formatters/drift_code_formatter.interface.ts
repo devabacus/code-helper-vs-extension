@@ -33,6 +33,7 @@ export interface IDriftCodeFormatter {
     // Параметры для тестов
     // paramsForTest()
     getFieldsValueForTest(fields: Field[]): string[];
-    
+
+    getFieldsExpectValueTest(fields: Field[]): string[];
     
   }

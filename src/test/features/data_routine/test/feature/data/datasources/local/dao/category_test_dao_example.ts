@@ -1,5 +1,5 @@
-export const testCategoryDaoExample = `import 'package:a13/core/database/local/database.dart';
-import 'package:a13/features/home/data/datasources/local/dao/category/category_dao.dart';
+export const testCategoryDaoExample = `import 'package:project_name/core/database/local/database.dart';
+import 'package:project_name/features/feature_name/data/datasources/local/dao/category/category_dao.dart';
 import 'package:drift/drift.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -21,12 +21,12 @@ void main() {
   group('CategoryDao', () {
     test('should create a new category', () async {
       final categoryCompanion = CategoryTableCompanion.insert(
-        title: 'title 1',
+        title: 'title 1'
       );
 
       final categoryId = await categoryDao.createCategory(categoryCompanion);
 
-      expect(categoryId, 1); 
+      expect(categoryId, 1);
     });
 
     test('should get all categories', () async {
@@ -46,7 +46,8 @@ void main() {
 
     test('should get category by id', () async {
       await categoryDao.createCategory(
-        CategoryTableCompanion.insert(title: 'title 1'),
+        CategoryTableCompanion.insert(
+        title: 'title 1')
       );
 
       final category = await categoryDao.getCategoryById(1);
@@ -62,14 +63,13 @@ void main() {
 
       await categoryDao.updateCategory(
         CategoryTableCompanion(
-          id: const Value(1),
-          title: const Value('Updated Category'),
+          id: Value(1), title: Value('title 2')
         ),
       );
 
       final updatedCategory = await categoryDao.getCategoryById(1);
 
-      expect(updatedCategory.title, 'Updated Category');
+      expect(updatedCategory.title, 'title 2');
     });
 
     test('should delete category', () async {
@@ -79,12 +79,7 @@ void main() {
 
       await categoryDao.deleteCategory(1);
 
-      expect(
-        () => categoryDao.getCategoryById(1),
-        throwsA(
-          isA<StateError>(),
-        ), 
-      );
+      expect(() => categoryDao.getCategoryById(1), throwsA(isA<StateError>()));
     });
   });
 }
