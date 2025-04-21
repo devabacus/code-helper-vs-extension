@@ -13,6 +13,16 @@ export class GenerateTestFilesCommand implements Command {
         await this.testGeneratorFactory.createTestLocalSourceGenerator().generate(this.featureTestPath, this.driftClassName, this.parser);
 
         await this.testGeneratorFactory.createTestRepositoryImplGenerator().generate(this.featureTestPath, this.driftClassName, this.parser);
+
+        await this.testGeneratorFactory.createTestUseCasesCreateGenerator().generate(this.featureTestPath, this.driftClassName, this.parser);
+
+        await this.testGeneratorFactory.createTestUseCasesDeleteGenerator().generate(this.featureTestPath, this.driftClassName, this.parser);
+
+        await this.testGeneratorFactory.createTestUseCasesUpdateGenerator().generate(this.featureTestPath, this.driftClassName, this.parser);
+
+        await this.testGeneratorFactory.createTestUseCasesGetByIdGenerator().generate(this.featureTestPath, this.driftClassName, this.parser);
+
+        await this.testGeneratorFactory.createTestUseCasesGetListGenerator().generate(this.featureTestPath, this.driftClassName, this.parser);
     }
 }
 
