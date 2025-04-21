@@ -22,9 +22,9 @@ void main() {
 
     group('categoryRepositoryImpl',(){
 
-      final testCategoryModel = CategoryModel(id: 1, title: 'Test Category');
-      final testCategoryModelList = [CategoryModel(id: 1, title: 'Test Category')];
-      final testCategoryEntity = CategoryEntity(id: -1, title: 'Test Category');
+      final testCategoryModel = CategoryModel(id: 1, title: 'title 1');
+      final testCategoryModelList = [CategoryModel(id: 1, title: 'title 1')];
+      final testCategoryEntity = CategoryEntity(id: -1, title: 'title 1');
       
       test('getCategories', () async{
           when(mockCategoryLocalDataSource.getCategories()).thenAnswer((_)async=>testCategoryModelList);

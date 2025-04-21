@@ -26,6 +26,8 @@ export class TestRepositoryImplGenerator extends BaseGenerator {
     const Ds = pluralConvert(D);
     const projectPath = basePath.split('test');
     const projectName = path.basename(projectPath[0]);
+    const fields = parser.fieldsForTest;
+    const firstRow = parser.fields[1].name;
     const featureName = (projectPath[1]).split(path.sep)[2];
     return `import 'package:${projectName}/features/${featureName}/data/datasources/local/interfaces/${d}_local_datasource_service.dart';
 import 'package:${projectName}/features/${featureName}/data/models/${d}/${d}_model.dart';
@@ -51,9 +53,9 @@ void main() {
 
     group('${d}RepositoryImpl',(){
 
-      final test${D}Model = ${D}Model(id: 1, title: 'Test ${D}');
-      final test${D}ModelList = [${D}Model(id: 1, title: 'Test ${D}')];
-      final test${D}Entity = ${D}Entity(id: -1, title: 'Test ${D}');
+      final test${D}Model = ${D}Model(id: 1, ${fields[0]});
+      final test${D}ModelList = [${D}Model(id: 1, ${fields[0]})];
+      final test${D}Entity = ${D}Entity(id: -1, ${fields[0]});
       
       test('get${Ds}', () async{
           when(mock${D}LocalDataSource.get${Ds}()).thenAnswer((_)async=>test${D}ModelList);
@@ -63,7 +65,7 @@ void main() {
           verify(mock${D}LocalDataSource.get${Ds}()).called(1);
           expect(categories.length, 1);
           expect(categories[0].id, equals(test${D}Model.id));
-          expect(categories[0].title, equals(test${D}Model.title));
+          expect(categories[0].${firstRow}, equals(test${D}Model.${firstRow}));
       });
 
 
@@ -75,7 +77,7 @@ void main() {
         verify(mock${D}LocalDataSource.get${D}ById(1)).called(1);
         
         expect(result.id, equals(test${D}Model.id));
-        expect(result.title, equals(test${D}Model.title));
+        expect(result.${firstRow}, equals(test${D}Model.${firstRow}));
         
       });
             test('create${D}', () async {
