@@ -19,6 +19,8 @@ dependencies:
     path: ../Packages/simple_storage  
   mlogger:
     path: ../Packages/mlogger
+  ui_kit:
+    path: ../Packages/ui_kit
 
   flutter:
     sdk: flutter
