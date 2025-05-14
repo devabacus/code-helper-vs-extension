@@ -45,7 +45,7 @@ export class DriftClassParser implements IDriftClassParser {
         }
         return dType;
     }
-
+     
     get driftClassNameUpper(): string {
         return this.driftClass.match(/\s(\w+)Table/)![1];
     }
