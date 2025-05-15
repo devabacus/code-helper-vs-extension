@@ -52,7 +52,7 @@ class ${Ds} extends _$${Ds} {
     });
   }
 
-  Future<void> delete${D}(int id) async {
+  Future<void> delete${D}(String id) async {
     state = await AsyncValue.guard(() async {
       await ref.read(delete${D}UseCaseProvider)(id);
       return ref.read(get${Ds}UseCaseProvider)();

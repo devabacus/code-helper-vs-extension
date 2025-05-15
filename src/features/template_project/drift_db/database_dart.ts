@@ -3,12 +3,13 @@ export const database_cont = (db_name: string) => {
 return `
 import 'package:drift/drift.dart';
 import 'package:drift_flutter/drift_flutter.dart';
+import 'package:uuid/uuid.dart';
 
 part 'database.g.dart';
 
 @DriftDatabase(tables: [])
 class AppDatabase extends _$AppDatabase {
-  AppDatabase([QueryExecutor? excutor]) : super(excutor ?? _openConnection());
+  AppDatabase([QueryExecutor? executor]) : super(executor ?? _openConnection());
 
   @override
   int get schemaVersion => 1;

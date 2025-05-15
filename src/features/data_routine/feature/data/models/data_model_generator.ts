@@ -25,7 +25,6 @@ export class ModelGenerator extends DataRoutineGenerator {
     const D = parser.driftClassNameUpper;
 
     const formatter = new DriftCodeFormatter();
-    // const fields = parser.fieldsRequired;
     const formattedFields = formatter.formatRequiredTypeFields(parser.fields);
 
 

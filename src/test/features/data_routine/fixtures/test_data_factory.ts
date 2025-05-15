@@ -23,6 +23,7 @@ import { entityExtensionCategoryExample } from "../feature/domain/entities/exten
 import { useCaseCategoryProviderExample } from "../feature/domain/providers/use_case_prov_example";
 import { domainRepostitoryExample } from "../feature/domain/repositories/domain_repository_example";
 import { presentStateProviderCategoryExample } from "../feature/presentation/providers/present_state_prov_example";
+import { useCaseWatchAllExample } from "../feature/domain/usecases/use_case_watch_all_example";
 
 
 
@@ -71,6 +72,9 @@ export class TestDataFactory {
         return useCaseGetAllExample;
       case 'usecase_get_by_id_category':
         return useCaseGetByIdExample;
+
+      case 'usecase_watch_all_category':
+        return useCaseWatchAllExample;
 
       case 'usecase_providers_category':
         return useCaseCategoryProviderExample;

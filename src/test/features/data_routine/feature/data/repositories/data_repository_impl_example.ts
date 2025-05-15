@@ -1,7 +1,6 @@
 export const dataRepositoryImplCategoryExample = `
 import '../datasources/local/interfaces/category_local_datasource_service.dart';
 import '../models/extensions/category_model_extension.dart';
-import '../models/category/category_model.dart';
 import '../../domain/entities/extensions/category_entity_extension.dart';
 import '../../domain/entities/category/category.dart';
 import '../../domain/repositories/category_repository.dart';
@@ -10,7 +9,7 @@ class CategoryRepositoryImpl implements ICategoryRepository {
   final ICategoryLocalDataSource _localDataSource;
 
   CategoryRepositoryImpl(this._localDataSource);
-  
+
   @override
   Future<List<CategoryEntity>> getCategories() async {
     final categoryModels = await _localDataSource.getCategories();
@@ -18,18 +17,25 @@ class CategoryRepositoryImpl implements ICategoryRepository {
   }
 
   @override
-  Future<CategoryEntity> getCategoryById(int id) async {
+  Stream<List<CategoryEntity>> watchCategories() {
+    return _localDataSource.watchCategories().map(
+      (models) => models.toEntities(),
+    );
+  }
+
+  @override
+  Future<CategoryEntity> getCategoryById(String id) async {
     final model = await _localDataSource.getCategoryById(id);
     return model.toEntity();
   }
 
   @override
-  Future<int> createCategory(CategoryEntity category) {
+  Future<String> createCategory(CategoryEntity category) {
     return _localDataSource.createCategory(category.toModel());
   }
 
   @override
-  Future<void> deleteCategory(int id) async {
+  Future<void> deleteCategory(String id) async {
     _localDataSource.deleteCategory(id);
   }
 
@@ -38,6 +44,5 @@ class CategoryRepositoryImpl implements ICategoryRepository {
     _localDataSource.updateCategory(category.toModel());
   }
 }
-
 
 `;

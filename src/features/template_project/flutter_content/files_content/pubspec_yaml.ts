@@ -53,7 +53,9 @@ dependencies:
   flutter_dotenv: ^5.2.1
 
   mockito: ^5.4.5
-
+  uuid: ^4.5.1
+  shared_preferences: ^2.5.3
+  connectivity_plus: ^6.1.4
 
 dev_dependencies:
   flutter_test:

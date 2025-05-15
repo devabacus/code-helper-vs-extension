@@ -8,7 +8,7 @@ class CreateCategoryUseCase {
   
   CreateCategoryUseCase(this._repository);
   
-  Future<int> call(CategoryEntity category) {
+  Future<String> call(CategoryEntity category) {
     return _repository.createCategory(category);
   }
 }

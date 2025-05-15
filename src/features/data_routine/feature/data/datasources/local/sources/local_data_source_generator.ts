@@ -23,11 +23,11 @@ export class DataSourcesGenerator extends DataRoutineGenerator {
   protected getContent(parser: DriftClassParser): string {
     const D = parser.driftClassNameUpper;
     const d = parser.driftClassNameLower;
+    const ds = pluralConvert(d);
     const Ds = pluralConvert(D);
 
-    return `
-import '../tables/extensions/${d}_table_extension.dart';
-import '../../../models/extensions/${d}_model_extension.dart';
+    return `import '../../../models/extensions/${d}_model_extension.dart';
+import '../../../datasources/local/tables/extensions/${d}_table_extension.dart';
 import '../../../models/${d}/${d}_model.dart';
 import '../dao/${d}/${d}_dao.dart';
 import '../interfaces/${d}_local_datasource_service.dart';
@@ -39,18 +39,23 @@ class ${D}LocalDataSource implements I${D}LocalDataSource {
 
   @override
   Future<List<${D}Model>> get${Ds}() async {
-    final categories = await ${d}Dao.get${Ds}();
-    return categories.toModels();
+    final ${ds} = await ${d}Dao.get${Ds}();
+    return ${ds}.toModels();
   }
 
   @override
-  Future<${D}Model> get${D}ById(int id) async {
+  Stream<List<${D}Model>> watch${Ds}() {
+    return ${d}Dao.watch${Ds}().map((list) => list.toModels());
+  }
+
+  @override
+  Future<${D}Model> get${D}ById(String id) async {
     final ${d} = await ${d}Dao.get${D}ById(id);
     return ${d}.toModel();
   }
 
   @override
-  Future<int> create${D}(${D}Model ${d}) {
+  Future<String> create${D}(${D}Model ${d}) {
     return ${d}Dao.create${D}(${d}.toCompanion());
   }
 
@@ -60,7 +65,7 @@ class ${D}LocalDataSource implements I${D}LocalDataSource {
   }
 
   @override
-  Future<void> delete${D}(int id) async {
+  Future<void> delete${D}(String id) async {
     await ${d}Dao.delete${D}(id);
   }
 }

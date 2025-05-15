@@ -31,10 +31,11 @@ import '../../../models/${d}/${d}_model.dart';
 
 abstract class I${D}LocalDataSource {
   Future<List<${D}Model>> get${Ds}();
-  Future<${D}Model> get${D}ById(int id);
-  Future<int> create${D}(${D}Model ${d});
+  Stream<List<${D}Model>> watch${Ds}();
+  Future<${D}Model> get${D}ById(String id);
+  Future<String> create${D}(${D}Model ${d});
   Future<void> update${D}(${D}Model ${d});
-  Future<void> delete${D}(int id);
+  Future<void> delete${D}(String id);
 }
 
 `;

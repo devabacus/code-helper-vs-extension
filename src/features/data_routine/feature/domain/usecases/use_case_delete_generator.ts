@@ -32,7 +32,7 @@ class Delete${D}UseCase {
 
   Delete${D}UseCase(this._repository);
 
-  Future<void> call(int id) async {
+  Future<void> call(String id) async {
     return _repository.delete${D}(id);
   }
 }

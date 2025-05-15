@@ -17,7 +17,6 @@ export class DataRepositoryGenerator extends DataRoutineGenerator {
 
     return `import '../datasources/local/interfaces/${d}_local_datasource_service.dart';
 import '../models/extensions/${d}_model_extension.dart';
-import '../models/${d}/${d}_model.dart';
 import '../../domain/entities/extensions/${d}_entity_extension.dart';
 import '../../domain/entities/${d}/${d}.dart';
 import '../../domain/repositories/${d}_repository.dart';
@@ -26,7 +25,7 @@ class ${D}RepositoryImpl implements I${D}Repository {
   final I${D}LocalDataSource _localDataSource;
 
   ${D}RepositoryImpl(this._localDataSource);
-  
+
   @override
   Future<List<${D}Entity>> get${Ds}() async {
     final ${d}Models = await _localDataSource.get${Ds}();
@@ -34,18 +33,25 @@ class ${D}RepositoryImpl implements I${D}Repository {
   }
 
   @override
-  Future<${D}Entity> get${D}ById(int id) async {
+  Stream<List<${D}Entity>> watch${Ds}() {
+    return _localDataSource.watch${Ds}().map(
+      (models) => models.toEntities(),
+    );
+  }
+
+  @override
+  Future<${D}Entity> get${D}ById(String id) async {
     final model = await _localDataSource.get${D}ById(id);
     return model.toEntity();
   }
 
   @override
-  Future<int> create${D}(${D}Entity ${d}) {
+  Future<String> create${D}(${D}Entity ${d}) {
     return _localDataSource.create${D}(${d}.toModel());
   }
 
   @override
-  Future<void> delete${D}(int id) async {
+  Future<void> delete${D}(String id) async {
     _localDataSource.delete${D}(id);
   }
 
@@ -54,7 +60,6 @@ class ${D}RepositoryImpl implements I${D}Repository {
     _localDataSource.update${D}(${d}.toModel());
   }
 }
-
 `;
   }
 

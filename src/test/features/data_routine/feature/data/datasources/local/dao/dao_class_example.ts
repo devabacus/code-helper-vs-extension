@@ -1,30 +1,51 @@
 export const dataDaoExample =
-    `
+    `import 'package:uuid/uuid.dart';
 import 'package:drift/drift.dart';
-import '../../../../../../../core/database/local/database.dart';
+
 import '../../../../../../../core/database/local/interface/i_database_service.dart';
+import '../../../../../../../core/database/local/database.dart';
 import '../../tables/category_table.dart';
 
 part 'category_dao.g.dart';
 
 @DriftAccessor(tables: [CategoryTable])
-class CategoryDao extends DatabaseAccessor<AppDatabase> with _$CategoryDaoMixin {
-  
-  CategoryDao(IDatabaseService databaseService): super(databaseService.database);
+class CategoryDao extends DatabaseAccessor<AppDatabase>
+    with _$CategoryDaoMixin {
+  final Uuid _uuid = Uuid();
 
-  Future<List<CategoryTableData>> getCategories() => select(categoryTable).get();
-  
-  Future<CategoryTableData> getCategoryById(int id) => 
-      (select(categoryTable)..where((t) => t.id.equals(id)))
-      .getSingle();
-  
-  Future<int> createCategory(CategoryTableCompanion category) =>
-      into(categoryTable).insert(category);
-  
+  CategoryDao(IDatabaseService databaseService)
+    : super(databaseService.database);
+
+  Future<List<CategoryTableData>> getCategories() =>
+      select(categoryTable).get();
+
+  Stream<List<CategoryTableData>> watchCategories() =>
+      select(categoryTable).watch();
+
+  Future<CategoryTableData> getCategoryById(String id) =>
+      (select(categoryTable)..where((t) => t.id.equals(id))).getSingle();
+
+  Future<String> createCategory(CategoryTableCompanion companion) async {
+    String idToInsert;
+    CategoryTableCompanion companionForInsert;
+
+    if (companion.id.present && companion.id.value.isNotEmpty) {
+      idToInsert = companion.id.value;
+      companionForInsert = companion;
+    } else {
+      idToInsert = _uuid.v7();
+      companionForInsert = companion.copyWith(id: Value(idToInsert));
+    }
+
+    await into(categoryTable).insert(companionForInsert);
+    return idToInsert;
+  }
+
   Future<void> updateCategory(CategoryTableCompanion category) =>
       update(categoryTable).replace(category);
-  
-  Future<void> deleteCategory(int id) =>
+
+  Future<void> deleteCategory(String id) =>
       (delete(categoryTable)..where((t) => t.id.equals(id))).go();
 }
+
 `;

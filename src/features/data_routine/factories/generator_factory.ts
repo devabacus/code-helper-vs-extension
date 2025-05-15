@@ -17,6 +17,7 @@ import { UseCaseDeleteGenerator } from "../feature/domain/usecases/use_case_dele
 import { UseCaseGetAllGenerator } from "../feature/domain/usecases/use_case_get_all_generator";
 import { UseCaseGetByIdGenerator } from "../feature/domain/usecases/use_case_get_by_id_generator";
 import { UseCaseUpdateGenerator } from "../feature/domain/usecases/use_case_update_generator";
+import { UseCaseWatchAllGenerator } from "../feature/domain/usecases/use_case_watch_all_generator";
 import { PresentGetByIdProviderGenerator } from "../feature/presentation/providers/present_get_by_id_prov_generator";
 import { PresentStateProviderGenerator } from "../feature/presentation/providers/present_state_prov_generator";
 
@@ -88,6 +89,10 @@ export class GeneratorFactory {
     }
     createUseCaseDeleteGenerator(): FileGenerator {
         return new UseCaseDeleteGenerator(this.fileSystem);
+    }
+
+    createUseCaseWatchAllGenerator(): FileGenerator {
+        return new UseCaseWatchAllGenerator(this.fileSystem);
     }
 
     // presentation layer

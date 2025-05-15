@@ -48,7 +48,7 @@ export class GenerateAllFilesCommand implements Command {
 
         await this.generatorFactory.createUseCaseGetAllGenerator().generate(this.featurePath, this.driftClassName, this.parser);
 
-
+        await this.generatorFactory.createUseCaseWatchAllGenerator().generate(this.featurePath, this.driftClassName, this.parser);
 
 
         //presentation layer

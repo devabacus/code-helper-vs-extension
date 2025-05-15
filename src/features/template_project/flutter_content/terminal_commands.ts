@@ -24,7 +24,7 @@ const startDevPlugins = [
 
 export const pubAddComm = `flutter pub add `;
 export const pubGet = `flutter pub get`;
-export const build_runner = `dart run build_runner build`;
+export const build_runner = `dart run build_runner build --delete-conflicting-outputs`;
 
 
 const regularPluginsCommand = `${startPlugins.join(' ')}`;

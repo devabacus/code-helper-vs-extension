@@ -19,7 +19,7 @@ export const settingsJson = `
         "*.yaml": true,
         "*.env": true,
         "README.md": true,
-        ".gitignore": true,
+        ".gitignore": false,
     }
 }
 `;

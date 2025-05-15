@@ -17,6 +17,12 @@ GetCategoriesUseCase getCategoriesUseCase(Ref ref) {
 }
 
 @riverpod
+WatchCategoriesUseCase watchCategoriesUseCase(Ref ref) {
+  final repository = ref.read(categoryRepositoryProvider);
+  return WatchCategoriesUseCase(repository);
+}
+
+@riverpod
 CreateCategoryUseCase createCategoryUseCase(Ref ref) {
   final repository = ref.read(categoryRepositoryProvider);
   return CreateCategoryUseCase(repository);

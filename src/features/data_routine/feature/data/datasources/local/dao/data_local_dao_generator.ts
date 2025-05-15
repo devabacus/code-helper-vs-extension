@@ -24,34 +24,55 @@ export class DataDaoGenerator extends DataRoutineGenerator {
         const D = parser.driftClassNameUpper;
         const Ds = pluralConvert(D);
 
-        return `
+        return `import 'package:uuid/uuid.dart';
 import 'package:drift/drift.dart';
-import '../../../../../../../core/database/local/database.dart';
+
 import '../../../../../../../core/database/local/interface/i_database_service.dart';
+import '../../../../../../../core/database/local/database.dart';
 import '../../tables/${d}_table.dart';
 
 part '${d}_dao.g.dart';
 
 @DriftAccessor(tables: [${D}Table])
-class ${D}Dao extends DatabaseAccessor<AppDatabase> with _$${D}DaoMixin {
-  
-  ${D}Dao(IDatabaseService databaseService): super(databaseService.database);
+class ${D}Dao extends DatabaseAccessor<AppDatabase>
+    with _$${D}DaoMixin {
+  final Uuid _uuid = Uuid();
 
-  Future<List<${D}TableData>> get${Ds}() => select(${d}Table).get();
-  
-  Future<${D}TableData> get${D}ById(int id) => 
-      (select(${d}Table)..where((t) => t.id.equals(id)))
-      .getSingle();
-  
-  Future<int> create${D}(${D}TableCompanion ${d}) =>
-      into(${d}Table).insert(${d});
-  
+  ${D}Dao(IDatabaseService databaseService)
+    : super(databaseService.database);
+
+  Future<List<${D}TableData>> get${Ds}() =>
+      select(${d}Table).get();
+
+  Stream<List<${D}TableData>> watch${Ds}() =>
+      select(${d}Table).watch();
+
+  Future<${D}TableData> get${D}ById(String id) =>
+      (select(${d}Table)..where((t) => t.id.equals(id))).getSingle();
+
+  Future<String> create${D}(${D}TableCompanion companion) async {
+    String idToInsert;
+    ${D}TableCompanion companionForInsert;
+
+    if (companion.id.present && companion.id.value.isNotEmpty) {
+      idToInsert = companion.id.value;
+      companionForInsert = companion;
+    } else {
+      idToInsert = _uuid.v7();
+      companionForInsert = companion.copyWith(id: Value(idToInsert));
+    }
+
+    await into(${d}Table).insert(companionForInsert);
+    return idToInsert;
+  }
+
   Future<void> update${D}(${D}TableCompanion ${d}) =>
       update(${d}Table).replace(${d});
-  
-  Future<void> delete${D}(int id) =>
+
+  Future<void> delete${D}(String id) =>
       (delete(${d}Table)..where((t) => t.id.equals(id))).go();
 }
+
 `;
     }
 

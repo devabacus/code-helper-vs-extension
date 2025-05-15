@@ -26,7 +26,7 @@ class Categories extends _$Categories {
     });
   }
 
-  Future<void> deleteCategory(int id) async {
+  Future<void> deleteCategory(String id) async {
     state = await AsyncValue.guard(() async {
       await ref.read(deleteCategoryUseCaseProvider)(id);
       return ref.read(getCategoriesUseCaseProvider)();

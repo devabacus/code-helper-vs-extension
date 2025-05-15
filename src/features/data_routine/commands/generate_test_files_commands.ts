@@ -23,6 +23,8 @@ export class GenerateTestFilesCommand implements Command {
         await this.testGeneratorFactory.createTestUseCasesGetByIdGenerator().generate(this.featureTestPath, this.driftClassName, this.parser);
 
         await this.testGeneratorFactory.createTestUseCasesGetListGenerator().generate(this.featureTestPath, this.driftClassName, this.parser);
+
+        
     }
 }
 

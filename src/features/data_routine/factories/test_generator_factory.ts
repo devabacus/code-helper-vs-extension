@@ -46,5 +46,9 @@ export class DartTestGeneratorFactory {
     createTestUseCasesGetListGenerator(): FileGenerator {
         return new TestUseCaseGetListGenerator(this.fileSystem);
     }
+
+    // createTestUseCasesWatchAllGenerator(): FileGenerator {
+    //     return new TestUseCaseGetListGenerator(this.fileSystem);
+    // }
 }
 

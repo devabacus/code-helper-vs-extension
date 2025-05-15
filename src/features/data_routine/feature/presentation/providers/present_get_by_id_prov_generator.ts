@@ -35,7 +35,7 @@ import '${d}_state_providers.dart';
 part '${d}_get_by_id_provider.g.dart';
 
 @riverpod
-FutureOr<${D}Entity> get${D}ById(Ref ref, int id) async {
+FutureOr<${D}Entity> get${D}ById(Ref ref, String id) async {
   final ${ds}AsyncValue = ref.read(${ds}Provider);
 
   if (${ds}AsyncValue is AsyncData<List<${D}Entity>>) {

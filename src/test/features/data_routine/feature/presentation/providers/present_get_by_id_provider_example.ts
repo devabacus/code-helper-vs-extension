@@ -9,7 +9,7 @@ import 'category_state_providers.dart';
 part 'category_get_by_id_provider.g.dart';
 
 @riverpod
-FutureOr<CategoryEntity> getCategoryById(Ref ref, int id) async {
+FutureOr<CategoryEntity> getCategoryById(Ref ref, String id) async {
   final categoriesAsyncValue = ref.read(categoriesProvider);
 
   if (categoriesAsyncValue is AsyncData<List<CategoryEntity>>) {

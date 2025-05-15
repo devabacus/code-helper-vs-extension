@@ -33,7 +33,7 @@ class Create${D}UseCase {
   
   Create${D}UseCase(this._repository);
   
-  Future<int> call(${D}Entity ${d}) {
+  Future<String> call(${D}Entity ${d}) {
     return _repository.create${D}(${d});
   }
 }
