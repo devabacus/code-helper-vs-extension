@@ -20,7 +20,7 @@ suite('TestLocalSourceGeneratorTest', () => {
 
   const testInstance = new TestUseCaseUpdateGeneratorTest();
 
-  test('TestDaoGeneratorTest', async () => {
+  test('TestLocalSourceGeneratorTest', async () => {
     testInstance.setup();
 
     const featureCategoryTestPath = `"g:\\Projects\\Flutter\\project_name\\test\\features\\feature_name\\domain\\usecases\\category\\crud\\category_update_usecase_test.dart"`;

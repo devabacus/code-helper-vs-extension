@@ -21,7 +21,7 @@ suite('TestLocalSourceGeneratorTest', () => {
 
   const testInstance = new TestRepositoryGeneratorTest();
 
-  test('TestDaoGeneratorTest', async () => {
+  test('TestRepositoryGeneratorTest', async () => {
     testInstance.setup();
 
     const featureCategoryTestPath = `"g:\\Projects\\Flutter\\project_name\\test\\features\\feature_name\\data\\repositories\\category\\category_repository_impl_test.dart"`;

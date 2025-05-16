@@ -7,7 +7,7 @@ import { TestTaskDeleteUseCaseExample } from "./test_task_delete_usecase_example
 import { TestUseCaseDeleteGenerator } from "../../../../../../../../features/data_routine/test/feature/domain/usecases/test_usecase_delete_generator";
 
 
-suite('TestLocalSourceGeneratorTest', () => {
+suite('TestUseCaseDeleteGeneratorTest', () => {
   class TestUseCaseDeleteGeneratorTest extends BaseDataRoutineGeneratorTest {
 
     protected createGenerator(fileSystem: IFileSystem): FileGenerator {
@@ -21,7 +21,7 @@ suite('TestLocalSourceGeneratorTest', () => {
 
   const testInstance = new TestUseCaseDeleteGeneratorTest();
 
-  test('TestDaoGeneratorTest', async () => {
+  test('TestUseCaseDeleteGeneratorTest', async () => {
     testInstance.setup();
 
     const featureCategoryTestPath = `"g:\\Projects\\Flutter\\project_name\\test\\features\\feature_name\\domain\\usecases\\category\\crud\\category_delete_usecase_test.dart"`;

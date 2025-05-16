@@ -7,7 +7,7 @@ import { TestUseCaseCreateGenerator } from "../../../../../../../../features/dat
 import { TestTaskCreateUseCaseExample } from "./test_task_create_usecase_example";
 
 
-suite('TestLocalSourceGeneratorTest', () => {
+suite('TestUseCaseCreateGeneratorTest', () => {
   class TestUseCaseCreateGeneratorTest extends BaseDataRoutineGeneratorTest {
 
     protected createGenerator(fileSystem: IFileSystem): FileGenerator {
@@ -21,7 +21,7 @@ suite('TestLocalSourceGeneratorTest', () => {
 
   const testInstance = new TestUseCaseCreateGeneratorTest();
 
-  test('TestDaoGeneratorTest', async () => {
+  test('UseCaseCreateTest', async () => {
     testInstance.setup();
 
     const featureCategoryTestPath = `"g:\\Projects\\Flutter\\project_name\\test\\features\\feature_name\\domain\\usecases\\category\\crud\\category_create_usecase_test.dart"`;

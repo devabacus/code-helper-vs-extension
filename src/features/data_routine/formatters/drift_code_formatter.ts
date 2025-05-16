@@ -56,7 +56,7 @@ export class DriftCodeFormatter implements IDriftCodeFormatter {
     const firstRow = fieldsList.map((item) => `${item.name}: ${item.value}`).join(', ');
     const secondRow = firstRow.replaceAll('1', '2').replace('false', 'true');
     let wrapped = secondRow.replaceAll(/(\w+):\s*(.*?)(?:,|$)/g, '$1: Value($2),');
-    wrapped = `id: Value(1), ` + wrapped.slice(0, -1);
+    wrapped = `id: Value(testId), ` + wrapped.slice(0, -1);
 
     return [firstRow, secondRow, wrapped];
   }

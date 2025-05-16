@@ -20,7 +20,7 @@ suite('TestUseCaseGetListGeneratorTest', () => {
 
   const testInstance = new TestUseCaseGetListGeneratorTest();
 
-  test('TestDaoGeneratorTest', async () => {
+  test('TestUseCaseGetListGeneratorTest', async () => {
     testInstance.setup();
 
     const featureCategoryTestPath = `"g:\\Projects\\Flutter\\project_name\\test\\features\\feature_name\\domain\\usecases\\category\\crud\\category_get_list_usecase_test.dart"`;

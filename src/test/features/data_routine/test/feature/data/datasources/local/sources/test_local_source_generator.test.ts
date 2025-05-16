@@ -21,7 +21,7 @@ suite('TestLocalSourceGeneratorTest', () => {
 
   const testInstance = new TestLocalSourceGeneratorTest();
 
-  test('TestDaoGeneratorTest', async () => {
+  test('TestLocalSourceGeneratorTest', async () => {
     testInstance.setup();
 
     const featureTestCategoryPath = `"g:\\Projects\\Flutter\\project_name\\test\\features\\feature_name\\data\\datasources\\local\\sources\\category\\category_local_data_source_test.dart"`;

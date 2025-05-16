@@ -20,7 +20,7 @@ suite('TestUseCaseGetByIdGeneratorTest', () => {
 
   const testInstance = new TestUseCaseGetByIdGeneratorTest();
 
-  test('TestDaoGeneratorTest', async () => {
+  test('TestUseCaseGetByIdGeneratorTest', async () => {
     testInstance.setup();
 
     const featureCategoryTestPath = `"g:\\Projects\\Flutter\\project_name\\test\\features\\feature_name\\domain\\usecases\\category\\crud\\category_get_by_id_usecase_test.dart"`;

@@ -16,9 +16,9 @@ export const settingsJson = `
         ".flutter-plugins": true,
         ".flutter-plugins-dependencies": true,
         "*iml": true,
-        "*.yaml": true,
+        "analysis_options.yaml": true,
+        "build.yaml": true,
         "*.env": true,
-        "README.md": true,
         ".gitignore": false,
     }
 }
