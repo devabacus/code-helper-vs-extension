@@ -1,10 +1,9 @@
 import path from "path";
-import { IFileSystem } from "../../../../../../../../../core/interfaces/file_system";
-import { BaseDataRoutineGeneratorTest } from "../../../../../../generators/data_routine_generator.test";
 import { FileGenerator } from "../../../../../../../../../core/interfaces/file_generator";
-import { testCategoryDaoExample } from "./category_test_dao_example";
+import { IFileSystem } from "../../../../../../../../../core/interfaces/file_system";
 import { TestDaoGenerator } from "../../../../../../../../../features/data_routine/test/feature/data/datasources/local/dao/test_dao_generator";
-import { PathData } from "../../../../../../../../../features/utils/path_util";
+import { BaseDataRoutineGeneratorTest } from "../../../../../../generators/data_routine_generator.test";
+import { testCategoryDaoExample } from "./category_test_dao_example";
 import { testTaskDaoExample } from "./task_test_dao_example";
 
 
@@ -19,7 +18,7 @@ suite('TestDaoGeneratorTest', () => {
       return path.join(featureTestPath, "data", "datasources", "local","dao", `${entityName}_dao_test.dart`);
     }
   }
-  
+       
   const testInstance = new TestDaoGeneratorTest();
   
   test('TestDaoGeneratorTest', async () => {
