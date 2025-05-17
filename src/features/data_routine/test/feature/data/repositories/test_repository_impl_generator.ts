@@ -36,87 +36,92 @@ import 'package:${projectName}/features/${featureName}/domain/entities/${d}/${d}
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import '${d}_repository_impl_test.mocks.dart';
+import 'package:uuid/uuid.dart';
 
+import '${d}_repository_impl_test.mocks.dart';
 
 @GenerateMocks([I${D}LocalDataSource])
 void main() {
+  late MockI${D}LocalDataSource mock${D}LocalDataSource;
+  late ${D}RepositoryImpl ${d}RepositoryImpl;
+  const uuid = Uuid();
 
-    late MockI${D}LocalDataSource mock${D}LocalDataSource;
-    late ${D}RepositoryImpl ${d}RepositoryImpl;
+  setUp(() {
+    mock${D}LocalDataSource = MockI${D}LocalDataSource();
+    ${d}RepositoryImpl = ${D}RepositoryImpl(
+      mock${D}LocalDataSource,
+    );
+  });
 
+  group('${d}RepositoryImpl', () {
+    final testId = uuid.v7();
 
-    setUp((){
-      mock${D}LocalDataSource = MockI${D}LocalDataSource();
-      ${d}RepositoryImpl = ${D}RepositoryImpl(mock${D}LocalDataSource);
+    final test${D}Model = ${D}Model(id: testId, ${fields[0]});
+    final test${D}ModelList = [${D}Model(id: testId, ${fields[0]})];
+    final test${D}Entity = ${D}Entity(id: testId, ${fields[0]});
+
+    test('get${Ds}', () async {
+      when(
+        mock${D}LocalDataSource.get${Ds}(),
+      ).thenAnswer((_) async => test${D}ModelList);
+
+      final categories = await ${d}RepositoryImpl.get${Ds}();
+
+      verify(mock${D}LocalDataSource.get${Ds}()).called(1);
+      expect(categories.length, 1);
+      expect(categories[0].id, equals(test${D}Model.id));
+      expect(categories[0].${firstRow}, equals(test${D}Model.${firstRow}));
     });
 
-    group('${d}RepositoryImpl',(){
+    test('get${D}ById', () async {
+      when(
+        mock${D}LocalDataSource.get${D}ById(testId),
+      ).thenAnswer((_) async => test${D}Model);
 
-      final test${D}Model = ${D}Model(id: 1, ${fields[0]});
-      final test${D}ModelList = [${D}Model(id: 1, ${fields[0]})];
-      final test${D}Entity = ${D}Entity(id: -1, ${fields[0]});
-      
-      test('get${Ds}', () async{
-          when(mock${D}LocalDataSource.get${Ds}()).thenAnswer((_)async=>test${D}ModelList);
+      final result = await ${d}RepositoryImpl.get${D}ById(testId);
 
-          final categories = await ${d}RepositoryImpl.get${Ds}();
+      verify(mock${D}LocalDataSource.get${D}ById(testId)).called(1);
 
-          verify(mock${D}LocalDataSource.get${Ds}()).called(1);
-          expect(categories.length, 1);
-          expect(categories[0].id, equals(test${D}Model.id));
-          expect(categories[0].${firstRow}, equals(test${D}Model.${firstRow}));
-      });
+      expect(result.id, equals(test${D}Model.id));
+      expect(result.${firstRow}, equals(test${D}Model.${firstRow}));
+    });
+    test('create${D}', () async {
+      when(
+        mock${D}LocalDataSource.create${D}(any),
+      ).thenAnswer((_) async => testId);
 
+      final result = await ${d}RepositoryImpl.create${D}(
+        test${D}Entity,
+      );
 
-      test('get${D}ById', () async {
-        when(mock${D}LocalDataSource.get${D}ById(1)).thenAnswer((_)async=>test${D}Model);
-
-        final result = await ${d}RepositoryImpl.get${D}ById(1);
-
-        verify(mock${D}LocalDataSource.get${D}ById(1)).called(1);
-        
-        expect(result.id, equals(test${D}Model.id));
-        expect(result.${firstRow}, equals(test${D}Model.${firstRow}));
-        
-      });
-            test('create${D}', () async {
-        final expectedId = 1;
-
-        when(mock${D}LocalDataSource.create${D}(any))
-            .thenAnswer((_) async => expectedId);
-
-        final result = await ${d}RepositoryImpl.create${D}(test${D}Entity);
-
-        verify(mock${D}LocalDataSource.create${D}(any)).called(1);
-        expect(result, equals(expectedId));
-      });
-
-      test('update${D}', () async {
-        when(mock${D}LocalDataSource.update${D}(any))
-            .thenAnswer((_) async => {});
-
-        await ${d}RepositoryImpl.update${D}(test${D}Entity);
-
-        verify(mock${D}LocalDataSource.update${D}(any)).called(1);
-      });
-
-      test('delete${D}', () async {
-        
-        final ${d}Id = 1;
-
-        when(mock${D}LocalDataSource.delete${D}(${d}Id))
-            .thenAnswer((_) async => {});
-
-        await ${d}RepositoryImpl.delete${D}(${d}Id);
-
-        verify(mock${D}LocalDataSource.delete${D}(${d}Id)).called(1);
-      });
-
+      verify(mock${D}LocalDataSource.create${D}(any)).called(1);
+      expect(result, equals(testId));
     });
 
+    test('update${D}', () async {
+      when(
+        mock${D}LocalDataSource.update${D}(any),
+      ).thenAnswer((_) async => {});
+
+      await ${d}RepositoryImpl.update${D}(test${D}Entity);
+
+      verify(mock${D}LocalDataSource.update${D}(any)).called(1);
+    });
+
+    test('delete${D}', () async {
+      when(
+        mock${D}LocalDataSource.delete${D}(testId),
+      ).thenAnswer((_) async => {});
+
+      await ${d}RepositoryImpl.delete${D}(testId);
+
+      verify(mock${D}LocalDataSource.delete${D}(testId)).called(1);
+    });
+  });
 }
+
 
 `;
   }
 }
+

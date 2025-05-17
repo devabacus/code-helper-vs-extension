@@ -5,86 +5,87 @@ import 'package:project_name/features/feature_name/domain/entities/category/cate
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'category_repository_impl_test.mocks.dart';
+import 'package:uuid/uuid.dart';
 
+import 'category_repository_impl_test.mocks.dart';
 
 @GenerateMocks([ICategoryLocalDataSource])
 void main() {
+  late MockICategoryLocalDataSource mockCategoryLocalDataSource;
+  late CategoryRepositoryImpl categoryRepositoryImpl;
+  const uuid = Uuid();
 
-    late MockICategoryLocalDataSource mockCategoryLocalDataSource;
-    late CategoryRepositoryImpl categoryRepositoryImpl;
+  setUp(() {
+    mockCategoryLocalDataSource = MockICategoryLocalDataSource();
+    categoryRepositoryImpl = CategoryRepositoryImpl(
+      mockCategoryLocalDataSource,
+    );
+  });
 
+  group('categoryRepositoryImpl', () {
+    final testId = uuid.v7();
 
-    setUp((){
-      mockCategoryLocalDataSource = MockICategoryLocalDataSource();
-      categoryRepositoryImpl = CategoryRepositoryImpl(mockCategoryLocalDataSource);
+    final testCategoryModel = CategoryModel(id: testId, title: 'title 1');
+    final testCategoryModelList = [CategoryModel(id: testId, title: 'title 1')];
+    final testCategoryEntity = CategoryEntity(id: testId, title: 'title 1');
+
+    test('getCategories', () async {
+      when(
+        mockCategoryLocalDataSource.getCategories(),
+      ).thenAnswer((_) async => testCategoryModelList);
+
+      final categories = await categoryRepositoryImpl.getCategories();
+
+      verify(mockCategoryLocalDataSource.getCategories()).called(1);
+      expect(categories.length, 1);
+      expect(categories[0].id, equals(testCategoryModel.id));
+      expect(categories[0].title, equals(testCategoryModel.title));
     });
 
-    group('categoryRepositoryImpl',(){
+    test('getCategoryById', () async {
+      when(
+        mockCategoryLocalDataSource.getCategoryById(testId),
+      ).thenAnswer((_) async => testCategoryModel);
 
-      final testCategoryModel = CategoryModel(id: 1, title: 'title 1');
-      final testCategoryModelList = [CategoryModel(id: 1, title: 'title 1')];
-      final testCategoryEntity = CategoryEntity(id: -1, title: 'title 1');
-      
-      test('getCategories', () async{
-          when(mockCategoryLocalDataSource.getCategories()).thenAnswer((_)async=>testCategoryModelList);
+      final result = await categoryRepositoryImpl.getCategoryById(testId);
 
-          final categories = await categoryRepositoryImpl.getCategories();
+      verify(mockCategoryLocalDataSource.getCategoryById(testId)).called(1);
 
-          verify(mockCategoryLocalDataSource.getCategories()).called(1);
-          expect(categories.length, 1);
-          expect(categories[0].id, equals(testCategoryModel.id));
-          expect(categories[0].title, equals(testCategoryModel.title));
-      });
+      expect(result.id, equals(testCategoryModel.id));
+      expect(result.title, equals(testCategoryModel.title));
+    });
+    test('createCategory', () async {
+      when(
+        mockCategoryLocalDataSource.createCategory(any),
+      ).thenAnswer((_) async => testId);
 
+      final result = await categoryRepositoryImpl.createCategory(
+        testCategoryEntity,
+      );
 
-      test('getCategoryById', () async {
-        when(mockCategoryLocalDataSource.getCategoryById(1)).thenAnswer((_)async=>testCategoryModel);
-
-        final result = await categoryRepositoryImpl.getCategoryById(1);
-
-        verify(mockCategoryLocalDataSource.getCategoryById(1)).called(1);
-        
-        expect(result.id, equals(testCategoryModel.id));
-        expect(result.title, equals(testCategoryModel.title));
-        
-      });
-            test('createCategory', () async {
-        final expectedId = 1;
-
-        when(mockCategoryLocalDataSource.createCategory(any))
-            .thenAnswer((_) async => expectedId);
-
-        final result = await categoryRepositoryImpl.createCategory(testCategoryEntity);
-
-        verify(mockCategoryLocalDataSource.createCategory(any)).called(1);
-        expect(result, equals(expectedId));
-      });
-
-      test('updateCategory', () async {
-        when(mockCategoryLocalDataSource.updateCategory(any))
-            .thenAnswer((_) async => {});
-
-        await categoryRepositoryImpl.updateCategory(testCategoryEntity);
-
-        verify(mockCategoryLocalDataSource.updateCategory(any)).called(1);
-      });
-
-      test('deleteCategory', () async {
-        
-        final categoryId = 1;
-
-        when(mockCategoryLocalDataSource.deleteCategory(categoryId))
-            .thenAnswer((_) async => {});
-
-        await categoryRepositoryImpl.deleteCategory(categoryId);
-
-        verify(mockCategoryLocalDataSource.deleteCategory(categoryId)).called(1);
-      });
-
+      verify(mockCategoryLocalDataSource.createCategory(any)).called(1);
+      expect(result, equals(testId));
     });
 
+    test('updateCategory', () async {
+      when(
+        mockCategoryLocalDataSource.updateCategory(any),
+      ).thenAnswer((_) async => {});
+
+      await categoryRepositoryImpl.updateCategory(testCategoryEntity);
+
+      verify(mockCategoryLocalDataSource.updateCategory(any)).called(1);
+    });
+
+    test('deleteCategory', () async {
+      when(
+        mockCategoryLocalDataSource.deleteCategory(testId),
+      ).thenAnswer((_) async => {});
+
+      await categoryRepositoryImpl.deleteCategory(testId);
+
+      verify(mockCategoryLocalDataSource.deleteCategory(testId)).called(1);
+    });
+  });
 }
-
-
 `;
