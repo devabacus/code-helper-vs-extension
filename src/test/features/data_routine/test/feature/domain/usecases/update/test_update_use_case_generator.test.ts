@@ -5,8 +5,9 @@ import { BaseDataRoutineGeneratorTest } from "../../../../../generators/data_rou
 import { TestCategoryUpdateUseCaseExample } from "./test_category_update_usecase_example";
 import { TestTaskUpdateUseCaseExample } from "./test_task_update_usecase_example";
 import { TestUseCaseUpdateGenerator } from "../../../../../../../../features/data_routine/test/feature/domain/usecases/test_usecase_update_generator";
+import { TestCategoryWatchUseCaseExample } from "../watch/test_category_watch_usecase_example";
 
-suite('TestLocalSourceGeneratorTest', () => {
+suite('TestUpdateGeneratorTest', () => {
   class TestUseCaseUpdateGeneratorTest extends BaseDataRoutineGeneratorTest {
 
     protected createGenerator(fileSystem: IFileSystem): FileGenerator {
@@ -20,12 +21,12 @@ suite('TestLocalSourceGeneratorTest', () => {
 
   const testInstance = new TestUseCaseUpdateGeneratorTest();
 
-  test('TestLocalSourceGeneratorTest', async () => {
+  test('TestLocalUpdateGeneratorTest', async () => {
     testInstance.setup();
 
     const featureCategoryTestPath = `"g:\\Projects\\Flutter\\project_name\\test\\features\\feature_name\\domain\\usecases\\category\\crud\\category_update_usecase_test.dart"`;
     const featureTaskTestPath = `"g:\\Projects\\Flutter\\project_name\\test\\features\\feature_name\\domain\\usecases\\task\\crud\\task_update_usecase_test.dart"`;
-
+-
     await testInstance.testGenerator(featureCategoryTestPath, "category", TestCategoryUpdateUseCaseExample);
     await testInstance.testGenerator(featureTaskTestPath, "task", TestTaskUpdateUseCaseExample);
   });

@@ -24,6 +24,8 @@ export class GenerateTestFilesCommand implements Command {
 
         await this.testGeneratorFactory.createTestUseCasesGetListGenerator().generate(this.featureTestPath, this.driftClassName, this.parser);
 
+        await this.testGeneratorFactory.createTestUseCaseWatchGenerator().generate(this.featureTestPath, this.driftClassName, this.parser);
+
         
     }
 }

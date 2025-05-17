@@ -8,6 +8,7 @@ import { TestUseCaseDeleteGenerator } from "../test/feature/domain/usecases/test
 import { TestUseCaseGetByIdGenerator } from "../test/feature/domain/usecases/test_usecase_get_by_id_generator";
 import { TestUseCaseGetListGenerator } from "../test/feature/domain/usecases/test_usecase_get_list_generator";
 import { TestUseCaseUpdateGenerator } from "../test/feature/domain/usecases/test_usecase_update_generator";
+import { TestUseCaseWatchGenerator } from "../test/feature/domain/usecases/test_usecase_watch_generator";
 
 
 
@@ -47,8 +48,8 @@ export class DartTestGeneratorFactory {
         return new TestUseCaseGetListGenerator(this.fileSystem);
     }
 
-    // createTestUseCasesWatchAllGenerator(): FileGenerator {
-    //     return new TestUseCaseGetListGenerator(this.fileSystem);
-    // }
+    createTestUseCaseWatchGenerator(): FileGenerator {
+        return new TestUseCaseWatchGenerator(this.fileSystem);
+    }
 }
 
