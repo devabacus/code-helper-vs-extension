@@ -1,10 +1,9 @@
 import path from "path";
 import { FileGenerator } from "../../../../../../../../core/interfaces/file_generator";
 import { IFileSystem } from "../../../../../../../../core/interfaces/file_system";
-import { BaseDataRoutineGeneratorTest } from "../../../../../generators/data_routine_generator.test";
-import { TestUseCaseUpdateGenerator } from "../../../../../../../../features/data_routine/test/feature/domain/usecases/test_usecase_update_generator";
-import { TestCategoryWatchUseCaseExample } from "../watch/test_category_watch_usecase_example";
 import { TestUseCaseWatchGenerator } from "../../../../../../../../features/data_routine/test/feature/domain/usecases/test_usecase_watch_generator";
+import { BaseDataRoutineGeneratorTest } from "../../../../../generators/data_routine_generator.test";
+import { TestCategoryWatchUseCaseExample } from "../watch/test_category_watch_usecase_example";
 import { TestTaskWatchUseCaseExample } from "./test_task_watch_usecase_example";
 
 suite('TestWatchGeneratorTest', () => {
