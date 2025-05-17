@@ -4,6 +4,7 @@ import 'package:project_name/features/feature_name/domain/usecases/task/get_by_i
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:uuid/uuid.dart';
 
 import 'task_get_by_id_usecase_test.mocks.dart';
 
@@ -11,6 +12,7 @@ import 'task_get_by_id_usecase_test.mocks.dart';
 void main() {
   late GetTaskByIdUseCase getTaskByIdUseCase;
   late MockITaskRepository mockITaskRepository;
+  const uuid = Uuid();
 
   setUp(() {
     mockITaskRepository = MockITaskRepository();
@@ -18,33 +20,33 @@ void main() {
   });
 
   test('should return correct item by id', () async {
-    const taskId = 1;
-    final task = TaskEntity(id: taskId, title: 'title 1', description: 'description 1', duration: 1, createdAt: DateTime(1), dueDateTime: DateTime(1), categoryId: 1);
+    final testId = uuid.v7();
+    final task = TaskEntity(id: testId, title: 'title 1', description: 'description 1', duration: 1, createdAt: DateTime(1), dueDateTime: DateTime(1), categoryId: 'categoryId 1');
     
     when(
-      mockITaskRepository.getTaskById(taskId),
+      mockITaskRepository.getTaskById(testId),
     ).thenAnswer((_) async => task);
 
-    final result = await getTaskByIdUseCase(taskId);
+    final result = await getTaskByIdUseCase(testId);
 
-    verify(mockITaskRepository.getTaskById(taskId)).called(1);
+    verify(mockITaskRepository.getTaskById(testId)).called(1);
     expect(result, task);
-    expect(result?.id, taskId);
+    expect(result?.id, testId);
     expect(result?.title, 'title 1');
   });
 
   test('shoul throw exception', () async {
-    const taskId = 999;
+    const wrongId = '999';
     
     when(
-      mockITaskRepository.getTaskById(taskId),
+      mockITaskRepository.getTaskById(wrongId),
     ).thenThrow(StateError('Task not found'));
 
     expect(
-      () => getTaskByIdUseCase(taskId),
+      () => getTaskByIdUseCase(wrongId),
       throwsA(isA<StateError>()),
     );
-    verify(mockITaskRepository.getTaskById(taskId)).called(1);
+    verify(mockITaskRepository.getTaskById(wrongId)).called(1);
   });
 }
 

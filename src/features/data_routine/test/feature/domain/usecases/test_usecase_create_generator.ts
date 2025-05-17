@@ -33,6 +33,7 @@ import 'package:${projectName}/features/${featureName}/domain/usecases/${d}/crea
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:uuid/uuid.dart';
 
 import '${d}_create_usecase_test.mocks.dart';
 
@@ -40,26 +41,28 @@ import '${d}_create_usecase_test.mocks.dart';
 void main() {
   late Create${D}UseCase create${D}UseCase;
   late MockI${D}Repository mockI${D}Repository;
+  const uuid = Uuid();
 
   setUp(() {
     mockI${D}Repository = MockI${D}Repository();
     create${D}UseCase = Create${D}UseCase(mockI${D}Repository);
   });
 
-  test('should create new with id 1', () async {
-    final expectedId = 1;
-    final ${d}Entity = ${D}Entity(id: -1, ${fieldsRow[0]});
+  test('should create new category', () async {
+    final testId = uuid.v7();
+    final ${d}Entity = ${D}Entity(id: testId, ${fieldsRow[0]});
 
     when(
       mockI${D}Repository.create${D}(${d}Entity),
-    ).thenAnswer((_) async => 1);
+    ).thenAnswer((_) async => testId);
 
     final result = await create${D}UseCase(${d}Entity);
 
     verify(mockI${D}Repository.create${D}(${d}Entity)).called(1);
-    expect(result, expectedId);
+    expect(result, testId);
   });
 }
 `;
   }
 }
+

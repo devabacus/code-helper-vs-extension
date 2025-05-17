@@ -4,6 +4,7 @@ import 'package:project_name/features/feature_name/domain/usecases/task/update.d
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:uuid/uuid.dart';
 
 import 'task_update_usecase_test.mocks.dart';
 
@@ -11,6 +12,7 @@ import 'task_update_usecase_test.mocks.dart';
 void main() {
   late UpdateTaskUseCase updateTaskUseCase;
   late MockITaskRepository mockITaskRepository;
+  const uuid = Uuid();
 
   setUp(() {
     mockITaskRepository = MockITaskRepository();
@@ -18,7 +20,8 @@ void main() {
   });
 
   test('should call correct update method', () async {
-    final task = TaskEntity(id: 1, title: 'title 1', description: 'description 1', duration: 1, createdAt: DateTime(1), dueDateTime: DateTime(1), categoryId: 1);
+    final testId = uuid.v7();
+    final task = TaskEntity(id: testId, title: 'title 1', description: 'description 1', duration: 1, createdAt: DateTime(1), dueDateTime: DateTime(1), categoryId: 'categoryId 1');
     
     when(
       mockITaskRepository.updateTask(task),
@@ -29,6 +32,7 @@ void main() {
     verify(mockITaskRepository.updateTask(task)).called(1);
   });
 }
+
 
 `
 

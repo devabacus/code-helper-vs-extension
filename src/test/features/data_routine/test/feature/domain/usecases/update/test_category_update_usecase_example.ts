@@ -4,6 +4,7 @@ import 'package:project_name/features/feature_name/domain/usecases/category/upda
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:uuid/uuid.dart';
 
 import 'category_update_usecase_test.mocks.dart';
 
@@ -11,6 +12,7 @@ import 'category_update_usecase_test.mocks.dart';
 void main() {
   late UpdateCategoryUseCase updateCategoryUseCase;
   late MockICategoryRepository mockICategoryRepository;
+  const uuid = Uuid();
 
   setUp(() {
     mockICategoryRepository = MockICategoryRepository();
@@ -18,7 +20,8 @@ void main() {
   });
 
   test('should call correct update method', () async {
-    final category = CategoryEntity(id: 1, title: 'title 1');
+    final testId = uuid.v7();
+    final category = CategoryEntity(id: testId, title: 'title 1');
     
     when(
       mockICategoryRepository.updateCategory(category),

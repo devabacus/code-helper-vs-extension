@@ -33,6 +33,7 @@ import 'package:${projectName}/features/${featureName}/domain/usecases/${d}/get_
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:uuid/uuid.dart';
 
 import '${d}_get_by_id_usecase_test.mocks.dart';
 
@@ -40,6 +41,7 @@ import '${d}_get_by_id_usecase_test.mocks.dart';
 void main() {
   late Get${D}ByIdUseCase get${D}ByIdUseCase;
   late MockI${D}Repository mockI${D}Repository;
+  const uuid = Uuid();
 
   setUp(() {
     mockI${D}Repository = MockI${D}Repository();
@@ -47,33 +49,33 @@ void main() {
   });
 
   test('should return correct item by id', () async {
-    const ${d}Id = 1;
-    final ${d} = ${D}Entity(id: ${d}Id, ${fieldsRow[0]});
+    final testId = uuid.v7();
+    final ${d} = ${D}Entity(id: testId, ${fieldsRow[0]});
     
     when(
-      mockI${D}Repository.get${D}ById(${d}Id),
+      mockI${D}Repository.get${D}ById(testId),
     ).thenAnswer((_) async => ${d});
 
-    final result = await get${D}ByIdUseCase(${d}Id);
+    final result = await get${D}ByIdUseCase(testId);
 
-    verify(mockI${D}Repository.get${D}ById(${d}Id)).called(1);
+    verify(mockI${D}Repository.get${D}ById(testId)).called(1);
     expect(result, ${d});
-    expect(result?.id, ${d}Id);
+    expect(result?.id, testId);
     expect(result?${fieldsExpected[0]});
   });
 
   test('shoul throw exception', () async {
-    const ${d}Id = 999;
+    const wrongId = '999';
     
     when(
-      mockI${D}Repository.get${D}ById(${d}Id),
+      mockI${D}Repository.get${D}ById(wrongId),
     ).thenThrow(StateError('${D} not found'));
 
     expect(
-      () => get${D}ByIdUseCase(${d}Id),
+      () => get${D}ByIdUseCase(wrongId),
       throwsA(isA<StateError>()),
     );
-    verify(mockI${D}Repository.get${D}ById(${d}Id)).called(1);
+    verify(mockI${D}Repository.get${D}ById(wrongId)).called(1);
   });
 }
 `;

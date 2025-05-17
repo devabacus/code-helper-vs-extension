@@ -4,6 +4,7 @@ import 'package:project_name/features/feature_name/domain/usecases/task/create.d
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:uuid/uuid.dart';
 
 import 'task_create_usecase_test.mocks.dart';
 
@@ -11,26 +12,28 @@ import 'task_create_usecase_test.mocks.dart';
 void main() {
   late CreateTaskUseCase createTaskUseCase;
   late MockITaskRepository mockITaskRepository;
+  const uuid = Uuid();
 
   setUp(() {
     mockITaskRepository = MockITaskRepository();
     createTaskUseCase = CreateTaskUseCase(mockITaskRepository);
   });
 
-  test('should create new with id 1', () async {
-    final expectedId = 1;
-    final taskEntity = TaskEntity(id: -1, title: 'title 1', description: 'description 1', duration: 1, createdAt: DateTime(1), dueDateTime: DateTime(1), categoryId: 1);
+  test('should create new category', () async {
+    final testId = uuid.v7();
+    final taskEntity = TaskEntity(id: testId, title: 'title 1', description: 'description 1', duration: 1, createdAt: DateTime(1), dueDateTime: DateTime(1), categoryId: 'categoryId 1');
 
     when(
       mockITaskRepository.createTask(taskEntity),
-    ).thenAnswer((_) async => 1);
+    ).thenAnswer((_) async => testId);
 
     final result = await createTaskUseCase(taskEntity);
 
     verify(mockITaskRepository.createTask(taskEntity)).called(1);
-    expect(result, expectedId);
+    expect(result, testId);
   });
 }
+
 
 `
 

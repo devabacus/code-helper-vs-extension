@@ -4,6 +4,7 @@ import 'package:project_name/features/feature_name/domain/usecases/task/get_all.
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:uuid/uuid.dart';
 
 import 'task_get_list_usecase_test.mocks.dart';
 
@@ -11,6 +12,7 @@ import 'task_get_list_usecase_test.mocks.dart';
 void main() {
   late GetTasksUseCase getTasksUseCase;
   late MockITaskRepository mockITaskRepository;
+  const uuid = Uuid();
 
   setUp(() {
     mockITaskRepository = MockITaskRepository();
@@ -18,9 +20,12 @@ void main() {
   });
 
   test('should return list of items from repository', () async {
+    final testId1 = uuid.v7();
+    final testId2 = uuid.v7();
+
     final tasks = [
-      TaskEntity(id: 1, title: 'title 1', description: 'description 1', duration: 1, createdAt: DateTime(1), dueDateTime: DateTime(1), categoryId: 1),
-      TaskEntity(id: 2, title: 'title 2', description: 'description 2', duration: 2, createdAt: DateTime(2), dueDateTime: DateTime(2), categoryId: 2),
+      TaskEntity(id: testId1, title: 'title 1', description: 'description 1', duration: 1, createdAt: DateTime(1), dueDateTime: DateTime(1), categoryId: 'categoryId 1'),
+      TaskEntity(id: testId2, title: 'title 2', description: 'description 2', duration: 2, createdAt: DateTime(2), dueDateTime: DateTime(2), categoryId: 'categoryId 2'),
     ];
     
     when(

@@ -36,6 +36,7 @@ import 'package:${projectName}/features/${featureName}/domain/usecases/${d}/get_
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:uuid/uuid.dart';
 
 import '${d}_get_list_usecase_test.mocks.dart';
 
@@ -43,6 +44,7 @@ import '${d}_get_list_usecase_test.mocks.dart';
 void main() {
   late Get${Ds}UseCase get${Ds}UseCase;
   late MockI${D}Repository mockI${D}Repository;
+  const uuid = Uuid();
 
   setUp(() {
     mockI${D}Repository = MockI${D}Repository();
@@ -50,9 +52,12 @@ void main() {
   });
 
   test('should return list of items from repository', () async {
+    final testId1 = uuid.v7();
+    final testId2 = uuid.v7();
+
     final ${ds} = [
-      ${D}Entity(id: 1, ${fieldsRow[0]}),
-      ${D}Entity(id: 2, ${fieldsRow[1]}),
+      ${D}Entity(id: testId1, ${fieldsRow[0]}),
+      ${D}Entity(id: testId2, ${fieldsRow[1]}),
     ];
     
     when(

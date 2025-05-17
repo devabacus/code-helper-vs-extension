@@ -3,6 +3,7 @@ import 'package:project_name/features/feature_name/domain/usecases/category/dele
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:uuid/uuid.dart';
 
 import 'category_delete_usecase_test.mocks.dart';
 
@@ -10,6 +11,7 @@ import 'category_delete_usecase_test.mocks.dart';
 void main() {
   late DeleteCategoryUseCase deleteCategoryUseCase;
   late MockICategoryRepository mockICategoryRepository;
+  const uuid = Uuid();
 
   setUp(() {
     mockICategoryRepository = MockICategoryRepository();
@@ -17,15 +19,15 @@ void main() {
   });
 
   test('should call delete with correct id', () async {
-    const categoryId = 1;
+    final testId = uuid.v7();
     
     when(
-      mockICategoryRepository.deleteCategory(categoryId),
+      mockICategoryRepository.deleteCategory(testId),
     ).thenAnswer((_) async => {});
 
-    await deleteCategoryUseCase(categoryId);
+    await deleteCategoryUseCase(testId);
 
-    verify(mockICategoryRepository.deleteCategory(categoryId)).called(1);
+    verify(mockICategoryRepository.deleteCategory(testId)).called(1);
   });
 }
 

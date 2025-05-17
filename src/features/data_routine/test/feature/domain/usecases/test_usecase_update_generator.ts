@@ -32,6 +32,7 @@ import 'package:${projectName}/features/${featureName}/domain/usecases/${d}/upda
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:uuid/uuid.dart';
 
 import '${d}_update_usecase_test.mocks.dart';
 
@@ -39,6 +40,7 @@ import '${d}_update_usecase_test.mocks.dart';
 void main() {
   late Update${D}UseCase update${D}UseCase;
   late MockI${D}Repository mockI${D}Repository;
+  const uuid = Uuid();
 
   setUp(() {
     mockI${D}Repository = MockI${D}Repository();
@@ -46,7 +48,8 @@ void main() {
   });
 
   test('should call correct update method', () async {
-    final ${d} = ${D}Entity(id: 1, ${fieldsRow[0]});
+    final testId = uuid.v7();
+    final ${d} = ${D}Entity(id: testId, ${fieldsRow[0]});
     
     when(
       mockI${D}Repository.update${D}(${d}),

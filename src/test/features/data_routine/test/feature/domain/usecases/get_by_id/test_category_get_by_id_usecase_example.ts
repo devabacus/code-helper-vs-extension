@@ -4,6 +4,7 @@ import 'package:project_name/features/feature_name/domain/usecases/category/get_
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:uuid/uuid.dart';
 
 import 'category_get_by_id_usecase_test.mocks.dart';
 
@@ -11,6 +12,7 @@ import 'category_get_by_id_usecase_test.mocks.dart';
 void main() {
   late GetCategoryByIdUseCase getCategoryByIdUseCase;
   late MockICategoryRepository mockICategoryRepository;
+  const uuid = Uuid();
 
   setUp(() {
     mockICategoryRepository = MockICategoryRepository();
@@ -18,33 +20,33 @@ void main() {
   });
 
   test('should return correct item by id', () async {
-    const categoryId = 1;
-    final category = CategoryEntity(id: categoryId, title: 'title 1');
+    final testId = uuid.v7();
+    final category = CategoryEntity(id: testId, title: 'title 1');
     
     when(
-      mockICategoryRepository.getCategoryById(categoryId),
+      mockICategoryRepository.getCategoryById(testId),
     ).thenAnswer((_) async => category);
 
-    final result = await getCategoryByIdUseCase(categoryId);
+    final result = await getCategoryByIdUseCase(testId);
 
-    verify(mockICategoryRepository.getCategoryById(categoryId)).called(1);
+    verify(mockICategoryRepository.getCategoryById(testId)).called(1);
     expect(result, category);
-    expect(result?.id, categoryId);
+    expect(result?.id, testId);
     expect(result?.title, 'title 1');
   });
 
   test('shoul throw exception', () async {
-    const categoryId = 999;
+    const wrongId = '999';
     
     when(
-      mockICategoryRepository.getCategoryById(categoryId),
+      mockICategoryRepository.getCategoryById(wrongId),
     ).thenThrow(StateError('Category not found'));
 
     expect(
-      () => getCategoryByIdUseCase(categoryId),
+      () => getCategoryByIdUseCase(wrongId),
       throwsA(isA<StateError>()),
     );
-    verify(mockICategoryRepository.getCategoryById(categoryId)).called(1);
+    verify(mockICategoryRepository.getCategoryById(wrongId)).called(1);
   });
 }
 `

@@ -4,6 +4,7 @@ import 'package:project_name/features/feature_name/domain/usecases/category/get_
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:uuid/uuid.dart';
 
 import 'category_get_list_usecase_test.mocks.dart';
 
@@ -11,6 +12,7 @@ import 'category_get_list_usecase_test.mocks.dart';
 void main() {
   late GetCategoriesUseCase getCategoriesUseCase;
   late MockICategoryRepository mockICategoryRepository;
+  const uuid = Uuid();
 
   setUp(() {
     mockICategoryRepository = MockICategoryRepository();
@@ -18,9 +20,12 @@ void main() {
   });
 
   test('should return list of items from repository', () async {
+    final testId1 = uuid.v7();
+    final testId2 = uuid.v7();
+
     final categories = [
-      CategoryEntity(id: 1, title: 'title 1'),
-      CategoryEntity(id: 2, title: 'title 2'),
+      CategoryEntity(id: testId1, title: 'title 1'),
+      CategoryEntity(id: testId2, title: 'title 2'),
     ];
     
     when(

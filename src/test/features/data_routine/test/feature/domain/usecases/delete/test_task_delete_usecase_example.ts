@@ -3,6 +3,7 @@ import 'package:project_name/features/feature_name/domain/usecases/task/delete.d
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:uuid/uuid.dart';
 
 import 'task_delete_usecase_test.mocks.dart';
 
@@ -10,6 +11,7 @@ import 'task_delete_usecase_test.mocks.dart';
 void main() {
   late DeleteTaskUseCase deleteTaskUseCase;
   late MockITaskRepository mockITaskRepository;
+  const uuid = Uuid();
 
   setUp(() {
     mockITaskRepository = MockITaskRepository();
@@ -17,17 +19,19 @@ void main() {
   });
 
   test('should call delete with correct id', () async {
-    const taskId = 1;
+    final testId = uuid.v7();
     
     when(
-      mockITaskRepository.deleteTask(taskId),
+      mockITaskRepository.deleteTask(testId),
     ).thenAnswer((_) async => {});
 
-    await deleteTaskUseCase(taskId);
+    await deleteTaskUseCase(testId);
 
-    verify(mockITaskRepository.deleteTask(taskId)).called(1);
+    verify(mockITaskRepository.deleteTask(testId)).called(1);
   });
 }
+
+
 `
 
 ;

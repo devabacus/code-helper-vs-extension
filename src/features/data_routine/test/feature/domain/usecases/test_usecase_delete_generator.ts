@@ -30,6 +30,7 @@ import 'package:${projectName}/features/${featureName}/domain/usecases/${d}/dele
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:uuid/uuid.dart';
 
 import '${d}_delete_usecase_test.mocks.dart';
 
@@ -37,6 +38,7 @@ import '${d}_delete_usecase_test.mocks.dart';
 void main() {
   late Delete${D}UseCase delete${D}UseCase;
   late MockI${D}Repository mockI${D}Repository;
+  const uuid = Uuid();
 
   setUp(() {
     mockI${D}Repository = MockI${D}Repository();
@@ -44,15 +46,15 @@ void main() {
   });
 
   test('should call delete with correct id', () async {
-    const ${d}Id = 1;
+    final testId = uuid.v7();
     
     when(
-      mockI${D}Repository.delete${D}(${d}Id),
+      mockI${D}Repository.delete${D}(testId),
     ).thenAnswer((_) async => {});
 
-    await delete${D}UseCase(${d}Id);
+    await delete${D}UseCase(testId);
 
-    verify(mockI${D}Repository.delete${D}(${d}Id)).called(1);
+    verify(mockI${D}Repository.delete${D}(testId)).called(1);
   });
 }
 
