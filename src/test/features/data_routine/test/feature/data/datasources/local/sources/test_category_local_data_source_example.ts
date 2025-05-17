@@ -5,6 +5,7 @@ import 'package:project_name/features/feature_name/data/models/category/category
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:uuid/uuid.dart';
 
 import 'category_local_data_source_test.mocks.dart';
 
@@ -12,6 +13,7 @@ import 'category_local_data_source_test.mocks.dart';
 void main() {
   late MockCategoryDao mockCategoryDao;
   late CategoryLocalDataSource dataSource;
+  const uuid = Uuid();
 
   setUp(() {
     mockCategoryDao = MockCategoryDao();
@@ -19,13 +21,15 @@ void main() {
   });
 
   group('CategoryLocalDataSource', () {
-    final testCategoryTableData = CategoryTableData(id: 1, title: 'title 1');
+    final testId = uuid.v7();
+    
+    final testCategoryTableData = CategoryTableData(id: testId, title: 'title 1');
    
-    final testCategoryModel = CategoryModel(id: 1, title: 'title 1');
+    final testCategoryModel = CategoryModel(id: testId, title: 'title 1');
    
     final testCategoryModelCompanion = CategoryTableCompanion.insert(title: 'title 1');
    
-    final testCategoryModelWithId = CategoryModel(id: 1, title: 'title 1');
+    final testCategoryModelWithId = CategoryModel(id: testId, title: 'title 1');
    
     final testCategoryTableDataList = [testCategoryTableData];
 
@@ -44,12 +48,12 @@ void main() {
 
     test('getCategoryById должен вернуть CategoryModel', () async {
       when(
-        mockCategoryDao.getCategoryById(1),
+        mockCategoryDao.getCategoryById(testId),
       ).thenAnswer((_) async => testCategoryTableData);
 
-      final result = await dataSource.getCategoryById(1);
+      final result = await dataSource.getCategoryById(testId);
 
-      verify(mockCategoryDao.getCategoryById(1)).called(1);
+      verify(mockCategoryDao.getCategoryById(testId)).called(1);
       expect(result.id, equals(testCategoryModel.id));
       expect(result.title, equals(testCategoryModel.title));
     });
@@ -59,12 +63,12 @@ void main() {
       () async {
         when(
           mockCategoryDao.createCategory(testCategoryModelCompanion),
-        ).thenAnswer((_) async => 1);
+        ).thenAnswer((_) async => testId);
 
         final result = await dataSource.createCategory(testCategoryModel);
 
         verify(mockCategoryDao.createCategory(any)).called(1);
-        expect(result, equals(1));
+        expect(result, equals(testId));
       },
     );
 
@@ -77,13 +81,14 @@ void main() {
     });
 
     test('deleteCategory should call categoryDao.deleteCategory', () async {
-      when(mockCategoryDao.deleteCategory(1)).thenAnswer((_) async => {});
+      when(mockCategoryDao.deleteCategory(testId)).thenAnswer((_) async => {});
 
-      await dataSource.deleteCategory(1);
+      await dataSource.deleteCategory(testId);
 
-      verify(mockCategoryDao.deleteCategory(1)).called(1);
+      verify(mockCategoryDao.deleteCategory(testId)).called(1);
     });
   });
 }
+
 
 `;

@@ -5,6 +5,7 @@ import 'package:project_name/features/feature_name/data/models/task/task_model.d
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:uuid/uuid.dart';
 
 import 'task_local_data_source_test.mocks.dart';
 
@@ -12,6 +13,7 @@ import 'task_local_data_source_test.mocks.dart';
 void main() {
   late MockTaskDao mockTaskDao;
   late TaskLocalDataSource dataSource;
+  const uuid = Uuid();
 
   setUp(() {
     mockTaskDao = MockTaskDao();
@@ -19,13 +21,15 @@ void main() {
   });
 
   group('TaskLocalDataSource', () {
-    final testTaskTableData = TaskTableData(id: 1, title: 'title 1', description: 'description 1', duration: 1, createdAt: DateTime(1), dueDateTime: DateTime(1), categoryId: 1);
+    final testId = uuid.v7();
+    
+    final testTaskTableData = TaskTableData(id: testId, title: 'title 1', description: 'description 1', duration: 1, createdAt: DateTime(1), dueDateTime: DateTime(1), categoryId: 'categoryId 1');
    
-    final testTaskModel = TaskModel(id: 1, title: 'title 1', description: 'description 1', duration: 1, createdAt: DateTime(1), dueDateTime: DateTime(1), categoryId: 1);
+    final testTaskModel = TaskModel(id: testId, title: 'title 1', description: 'description 1', duration: 1, createdAt: DateTime(1), dueDateTime: DateTime(1), categoryId: 'categoryId 1');
    
-    final testTaskModelCompanion = TaskTableCompanion.insert(title: 'title 1', description: 'description 1', duration: 1, createdAt: DateTime(1), dueDateTime: DateTime(1), categoryId: 1);
+    final testTaskModelCompanion = TaskTableCompanion.insert(title: 'title 1', description: 'description 1', duration: 1, createdAt: DateTime(1), dueDateTime: DateTime(1), categoryId: 'categoryId 1');
    
-    final testTaskModelWithId = TaskModel(id: 1, title: 'title 1', description: 'description 1', duration: 1, createdAt: DateTime(1), dueDateTime: DateTime(1), categoryId: 1);
+    final testTaskModelWithId = TaskModel(id: testId, title: 'title 1', description: 'description 1', duration: 1, createdAt: DateTime(1), dueDateTime: DateTime(1), categoryId: 'categoryId 1');
    
     final testTaskTableDataList = [testTaskTableData];
 
@@ -44,12 +48,12 @@ void main() {
 
     test('getTaskById должен вернуть TaskModel', () async {
       when(
-        mockTaskDao.getTaskById(1),
+        mockTaskDao.getTaskById(testId),
       ).thenAnswer((_) async => testTaskTableData);
 
-      final result = await dataSource.getTaskById(1);
+      final result = await dataSource.getTaskById(testId);
 
-      verify(mockTaskDao.getTaskById(1)).called(1);
+      verify(mockTaskDao.getTaskById(testId)).called(1);
       expect(result.id, equals(testTaskModel.id));
       expect(result.title, equals(testTaskModel.title));
     });
@@ -59,12 +63,12 @@ void main() {
       () async {
         when(
           mockTaskDao.createTask(testTaskModelCompanion),
-        ).thenAnswer((_) async => 1);
+        ).thenAnswer((_) async => testId);
 
         final result = await dataSource.createTask(testTaskModel);
 
         verify(mockTaskDao.createTask(any)).called(1);
-        expect(result, equals(1));
+        expect(result, equals(testId));
       },
     );
 
@@ -77,14 +81,13 @@ void main() {
     });
 
     test('deleteTask should call taskDao.deleteTask', () async {
-      when(mockTaskDao.deleteTask(1)).thenAnswer((_) async => {});
+      when(mockTaskDao.deleteTask(testId)).thenAnswer((_) async => {});
 
-      await dataSource.deleteTask(1);
+      await dataSource.deleteTask(testId);
 
-      verify(mockTaskDao.deleteTask(1)).called(1);
+      verify(mockTaskDao.deleteTask(testId)).called(1);
     });
   });
 }
-
 
 `;

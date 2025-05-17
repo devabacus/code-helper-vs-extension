@@ -33,9 +33,10 @@ export class TestLocalSourceGenerator extends BaseGenerator {
 import 'package:${projectName}/features/${featureName}/data/datasources/local/dao/${d}/${d}_dao.dart';
 import 'package:${projectName}/features/${featureName}/data/datasources/local/sources/${d}_local_data_source.dart';
 import 'package:${projectName}/features/${featureName}/data/models/${d}/${d}_model.dart';
-import 'package:flutter_test/flutter_test.dart';    
+import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:uuid/uuid.dart';
 
 import '${d}_local_data_source_test.mocks.dart';
 
@@ -43,6 +44,7 @@ import '${d}_local_data_source_test.mocks.dart';
 void main() {
   late Mock${D}Dao mock${D}Dao;
   late ${D}LocalDataSource dataSource;
+  const uuid = Uuid();
 
   setUp(() {
     mock${D}Dao = Mock${D}Dao();
@@ -50,13 +52,15 @@ void main() {
   });
 
   group('${D}LocalDataSource', () {
-    final test${D}TableData = ${D}TableData(id: 1, ${fieldsRow[0]});
+    final testId = uuid.v7();
+    
+    final test${D}TableData = ${D}TableData(id: testId, ${fieldsRow[0]});
    
-    final test${D}Model = ${D}Model(id: 1, ${fieldsRow[0]});
+    final test${D}Model = ${D}Model(id: testId, ${fieldsRow[0]});
    
     final test${D}ModelCompanion = ${D}TableCompanion.insert(${fieldsRow[0]});
    
-    final test${D}ModelWithId = ${D}Model(id: 1, ${fieldsRow[0]});
+    final test${D}ModelWithId = ${D}Model(id: testId, ${fieldsRow[0]});
    
     final test${D}TableDataList = [test${D}TableData];
 
@@ -75,12 +79,12 @@ void main() {
 
     test('get${D}ById должен вернуть ${D}Model', () async {
       when(
-        mock${D}Dao.get${D}ById(1),
+        mock${D}Dao.get${D}ById(testId),
       ).thenAnswer((_) async => test${D}TableData);
 
-      final result = await dataSource.get${D}ById(1);
+      final result = await dataSource.get${D}ById(testId);
 
-      verify(mock${D}Dao.get${D}ById(1)).called(1);
+      verify(mock${D}Dao.get${D}ById(testId)).called(1);
       expect(result.id, equals(test${D}Model.id));
       expect(result.${firstRow}, equals(test${D}Model.${firstRow}));
     });
@@ -90,12 +94,12 @@ void main() {
       () async {
         when(
           mock${D}Dao.create${D}(test${D}ModelCompanion),
-        ).thenAnswer((_) async => 1);
+        ).thenAnswer((_) async => testId);
 
         final result = await dataSource.create${D}(test${D}Model);
 
         verify(mock${D}Dao.create${D}(any)).called(1);
-        expect(result, equals(1));
+        expect(result, equals(testId));
       },
     );
 
@@ -108,11 +112,11 @@ void main() {
     });
 
     test('delete${D} should call ${d}Dao.delete${D}', () async {
-      when(mock${D}Dao.delete${D}(1)).thenAnswer((_) async => {});
+      when(mock${D}Dao.delete${D}(testId)).thenAnswer((_) async => {});
 
-      await dataSource.delete${D}(1);
+      await dataSource.delete${D}(testId);
 
-      verify(mock${D}Dao.delete${D}(1)).called(1);
+      verify(mock${D}Dao.delete${D}(testId)).called(1);
     });
   });
 }
