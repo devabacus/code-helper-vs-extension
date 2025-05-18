@@ -29,8 +29,8 @@ export interface IDriftClassParser {
 }
 
 export class DriftClassParser implements IDriftClassParser {
-    private driftClass: string;
-    private formatter: IDriftCodeFormatter;
+    driftClass: string;
+    formatter: IDriftCodeFormatter;
 
     constructor(driftClass: string, formatter?: IDriftCodeFormatter) {
         this.driftClass = driftClass;
