@@ -12,12 +12,18 @@ import { DriftClassParser } from "./feature/data/datasources/local/tables/drift_
 import { DartTestGeneratorFactory } from "./factories/test_generator_factory";
 import { GenerateTestFilesCommand } from "./commands/generate_test_files_commands";
 import path from "path";
+import { DriftTableParser } from "./feature/data/datasources/local/tables/drift_table_parser";
 
 export async function createDataFiles() {
-    const driftClass = getDocText();
-    const parser = new DriftClassParser(driftClass);
-    const driftClassName = unCap(parser.driftClassNameUpper);
+    const driftClassCode = getDocText();
+    const classParser = new DriftClassParser(driftClassCode);
+    const entityName = unCap(classParser.driftClassNameUpper);
        const currentFilePath = getActiveEditorPath()!;
+    const tableStructureParser = new DriftTableParser(driftClassCode); // Для анализа связей
+    const isManyToManyTable = tableStructureParser.isRelationTable();
+    const relations = tableStructureParser.getTableRelations();
+
+
     const featurePath = currentFilePath.split(/\Wdata\W/)[0];
     const projectPath = currentFilePath.split(/\Wlib\W/)[0];
     const featureTestPath = path.join(projectPath, "test", featurePath.split('lib')[1]);
@@ -34,8 +40,8 @@ export async function createDataFiles() {
 
 
     // инициализируем команду "запустить генерацию всех файлов"
-    const generatorCommands = new GenerateAllFilesCommand(generatorFactory, featurePath, driftClassName, parser);
-    const generateTestFilesCommand = new GenerateTestFilesCommand(testGeneratorFactory, featureTestPath, driftClassName, parser);
+    const generatorCommands = new GenerateAllFilesCommand(generatorFactory, featurePath, entityName, classParser);
+    const generateTestFilesCommand = new GenerateTestFilesCommand(testGeneratorFactory, featureTestPath, entityName, classParser);
 
     // запускаем генерацию
     generatorCommands.execute();
@@ -43,7 +49,7 @@ export async function createDataFiles() {
     generateTestFilesCommand.execute();
 
     // appdatabase routine
-    await appDatabaseRoutine(currentFilePath, driftClassName);
+    await appDatabaseRoutine(currentFilePath, entityName);
 
     await executeInTerminal(build_runner);
 }
