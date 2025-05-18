@@ -1,4 +1,4 @@
-export const dataRepositoryImplCategoryExample = `import '../../data/models/extensions/tag_model_extension.dart';
+export const dataRepositoryRelateImplCategoryExample = `import '../models/extensions/tag_model_extension.dart';
 import '../../domain/entities/tag/tag.dart';
 import '../../domain/entities/task/task.dart';
 import '../../domain/repositories/task_tag_map_repository.dart';

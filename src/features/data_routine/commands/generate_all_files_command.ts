@@ -76,7 +76,12 @@ export class GenerateAllFilesCommand implements Command {
                    // Генерируем специализированный интерфейс Domain Repository для связующей таблицы
                 console.log(`Генерация интерфейса Domain Repository для связующей таблицы ${this.driftClassName} с использованием DomainRelateRepositoryGenerator.`);
                 await this.generatorFactory.createDomainRelateRepositoryGenerator().generate(this.featurePath, this.driftClassName, this.classParser);
+                
+                // Генерируем реализацию Data Repository для связующей таблицы
+                console.log(`Генерация реализации Data Repository для связующей таблицы ${this.driftClassName} с использованием DataRepositoryRelateImplGenerator.`);
+                await this.generatorFactory.createDataRepositoryRelateImplGenerator().generate(this.featurePath, this.driftClassName, this.classParser);
                 return; // Я бы оставил return здесь, если для связующих таблиц больше ничего не надо генерировать из стандартного набора.
+
             } else {
                  console.warn(`Таблица ${this.driftClassName} определена как связующая (isRelationTable=true), но детали связи MANY_TO_MANY не найдены в relations. Проверьте логику DriftTableParser.`);
             }

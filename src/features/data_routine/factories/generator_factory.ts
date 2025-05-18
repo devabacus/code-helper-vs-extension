@@ -11,6 +11,7 @@ import { ModelGenerator } from "../feature/data/models/data_model_generator";
 import { DataExtensionModelGenerator } from "../feature/data/models/extension_model_generator";
 import { DataProviderGenerator } from "../feature/data/providers/data_prov_generator";
 import { DataRepositoryGenerator } from "../feature/data/repositories/data_repository_generator";
+import { DataRepositoryRelateImplGenerator } from "../feature/data/repositories/data_repository_relate_impl_generator";
 import { DomainExtensionEntityGenerator } from "../feature/domain/entities/entity_extension_generator";
 import { EntityGenerator } from "../feature/domain/entities/entity_generator";
 import { UseCaseProvidersGenerator } from "../feature/domain/providers/usecase_providers_generator";
@@ -73,6 +74,10 @@ export class GeneratorFactory {
 
     createDataLocalRelateDataSourceServiceGenerator(): FileGenerator {
         return new DataLocalRelateDataSourceServiceGenerator(this.fileSystem);
+    }
+
+       createDataRepositoryRelateImplGenerator(): FileGenerator {
+        return new DataRepositoryRelateImplGenerator(this.fileSystem);
     }
 
     // domain layer

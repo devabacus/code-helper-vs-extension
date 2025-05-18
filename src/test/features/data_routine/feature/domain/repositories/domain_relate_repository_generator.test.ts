@@ -16,7 +16,7 @@ suite('DomainRelateRepositoryGenerator', () => {
 
     protected getExpectedPath(featurePath: string, entityName: string): string { // entityName here is "taskTagMap" (camelCase)
       const snakeCaseEntityName = toSnakeCase(entityName);
-      return path.join(featurePath, "domain", "repositories", `i_${snakeCaseEntityName}_repository.dart`);
+      return path.join(featurePath, "domain", "repositories", `${snakeCaseEntityName}_repository.dart`);
     }
   }
 
@@ -24,7 +24,7 @@ suite('DomainRelateRepositoryGenerator', () => {
 
   setup(() => testInstance.setup());
 
-  test('should generate i_xxx_repository.dart for a many-to-many relation', async () => {
+  test('should generate repository.dart for a many-to-many relation', async () => {
     await testInstance.testGenerator(testInstance.defaultFeaturePath, "taskTagMap", domainRelateRepostitoryExample);
   });
 });

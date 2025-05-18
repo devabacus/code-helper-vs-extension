@@ -16,7 +16,7 @@ suite('DataLocalRelateDataSourceServiceGenerator', () => {
 
     protected getExpectedPath(featurePath: string, entityName: string): string { // entityName here is "taskTagMap" (camelCase)
       const snakeCaseEntityName = toSnakeCase(entityName);
-      return path.join(featurePath, "data", "datasources", "local", "interfaces", `i_${snakeCaseEntityName}_local_datasource_service.dart`);
+      return path.join(featurePath, "data", "datasources", "local", "interfaces", `${snakeCaseEntityName}_local_datasource_service.dart`);
     }
   }
 
@@ -26,7 +26,7 @@ suite('DataLocalRelateDataSourceServiceGenerator', () => {
     testInstance.setup();
   });
 
-  test('should generate i_local_relate_datasource_service.dart with correct content for a many-to-many relation', async () => {
+  test('should generate local_relate_datasource_service.dart with correct content for a many-to-many relation', async () => {
     await testInstance.testGenerator(testInstance.defaultFeaturePath, "taskTagMap", iLocalDatasourceRelateServiceExample);
   });
 });
