@@ -7,36 +7,36 @@ import '../../../models/tag/tag_model.dart';
 import '../../../models/task/task_model.dart';
 
 class TaskTagMapLocalDataSource implements ITaskTagMapLocalDataSource {
-  final TaskTagMapDao _dao;
+  final TaskTagMapDao _taskTagMapDao;
 
   TaskTagMapLocalDataSource(IDatabaseService databaseService)
-    : _dao = TaskTagMapDao(databaseService);
+    : _taskTagMapDao = TaskTagMapDao(databaseService);
 
   @override
   Future<List<TagModel>> getTagsForTask(String taskId) async {
-    final tags = await _dao.getTagsForTask(taskId);
+    final tags = await _taskTagMapDao.getTagsForTask(taskId);
     return tags.toModels();
   }
 
   @override
   Future<List<TaskModel>> getTasksWithTag(String tagId) async {
-    final tasks = await _dao.getTasksWithTag(tagId);
+    final tasks = await _taskTagMapDao.getTasksWithTag(tagId);
     return tasks.toModels();
   }
 
   @override
   Future<void> addTagToTask(String taskId, String tagId) async {
-    await _dao.addTagToTask(taskId, tagId);
+    await _taskTagMapDao.addTagToTask(taskId, tagId);
   }
 
   @override
   Future<void> removeTagFromTask(String taskId, String tagId) async {
-    await _dao.removeTagFromTask(taskId, tagId);
+    await _taskTagMapDao.removeTagFromTask(taskId, tagId);
   }
 
   @override
   Future<void> removeAllTagsFromTask(String taskId) async {
-    await _dao.removeAllTagsFromTask(taskId);
+    await _taskTagMapDao.removeAllTagsFromTask(taskId);
   }
 }
 

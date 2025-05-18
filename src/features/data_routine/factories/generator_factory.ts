@@ -4,6 +4,7 @@ import { DataDaoGenerator } from "../feature/data/datasources/local/dao/data_loc
 import { DataDaoRelateGenerator } from "../feature/data/datasources/local/dao/data_local_dao_relate_generator";
 import { LocalDataSourceServiceGenerator } from "../feature/data/datasources/local/interfaces/i_local_datasource_service";
 import { DataLocalRelateDataSourceServiceGenerator } from "../feature/data/datasources/local/interfaces/i_local_relate_datasource_service";
+import { DataLocalRelateSourceGenerator } from "../feature/data/datasources/local/sources/local_data_relate_source_generator";
 import { DataSourcesGenerator } from "../feature/data/datasources/local/sources/local_data_source_generator";
 import { TableExtensionGenerator } from "../feature/data/datasources/local/tables/extensions/table_extension_generator";
 import { ModelGenerator } from "../feature/data/models/data_model_generator";
@@ -43,6 +44,10 @@ export class GeneratorFactory {
 
     createLocalSourcesGenerator(): FileGenerator {
         return new DataSourcesGenerator(this.fileSystem);
+    }
+
+    createDataLocalRelateSourceGenerator(): FileGenerator {
+        return new DataLocalRelateSourceGenerator(this.fileSystem);
     }
 
     createDataProviderGenerator(): FileGenerator {
