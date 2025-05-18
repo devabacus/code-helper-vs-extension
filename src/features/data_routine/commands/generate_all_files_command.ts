@@ -43,7 +43,6 @@ export class GenerateAllFilesCommand implements Command {
             await this.generatorFactory.createDomainEntityExtensionGenerator().generate(this.featurePath, this.driftClassName, this.classParser);
             await this.generatorFactory.createLocalDataSourceServiceGenerator().generate(this.featurePath, this.driftClassName, this.classParser);
 
-
             // domain layer use_cases
             await this.generatorFactory.createUseCaseCreateGenerator().generate(this.featurePath, this.driftClassName, this.classParser);
             await this.generatorFactory.createUseCaseUpdateGenerator().generate(this.featurePath, this.driftClassName, this.classParser);
@@ -51,7 +50,6 @@ export class GenerateAllFilesCommand implements Command {
             await this.generatorFactory.createUseCaseGetByIdGenerator().generate(this.featurePath, this.driftClassName, this.classParser);
             await this.generatorFactory.createUseCaseGetAllGenerator().generate(this.featurePath, this.driftClassName, this.classParser);
             await this.generatorFactory.createUseCaseWatchAllGenerator().generate(this.featurePath, this.driftClassName, this.classParser);
-
 
             //presentation layer
             await this.generatorFactory.createPresentStateProviderGenerator().generate(this.featurePath, this.driftClassName, this.classParser);
