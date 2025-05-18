@@ -19,6 +19,7 @@ import { UseCaseProvidersGenerator } from "../feature/domain/providers/usecase_p
 import { DomainRelateRepositoryGenerator } from "../feature/domain/repositories/domain_relate_repository_generator";
 import { DomainRepositoryGenerator } from "../feature/domain/repositories/domain_repository_generator";
 import { UseCaseRelateAddGenerator } from "../feature/domain/usecases/relate/use_case_relate_add_generator";
+import { UseCaseRelateGetTargetsForSourceGenerator } from "../feature/domain/usecases/relate/use_case_relate_get_generator";
 import { UseCaseCreateGenerator } from "../feature/domain/usecases/use_case_create_generator";
 import { UseCaseDeleteGenerator } from "../feature/domain/usecases/use_case_delete_generator";
 import { UseCaseGetAllGenerator } from "../feature/domain/usecases/use_case_get_all_generator";
@@ -129,6 +130,10 @@ export class GeneratorFactory {
 
     createUseCaseRelateAddGenerator(): FileGenerator {
         return new UseCaseRelateAddGenerator(this.fileSystem);
+    }
+
+       createUseCaseRelateGetTargetsForSourceGenerator(): FileGenerator {
+        return new UseCaseRelateGetTargetsForSourceGenerator(this.fileSystem);
     }
 
     // presentation layer
