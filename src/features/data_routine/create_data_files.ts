@@ -39,9 +39,15 @@ export async function createDataFiles() {
     const testGeneratorFactory = new DartTestGeneratorFactory(fileSystem);
 
 
+    const commandData = {
+        classParser: classParser,
+        isRelationTable: isManyToManyTable,
+        relations: relations,
+    };
+
     // инициализируем команду "запустить генерацию всех файлов"
-    const generatorCommands = new GenerateAllFilesCommand(generatorFactory, featurePath, entityName, classParser);
-    const generateTestFilesCommand = new GenerateTestFilesCommand(testGeneratorFactory, featureTestPath, entityName, classParser);
+    const generatorCommands = new GenerateAllFilesCommand(generatorFactory, featurePath, entityName, commandData);
+    const generateTestFilesCommand = new GenerateTestFilesCommand(testGeneratorFactory, featureTestPath, entityName, commandData);
 
     // запускаем генерацию
     generatorCommands.execute();
