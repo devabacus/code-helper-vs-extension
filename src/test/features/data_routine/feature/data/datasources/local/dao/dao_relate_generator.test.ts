@@ -17,9 +17,9 @@ suite('DataDaoRelateGenerator', () => {
     }
     
     protected getExpectedPath(featurePath: string, entityName: string): string { // entityName здесь "taskTagMap" (camelCase)
-  const snakeCaseEntityName = toSnakeCase(entityName);
-  return path.join(featurePath, "data", "datasources", "local", "dao", snakeCaseEntityName, `${snakeCaseEntityName}_dao.dart`);
-}
+      const snakeCaseEntityName = toSnakeCase(entityName);
+      return path.join(featurePath, "data", "datasources", "local", "dao", snakeCaseEntityName, `${snakeCaseEntityName}_dao.dart`);
+    }
   } 
   
   const testInstance = new DataDaoRelateGeneratorTest();
@@ -34,4 +34,4 @@ suite('DataDaoRelateGenerator', () => {
     const expectedContent = TestDataFactory.getExpectedContent('data_dao_relate', 'task_tag_map');    
     await testInstance.testGenerator(featurePath, entityName, expectedContent);
   });
-});;  
+});; 

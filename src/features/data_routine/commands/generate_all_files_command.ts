@@ -63,16 +63,15 @@ export class GenerateAllFilesCommand implements Command {
                 console.log(`Обнаружена связующая таблица: ${this.driftClassName}. Связывает ${manyToManyRelation.sourceTable} и ${manyToManyRelation.targetTable}.`);
                 console.log(`Пропуск стандартной генерации большинства файлов для ${this.driftClassName}.`);
 
-                // На этом этапе можно решить, нужны ли какие-то МИНИМАЛЬНЫЕ файлы для самой связующей таблицы.
-                // Например, DAO для добавления/удаления связей и, возможно, модель.
-                // console.log(`Генерация DAO для связующей таблицы ${this.driftClassName}.`);
-                // await this.generatorFactory.createDaoGenerator().generate(this.featurePath, this.driftClassName, this.classParser);
+                // Генерируем специализированный DAO для связующей таблицы
+                console.log(`Генерация DAO для связующей таблицы ${this.driftClassName} с использованием DataDaoRelateGenerator.`);
+                await this.generatorFactory.createDaoRelateGenerator().generate(this.featurePath, this.driftClassName, this.classParser);
+
+                // Модель для связующей таблицы обычно не требуется, так как ее поля - это внешние ключи,
+                // и сама таблица не представляет самостоятельную бизнес-сущность.
                 // console.log(`Генерация модели для связующей таблицы ${this.driftClassName}.`);
                 // await this.generatorFactory.createModelGenerator().generate(this.featurePath, this.driftClassName, this.classParser);
 
-                // Важно: не вызываем return; здесь сразу, если хотим, чтобы ниже (за пределами if/else)
-                // выполнялся какой-то общий код для ВСЕХ таблиц, включая связующие.
-                // Но в данном случае, скорее всего, для связующих таблиц остальная генерация не нужна.
                 return; // Я бы оставил return здесь, если для связующих таблиц больше ничего не надо генерировать из стандартного набора.
             } else {
                  console.warn(`Таблица ${this.driftClassName} определена как связующая (isRelationTable=true), но детали связи MANY_TO_MANY не найдены в relations. Проверьте логику DriftTableParser.`);

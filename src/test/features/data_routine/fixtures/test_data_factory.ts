@@ -2,7 +2,7 @@
 import { DriftClassParser } from "../../../../features/data_routine/feature/data/datasources/local/tables/drift_class_parser";
 
 import { tableAuth, tableCategory, tableTask } from "../feature/data/datasources/local/tables/drift_class_examples";
-
+import { tableTaskTagMapExample } from "../feature/data/datasources/local/tables/drift_relation_examples";
 import { entityCategoryExample } from "../feature/domain/entities/entity_example";
 import { useCaseCreateFileExample } from "../feature/domain/usecases/use_case_create_example";
 import { useCaseDeleteExample } from "../feature/domain/usecases/use_case_delete_example";
@@ -38,8 +38,8 @@ export class TestDataFactory {
         return new DriftClassParser(tableCategory);
       case 'task':
         return new DriftClassParser(tableTask);
-      case 'taskTagMap':
-        return new DriftClassParser(tableTask);
+      case 'taskTagMap': // Corrected to use the actual intermediate table definition
+        return new DriftClassParser(tableTaskTagMapExample);
       case 'auth':
         return new DriftClassParser(tableAuth);
       default:

@@ -1,10 +1,10 @@
 export const dataDaoRelateExample =
-    `import 'package:dataroutine6/core/database/local/interface/database_service.dart';
-import 'package:drift/drift.dart';
-import '../../../../../../core/database/local/database.dart';
-import '../tables/tag_table.dart';
-import '../tables/task_table.dart';
-import '../tables/task_tag_map_table.dart';
+    `import 'package:drift/drift.dart';
+import '../../../../../../../core/database/local/database.dart';
+import '../../../../../../../core/database/local/interface/i_database_service.dart';
+import '../../tables/tag_table.dart';
+import '../../tables/task_table.dart';
+import '../../tables/task_tag_map_table.dart';
 
 part 'task_tag_map_dao.g.dart';
 
@@ -35,19 +35,15 @@ class TaskTagMapDao extends DatabaseAccessor<AppDatabase>
   }
 
   Future<void> addTagToTask(String taskId, String tagId) {
-    return into(
-      taskTagMapTable,
-    ).insert(TaskTagMapTableCompanion.insert(taskId: taskId, tagId: tagId));
+    return into(taskTagMapTable).insert(TaskTagMapTableCompanion.insert(taskId: taskId, tagId: tagId));
   }
 
   Future<void> removeTagFromTask(String taskId, String tagId) {
-    return (delete(taskTagMapTable)
-      ..where((t) => t.taskId.equals(taskId) & t.tagId.equals(tagId))).go();
+    return (delete(taskTagMapTable)..where((t) => t.taskId.equals(taskId) & t.tagId.equals(tagId))).go();
   }
 
   Future<void> removeAllTagsFromTask(String taskId) {
-    return (delete(taskTagMapTable)
-      ..where((t) => t.taskId.equals(taskId))).go();
+    return (delete(taskTagMapTable)..where((t) => t.taskId.equals(taskId))).go();
   }
 }
 
