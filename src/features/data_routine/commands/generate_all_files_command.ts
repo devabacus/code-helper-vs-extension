@@ -101,6 +101,9 @@ export class GenerateAllFilesCommand implements Command {
                 console.log(`Генерация UseCase "remove all targets from source" для связующей таблицы ${this.driftClassName} с использованием UseCaseRelateRemoveAllTargetsFromSourceGenerator.`);
                 await this.generatorFactory.createUseCaseRelateRemoveAllTargetsFromSourceGenerator().generate(this.featurePath, this.driftClassName, this.classParser);
 
+                 // Генерируем UseCase для удаления конкретной связи (target from source)
+                console.log(`Генерация UseCase "remove target from source" для связующей таблицы ${this.driftClassName} с использованием UseCaseRelateRemoveTargetFromSourceGenerator.`);
+                await this.generatorFactory.createUseCaseRelateRemoveTargetFromSourceGenerator().generate(this.featurePath, this.driftClassName, this.classParser);
 
 
             } else {

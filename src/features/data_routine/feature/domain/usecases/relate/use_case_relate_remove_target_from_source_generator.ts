@@ -8,7 +8,7 @@ import { DriftClassParser } from "../../../data/datasources/local/tables/drift_c
 import { DriftTableParser } from "../../../data/datasources/local/tables/drift_table_parser";
 import { RelationType } from "../../../../interfaces/table_relation.interface";
 
-export class UseCaseRelateAddGenerator extends DataRoutineGenerator {
+export class UseCaseRelateRemoveTargetFromSourceGenerator extends DataRoutineGenerator {
 
   private structure: ProjectStructure;
 
@@ -18,9 +18,9 @@ export class UseCaseRelateAddGenerator extends DataRoutineGenerator {
   }
 
   protected getPath(featurePath: string, entityName: string): string {
-
-    const snakeCaseEntityName = toSnakeCase(entityName);
-    return path.join(this.structure.getDomainUseCasesPath(featurePath), snakeCaseEntityName,  `add.dart`);
+    const snakeCaseEntityName = toSnakeCase(entityName); // e.g., task_tag_map
+    // Consistent with add.dart, creating a specific file name based on operation
+    return path.join(this.structure.getDomainUseCasesPath(featurePath), snakeCaseEntityName, `remove_target_from_source.dart`);
   }
 
   protected getContent(parser: DriftClassParser): string {
@@ -28,28 +28,28 @@ export class UseCaseRelateAddGenerator extends DataRoutineGenerator {
     const manyToManyRelation = tableParser.getTableRelations().find(r => r.relationType === RelationType.MANY_TO_MANY);
 
     if (!manyToManyRelation) {
-      throw new Error(`Could not find MANY_TO_MANY relation for table ${parser.driftClassNameUpper} to generate relate add use case.`);
+      throw new Error(`Could not find MANY_TO_MANY relation for table ${parser.driftClassNameUpper} to generate 'remove target from source' use case.`);
     }
 
-    const intermediateUpper = parser.driftClassNameUpper; // e.g., TaskTagMap
+    const intermediateUpper = parser.driftClassNameUpper; 
     const intermediateSnake = toSnakeCase(intermediateUpper);
 
-    const sourceUpper = cap(manyToManyRelation.sourceTable); // e.g., Task
-    const sourceForeignKey = manyToManyRelation.sourceField; // e.g., taskId
+    const sourceUpper = cap(manyToManyRelation.sourceTable); 
+    const sourceForeignKey = manyToManyRelation.sourceField; 
 
-    const targetUpper = cap(manyToManyRelation.targetTable); // e.g., Tag
-    const targetForeignKey = manyToManyRelation.targetField; // e.g., tagId
+    const targetUpper = cap(manyToManyRelation.targetTable); 
+    const targetForeignKey = manyToManyRelation.targetField; 
 
     return `
 import '../../repositories/${intermediateSnake}_repository.dart';
 
-class Add${targetUpper}To${sourceUpper}UseCase {
+class Remove${targetUpper}From${sourceUpper}UseCase {
   final I${intermediateUpper}Repository repository;
 
-  const Add${targetUpper}To${sourceUpper}UseCase(this.repository);
+  Remove${targetUpper}From${sourceUpper}UseCase(this.repository);
 
   Future<void> call(String ${sourceForeignKey}, String ${targetForeignKey}) {
-    return repository.add${targetUpper}To${sourceUpper}(${sourceForeignKey}, ${targetForeignKey});
+    return repository.remove${targetUpper}From${sourceUpper}(${sourceForeignKey}, ${targetForeignKey});
   }
 }
 `;
