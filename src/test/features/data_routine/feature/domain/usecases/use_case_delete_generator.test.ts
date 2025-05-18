@@ -8,27 +8,27 @@ import { BaseDataRoutineGeneratorTest } from "../../../generators/data_routine_g
 
 suite('UseCaseDeleteGenerator', () => {
   class UseCaseDeleteGeneratorTest extends BaseDataRoutineGeneratorTest {
-   
+
     protected createGenerator(fileSystem: IFileSystem): FileGenerator {
       return new UseCaseDeleteGenerator(fileSystem);
     }
-    
+
     protected getExpectedPath(featurePath: string, entityName: string): string {
       return path.join(featurePath, "domain", "usecases", entityName, "delete.dart");
     }
   }
-  
+
   const testInstance = new UseCaseDeleteGeneratorTest();
-  
+
   setup(() => {
     testInstance.setup();
   });
-  
+
   test('должен сгенерировать use_case_delete файл с правильным контентом', async () => {
     const featurePath = path.join("test", "feature");
     const entityName = "category";
     const expectedContent = TestDataFactory.getExpectedContent('usecase_delete', 'category');
-    
+
     await testInstance.testGenerator(featurePath, entityName, expectedContent);
   });
 });

@@ -84,7 +84,10 @@ export class GenerateAllFilesCommand implements Command {
                       // Генерируем файл с провайдерами для связующей таблицы
                 console.log(`Генерация файла провайдеров для связующей таблицы ${this.driftClassName} с использованием DataProviderRelateGenerator.`);
                 await this.generatorFactory.createDataProviderRelateGenerator().generate(this.featurePath, this.driftClassName, this.classParser);
-                return;
+                
+                // Генерируем UseCase для добавления связи
+                console.log(`Генерация UseCase "add relation" для связующей таблицы ${this.driftClassName} с использованием UseCaseRelateAddGenerator.`);
+                await this.generatorFactory.createUseCaseRelateAddGenerator().generate(this.featurePath, this.driftClassName, this.classParser);
 
             } else {
                  console.warn(`Таблица ${this.driftClassName} определена как связующая (isRelationTable=true), но детали связи MANY_TO_MANY не найдены в relations. Проверьте логику DriftTableParser.`);

@@ -8,7 +8,6 @@ import { useCaseCreateFileExample } from "../feature/domain/usecases/use_case_cr
 import { useCaseDeleteExample } from "../feature/domain/usecases/use_case_delete_example";
 import { useCaseGetAllExample } from "../feature/domain/usecases/use_case_get_all_example";
 import { useCaseGetByIdExample } from "../feature/domain/usecases/use_case_get_by_id_example";
-import { useCaseUpdateExample } from "../feature/domain/usecases/use_case_update_example";
 
 
 import { dataDaoExample } from "../feature/data/datasources/local/dao/dao_class_example";
@@ -23,8 +22,9 @@ import { entityExtensionCategoryExample } from "../feature/domain/entities/exten
 import { useCaseCategoryProviderExample } from "../feature/domain/providers/use_case_prov_example";
 import { domainRepostitoryExample } from "../feature/domain/repositories/domain_repository_example";
 import { presentStateProviderCategoryExample } from "../feature/presentation/providers/present_state_prov_example";
-import { useCaseWatchAllExample } from "../feature/domain/usecases/use_case_watch_all_example";
 import { dataDaoRelateExample } from "../feature/data/datasources/local/dao/dao_relate_class_example";
+import { useCaseUpdateExample } from "../feature/domain/usecases/use_case_update_example";
+import { useCaseWatchAllExample } from "../feature/domain/usecases/use_case_watch_all_example";
 
 
 

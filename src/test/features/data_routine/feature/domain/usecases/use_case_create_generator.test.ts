@@ -8,27 +8,27 @@ import { BaseDataRoutineGeneratorTest } from "../../../generators/data_routine_g
 
 suite('UseCaseCreateGenerator', () => {
   class UseCaseCreateGeneratorTest extends BaseDataRoutineGeneratorTest {
-   
+
     protected createGenerator(fileSystem: IFileSystem): FileGenerator {
       return new UseCaseCreateGenerator(fileSystem);
     }
-    
+
     protected getExpectedPath(featurePath: string, entityName: string): string {
       return path.join(featurePath, "domain", "usecases", entityName, "create.dart");
     }
   }
-  
+
   const testInstance = new UseCaseCreateGeneratorTest();
-  
+
   setup(() => {
     testInstance.setup();
   });
-  
+
   test('должен сгенерировать use_case_create файл с правильным контентом', async () => {
     const featurePath = path.join("test", "feature");
     const entityName = "category";
     const expectedContent = TestDataFactory.getExpectedContent('usecase_create', 'category');
-    
+
     await testInstance.testGenerator(featurePath, entityName, expectedContent);
   });
 });
