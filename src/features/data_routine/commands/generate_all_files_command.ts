@@ -67,6 +67,10 @@ export class GenerateAllFilesCommand implements Command {
                 console.log(`Генерация DAO для связующей таблицы ${this.driftClassName} с использованием DataDaoRelateGenerator.`);
                 await this.generatorFactory.createDaoRelateGenerator().generate(this.featurePath, this.driftClassName, this.classParser);
 
+                // Генерируем специализированный интерфейс LocalDataSource для связующей таблицы
+                console.log(`Генерация интерфейса LocalDataSource для связующей таблицы ${this.driftClassName} с использованием DataLocalRelateDataSourceServiceGenerator.`);
+                await this.generatorFactory.createDataLocalRelateDataSourceServiceGenerator().generate(this.featurePath, this.driftClassName, this.classParser);
+
                 // Модель для связующей таблицы обычно не требуется, так как ее поля - это внешние ключи,
                 // и сама таблица не представляет самостоятельную бизнес-сущность.
                 // console.log(`Генерация модели для связующей таблицы ${this.driftClassName}.`);

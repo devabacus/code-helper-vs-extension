@@ -3,6 +3,7 @@ import { IFileSystem } from "../../../core/interfaces/file_system";
 import { DataDaoGenerator } from "../feature/data/datasources/local/dao/data_local_dao_generator";
 import { DataDaoRelateGenerator } from "../feature/data/datasources/local/dao/data_local_dao_relate_generator";
 import { LocalDataSourceServiceGenerator } from "../feature/data/datasources/local/interfaces/i_local_datasource_service";
+import { DataLocalRelateDataSourceServiceGenerator } from "../feature/data/datasources/local/interfaces/i_local_relate_datasource_service";
 import { DataSourcesGenerator } from "../feature/data/datasources/local/sources/local_data_source_generator";
 import { TableExtensionGenerator } from "../feature/data/datasources/local/tables/extensions/table_extension_generator";
 import { ModelGenerator } from "../feature/data/models/data_model_generator";
@@ -64,7 +65,9 @@ export class GeneratorFactory {
         return new LocalDataSourceServiceGenerator(this.fileSystem);
     }
 
-    
+    createDataLocalRelateDataSourceServiceGenerator(): FileGenerator {
+        return new DataLocalRelateDataSourceServiceGenerator(this.fileSystem);
+    }
 
     // domain layer
     createEntityGenerator(): FileGenerator {
@@ -114,5 +117,3 @@ export class GeneratorFactory {
 
 
 }
-
-
