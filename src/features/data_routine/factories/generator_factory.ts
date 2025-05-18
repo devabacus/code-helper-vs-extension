@@ -19,7 +19,9 @@ import { UseCaseProvidersGenerator } from "../feature/domain/providers/usecase_p
 import { DomainRelateRepositoryGenerator } from "../feature/domain/repositories/domain_relate_repository_generator";
 import { DomainRepositoryGenerator } from "../feature/domain/repositories/domain_repository_generator";
 import { UseCaseRelateAddGenerator } from "../feature/domain/usecases/relate/use_case_relate_add_generator";
-import { UseCaseRelateGetTargetsForSourceGenerator } from "../feature/domain/usecases/relate/use_case_relate_get_generator";
+import { UseCaseRelateGetSourcesWithTargetGenerator } from "../feature/domain/usecases/relate/use_case_relate_get_sources_with_target_generator";
+import { UseCaseRelateGetTargetsForSourceGenerator } from "../feature/domain/usecases/relate/use_case_relate_get_targets_for_source_generator";
+import { UseCaseRelateRemoveAllTargetsFromSourceGenerator } from "../feature/domain/usecases/relate/use_case_relate_remove_all_targets_from_source_generator";
 import { UseCaseCreateGenerator } from "../feature/domain/usecases/use_case_create_generator";
 import { UseCaseDeleteGenerator } from "../feature/domain/usecases/use_case_delete_generator";
 import { UseCaseGetAllGenerator } from "../feature/domain/usecases/use_case_get_all_generator";
@@ -79,11 +81,11 @@ export class GeneratorFactory {
         return new DataLocalRelateDataSourceServiceGenerator(this.fileSystem);
     }
 
-       createDataRepositoryRelateImplGenerator(): FileGenerator {
+    createDataRepositoryRelateImplGenerator(): FileGenerator {
         return new DataRepositoryRelateImplGenerator(this.fileSystem);
     }
 
-     createDataProviderRelateGenerator(): FileGenerator {
+    createDataProviderRelateGenerator(): FileGenerator {
         return new DataProviderRelateGenerator(this.fileSystem);
     }
 
@@ -95,7 +97,7 @@ export class GeneratorFactory {
         return new DomainRepositoryGenerator(this.fileSystem);
     }
 
-      createDomainRelateRepositoryGenerator(): FileGenerator {
+    createDomainRelateRepositoryGenerator(): FileGenerator {
         return new DomainRelateRepositoryGenerator(this.fileSystem);
     }
 
@@ -132,8 +134,16 @@ export class GeneratorFactory {
         return new UseCaseRelateAddGenerator(this.fileSystem);
     }
 
-       createUseCaseRelateGetTargetsForSourceGenerator(): FileGenerator {
+    createUseCaseRelateGetTargetsForSourceGenerator(): FileGenerator {
         return new UseCaseRelateGetTargetsForSourceGenerator(this.fileSystem);
+    }
+
+      createUseCaseRelateGetSourcesWithTargetGenerator(): FileGenerator {
+        return new UseCaseRelateGetSourcesWithTargetGenerator(this.fileSystem);
+    }
+
+     createUseCaseRelateRemoveAllTargetsFromSourceGenerator(): FileGenerator {
+        return new UseCaseRelateRemoveAllTargetsFromSourceGenerator(this.fileSystem);
     }
 
     // presentation layer

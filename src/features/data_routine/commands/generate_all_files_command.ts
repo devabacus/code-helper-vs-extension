@@ -93,6 +93,15 @@ export class GenerateAllFilesCommand implements Command {
                 console.log(`Генерация UseCase "get targets for source" для связующей таблицы ${this.driftClassName} с использованием UseCaseRelateGetTargetsForSourceGenerator.`);
                 await this.generatorFactory.createUseCaseRelateGetTargetsForSourceGenerator().generate(this.featurePath, this.driftClassName, this.classParser);
 
+                // Генерируем UseCase для получения связанных сущностей (sources with target)
+                console.log(`Генерация UseCase "get sources with target" для связующей таблицы ${this.driftClassName} с использованием UseCaseRelateGetSourcesWithTargetGenerator.`);
+                await this.generatorFactory.createUseCaseRelateGetSourcesWithTargetGenerator().generate(this.featurePath, this.driftClassName, this.classParser);
+
+                // Генерируем UseCase для удаления всех связей (targets from source)
+                console.log(`Генерация UseCase "remove all targets from source" для связующей таблицы ${this.driftClassName} с использованием UseCaseRelateRemoveAllTargetsFromSourceGenerator.`);
+                await this.generatorFactory.createUseCaseRelateRemoveAllTargetsFromSourceGenerator().generate(this.featurePath, this.driftClassName, this.classParser);
+
+
 
             } else {
                  console.warn(`Таблица ${this.driftClassName} определена как связующая (isRelationTable=true), но детали связи MANY_TO_MANY не найдены в relations. Проверьте логику DriftTableParser.`);
