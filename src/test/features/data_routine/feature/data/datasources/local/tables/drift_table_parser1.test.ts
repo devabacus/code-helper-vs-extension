@@ -19,13 +19,13 @@ suite('parser drift test', () => {
     });
 
     test('fields parse', () => {
-        const entity = `final int id;\nfinal String title;`;
+        const entity = `final String id;\nfinal String title;`;
         assert.strictEqual(driftClassCategory.fieldsClass, entity);
     });
 
     test('fields comma', () => {
         assert.strictEqual(driftClassCategory.fieldsComma, 'id,title');
-        assert.strictEqual(driftClassTask.fieldsComma, 'id,title,description,age');
+        assert.strictEqual(driftClassTask.fieldsComma, 'id,title,description,duration,createdAt,dueDateTime,categoryId');
     });
 
 
@@ -61,7 +61,7 @@ suite('parser drift test', () => {
 
     test('fields Value wrapper', () => {
         const result = `id: Value(id), title: Value(title)`;
-        const result2 = `id: Value(id), title: Value(title), description: Value(description), age: Value(age)`;
+        const result2 = `id: Value(id), title: Value(title), description: Value(description), duration: Value(duration), createdAt: Value(createdAt), dueDateTime: Value(dueDateTime), categoryId: Value(categoryId)`;
 
         assert.strictEqual(driftClassCategory.paramsWrapValue, result);
         assert.strictEqual(driftClassTask.paramsWrapValue, result2);

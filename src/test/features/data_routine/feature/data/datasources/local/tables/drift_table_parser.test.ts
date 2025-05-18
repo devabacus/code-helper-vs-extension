@@ -17,7 +17,7 @@ suite('DriftTableParser Tests', () => {
     const fields = parser.getFields();
     assert.strictEqual(fields.length, 2);
     assert.strictEqual(fields[0].name, "id");
-    assert.strictEqual(fields[0].type, "int");
+    assert.strictEqual(fields[0].type, "String");
     assert.strictEqual(fields[1].name, "title");
     assert.strictEqual(fields[1].type, "String");
     
@@ -102,6 +102,60 @@ suite('DriftTableParser Tests', () => {
     assert.strictEqual(relations[0].intermediateTable, 'TaskTagMap');
     assert.strictEqual(relations[0].sourceField, 'taskId');
     assert.strictEqual(relations[0].targetField, 'tagId');
+  });
+
+
+  test('должен возвращать пустой массив TableRelation для таблицы без связей', () => {
+  const simpleTableCode = `
+    class SimpleTable extends Table {
+      IntColumn get id => integer().autoIncrement()();
+      TextColumn get name => text()();
+    }
+  `;
+  const parser = new DriftTableParser(simpleTableCode);
+  const relations = parser.getTableRelations();
+  assert.strictEqual(relations.length, 0, 'Массив связей должен быть пустым');
+});
+
+ test('должен корректно возвращать несколько ONE_TO_MANY TableRelation для OrderTable', () => {
+    // Строка ТОЛЬКО с определением OrderTable
+    const orderTableDefinition = `
+      class OrderTable extends Table {
+        IntColumn get id => integer().autoIncrement()();
+        TextColumn get orderDetails => text()();
+        IntColumn get customerId => integer().references(CustomerTable, #id)();
+        IntColumn get productId => integer().references(ProductTable, #id)();
+
+        @override
+        Set<Column> get primaryKey => {id}; // Это НЕ join table
+      }
+    `;
+    // Предполагается, что CustomerTable и ProductTable "известны" Drift,
+    // для парсера OrderTable важны только их имена в .references()
+
+    const parser = new DriftTableParser(orderTableDefinition);
+    const relations = parser.getTableRelations();
+    
+    // Сначала убедимся, что парсер правильно определил имя текущего класса
+    assert.strictEqual(parser.getClassName(), "Order", "Имя класса должно быть 'Order'");
+    
+    assert.strictEqual(relations.length, 2, 'Должно быть две связи ONE_TO_MANY');
+
+    const customerRelation = relations.find(r => r.targetTable === 'Customer');
+    assert.ok(customerRelation, 'Должна быть найдена связь с CustomerTable');
+    // Теперь это утверждение должно проходить:
+    assert.strictEqual(customerRelation!.sourceTable, 'Order', "Источник связи Order-Customer должен быть 'Order'");
+    assert.strictEqual(customerRelation!.relationType, RelationType.ONE_TO_MANY);
+    assert.strictEqual(customerRelation!.sourceField, 'customerId');
+    assert.strictEqual(customerRelation!.targetField, 'id');
+
+    const productRelation = relations.find(r => r.targetTable === 'Product');
+    assert.ok(productRelation, 'Должна быть найдена связь с ProductTable');
+    // И это утверждение тоже:
+    assert.strictEqual(productRelation!.sourceTable, 'Order', "Источник связи Order-Product должен быть 'Order'");
+    assert.strictEqual(productRelation!.relationType, RelationType.ONE_TO_MANY);
+    assert.strictEqual(productRelation!.sourceField, 'productId');
+    assert.strictEqual(productRelation!.targetField, 'id');
   });
 
 });

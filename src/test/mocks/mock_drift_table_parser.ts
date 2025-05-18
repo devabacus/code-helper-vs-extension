@@ -1,5 +1,6 @@
 import { IDriftTableParser, Reference } from "../../core/interfaces/drift_table_parser";
 import { Field } from "../../features/data_routine/feature/data/datasources/local/tables/drift_class_parser";
+import { TableRelation } from "../../features/data_routine/interfaces/table_relation.interface";
 
 
 export class MockDriftTableParser implements IDriftTableParser {
@@ -9,6 +10,7 @@ export class MockDriftTableParser implements IDriftTableParser {
     private _references: Reference[];
     private _isRelationTable: boolean;
     private _relatedTables: string[];
+    private _tableRelations: TableRelation[];
   
     constructor(options: {
       className: string,
@@ -16,7 +18,8 @@ export class MockDriftTableParser implements IDriftTableParser {
       primaryKey?: string[],
       references?: Reference[],
       isRelationTable?: boolean,
-      relatedTables?: string[]
+      relatedTables?: string[],
+      tableRelations?: TableRelation[]
     }) {
       this._className = options.className;
       this._fields = options.fields;
@@ -24,6 +27,7 @@ export class MockDriftTableParser implements IDriftTableParser {
       this._references = options.references || [];
       this._isRelationTable = options.isRelationTable || false;
       this._relatedTables = options.relatedTables || [];
+      this._tableRelations = options.tableRelations || [];
     }
   
     getClassName(): string {
@@ -53,4 +57,5 @@ export class MockDriftTableParser implements IDriftTableParser {
     getRelatedTables(): string[] {
       return this._relatedTables;
     }
+    getTableRelations(): TableRelation[] { return this._tableRelations; }
 }
