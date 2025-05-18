@@ -14,6 +14,7 @@ import { DataRepositoryGenerator } from "../feature/data/repositories/data_repos
 import { DomainExtensionEntityGenerator } from "../feature/domain/entities/entity_extension_generator";
 import { EntityGenerator } from "../feature/domain/entities/entity_generator";
 import { UseCaseProvidersGenerator } from "../feature/domain/providers/usecase_providers_generator";
+import { DomainRelateRepositoryGenerator } from "../feature/domain/repositories/domain_relate_repository_generator";
 import { DomainRepositoryGenerator } from "../feature/domain/repositories/domain_repository_generator";
 import { UseCaseCreateGenerator } from "../feature/domain/usecases/use_case_create_generator";
 import { UseCaseDeleteGenerator } from "../feature/domain/usecases/use_case_delete_generator";
@@ -80,6 +81,10 @@ export class GeneratorFactory {
     }
     createDomainRepositoryGenerator(): FileGenerator {
         return new DomainRepositoryGenerator(this.fileSystem);
+    }
+
+      createDomainRelateRepositoryGenerator(): FileGenerator {
+        return new DomainRelateRepositoryGenerator(this.fileSystem);
     }
 
     createDomainProviderGenerator(): FileGenerator {

@@ -73,11 +73,9 @@ export class GenerateAllFilesCommand implements Command {
                 console.log(`Генерация реализации LocalDataSource для связующей таблицы ${this.driftClassName} с использованием DataLocalRelateSourceGenerator.`);
                 await this.generatorFactory.createDataLocalRelateSourceGenerator().generate(this.featurePath, this.driftClassName, this.classParser);
 
-                // Модель для связующей таблицы обычно не требуется, так как ее поля - это внешние ключи,
-                // и сама таблица не представляет самостоятельную бизнес-сущность.
-                // console.log(`Генерация модели для связующей таблицы ${this.driftClassName}.`);
-                // await this.generatorFactory.createModelGenerator().generate(this.featurePath, this.driftClassName, this.classParser);
-
+                   // Генерируем специализированный интерфейс Domain Repository для связующей таблицы
+                console.log(`Генерация интерфейса Domain Repository для связующей таблицы ${this.driftClassName} с использованием DomainRelateRepositoryGenerator.`);
+                await this.generatorFactory.createDomainRelateRepositoryGenerator().generate(this.featurePath, this.driftClassName, this.classParser);
                 return; // Я бы оставил return здесь, если для связующих таблиц больше ничего не надо генерировать из стандартного набора.
             } else {
                  console.warn(`Таблица ${this.driftClassName} определена как связующая (isRelationTable=true), но детали связи MANY_TO_MANY не найдены в relations. Проверьте логику DriftTableParser.`);
