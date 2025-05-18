@@ -24,6 +24,7 @@ import { useCaseCategoryProviderExample } from "../feature/domain/providers/use_
 import { domainRepostitoryExample } from "../feature/domain/repositories/domain_repository_example";
 import { presentStateProviderCategoryExample } from "../feature/presentation/providers/present_state_prov_example";
 import { useCaseWatchAllExample } from "../feature/domain/usecases/use_case_watch_all_example";
+import { dataDaoRelateExample } from "../feature/data/datasources/local/dao/dao_relate_class_example";
 
 
 
@@ -36,6 +37,8 @@ export class TestDataFactory {
       case 'category':
         return new DriftClassParser(tableCategory);
       case 'task':
+        return new DriftClassParser(tableTask);
+      case 'taskTagMap':
         return new DriftClassParser(tableTask);
       case 'auth':
         return new DriftClassParser(tableAuth);
@@ -83,8 +86,8 @@ export class TestDataFactory {
       case 'data_dao_category':
         return dataDaoExample;
 
-      case 'data_dao_relate_category':
-        return dataDaoExample;
+      case 'data_dao_relate_task_tag_map':
+        return dataDaoRelateExample;
 
       case 'data_local_data_source_service_category':
         return iLocalDatasourceServiceExample;

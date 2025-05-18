@@ -8,20 +8,21 @@ import { DriftClassParser } from "../tables/drift_class_parser";
 
 
 export class DataDaoRelateGenerator extends DataRoutineGenerator {
-   
-    private structure: ProjectStructure;
 
-    constructor(fileSystem: IFileSystem, structure?: ProjectStructure) {
-        super(fileSystem);
-        this.structure = structure || new DefaultProjectStructure();
-    }
 
-    protected getPath(featurePath: string, entityName: string): string {
-      throw new Error("Method not implemented.");
-    }
-    protected getContent(data?: any): string {
-      throw new Error("Method not implemented.");
-    }
+  private structure: ProjectStructure;
+
+  constructor(fileSystem: IFileSystem, structure?: ProjectStructure) {
+    super(fileSystem);
+    this.structure = structure || new DefaultProjectStructure();
+  }
+
+  protected getPath(featurePath: string, entityName: string): string {
+    throw new Error("Method not implemented.");
+  }
+  protected getContent(data?: any): string {
+    throw new Error("Method not implemented.");
+  }
 
 }
 
