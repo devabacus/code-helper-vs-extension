@@ -28,6 +28,18 @@ export function pluralConvert(str: string): string {
 }
 
 
+export function toSnakeCase(str: string): string {
+  if (!str) {return ''};
+  return str
+    // Сначала обрабатываем последовательности заглавных букв, за которыми идет строчная (например, SQLDatabase -> SQL_Database)
+    .replace(/([A-Z])([A-Z][a-z])/g, '$1_$2')
+    // Затем обрабатываем переходы от строчной/цифры к заглавной (например, myVar -> my_Var, var1Interface -> var1_Interface)
+    .replace(/([a-z\d])([A-Z])/g, '$1_$2')
+    // И, наконец, все в нижний регистр
+    .toLowerCase();
+}
+
+
 export const textGroupReplacer = (content: string, regex: RegExp, newTableName: string) => content.replace(regex, (match, p1) => {
     const trimmedCont = p1.trim();
     return `tables: [${trimmedCont ? trimmedCont + ', ' : ''}${newTableName}]`;
