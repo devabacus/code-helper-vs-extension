@@ -24,9 +24,9 @@ suite('DriftCodeFormatter', () => {
   });
 
   test('formatFieldsForTest', () => {
-    const expected1 = `title: 'title 1',\ncreatedAt: DateTime(1),\nisCompleted: false,\ncategoryId: 1`;
-    const expected2 = `title: 'title 2',\ncreatedAt: DateTime(2),\nisCompleted: true,\ncategoryId: 2`;
-    const expected3 = `id: Value(1),\ntitle: Value('title 2'),\ncreatedAt: Value(DateTime(2)),\nisCompleted: Value(true),\ncategoryId: Value(2)`;
+    const expected1 = `title: 'title 1', createdAt: DateTime(1), isCompleted: false, categoryId: 1`;
+    const expected2 = `title: 'title 2', createdAt: DateTime(2), isCompleted: true, categoryId: 2`;
+    const expected3 = `id: Value(testId), title: Value('title 2'), createdAt: Value(DateTime(2)), isCompleted: Value(true), categoryId: Value(2)`;
     
     assert.strictEqual(formatter.getFieldsValueForTest(testFieldsFull)[0], expected1);
     assert.strictEqual(formatter.getFieldsValueForTest(testFieldsFull)[1], expected2);

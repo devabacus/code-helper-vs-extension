@@ -6,6 +6,7 @@ import '../../usecases/category/delete.dart';
 import '../../usecases/category/get_by_id.dart';
 import '../../usecases/category/update.dart';
 import '../../usecases/category/get_all.dart';
+import '../../usecases/category/watch_all.dart';
 import '../../../data/providers/category/category_data_providers.dart';
 
 part 'category_usecase_providers.g.dart';

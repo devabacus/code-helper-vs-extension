@@ -7,7 +7,7 @@ part 'category.g.dart';
 @freezed
 abstract class CategoryEntity with _$CategoryEntity {
   const factory CategoryEntity({
-    required int id,
+    required String id,
 required String title,
   }) = _CategoryEntity;
 
