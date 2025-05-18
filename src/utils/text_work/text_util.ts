@@ -27,6 +27,18 @@ export function pluralConvert(str: string): string {
 
 }
 
+export function toPascalCase(str: string): string {
+  return str.replace(/(^\w|-\w)/g, clearAndUpper);
+}
+
+export function toCamelCase(str: string): string {
+  return str.replace(/-\w/g, clearAndUpper).replace(/^\w/, (c) => c.toLowerCase());
+}
+
+function clearAndUpper(text: string): string {
+  return text.replace(/-/, "").toUpperCase();
+}
+
 
 export function toSnakeCase(str: string): string {
   if (!str) {return ''};

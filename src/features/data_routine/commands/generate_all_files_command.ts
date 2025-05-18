@@ -1,4 +1,5 @@
 import { Command } from "../../../core/interfaces/command";
+import { toPascalCase } from "../../../utils/text_work/text_util";
 import { GeneratorFactory } from "../factories/generator_factory";
 import { DriftClassParser } from "../feature/data/datasources/local/tables/drift_class_parser";
 import { RelationType, TableRelation } from "../interfaces/table_relation.interface";
@@ -104,6 +105,14 @@ export class GenerateAllFilesCommand implements Command {
                  // Генерируем UseCase для удаления конкретной связи (target from source)
                 console.log(`Генерация UseCase "remove target from source" для связующей таблицы ${this.driftClassName} с использованием UseCaseRelateRemoveTargetFromSourceGenerator.`);
                 await this.generatorFactory.createUseCaseRelateRemoveTargetFromSourceGenerator().generate(this.featurePath, this.driftClassName, this.classParser);
+
+
+                 // Генерируем провайдеры для "relate" use cases
+                const sourceTable = manyToManyRelation.sourceTable;
+                const targetTable = manyToManyRelation.targetTable;
+                const relationName = `${toPascalCase(sourceTable)}${toPascalCase(targetTable)}`; // e.g., TaskTag
+                console.log(`Генерация UseCase Providers для связей ${relationName} (из таблицы ${this.driftClassName}) с использованием UseCaseRelateProvidersGenerator.`);
+                await this.generatorFactory.createUseCaseRelateProvidersGenerator().generate(this.featurePath, relationName, this.classParser);
 
 
             } else {

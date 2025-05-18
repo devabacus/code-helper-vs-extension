@@ -22,11 +22,13 @@ export abstract class BaseDataRoutineGeneratorTest {
     get defaultTestFeaturePath(): string {
         return path.join("test", "test", "feature");
     }
+    
 
     setup() {
         this.mockFileSystem = new MockFileSystem();
     }
 
+    
     async testGenerator(featurePath: string, entityName: string, expectedContent: string) {
 
         const effectiveBasePath = featurePath || this.defaultFeaturePath;
