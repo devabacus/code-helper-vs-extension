@@ -83,6 +83,9 @@ export class TestDataFactory {
       case 'data_dao_category':
         return dataDaoExample;
 
+      case 'data_dao_relate_category':
+        return dataDaoExample;
+
       case 'data_local_data_source_service_category':
         return iLocalDatasourceServiceExample;
 
