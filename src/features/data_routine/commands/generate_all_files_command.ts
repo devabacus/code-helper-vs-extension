@@ -115,6 +115,12 @@ export class GenerateAllFilesCommand implements Command {
                 console.log(`Генерация Presentation State Providers для связей (из таблицы ${this.driftClassName}) с использованием PresentStateRelateProviderGenerator.`);
                 await this.generatorFactory.createPresentStateRelateProviderGenerator().generate(this.featurePath, this.driftClassName, this.classParser);
 
+
+                 // Генерируем Presentation Filter Providers для связей
+                console.log(`Генерация Presentation Filter Providers для связей (из таблицы ${this.driftClassName}) с использованием PresentFilterRelateProviderGenerator.`);
+                await this.generatorFactory.createPresentFilterRelateProviderGenerator().generate(this.featurePath, this.driftClassName, this.classParser);
+
+
             } else {
                  console.warn(`Таблица ${this.driftClassName} определена как связующая (isRelationTable=true), но детали связи MANY_TO_MANY не найдены в relations. Проверьте логику DriftTableParser.`);
             }

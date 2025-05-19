@@ -30,6 +30,7 @@ import { UseCaseGetAllGenerator } from "../feature/domain/usecases/use_case_get_
 import { UseCaseGetByIdGenerator } from "../feature/domain/usecases/use_case_get_by_id_generator";
 import { UseCaseUpdateGenerator } from "../feature/domain/usecases/use_case_update_generator";
 import { UseCaseWatchAllGenerator } from "../feature/domain/usecases/use_case_watch_all_generator";
+import { PresentFilterRelateProviderGenerator } from "../feature/presentation/providers/present_filter_relate_provider_generator";
 import { PresentGetByIdProviderGenerator } from "../feature/presentation/providers/present_get_by_id_prov_generator";
 import { PresentStateProviderGenerator } from "../feature/presentation/providers/present_state_prov_generator";
 import { PresentStateRelateProviderGenerator } from "../feature/presentation/providers/present_state_relate_provider_generator";
@@ -168,6 +169,10 @@ export class GeneratorFactory {
 
       createPresentStateRelateProviderGenerator(): PresentStateRelateProviderGenerator {
         return new PresentStateRelateProviderGenerator(this.fileSystem);
+    }
+
+    createPresentFilterRelateProviderGenerator(): PresentFilterRelateProviderGenerator {
+        return new PresentFilterRelateProviderGenerator(this.fileSystem);
     }
 
 }
