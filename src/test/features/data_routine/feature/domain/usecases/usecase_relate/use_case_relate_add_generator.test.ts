@@ -15,16 +15,23 @@ suite('UseCaseRelateAddGenerator', () => {
         }
 
         protected getExpectedPath(featurePath: string, entityName: string): string {
-            const snakeCaseEntityName = toSnakeCase(entityName);
-            return path.join(featurePath, "domain", "usecases", snakeCaseEntityName, "add_target_to_source.dart");
+            // Assuming entityName "taskTagMap" implies source "task" and target "tag"
+            // This logic should align with how RelateDataRoutineGenerator derives these.
+            const sourceSnake = "task";
+            const targetSnake = "tag";
+            const useCaseSubDirSnake = `${sourceSnake}_${targetSnake}`; // "task_tag"
+            const fileName = `add_${targetSnake}_to_${sourceSnake}.dart`; // "add_tag_to_task.dart"
+            
+            return path.join(featurePath, "domain", "usecases", useCaseSubDirSnake, fileName);
         }
     }
 
 
     const testInstance = new UseCaseRelateAddGeneratorTest();
     setup(() => testInstance.setup());
-
-    test('should generate add_<target>_to_<source>_use_case.dart for a many-to-many relation', async () => {
+    // Updated test description to reflect the specific file name for TaskTagMap
+    test('should generate add_tag_to_task.dart for TaskTagMap relation', async () => {
+        // Ensure testGenerator passes the correct Drift table content for "taskTagMap"
         await testInstance.testGenerator(testInstance.defaultFeaturePath, "taskTagMap", useCaseRelateAddFileExample);
     });
 });

@@ -1,56 +1,36 @@
 import path from "path";
-import { DefaultProjectStructure } from "../../../../../../core/implementations/default_project_structure";
 import { IFileSystem } from "../../../../../../core/interfaces/file_system";
 import { ProjectStructure } from "../../../../../../core/interfaces/project_structure";
-import { cap, pluralConvert, toSnakeCase } from "../../../../../../utils/text_work/text_util";
-import { DataRoutineGenerator } from "../../../../generators/data_routine_generator";
 import { DriftClassParser } from "../../../data/datasources/local/tables/drift_class_parser";
-import { DriftTableParser } from "../../../data/datasources/local/tables/drift_table_parser";
-import { RelationType } from "../../../../interfaces/table_relation.interface";
+import { RelateDataRoutineGenerator } from "../../../../generators/relate_data_routine_generator";
 
-export class UseCaseRelateGetTargetsForSourceGenerator extends DataRoutineGenerator {
-
-  private structure: ProjectStructure;
+export class UseCaseRelateGetTargetsForSourceGenerator extends RelateDataRoutineGenerator {
 
   constructor(fileSystem: IFileSystem, structure?: ProjectStructure) {
-    super(fileSystem);
-    this.structure = structure || new DefaultProjectStructure();
+    super(fileSystem, structure);
   }
 
-  protected getPath(featurePath: string, entityName: string): string {
-    const snakeCaseEntityName = toSnakeCase(entityName); 
-    return path.join(this.structure.getDomainUseCasesPath(featurePath), snakeCaseEntityName, `get_targets_for_source.dart`);
+  protected getRelatePath(featurePath: string, _entityName: string, _parser: DriftClassParser): string {
+    // Использует this.useCaseSubDirSnake, this.targetPluralSnake, this.sourceSnake из базового класса
+    const fileName = `get_${this.targetPluralSnake}_for_${this.sourceSnake}.dart`;
+    return path.join(this.projectStructure.getDomainUseCasesPath(featurePath), this.useCaseSubDirSnake, fileName);
   }
 
-  protected getContent(parser: DriftClassParser): string {
-    const tableParser = new DriftTableParser(parser.driftClass);
-    const manyToManyRelation = tableParser.getTableRelations().find(r => r.relationType === RelationType.MANY_TO_MANY);
-
-    if (!manyToManyRelation) {
-      throw new Error(`Could not find MANY_TO_MANY relation for table ${parser.driftClassNameUpper} to generate 'get targets for source' use case.`);
-    }
-
-    const intermediateUpper = parser.driftClassNameUpper; 
-    const intermediateSnake = toSnakeCase(intermediateUpper);
-
-    const sourceUpper = cap(manyToManyRelation.sourceTable); 
-    const sourceForeignKey = manyToManyRelation.sourceField; 
-
-    const targetUpper = cap(manyToManyRelation.targetTable); 
-    const targetSnake = toSnakeCase(manyToManyRelation.targetTable);
-    const targetPlural = pluralConvert(targetUpper);
-
+  protected getRelateContent(_parser: DriftClassParser): string {
+    // Использует this.intermediateSnake, this.targetUpper, this.sourceUpper, 
+    // this.targetPlural, this.sourceForeignKey, this.targetSnake из базового класса
+    // Изменения для соответствия тестам: путь импорта и имя типа сущности.
     return `
-import '../../entities/${targetSnake}/${targetSnake}.dart';
-import '../../repositories/${intermediateSnake}_repository.dart';
+import '../../entities/${this.targetSnake}/${this.targetSnake}.dart';
+import '../../repositories/${this.intermediateSnake}_repository.dart';
 
-class Get${targetPlural}For${sourceUpper}UseCase {
-  final I${intermediateUpper}Repository repository;
+class Get${this.targetPlural}For${this.sourceUpper}UseCase {
+  final I${this.intermediateUpper}Repository repository;
 
-  Get${targetPlural}For${sourceUpper}UseCase(this.repository);
+  Get${this.targetPlural}For${this.sourceUpper}UseCase(this.repository);
 
-  Future<List<${targetUpper}Entity>> call(String ${sourceForeignKey}) {
-    return repository.get${targetPlural}For${sourceUpper}(${sourceForeignKey});
+  Future<List<${this.targetUpper}Entity>> call(String ${this.sourceForeignKey}) {
+    return repository.get${this.targetPlural}For${this.sourceUpper}(${this.sourceForeignKey});
   }
 }
 `;

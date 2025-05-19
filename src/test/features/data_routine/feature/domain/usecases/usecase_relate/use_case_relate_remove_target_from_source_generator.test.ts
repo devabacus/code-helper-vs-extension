@@ -14,15 +14,22 @@ suite('UseCaseRelateRemoveTargetFromSourceGenerator', () => {
     }
 
     protected getExpectedPath(featurePath: string, entityName: string): string { 
-         const snakeCaseEntityName = toSnakeCase(entityName); // e.g., task_tag_map
-         return path.join(featurePath, "domain", "usecases", snakeCaseEntityName, "remove_target_from_source.dart");
+        // Assuming entityName "taskTagMap" implies source "task" and target "tag"
+        const sourceSnake = "task";
+        const targetSnake = "tag";
+        const useCaseSubDirSnake = `${sourceSnake}_${targetSnake}`; // "task_tag"
+        const fileName = `remove_${targetSnake}_from_${sourceSnake}.dart`; // "remove_tag_from_task.dart"
+
+        return path.join(featurePath, "domain", "usecases", useCaseSubDirSnake, fileName);
        }
      }
  
   const testInstance = new UseCaseRelateRemoveTargetFromSourceGeneratorTest();
   setup(() => testInstance.setup());
 
-  test('should generate remove_target_from_source.dart for a many-to-many relation', async () => {
+  // Updated test description
+  test('should generate remove_tag_from_task.dart for TaskTagMap relation', async () => {
+    // Ensure testGenerator passes the correct Drift table content for "taskTagMap"
     await testInstance.testGenerator(testInstance.defaultFeaturePath, "taskTagMap", useCaseRelateRemoveTargetFromSourceFileExample);
   });
 });

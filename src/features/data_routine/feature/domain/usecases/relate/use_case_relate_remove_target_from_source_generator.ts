@@ -1,55 +1,34 @@
 import path from "path";
-import { DefaultProjectStructure } from "../../../../../../core/implementations/default_project_structure";
 import { IFileSystem } from "../../../../../../core/interfaces/file_system";
 import { ProjectStructure } from "../../../../../../core/interfaces/project_structure";
-import { cap, toSnakeCase } from "../../../../../../utils/text_work/text_util";
-import { DataRoutineGenerator } from "../../../../generators/data_routine_generator";
 import { DriftClassParser } from "../../../data/datasources/local/tables/drift_class_parser";
-import { DriftTableParser } from "../../../data/datasources/local/tables/drift_table_parser";
-import { RelationType } from "../../../../interfaces/table_relation.interface";
+import { RelateDataRoutineGenerator } from "../../../../generators/relate_data_routine_generator";
 
-export class UseCaseRelateRemoveTargetFromSourceGenerator extends DataRoutineGenerator {
-
-  private structure: ProjectStructure;
+export class UseCaseRelateRemoveTargetFromSourceGenerator extends RelateDataRoutineGenerator {
 
   constructor(fileSystem: IFileSystem, structure?: ProjectStructure) {
-    super(fileSystem);
-    this.structure = structure || new DefaultProjectStructure();
+    super(fileSystem, structure);
   }
 
-  protected getPath(featurePath: string, entityName: string): string {
-    const snakeCaseEntityName = toSnakeCase(entityName); // e.g., task_tag_map
-    // Consistent with add.dart, creating a specific file name based on operation
-    return path.join(this.structure.getDomainUseCasesPath(featurePath), snakeCaseEntityName, `remove_target_from_source.dart`);
+  protected getRelatePath(featurePath: string, _entityName: string, _parser: DriftClassParser): string {
+    // Использует this.useCaseSubDirSnake, this.targetSnake, this.sourceSnake из базового класса
+    const fileName = `remove_${this.targetSnake}_from_${this.sourceSnake}.dart`;
+    return path.join(this.projectStructure.getDomainUseCasesPath(featurePath), this.useCaseSubDirSnake, fileName);
   }
 
-  protected getContent(parser: DriftClassParser): string {
-    const tableParser = new DriftTableParser(parser.driftClass);
-    const manyToManyRelation = tableParser.getTableRelations().find(r => r.relationType === RelationType.MANY_TO_MANY);
-
-    if (!manyToManyRelation) {
-      throw new Error(`Could not find MANY_TO_MANY relation for table ${parser.driftClassNameUpper} to generate 'remove target from source' use case.`);
-    }
-
-    const intermediateUpper = parser.driftClassNameUpper; 
-    const intermediateSnake = toSnakeCase(intermediateUpper);
-
-    const sourceUpper = cap(manyToManyRelation.sourceTable); 
-    const sourceForeignKey = manyToManyRelation.sourceField; 
-
-    const targetUpper = cap(manyToManyRelation.targetTable); 
-    const targetForeignKey = manyToManyRelation.targetField; 
-
+  protected getRelateContent(_parser: DriftClassParser): string {
+    // Использует this.intermediateSnake, this.targetUpper, this.sourceUpper,
+    // this.sourceForeignKey, this.targetForeignKey из базового класса
     return `
-import '../../repositories/${intermediateSnake}_repository.dart';
+import '../../repositories/${this.intermediateSnake}_repository.dart';
 
-class Remove${targetUpper}From${sourceUpper}UseCase {
-  final I${intermediateUpper}Repository repository;
+class Remove${this.targetUpper}From${this.sourceUpper}UseCase {
+  final I${this.intermediateUpper}Repository repository;
 
-  Remove${targetUpper}From${sourceUpper}UseCase(this.repository);
+  Remove${this.targetUpper}From${this.sourceUpper}UseCase(this.repository);
 
-  Future<void> call(String ${sourceForeignKey}, String ${targetForeignKey}) {
-    return repository.remove${targetUpper}From${sourceUpper}(${sourceForeignKey}, ${targetForeignKey});
+  Future<void> call(String ${this.sourceForeignKey}, String ${this.targetForeignKey}) {
+    return repository.remove${this.targetUpper}From${this.sourceUpper}(${this.sourceForeignKey}, ${this.targetForeignKey});
   }
 }
 `;

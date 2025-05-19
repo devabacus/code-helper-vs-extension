@@ -1,53 +1,34 @@
 import path from "path";
-import { DefaultProjectStructure } from "../../../../../../core/implementations/default_project_structure";
 import { IFileSystem } from "../../../../../../core/interfaces/file_system";
 import { ProjectStructure } from "../../../../../../core/interfaces/project_structure";
-import { cap, pluralConvert, toSnakeCase } from "../../../../../../utils/text_work/text_util";
-import { DataRoutineGenerator } from "../../../../generators/data_routine_generator";
 import { DriftClassParser } from "../../../data/datasources/local/tables/drift_class_parser";
-import { DriftTableParser } from "../../../data/datasources/local/tables/drift_table_parser";
-import { RelationType } from "../../../../interfaces/table_relation.interface";
+import { RelateDataRoutineGenerator } from "../../../../generators/relate_data_routine_generator";
 
-export class UseCaseRelateRemoveAllTargetsFromSourceGenerator extends DataRoutineGenerator {
-
-  private structure: ProjectStructure;
+export class UseCaseRelateRemoveAllTargetsFromSourceGenerator extends RelateDataRoutineGenerator {
 
   constructor(fileSystem: IFileSystem, structure?: ProjectStructure) {
-    super(fileSystem);
-    this.structure = structure || new DefaultProjectStructure();
+    super(fileSystem, structure);
   }
 
-  protected getPath(featurePath: string, entityName: string): string {
-    const snakeCaseEntityName = toSnakeCase(entityName); // e.g., task_tag_map
-    return path.join(this.structure.getDomainUseCasesPath(featurePath), snakeCaseEntityName, `remove_all_targets_from_source.dart`);
+  protected getRelatePath(featurePath: string, _entityName: string, _parser: DriftClassParser): string {
+    // Использует this.useCaseSubDirSnake, this.targetPluralSnake, this.sourceSnake из базового класса
+    const fileName = `remove_all_${this.targetPluralSnake}_from_${this.sourceSnake}.dart`;
+    return path.join(this.projectStructure.getDomainUseCasesPath(featurePath), this.useCaseSubDirSnake, fileName);
   }
 
-  protected getContent(parser: DriftClassParser): string {
-    const tableParser = new DriftTableParser(parser.driftClass);
-    const manyToManyRelation = tableParser.getTableRelations().find(r => r.relationType === RelationType.MANY_TO_MANY);
-
-    if (!manyToManyRelation) {
-      throw new Error(`Could not find MANY_TO_MANY relation for table ${parser.driftClassNameUpper} to generate 'remove all targets from source' use case.`);
-    }
-
-    const intermediateUpper = parser.driftClassNameUpper; 
-    const intermediateSnake = toSnakeCase(intermediateUpper);
-
-    const sourceUpper = cap(manyToManyRelation.sourceTable); 
-    const sourceForeignKey = manyToManyRelation.sourceField; 
-
-    const targetPlural = pluralConvert(cap(manyToManyRelation.targetTable)); 
-
+  protected getRelateContent(_parser: DriftClassParser): string {
+    // Использует this.intermediateSnake, this.targetUpper, this.sourceUpper,
+    // this.targetPlural, this.sourceForeignKey из базового класса
     return `
-import '../../repositories/${intermediateSnake}_repository.dart';
+import '../../repositories/${this.intermediateSnake}_repository.dart';
 
-class RemoveAll${targetPlural}From${sourceUpper}UseCase {
-  final I${intermediateUpper}Repository repository;
+class RemoveAll${this.targetPlural}From${this.sourceUpper}UseCase {
+  final I${this.intermediateUpper}Repository repository;
 
-  RemoveAll${targetPlural}From${sourceUpper}UseCase(this.repository);
+  RemoveAll${this.targetPlural}From${this.sourceUpper}UseCase(this.repository);
 
-  Future<void> call(String ${sourceForeignKey}) {
-    return repository.removeAll${targetPlural}From${sourceUpper}(${sourceForeignKey});
+  Future<void> call(String ${this.sourceForeignKey}) {
+    return repository.removeAll${this.targetPlural}From${this.sourceUpper}(${this.sourceForeignKey});
   }
 }
 `;
