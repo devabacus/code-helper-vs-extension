@@ -32,6 +32,7 @@ import { UseCaseUpdateGenerator } from "../feature/domain/usecases/use_case_upda
 import { UseCaseWatchAllGenerator } from "../feature/domain/usecases/use_case_watch_all_generator";
 import { PresentGetByIdProviderGenerator } from "../feature/presentation/providers/present_get_by_id_prov_generator";
 import { PresentStateProviderGenerator } from "../feature/presentation/providers/present_state_prov_generator";
+import { PresentStateRelateProviderGenerator } from "../feature/presentation/providers/present_state_relate_provider_generator";
 
 
 export class GeneratorFactory {
@@ -163,6 +164,10 @@ export class GeneratorFactory {
 
     createUseCaseRelateProvidersGenerator(): FileGenerator {
         return new UseCaseRelateProvidersGenerator(this.fileSystem);
+    }
+
+      createPresentStateRelateProviderGenerator(): PresentStateRelateProviderGenerator {
+        return new PresentStateRelateProviderGenerator(this.fileSystem);
     }
 
 }

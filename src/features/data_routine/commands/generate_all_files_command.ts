@@ -107,13 +107,13 @@ export class GenerateAllFilesCommand implements Command {
                 await this.generatorFactory.createUseCaseRelateRemoveTargetFromSourceGenerator().generate(this.featurePath, this.driftClassName, this.classParser);
 
 
-                 // Генерируем провайдеры для "relate" use cases
-                const sourceTable = manyToManyRelation.sourceTable;
-                const targetTable = manyToManyRelation.targetTable;
-                const relationName = `${toPascalCase(sourceTable)}${toPascalCase(targetTable)}`; // e.g., TaskTag
-                console.log(`Генерация UseCase Providers для связей ${relationName} (из таблицы ${this.driftClassName}) с использованием UseCaseRelateProvidersGenerator.`);
-                await this.generatorFactory.createUseCaseRelateProvidersGenerator().generate(this.featurePath, relationName, this.classParser);
+               // Для UseCaseRelateProvidersGenerator и PresentStateRelateProviderGenerator в качестве entityName передается имя промежуточной таблицы
+                console.log(`Генерация UseCase Providers для связей (из таблицы ${this.driftClassName}) с использованием UseCaseRelateProvidersGenerator.`);
+                await this.generatorFactory.createUseCaseRelateProvidersGenerator().generate(this.featurePath, this.driftClassName, this.classParser);
 
+                // Генерируем Presentation State Providers для связей
+                console.log(`Генерация Presentation State Providers для связей (из таблицы ${this.driftClassName}) с использованием PresentStateRelateProviderGenerator.`);
+                await this.generatorFactory.createPresentStateRelateProviderGenerator().generate(this.featurePath, this.driftClassName, this.classParser);
 
             } else {
                  console.warn(`Таблица ${this.driftClassName} определена как связующая (isRelationTable=true), но детали связи MANY_TO_MANY не найдены в relations. Проверьте логику DriftTableParser.`);
