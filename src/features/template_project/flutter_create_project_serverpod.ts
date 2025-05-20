@@ -23,11 +23,11 @@ export async function flutterCreateNewServerPodProject(addTemplateFolders?: (ful
     if (!projectName) {
         return;
     }
-    createFolder(path.join(projectsPath, projectName));
+    // createFolder(path.join(projectsPath, projectName));
     const create_command = `serverpod create ${projectName}`;
     // const projectPath = path.join(projectsPath, projectName);
     await executeCommand(create_command, projectsPath);
-    const fullProjectPath = path.join(projectsPath, `${projectName}_flutter`);
+    const fullProjectPath = path.join(projectsPath, projectName, `${projectName}_flutter`);
     
     if (addTemplateFolders) {
         addTemplateFolders(fullProjectPath);
@@ -50,9 +50,7 @@ export async function flutterCreateNewServerPodProject(addTemplateFolders?: (ful
     // createFile(path.join(serviceFilesPth, "shell_commands.ps1"), "//shell commands");
     createFile(path.join(fullProjectPath, "pubspec.yaml"), pubspec_yaml(projectName));
 
-
-
-    gitInit(fullProjectPath);
+    // gitInit(fullProjectPath);
 
     const homePagePath = path.join(fullProjectPath, 'lib', 'features', 'home', 'presentation', 'pages', 'home_page.dart');
     const openCommand = `code -g "${homePagePath}" "${fullProjectPath}"`;

@@ -36,10 +36,8 @@ export const baseTemplateFolders = [
 
 export const templatefiles: Record<string, string> = {
     'core/routing/routes_constants.dart': routesCont,
-    'core/routing/router_config.g.dart': routerGen,
     'core/services/navigation_service.dart': navServ,
     'core/providers/navigation_provider.dart': navServProv,
-    'core/providers/navigation_provider.g.dart': navServProvGen,
     
     'core/config/config.dart': config_dart,
     // chopper
@@ -54,7 +52,6 @@ export const templatefiles: Record<string, string> = {
     // 'core/services/interceptors/error_interceptor/error_interceptor.dart':error_interceptor,
 
     'core/providers/api_provider.dart': api_provider,
-    'core/providers/api_provider.g.dart': api_provider_g,
 
 
 

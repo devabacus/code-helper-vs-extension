@@ -15,7 +15,6 @@ export const routerCont =
 // ignore_for_file: unused_import
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mlogger/mlogger.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:talker_flutter/talker_flutter.dart';
 import './routes_constants.dart';
