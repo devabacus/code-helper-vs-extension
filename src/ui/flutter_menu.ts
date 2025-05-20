@@ -15,17 +15,19 @@ import { createDataFiles } from "../features/data_routine/create_data_files";
 import { executeCommand, writeToFile } from "../utils";
 import { createFlutterPackage } from "../features/flutter_create_package";
 import { getActiveEditorPath, getLibPath, getRootWorkspaceFolders } from "../utils/path_util";
+import { flutterCreateNewServerPodProject } from "../features/template_project/flutter_create_project_serverpod";
 
 
 
 export async function flutterHandler() {
     const options: { [key: string]: () => Promise<any> } = {
         'Новый проект': () => flutterCreateNewProject(addBaseTemplate),
+        'Новый проект c serverpod': () => flutterCreateNewServerPodProject(addBaseTemplate),
+        'Новый базовый проект': () => flutterCreateNewProject(startAppRoutine),
         'Добавить base template': () => addBaseTemplate(getRootWorkspaceFolders()),
         'Добавить template files': () => createTemplateFiles(getRootWorkspaceFolders()),
         'Добавить плагины': () => executeCommand(addStartPlugins, getRootWorkspaceFolders()),
         'Добавить feauture': () => addFeatureFolders(getRootWorkspaceFolders()),
-        'Новый базовый проект': () => flutterCreateNewProject(startAppRoutine),
         'Создать Flutter пакет': createFlutterPackage,
         'Создать навигацию для файла': () => updateRoutingFls(getActiveEditorPath()!),
         'Добавить api сервис в текущий файл': () => addApiService(getActiveEditorPath()!),
@@ -34,8 +36,6 @@ export async function flutterHandler() {
         'удалить страницу': () => deletePage(getActiveEditorPath()!),
         'Обновить barrel': () => crBarrelFls(getLibPath()),
         'Создать файлы данных': () => createDataFiles(),
-
-        // 'Создать навигацию по конструктору': () => getConstructorData(),
     };
 
     const choice = await window.showQuickPick(Object.keys(options), {
