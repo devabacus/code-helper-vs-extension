@@ -24,7 +24,7 @@ export class TestUseCaseGetListGenerator extends BaseGenerator {
     const d = parser.driftClassNameLower;
     const D = parser.driftClassNameUpper;
     const projectPath = basePath.split('test');
-    const projectName = path.basename(projectPath[0]);
+    const projectName = path.basename(projectPath[0]).replace(`_flutter`, '');
     const fieldsRow = parser.fieldsForTest;
     const Ds = pluralConvert(D);
     const ds = pluralConvert(d);

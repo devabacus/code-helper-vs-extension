@@ -23,7 +23,7 @@ export class TestUseCaseDeleteGenerator extends BaseGenerator {
     const d = parser.driftClassNameLower;
     const D = parser.driftClassNameUpper;
     const projectPath = basePath.split('test');
-    const projectName = path.basename(projectPath[0]);
+    const projectName = path.basename(projectPath[0]).replace(`_flutter`, '');
     const featureName = (projectPath[1]).split(path.sep)[2];
     return `import 'package:${projectName}/features/${featureName}/domain/repositories/${d}_repository.dart';
 import 'package:${projectName}/features/${featureName}/domain/usecases/${d}/delete.dart';

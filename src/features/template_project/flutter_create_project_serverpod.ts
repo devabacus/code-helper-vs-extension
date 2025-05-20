@@ -50,7 +50,7 @@ export async function flutterCreateNewServerPodProject(addTemplateFolders?: (ful
     // createFile(path.join(serviceFilesPth, "shell_commands.ps1"), "//shell commands");
     createFile(path.join(fullProjectPath, "pubspec.yaml"), pubspec_yaml(projectName));
 
-    // gitInit(fullProjectPath);
+    gitInit(fullProjectPath);
 
     const homePagePath = path.join(fullProjectPath, 'lib', 'features', 'home', 'presentation', 'pages', 'home_page.dart');
     const openCommand = `code -g "${homePagePath}" "${fullProjectPath}"`;

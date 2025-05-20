@@ -25,7 +25,7 @@ export class TestDaoGenerator extends BaseGenerator {
         const ds = pluralConvert(d);
         const Ds = pluralConvert(D);
         const projectPath = basePath.split('test');
-        const projectName = path.basename(projectPath[0]);
+        const projectName = path.basename(projectPath[0]).replace(`_flutter`, '');
         const fields = parser.fieldsForTest;
         const wrappedFields = fields[2];
         const fieldsExpected = parser.fieldsExpectedForTest;

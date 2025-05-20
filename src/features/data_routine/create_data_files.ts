@@ -17,45 +17,48 @@ import { DriftTableParser } from "./feature/data/datasources/local/tables/drift_
 export async function createDataFiles() {
     const driftClassCode = getDocText();
     const classParser = new DriftClassParser(driftClassCode);
+    const tableParser = new DriftTableParser(driftClassCode);
     const entityName = unCap(classParser.driftClassNameUpper);
-       const currentFilePath = getActiveEditorPath()!;
-    const tableStructureParser = new DriftTableParser(driftClassCode); // Для анализа связей
-    const isManyToManyTable = tableStructureParser.isRelationTable();
-    const relations = tableStructureParser.getTableRelations();
 
+    const currentFilePath = getActiveEditorPath()!; // Путь к Drift-файлу в a3_flutter
+    // Корень Flutter-проекта (например, G:\Projects\Flutter\serverpod\a3\a3_flutter)
+    const flutterProjectPath = currentFilePath.split(/\Wlib\W/)[0];
+    
+    // Имя серверного проекта (например, a3_server)
+    const serverProjectName = path.basename(flutterProjectPath).replace('_flutter', '_server'); 
+    
+    // Путь к директории моделей в Serverpod server-модуле
+    // (например, G:\Projects\Flutter\serverpod\a3\a3_server\lib\src\models)
+    const serverpodModelDir = path.join(flutterProjectPath, '..', serverProjectName, 'lib', 'src', 'models');
+    
+    const featurePath = currentFilePath.split(/\Wdata\W/)[0]; // Для остальных генераторов Flutter
+    const featureTestPath = path.join(flutterProjectPath, "test", featurePath.split('lib')[1]);
 
-    const featurePath = currentFilePath.split(/\Wdata\W/)[0];
-    const projectPath = currentFilePath.split(/\Wlib\W/)[0];
-    const featureTestPath = path.join(projectPath, "test", featurePath.split('lib')[1]);
-
-
-
-    // получаем файловую систему через ServiceLocator
     const serviceLocator = ServiceLocator.getInstance();
     const fileSystem = serviceLocator.getFileSystem();
-
-    // инициализируем фабрику генераторов
     const generatorFactory = new GeneratorFactory(fileSystem);
     const testGeneratorFactory = new DartTestGeneratorFactory(fileSystem);
 
-
     const commandData = {
         classParser: classParser,
-        isRelationTable: isManyToManyTable,
-        relations: relations,
+        tableParser: tableParser,
+        isRelationTable: tableParser.isRelationTable(),
+        relations: tableParser.getTableRelations(),
     };
 
-    // инициализируем команду "запустить генерацию всех файлов"
-    const generatorCommands = new GenerateAllFilesCommand(generatorFactory, featurePath, entityName, commandData);
+    // Передаем serverpodModelDir в команду генерации
+    const generatorCommands = new GenerateAllFilesCommand(
+        generatorFactory,
+        featurePath,
+        entityName, 
+        commandData,
+        serverpodModelDir // <--- Обновленный путь
+    );
     const generateTestFilesCommand = new GenerateTestFilesCommand(testGeneratorFactory, featureTestPath, entityName, commandData);
 
-    // запускаем генерацию
-    generatorCommands.execute();
+    await generatorCommands.execute(); // await, если execute асинхронный
+    await generateTestFilesCommand.execute(); // await, если execute асинхронный
 
-    generateTestFilesCommand.execute();
-
-    // appdatabase routine
     await appDatabaseRoutine(currentFilePath, entityName);
-
     await executeInTerminal(build_runner);
 }

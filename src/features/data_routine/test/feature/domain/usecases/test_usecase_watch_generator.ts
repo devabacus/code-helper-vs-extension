@@ -25,7 +25,7 @@ export class TestUseCaseWatchGenerator extends BaseGenerator {
     const D = parser.driftClassNameUpper;
     const Ds = pluralConvert(D);
     const projectPath = basePath.split('test');
-    const projectName = path.basename(projectPath[0]);
+    const projectName = path.basename(projectPath[0]).replace(`_flutter`, '');
     const fieldsRow = parser.fieldsForTest;
     const featureName = (projectPath[1]).split(path.sep)[2];
     return `import 'dart:async';

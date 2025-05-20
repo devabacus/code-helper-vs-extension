@@ -7,6 +7,7 @@ export class TestDatabaseService extends BaseGenerator {
         return path.join(basePath, "test", "core", "database", "local", "test_database_service.dart");
     }
     protected getContent(data: undefined, projectName: string): string {
+        projectName = projectName.replace(`_flutter`, '');
         return `import 'package:${projectName}/core/database/local/database.dart';
 import 'package:${projectName}/core/database/local/interface/i_database_service.dart';
 import 'package:drift/native.dart';

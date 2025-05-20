@@ -30,6 +30,7 @@ export class GenerateTestFilesCommand implements Command {
         if (!this.isRelationTable) {
             // Для обычных таблиц генерируем полный набор тестов, как и раньше.
             // Это позволит проверить, что ничего не сломалось для них.
+            
             console.log(`Генерация стандартного набора тестов для обычной таблицы: ${this.driftClassName}.`);
             await this.testGeneratorFactory.createTestDaoGenerator().generate(this.featureTestPath, this.driftClassName, this.classParser);
             await this.testGeneratorFactory.createTestLocalSourceGenerator().generate(this.featureTestPath, this.driftClassName, this.classParser);

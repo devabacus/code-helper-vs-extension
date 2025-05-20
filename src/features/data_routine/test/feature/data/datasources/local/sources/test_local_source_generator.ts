@@ -26,7 +26,7 @@ export class TestLocalSourceGenerator extends BaseGenerator {
         const fieldsRow = parser.fieldsForTest;
         const firstRow = parser.fields[1].name;
         const projectPath = basePath.split('test');
-        const projectName = path.basename(projectPath[0]);        
+        const projectName = path.basename(projectPath[0]).replace(`_flutter`, '');
         const featureName = (projectPath[1]).split(path.sep)[2];
 
     return `import 'package:${projectName}/core/database/local/database.dart';

@@ -2,6 +2,7 @@ import { Command } from "../../../core/interfaces/command";
 import { toPascalCase } from "../../../utils/text_work/text_util";
 import { GeneratorFactory } from "../factories/generator_factory";
 import { DriftClassParser } from "../feature/data/datasources/local/tables/drift_class_parser";
+import { DriftTableParser } from "../feature/data/datasources/local/tables/drift_table_parser"; // Добавлен импорт
 import { RelationType, TableRelation } from "../interfaces/table_relation.interface";
 
 
@@ -10,122 +11,99 @@ export class GenerateAllFilesCommand implements Command {
     private isRelationTable: boolean;
     private relations: TableRelation[];
     private classParser: DriftClassParser;
+    private tableParser: DriftTableParser; // <--- Добавлено поле tableParser
+    private serverpodProtocolModelDir?: string; // Опциональный параметр для Serverpod
 
-    constructor(private generatorFactory: GeneratorFactory, private featurePath: string, private driftClassName: string, commandData: {
+    constructor(
+        private generatorFactory: GeneratorFactory,
+        private featurePath: string,
+        private driftClassName: string, // Это camelCase имя класса, например "category" или "taskTagMap"
+        commandData: {
             classParser: DriftClassParser;
+            tableParser: DriftTableParser; // <--- tableParser теперь в commandData
             isRelationTable: boolean;
             relations: TableRelation[];
-        }) {
-            this.classParser = commandData.classParser; 
-            this.isRelationTable = commandData.isRelationTable;
-            this.relations = commandData.relations;
-        }       
+        },
+        serverpodProtocolModelDir?: string // Сделаем его опциональным
+    ) {
+        this.classParser = commandData.classParser;
+        this.tableParser = commandData.tableParser; // <--- Присваиваем tableParser
+        this.isRelationTable = commandData.isRelationTable;
+        this.relations = commandData.relations;
+        this.serverpodProtocolModelDir = serverpodProtocolModelDir;
+    }
 
     async execute(): Promise<void> {
+        const entityNameForGenerators = this.driftClassName; // Используем camelCase имя для большинства генераторов
 
-        // Если это НЕ связующая таблица (т.е. обычная таблица)
         if (!this.isRelationTable) {
-            console.log(`Обычная таблица: ${this.driftClassName}. Запуск стандартной генерации файлов.`);
+            console.log(`Обычная таблица: ${entityNameForGenerators}. Запуск стандартной генерации файлов.`);
             // data layer
-            await this.generatorFactory.createDataRepositoryGenerator().generate(this.featurePath, this.driftClassName, this.classParser);
-            await this.generatorFactory.createModelGenerator().generate(this.featurePath, this.driftClassName, this.classParser);
-            await this.generatorFactory.createDaoGenerator().generate(this.featurePath, this.driftClassName, this.classParser);
-            await this.generatorFactory.createLocalSourcesGenerator().generate(this.featurePath, this.driftClassName, this.classParser);
-            await this.generatorFactory.createDataProviderGenerator().generate(this.featurePath, this.driftClassName, this.classParser);
+            await this.generatorFactory.createDataRepositoryGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
+            await this.generatorFactory.createModelGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
+            await this.generatorFactory.createDaoGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
+            await this.generatorFactory.createLocalSourcesGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
+            await this.generatorFactory.createDataProviderGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
 
             //extensions
-            await this.generatorFactory.createDataTableExtensionGenerator().generate(this.featurePath, this.driftClassName, this.classParser);
-            await this.generatorFactory.createDataModelExtensionGenerator().generate(this.featurePath, this.driftClassName, this.classParser);
+            await this.generatorFactory.createDataTableExtensionGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
+            await this.generatorFactory.createDataModelExtensionGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
 
             // domain layer
-            await this.generatorFactory.createEntityGenerator().generate(this.featurePath, this.driftClassName, this.classParser);
-            await this.generatorFactory.createDomainRepositoryGenerator().generate(this.featurePath, this.driftClassName, this.classParser);
-            await this.generatorFactory.createDomainProviderGenerator().generate(this.featurePath, this.driftClassName, this.classParser);
-            await this.generatorFactory.createDomainEntityExtensionGenerator().generate(this.featurePath, this.driftClassName, this.classParser);
-            await this.generatorFactory.createLocalDataSourceServiceGenerator().generate(this.featurePath, this.driftClassName, this.classParser);
+            await this.generatorFactory.createEntityGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
+            await this.generatorFactory.createDomainRepositoryGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
+            await this.generatorFactory.createDomainProviderGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
+            await this.generatorFactory.createDomainEntityExtensionGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
+            await this.generatorFactory.createLocalDataSourceServiceGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
 
             // domain layer use_cases
-            await this.generatorFactory.createUseCaseCreateGenerator().generate(this.featurePath, this.driftClassName, this.classParser);
-            await this.generatorFactory.createUseCaseUpdateGenerator().generate(this.featurePath, this.driftClassName, this.classParser);
-            await this.generatorFactory.createUseCaseDeleteGenerator().generate(this.featurePath, this.driftClassName, this.classParser);
-            await this.generatorFactory.createUseCaseGetByIdGenerator().generate(this.featurePath, this.driftClassName, this.classParser);
-            await this.generatorFactory.createUseCaseGetAllGenerator().generate(this.featurePath, this.driftClassName, this.classParser);
-            await this.generatorFactory.createUseCaseWatchAllGenerator().generate(this.featurePath, this.driftClassName, this.classParser);
+            await this.generatorFactory.createUseCaseCreateGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
+            await this.generatorFactory.createUseCaseUpdateGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
+            await this.generatorFactory.createUseCaseDeleteGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
+            await this.generatorFactory.createUseCaseGetByIdGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
+            await this.generatorFactory.createUseCaseGetAllGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
+            await this.generatorFactory.createUseCaseWatchAllGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
 
             //presentation layer
-            await this.generatorFactory.createPresentStateProviderGenerator().generate(this.featurePath, this.driftClassName, this.classParser);
-            await this.generatorFactory.createPresentGetByIdProviderGenerator().generate(this.featurePath, this.driftClassName, this.classParser);
+            await this.generatorFactory.createPresentStateProviderGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
+            await this.generatorFactory.createPresentGetByIdProviderGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
         } else {
-            // Если это связующая таблица "многие ко многим"
             const manyToManyRelation = this.relations.find(r => r.relationType === RelationType.MANY_TO_MANY);
-            if (manyToManyRelation) {
-                console.log(`Обнаружена связующая таблица: ${this.driftClassName}. Связывает ${manyToManyRelation.sourceTable} и ${manyToManyRelation.targetTable}.`);
-                console.log(`Пропуск стандартной генерации большинства файлов для ${this.driftClassName}.`);
-
-                // Генерируем специализированный DAO для связующей таблицы
-                console.log(`Генерация DAO для связующей таблицы ${this.driftClassName} с использованием DataDaoRelateGenerator.`);
-                await this.generatorFactory.createDaoRelateGenerator().generate(this.featurePath, this.driftClassName, this.classParser);
-
-                // Генерируем специализированный интерфейс LocalDataSource для связующей таблицы
-                console.log(`Генерация интерфейса LocalDataSource для связующей таблицы ${this.driftClassName} с использованием DataLocalRelateDataSourceServiceGenerator.`);
-                await this.generatorFactory.createDataLocalRelateDataSourceServiceGenerator().generate(this.featurePath, this.driftClassName, this.classParser);
-
-                // Генерируем реализацию LocalDataSource для связующей таблицы
-                console.log(`Генерация реализации LocalDataSource для связующей таблицы ${this.driftClassName} с использованием DataLocalRelateSourceGenerator.`);
-                await this.generatorFactory.createDataLocalRelateSourceGenerator().generate(this.featurePath, this.driftClassName, this.classParser);
-
-                   // Генерируем специализированный интерфейс Domain Repository для связующей таблицы
-                console.log(`Генерация интерфейса Domain Repository для связующей таблицы ${this.driftClassName} с использованием DomainRelateRepositoryGenerator.`);
-                await this.generatorFactory.createDomainRelateRepositoryGenerator().generate(this.featurePath, this.driftClassName, this.classParser);
+            if (manyToManyRelation && manyToManyRelation.intermediateTable === this.classParser.driftClassNameUpper) {
+                console.log(`Обнаружена связующая таблица: ${entityNameForGenerators}. Связывает ${manyToManyRelation.sourceTable} и ${manyToManyRelation.targetTable}.`);
                 
-                // Генерируем реализацию Data Repository для связующей таблицы
-                console.log(`Генерация реализации Data Repository для связующей таблицы ${this.driftClassName} с использованием DataRepositoryRelateImplGenerator.`);
-                await this.generatorFactory.createDataRepositoryRelateImplGenerator().generate(this.featurePath, this.driftClassName, this.classParser);
-                
-                      // Генерируем файл с провайдерами для связующей таблицы
-                console.log(`Генерация файла провайдеров для связующей таблицы ${this.driftClassName} с использованием DataProviderRelateGenerator.`);
-                await this.generatorFactory.createDataProviderRelateGenerator().generate(this.featurePath, this.driftClassName, this.classParser);
-                
-                // Генерируем UseCase для добавления связи
-                console.log(`Генерация UseCase "add relation" для связующей таблицы ${this.driftClassName} с использованием UseCaseRelateAddGenerator.`);
-                await this.generatorFactory.createUseCaseRelateAddGenerator().generate(this.featurePath, this.driftClassName, this.classParser);
-
-                // Генерируем UseCase для получения связанных сущностей (targets for source)
-                console.log(`Генерация UseCase "get targets for source" для связующей таблицы ${this.driftClassName} с использованием UseCaseRelateGetTargetsForSourceGenerator.`);
-                await this.generatorFactory.createUseCaseRelateGetTargetsForSourceGenerator().generate(this.featurePath, this.driftClassName, this.classParser);
-
-                // Генерируем UseCase для получения связанных сущностей (sources with target)
-                console.log(`Генерация UseCase "get sources with target" для связующей таблицы ${this.driftClassName} с использованием UseCaseRelateGetSourcesWithTargetGenerator.`);
-                await this.generatorFactory.createUseCaseRelateGetSourcesWithTargetGenerator().generate(this.featurePath, this.driftClassName, this.classParser);
-
-                // Генерируем UseCase для удаления всех связей (targets from source)
-                console.log(`Генерация UseCase "remove all targets from source" для связующей таблицы ${this.driftClassName} с использованием UseCaseRelateRemoveAllTargetsFromSourceGenerator.`);
-                await this.generatorFactory.createUseCaseRelateRemoveAllTargetsFromSourceGenerator().generate(this.featurePath, this.driftClassName, this.classParser);
-
-                 // Генерируем UseCase для удаления конкретной связи (target from source)
-                console.log(`Генерация UseCase "remove target from source" для связующей таблицы ${this.driftClassName} с использованием UseCaseRelateRemoveTargetFromSourceGenerator.`);
-                await this.generatorFactory.createUseCaseRelateRemoveTargetFromSourceGenerator().generate(this.featurePath, this.driftClassName, this.classParser);
-
-
-               // Для UseCaseRelateProvidersGenerator и PresentStateRelateProviderGenerator в качестве entityName передается имя промежуточной таблицы
-                console.log(`Генерация UseCase Providers для связей (из таблицы ${this.driftClassName}) с использованием UseCaseRelateProvidersGenerator.`);
-                await this.generatorFactory.createUseCaseRelateProvidersGenerator().generate(this.featurePath, this.driftClassName, this.classParser);
-
-                // Генерируем Presentation State Providers для связей
-                console.log(`Генерация Presentation State Providers для связей (из таблицы ${this.driftClassName}) с использованием PresentStateRelateProviderGenerator.`);
-                await this.generatorFactory.createPresentStateRelateProviderGenerator().generate(this.featurePath, this.driftClassName, this.classParser);
-
-
-                 // Генерируем Presentation Filter Providers для связей
-                console.log(`Генерация Presentation Filter Providers для связей (из таблицы ${this.driftClassName}) с использованием PresentFilterRelateProviderGenerator.`);
-                await this.generatorFactory.createPresentFilterRelateProviderGenerator().generate(this.featurePath, this.driftClassName, this.classParser);
-
-
+                await this.generatorFactory.createDaoRelateGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
+                await this.generatorFactory.createDataLocalRelateDataSourceServiceGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
+                await this.generatorFactory.createDataLocalRelateSourceGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
+                await this.generatorFactory.createDomainRelateRepositoryGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
+                await this.generatorFactory.createDataRepositoryRelateImplGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
+                await this.generatorFactory.createDataProviderRelateGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
+                await this.generatorFactory.createUseCaseRelateAddGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
+                await this.generatorFactory.createUseCaseRelateGetTargetsForSourceGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
+                await this.generatorFactory.createUseCaseRelateGetSourcesWithTargetGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
+                await this.generatorFactory.createUseCaseRelateRemoveAllTargetsFromSourceGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
+                await this.generatorFactory.createUseCaseRelateRemoveTargetFromSourceGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
+                await this.generatorFactory.createUseCaseRelateProvidersGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
+                await this.generatorFactory.createPresentStateRelateProviderGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
+                await this.generatorFactory.createPresentFilterRelateProviderGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
             } else {
-                 console.warn(`Таблица ${this.driftClassName} определена как связующая (isRelationTable=true), но детали связи MANY_TO_MANY не найдены в relations. Проверьте логику DriftTableParser.`);
+                 console.warn(`Таблица ${entityNameForGenerators} определена как связующая (isRelationTable=true), но не является промежуточной таблицей для MANY_TO_MANY или детали связи не найдены.`);
             }
         }
-        // Здесь мог бы быть код, который выполняется для ВСЕХ типов таблиц,
-        // но судя по всему, его нет, и это нормально.
+
+        // Генерация Serverpod YAML файла, если serverpodProtocolModelDir предоставлен
+        if (this.serverpodProtocolModelDir) {
+            // entityName для Serverpod YAML файла - это имя класса Drift (PascalCase),
+            // которое ServerpodYamlGenerator преобразует в snake_case для имени файла.
+            // А для содержимого YAML (class: Name) используется PascalCase.
+            const serverpodEntityName = this.classParser.driftClassNameLower; // Используем camelCase, ServerpodYamlGenerator сделает toSnakeCase для имени файла
+
+            console.log(`Генерация Serverpod YAML для ${this.classParser.driftClassNameUpper}.`);
+            await this.generatorFactory.createServerpodYamlGenerator().generate(
+                this.serverpodProtocolModelDir,
+                serverpodEntityName, // camelCase имя, которое getPath преобразует в snake_case для имени файла
+                { classParser: this.classParser, tableParser: this.tableParser }
+            );
+        }
     }
 }

@@ -23,7 +23,7 @@ export class TestUseCaseUpdateGenerator extends BaseGenerator {
     const d = parser.driftClassNameLower;
     const D = parser.driftClassNameUpper;
     const projectPath = basePath.split('test');
-    const projectName = path.basename(projectPath[0]);
+    const projectName = path.basename(projectPath[0]).replace(`_flutter`, '');
     const fieldsRow = parser.fieldsForTest;
     const featureName = (projectPath[1]).split(path.sep)[2];
     return `import 'package:${projectName}/features/${featureName}/domain/entities/${d}/${d}.dart';

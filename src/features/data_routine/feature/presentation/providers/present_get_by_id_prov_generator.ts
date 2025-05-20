@@ -24,8 +24,7 @@ export class PresentGetByIdProviderGenerator extends DataRoutineGenerator {
     const D = parser.driftClassNameUpper;
     const ds = pluralConvert(d);
 
-    return `import 'package:mlogger/mlogger.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
+    return `import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../domain/entities/${d}/${d}.dart';
@@ -42,7 +41,7 @@ FutureOr<${D}Entity> get${D}ById(Ref ref, String id) async {
     try {
       return ${ds}AsyncValue.value.firstWhere((cat) => cat.id == id);
     } catch (e) {
-      log.debug("Не нашли в кэше делаем запрос к базе, error: $e");
+      print("Не нашли в кэше делаем запрос к базе, error: $e");
     }
   }
   final ${d} = await ref.read(get${D}ByIdUseCaseProvider)(id);

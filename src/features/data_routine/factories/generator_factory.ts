@@ -34,6 +34,7 @@ import { PresentFilterRelateProviderGenerator } from "../feature/presentation/pr
 import { PresentGetByIdProviderGenerator } from "../feature/presentation/providers/present_get_by_id_prov_generator";
 import { PresentStateProviderGenerator } from "../feature/presentation/providers/present_state_prov_generator";
 import { PresentStateRelateProviderGenerator } from "../feature/presentation/providers/present_state_relate_provider_generator";
+import { ServerpodYamlGenerator } from "../generators/serverpod_yaml_generator";
 
 
 export class GeneratorFactory {
@@ -175,4 +176,8 @@ export class GeneratorFactory {
         return new PresentFilterRelateProviderGenerator(this.fileSystem);
     }
 
+
+    createServerpodYamlGenerator(): FileGenerator {
+        return new ServerpodYamlGenerator(this.fileSystem);
+    }
 }
