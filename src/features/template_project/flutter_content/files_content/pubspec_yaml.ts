@@ -13,14 +13,14 @@ environment:
   flutter: ">=3.10.0"
 
 dependencies:
-  common_package:
-    path: ../Packages/common_package
-  simple_storage:
-    path: ../Packages/simple_storage  
-  mlogger:
-    path: ../Packages/mlogger
-  ui_kit:
-    path: ../Packages/ui_kit
+# common_package:
+#   path: ../Packages/common_package
+# simple_storage:
+#   path: ../Packages/simple_storage  
+# mlogger:
+#   path: ../Packages/mlogger
+# ui_kit:
+#   path: ../Packages/ui_kit
 
   flutter:
     sdk: flutter

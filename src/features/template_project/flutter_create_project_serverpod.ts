@@ -25,9 +25,9 @@ export async function flutterCreateNewServerPodProject(addTemplateFolders?: (ful
     }
     createFolder(path.join(projectsPath, projectName));
     const create_command = `serverpod create ${projectName}`;
-    const projectPath = path.join(projectsPath, projectName);
-    await executeCommand(create_command, projectPath);
-    const fullProjectPath = path.join(projectPath, `${projectName}_flutter`);
+    // const projectPath = path.join(projectsPath, projectName);
+    await executeCommand(create_command, projectsPath);
+    const fullProjectPath = path.join(projectsPath, `${projectName}_flutter`);
     
     if (addTemplateFolders) {
         addTemplateFolders(fullProjectPath);
