@@ -1,4 +1,4 @@
-import { createFile as utilCreateFile, createFolder as utilCreateFolder } from "../../utils";
+import { fileExists, readFile, createFile as utilCreateFile, createFolder as utilCreateFolder } from "../../utils";
 import { IFileSystem } from "../interfaces/file_system";
 
 export class DefaultFileSystem implements IFileSystem {
@@ -11,4 +11,12 @@ export class DefaultFileSystem implements IFileSystem {
     return utilCreateFolder(path);
   }
 
+  async readFile(path: string): Promise<string> {
+    return readFile(path);
+  }
+
+  async fileExists(path: string): Promise<boolean> {
+    return fileExists(path);
+  }
 }
+
