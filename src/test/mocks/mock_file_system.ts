@@ -2,6 +2,12 @@ import { IFileSystem } from "../../core/interfaces/file_system";
 
 
 export class MockFileSystem implements IFileSystem {
+    readFile(path: string): Promise<string> {
+        throw new Error("Method not implemented.");
+    }
+    fileExists(path: string): Promise<boolean> {
+        throw new Error("Method not implemented.");
+    }
 
     createdFiles: Record<string, string> = {};
     createdFolders: string[] = [];

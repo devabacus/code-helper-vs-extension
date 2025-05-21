@@ -1,5 +1,4 @@
-export const PresentGetByIdProviderExample = `import 'package:mlogger/mlogger.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
+export const PresentGetByIdProviderExample = `import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../domain/entities/category/category.dart';
@@ -16,7 +15,7 @@ FutureOr<CategoryEntity> getCategoryById(Ref ref, String id) async {
     try {
       return categoriesAsyncValue.value.firstWhere((cat) => cat.id == id);
     } catch (e) {
-      log.debug("Не нашли в кэше делаем запрос к базе, error: $e");
+      print("Не нашли в кэше делаем запрос к базе, error: $e");
     }
   }
   final category = await ref.read(getCategoryByIdUseCaseProvider)(id);
