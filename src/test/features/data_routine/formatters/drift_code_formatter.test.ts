@@ -6,9 +6,9 @@ import { DriftCodeFormatter } from "../../../../features/data_routine/formatters
 suite('DriftCodeFormatter', () => {
   let formatter: DriftCodeFormatter;
   const testFields = [
-    { type: 'int', name: 'id' },
-    { type: 'String', name: 'title' },
-    { type: 'String', name: 'description' }
+    { type: 'int', name: 'id', isNullable: false },
+    { type: 'String', name: 'title', isNullable: false },
+    { type: 'String', name: 'description', isNullable: false  }
   ];
 
   const testFieldsFull = [
@@ -33,7 +33,6 @@ suite('DriftCodeFormatter', () => {
     assert.strictEqual(formatter.getFieldsValueForTest(testFieldsFull)[2], expected3);
 
   });
-
 
   test('getFieldsExpectValueTest', () => {
     const expected1 = `.title, 'title 1'`;
