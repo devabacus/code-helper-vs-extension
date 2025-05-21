@@ -4,7 +4,7 @@ import * as path from 'path';
 import { BaseGenerator } from '../../../core/generators/base_generator';
 import { IFileSystem } from '../../../core/interfaces/file_system';
 import { DriftClassParser } from '../feature/data/datasources/local/tables/drift_class_parser';
-import { DriftTableParser } from '../feature/data/datasources/local/tables/drift_table_parser';
+import { DriftTableParser, Field as DriftField } from '../feature/data/datasources/local/tables/drift_table_parser'; // Импортируем Field
 import { cap, unCap, toSnakeCase, pluralConvert } from '../../../utils/text_work/text_util';
 
 export class ServerpodEndpointGenerator extends BaseGenerator<{ classParser: DriftClassParser, tableParser: DriftTableParser }> {
@@ -39,7 +39,7 @@ export class ServerpodEndpointGenerator extends BaseGenerator<{ classParser: Dri
         const serverProjectNameSnake = path.basename(serverProjectRootPath);
 
         const pkField = tableParser.getFields().find(f => tableParser.getPrimaryKey().includes(f.name));
-        let findByIdParamType = "int";
+        let findByIdParamType = "int"; // Тип параметра для методов getById, delete
 
         if (pkField) {
             if (pkField.name === "id" && pkField.type === "String") {
@@ -51,13 +51,22 @@ export class ServerpodEndpointGenerator extends BaseGenerator<{ classParser: Dri
             console.warn(`Поле первичного ключа не найдено для ${classNamePascal}, тип ID по умолчанию int для методов эндпоинта.`);
         }
         
-        const importUuid = findByIdParamType === "UuidValue" ? "import 'package:serverpod/serverpod.dart' show UuidValue;\n" : "";
+        // Определение поля для сортировки по умолчанию
+        const fields: DriftField[] = tableParser.getFields(); // Используем поля из DriftTableParser
+        let orderByField = "id"; // По умолчанию сортируем по id
+        if (fields.find(f => f.name === "title")) {
+            orderByField = "title";
+        } else if (fields.find(f => f.name === "name")) {
+            orderByField = "name";
+        }
+
+        // Лямбда-параметр для доступа к полям таблицы (обычно короткое имя, например, 't' или первая буква)
+        const tableLambdaVar = "t"; 
 
         return `import 'package:serverpod/serverpod.dart';
-${importUuid}import 'package:${serverProjectNameSnake}/src/generated/protocol.dart';
+import 'package:${serverProjectNameSnake}/src/generated/protocol.dart';
 
 class ${classNamePascal}Endpoint extends Endpoint {
-
   Future<${classNamePascal}> create${classNamePascal}(Session session, ${classNamePascal} ${classNameCamel}) async {
     await session.db.insertRow(${classNameCamel});
     return ${classNameCamel};
@@ -67,29 +76,33 @@ class ${classNamePascal}Endpoint extends Endpoint {
     return await session.db.findById<${classNamePascal}>(id);
   }
 
-  Future<List<${classNamePascal}>> get${classNamePluralPascal}(Session session, {String? keyword}) async {
-    // Пример простого поиска, можно расширить с помощью where, orderBy и т.д.
-    // var whereClause = keyword != null ? (${classNameCamel}) => ${classNameCamel}.title.like('%$keyword%') : null; // Пример, если есть поле 'title'
-    return await session.db.find<${classNamePascal}>(
-      // where: whereClause,
-      // orderBy: (${classNameCamel}) => ${classNameCamel}.id, // Предполагается поле 'id' или другое сортируемое поле
+  Future<List<${classNamePascal}>> get${classNamePluralPascal}(Session session) async {
+    return await ${classNamePascal}.db.find(
+      session,
+      orderBy: (${tableLambdaVar}) => ${tableLambdaVar}.${orderByField},
     );
   }
 
-  Future<${classNamePascal}> update${classNamePascal}(Session session, ${classNamePascal} ${classNameCamel}) async {
-    await session.db.updateRow(${classNameCamel});
-    return ${classNameCamel};
+  Future<bool> update${classNamePascal}(Session session, ${classNamePascal} ${classNameCamel}) async {
+    try {
+      await session.db.updateRow(${classNameCamel});
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 
   Future<bool> delete${classNamePascal}(Session session, ${findByIdParamType} id) async {
-    var count = await session.db.delete<${classNamePascal}>(
-      // Предполагается, что 'id' - это поле первичного ключа в модели Serverpod
-      where: (${classNameCamel}) => (${classNameCamel} as dynamic).id.equals(id),
-    );
-    return count > 0; // delete возвращает количество удаленных строк
+    try {
+      var deletedItems = await ${classNamePascal}.db.deleteWhere(
+        session,
+        where: (${tableLambdaVar}) => ${tableLambdaVar}.id.equals(id),
+      );
+      return deletedItems.isNotEmpty;
+    } catch (e) {
+      return false;
+    }
   }
-
-  // TODO: Добавить методы для связей M2M и O2M на основе tableParser.getTableRelations()
 }
 `;
     }

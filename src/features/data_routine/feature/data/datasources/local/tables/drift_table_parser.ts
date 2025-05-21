@@ -156,3 +156,5 @@ export class DriftTableParser implements IDriftTableParser {
     return relations;
   }
 }
+
+export { Field };
