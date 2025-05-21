@@ -36,11 +36,11 @@ export class ServerpodYamlGenerator extends BaseGenerator {
         }
     }
 
-    protected getContent(data: { classParser: DriftClassParser, tableParser: DriftTableParser }): string {
-        const { classParser, tableParser } = data; // classParser нам может и не понадобиться здесь, если tableParser имеет все поля
-        const className = tableParser.getClassName(); // Используем tableParser для имени класса текущего YAML
+     protected getContent(data: { classParser: DriftClassParser, tableParser: DriftTableParser }): string {
+        const { classParser, tableParser } = data;
+        const className = tableParser.getClassName();
         const tableName = toSnakeCase(className);
-        const driftReferences = tableParser.getReferences(); // Получаем ссылки из tableParser
+        const driftReferences = tableParser.getReferences();
 
         let yamlContent = `class: ${className}\n`;
         if (className.toLowerCase() !== "protocol") {
@@ -56,37 +56,33 @@ export class ServerpodYamlGenerator extends BaseGenerator {
             fkFieldsHandledAsObjectRelations.add(ref.columnName);
         }
         
-        // Поля, которые не являются внешними ключами (или являются ID)
-        for (const field of tableParser.getFields()) { // Используем поля из tableParser
-            if (field.name === 'id' && field.type === 'String') { // Тип String для ID соответствует UuidValue?
+        for (const field of tableParser.getFields()) {
+            if (field.name === 'id' && field.type === 'String') {
                 yamlContent += `  id: UuidValue?, defaultPersist=random_v7\n`;
             } else if (!fkFieldsHandledAsObjectRelations.has(field.name)) {
-                // Определяем, должен ли тип поля быть UuidValue? на основе типа String и имени (если это FK, обрабатываемый как UuidValue)
-                // Но здесь мы обрабатываем НЕ FK поля, поэтому просто маппинг типа.
                 const serverpodType = this.mapDriftTypeToServerpod(field.type, field.name, false);
-                yamlContent += `  ${field.name}: ${serverpodType}${field.isNullable ? '?' : ''}\n`; // Добавляем '?' если поле nullable в Drift
+                yamlContent += `  ${field.name}: ${serverpodType}${field.isNullable ? '?' : ''}\n`;
             }
         }
 
-        // Добавляем поля для прямых FK (они станут объектными связями)
+        // --- Изменения здесь ---
         for (const ref of driftReferences) {
             const referencedClassName = ref.referencedTable.replace('Table', '');
             const relationFieldName = unCap(referencedClassName);
 
-            // Находим определение поля внешнего ключа в списке полей tableParser, чтобы проверить его nullability
-            const fkField = tableParser.getFields().find(f => f.name === ref.columnName);
-            // Если поле найдено и оно nullable в Drift, то и в Serverpod оно должно быть nullable
-            const isFkNullableInDrift = fkField ? fkField.isNullable : false; 
+            const fkDriftField = tableParser.getFields().find(f => f.name === ref.columnName);
+            const isFkExplicitlyNullableInDrift = fkDriftField ? fkDriftField.isNullable : false;
 
-            const serverpodRelationType = `${referencedClassName}${isFkNullableInDrift ? '?' : ''}`;
+            // Если текущая таблица (для которой генерируется YAML) является связующей (M2M),
+            // то поля-ссылки в YAML для этой связующей таблицы всегда должны быть nullable.
+            // В остальных случаях nullability зависит от явного указания в Drift схеме.
+            const shouldBeNullable = tableParser.isRelationTable() || isFkExplicitlyNullableInDrift;
+
+            const serverpodRelationType = `${referencedClassName}${shouldBeNullable ? '?' : ''}`;
             yamlContent += `  ${relationFieldName}: ${serverpodRelationType}, relation\n`;
         }
+        // --- Конец изменений ---
 
-        // ... (остальная часть метода getContent без изменений) ...
-        // Логика для O2M и M2M связей (добавление List<...>) остается прежней,
-        // так как List<?> в Serverpod обычно всегда nullable.
-
-        // Пример (остальная часть логики индексов и т.д.)
         if (className.toLowerCase() !== "protocol") {
             const isSimpleUuidIdPk = primaryKeyFieldsDrift.length === 1 && primaryKeyFieldsDrift[0] === 'id' &&
                                    tableParser.getFields().find(f => f.name === 'id')?.type === 'String';
@@ -113,7 +109,6 @@ export class ServerpodYamlGenerator extends BaseGenerator {
     async generate(basePath: string, entityName: string, data: { classParser: DriftClassParser, tableParser: DriftTableParser }): Promise<void> {
         const { classParser, tableParser } = data;
         const currentEntityClassName = classParser.driftClassNameUpper;
-
         const primaryYamlPath = this.getPath(basePath, entityName);
         const primaryYamlContent = this.getContent(data);
         await this.fileSystem.createFile(primaryYamlPath, primaryYamlContent);
