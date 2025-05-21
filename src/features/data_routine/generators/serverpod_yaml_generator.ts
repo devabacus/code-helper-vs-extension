@@ -120,25 +120,21 @@ export class ServerpodYamlGenerator extends BaseGenerator {
 
     async generate(basePath: string, entityName: string, data: { classParser: DriftClassParser, tableParser: DriftTableParser }): Promise<void> {
         const { classParser, tableParser } = data;
-        const currentEntityClassName = classParser.driftClassNameUpper; // Имя текущей сущности (например, Task)
+        const currentEntityClassName = classParser.driftClassNameUpper;
 
-        // 1. Генерируем и записываем YAML для текущей сущности
-        const primaryYamlPath = this.getPath(basePath, entityName); // entityName здесь camelCase, getPath сделает snake_case
+        const primaryYamlPath = this.getPath(basePath, entityName);
         const primaryYamlContent = this.getContent(data);
         await this.fileSystem.createFile(primaryYamlPath, primaryYamlContent);
         console.log(`Сгенерирован YAML для ${currentEntityClassName} в ${primaryYamlPath}`);
 
-        // 2. Определяем связи "один ко многим", где текущая сущность является "многими" (sourceTable)
         const oneToManyRelations = tableParser.getTableRelations().filter(
             r => r.relationType === RelationType.ONE_TO_MANY && r.sourceTable === currentEntityClassName
         );
 
         for (const relation of oneToManyRelations) {
-            const oneSideClassName = relation.targetTable; // Имя сущности на стороне "один" (например, Category)
-            const manySideClassName = relation.sourceTable; // Имя текущей сущности (например, Task)
-            
-            const listFieldName = `${unCap(pluralConvert(manySideClassName))}`; // Имя поля-списка (например, tasks)
-            
+            const oneSideClassName = relation.targetTable;
+            const manySideClassName = relation.sourceTable;
+            const listFieldName = `${unCap(pluralConvert(manySideClassName))}`;
             const oneSideYamlFileName = `${toSnakeCase(oneSideClassName)}.spy.yaml`;
             const oneSideYamlPath = path.join(basePath, oneSideYamlFileName);
 
@@ -149,31 +145,18 @@ export class ServerpodYamlGenerator extends BaseGenerator {
                 
                 if (fileExists) {
                     let oneSideYamlContent = await this.fileSystem.readFile(oneSideYamlPath);
-                    const fieldKeyToAdd = ` ${listFieldName}:`; // Проверяем с отступом
                     const fullLineRegex = new RegExp(`^\\s*${listFieldName}:`, "m");
-
 
                     if (!fullLineRegex.test(oneSideYamlContent)) {
                         const lines = oneSideYamlContent.split('\n');
-                        let fieldsBlockEndIndex = -1; // Индекс строки, ПОСЛЕ которой вставлять новое поле
-                        let indent = "  "; // Отступ по умолчанию
+                        let fieldsStartIndex = -1;
+                        let indent = "  "; 
 
                         for (let i = 0; i < lines.length; i++) {
                             if (lines[i].trim() === "fields:") {
-                                // Определяем отступ на основе следующей строки, если это поле
+                                fieldsStartIndex = i;
                                 if (i + 1 < lines.length && lines[i+1].match(/^(\s+)\w+:/)) {
                                     indent = lines[i+1].match(/^(\s+)/)![0];
-                                }
-                                fieldsBlockEndIndex = i + 1; // Начальная позиция для вставки - сразу после "fields:"
-                                // Ищем конец блока fields
-                                for (let j = i + 1; j < lines.length; j++) {
-                                    if (lines[j].trim() === "" || lines[j].startsWith(indent) || lines[j].match(/^(\s*)$/)) {
-                                        // Это пустая строка, комментарий с таким же отступом или другое поле
-                                        fieldsBlockEndIndex = j + 1;
-                                    } else {
-                                        // Это начало нового блока или непустая строка без нужного отступа
-                                        break; 
-                                    }
                                 }
                                 break;
                             }
@@ -181,17 +164,30 @@ export class ServerpodYamlGenerator extends BaseGenerator {
                         
                         const lineToAdd = `${indent}${listFieldName}: List<${manySideClassName}>?, relation`;
 
-                        if (fieldsBlockEndIndex !== -1) { // Секция 'fields:' найдена
-                            lines.splice(fieldsBlockEndIndex, 0, lineToAdd);
+                        if (fieldsStartIndex !== -1) {
+                            let insertAtIndex = fieldsStartIndex + 1; // По умолчанию вставляем сразу после 'fields:'
+                            // Ищем последнюю строку, которая является полем (имеет отступ и не пустая)
+                            for (let j = fieldsStartIndex + 1; j < lines.length; j++) {
+                                if (lines[j].startsWith(indent) && lines[j].trim() !== "") {
+                                    insertAtIndex = j + 1; // Следующая строка после текущего поля
+                                } else if (lines[j].trim() !== "" && !lines[j].startsWith(indent)) {
+                                     // Нашли строку, которая не является полем и не пустая - это конец блока fields
+                                    break;
+                                }
+                          
+                            }
+                          
+                            lines.splice(insertAtIndex, 0, lineToAdd);
                             oneSideYamlContent = lines.join('\n');
-                        } else { // Секция 'fields:' не найдена, добавляем ее
+
+                        } else { 
                             oneSideYamlContent += (oneSideYamlContent.endsWith('\n\n') ? '' : (oneSideYamlContent.endsWith('\n') ? '\n' : '\n\n')) + `fields:\n${lineToAdd}\n`;
                         }
 
                         await this.fileSystem.createFile(oneSideYamlPath, oneSideYamlContent);
                         console.log(`Обновлен ${oneSideYamlFileName} добавлением поля: ${listFieldName}`);
                     } else {
-                        console.log(`Поле, начинающееся с '${fieldKeyToAdd.trim()}' уже существует в ${oneSideYamlFileName}.`);
+                        console.log(`Поле, начинающееся с '${listFieldName}:' уже существует в ${oneSideYamlFileName}.`);
                     }
                 } else {
                     console.warn(`Файл ${oneSideYamlPath} для сущности "${oneSideClassName}" не существует. Не удалось добавить поле-список ${listFieldName}.`);
