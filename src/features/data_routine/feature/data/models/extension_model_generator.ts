@@ -1,3 +1,4 @@
+// src/features/data_routine/feature/data/models/extension_model_generator.ts
 import path from "path";
 import { DefaultProjectStructure } from "../../../../../core/implementations/default_project_structure";
 import { IFileSystem } from "../../../../../core/interfaces/file_system";
@@ -9,7 +10,6 @@ export class DataExtensionModelGenerator extends DataRoutineGenerator {
 
     private structure: ProjectStructure;
 
-
     constructor(fileSystem: IFileSystem, structure?: ProjectStructure) {
         super(fileSystem);
         this.structure = structure || new DefaultProjectStructure();
@@ -18,16 +18,20 @@ export class DataExtensionModelGenerator extends DataRoutineGenerator {
     protected getPath(featurePath: string, entityName: string): string {
         return path.join(this.structure.getDataExtensionPath(featurePath), `${entityName}_model_extension.dart`);
     }
+
     protected getContent(parser: DriftClassParser): string {
         const d = parser.driftClassNameLower;
         const D = parser.driftClassNameUpper;
-        const fieldsSimple = parser.fieldsSimple;
-        const fieldsSimpleWithoutId = parser.fieldsSimpleWithoutId;
-        const paramsWrapValue = parser.paramsWrapValue;
+        const fieldsSimple = parser.fieldsSimple;       // для toEntity()
+        const paramsWrapValue = parser.paramsWrapValue; // для toCompanionWithId()
+        const insertCompanionParams = parser.insertCompanionParams; // <--- Используем новый геттер
 
         return `
 import 'package:drift/drift.dart';
-import '../../../../../../core/database/local/database.dart';
+// Важно: Убедитесь, что путь к database.dart корректен для вашей структуры
+// Если он находится в lib/core/database/local/database.dart, то:
+import '../../../../../../../core/database/local/database.dart';
+// Если путь другой, скорректируйте его
 import '../../../domain/entities/${d}/${d}.dart';
 import '../${d}/${d}_model.dart';
 
@@ -35,7 +39,7 @@ extension ${D}ModelExtension on ${D}Model {
   ${D}Entity toEntity() => ${D}Entity(${fieldsSimple});
 
   ${D}TableCompanion toCompanion() =>
-      ${D}TableCompanion.insert(${fieldsSimpleWithoutId});
+      ${D}TableCompanion.insert(${insertCompanionParams}); // <--- ОБНОВЛЕНО
 
   ${D}TableCompanion toCompanionWithId() =>
       ${D}TableCompanion(${paramsWrapValue});
@@ -48,4 +52,3 @@ extension ${D}ModelListExtension on List<${D}Model> {
   `;
     }
 }
-

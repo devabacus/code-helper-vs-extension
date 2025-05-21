@@ -36,4 +36,6 @@ export interface IDriftCodeFormatter {
 
     getFieldsExpectValueTest(fields: Field[]): string[];
     
-  }
+    formatInsertCompanionParams(fields: Field[]): string;
+}
+ 

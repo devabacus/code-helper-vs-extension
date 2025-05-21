@@ -27,6 +27,7 @@ export interface IDriftClassParser {
     readonly paramsInstModel: string;
     paramsWithOutId(row: string): string;
     readonly paramsWrapValue: string;
+    readonly insertCompanionParams: string;
 }
 
 export class DriftClassParser implements IDriftClassParser {
@@ -124,6 +125,10 @@ export class DriftClassParser implements IDriftClassParser {
 
     get paramsWrapValue(): string {
         return this.formatter.formatValueWrappedFields(this.fields);
+    }
+
+    get insertCompanionParams(): string {
+        return this.formatter.formatInsertCompanionParams(this.fields);
     }
 
     get fieldsForTest() : string[] {

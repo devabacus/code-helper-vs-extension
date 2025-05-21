@@ -89,4 +89,9 @@ export class DriftCodeFormatter implements IDriftCodeFormatter {
     const secondRow = firstRow.replace('1', '2');
     return [firstRow, secondRow];
   }
+
+    formatInsertCompanionParams(fields: Field[]): string {
+    const insertFields = fields.filter(field => field.name !== 'id'); // id обычно не указывается при insert
+    return insertFields.map(field => `${field.name}: Value(${field.name})`).join(', ');
+  }
 }
