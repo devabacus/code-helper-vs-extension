@@ -99,7 +99,7 @@ export class DriftTableParser implements IDriftTableParser {
   }
 
   private extractReferences(): Reference[] {
-    const referenceRegex = /(\w+)\s+=>\s+\w+\(\)\.references\((\w+),\s+#(\w+)\)\(\)/g;
+    const referenceRegex = /(\w+)\s*=>\s*\w+\(\)(?:\s*\.(?:[a-zA-Z_][a-zA-Z0-9_]*)\(\))*\s*\.references\((\w+Table),\s*#(\w+)\)/g;
     const references: Reference[] = [];
     let match;
     while ((match = referenceRegex.exec(this.driftClass)) !== null) {
