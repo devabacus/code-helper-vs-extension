@@ -13,25 +13,30 @@ export class GenerateAllFilesCommand implements Command {
     private classParser: DriftClassParser;
     private tableParser: DriftTableParser; // <--- Добавлено поле tableParser
     private serverpodProtocolModelDir?: string; // Опциональный параметр для Serverpod
+    private serverProjectEndpointsDir?: string; // Новое поле
+
 
     constructor(
         private generatorFactory: GeneratorFactory,
         private featurePath: string,
-        private driftClassName: string, // Это camelCase имя класса, например "category" или "taskTagMap"
+        private driftClassName: string,
         commandData: {
             classParser: DriftClassParser;
-            tableParser: DriftTableParser; // <--- tableParser теперь в commandData
+            tableParser: DriftTableParser;
             isRelationTable: boolean;
             relations: TableRelation[];
         },
-        serverpodProtocolModelDir?: string // Сделаем его опциональным
+        serverpodProtocolModelDir?: string,
+        serverProjectEndpointsDir?: string // Новый параметр
     ) {
         this.classParser = commandData.classParser;
-        this.tableParser = commandData.tableParser; // <--- Присваиваем tableParser
+        this.tableParser = commandData.tableParser;
         this.isRelationTable = commandData.isRelationTable;
         this.relations = commandData.relations;
         this.serverpodProtocolModelDir = serverpodProtocolModelDir;
+        this.serverProjectEndpointsDir = serverProjectEndpointsDir; // Присваиваем новое поле
     }
+
 
     async execute(): Promise<void> {
         const entityNameForGenerators = this.driftClassName; // Используем camelCase имя для большинства генераторов
@@ -67,6 +72,19 @@ export class GenerateAllFilesCommand implements Command {
             //presentation layer
             await this.generatorFactory.createPresentStateProviderGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
             await this.generatorFactory.createPresentGetByIdProviderGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
+            if (this.serverProjectEndpointsDir) {
+                const serverpodEntityNamePascal = this.classParser.driftClassNameUpper; // Используем PascalCase
+
+                console.log(`Генерация Serverpod Endpoint для ${serverpodEntityNamePascal}.`);
+                await this.generatorFactory.createServerpodEndpointGenerator().generate(
+                    this.serverProjectEndpointsDir, // Это директория для эндпоинтов, например, <server_proj>/lib/src/endpoints
+                    serverpodEntityNamePascal,    // Передаем имя в PascalCase
+                    { classParser: this.classParser, tableParser: this.tableParser }
+                );
+            }
+
+
+
         } else {
             const manyToManyRelation = this.relations.find(r => r.relationType === RelationType.MANY_TO_MANY);
             if (manyToManyRelation && manyToManyRelation.intermediateTable === this.classParser.driftClassNameUpper) {
@@ -88,6 +106,15 @@ export class GenerateAllFilesCommand implements Command {
                 await this.generatorFactory.createPresentFilterRelateProviderGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
             } else {
                  console.warn(`Таблица ${entityNameForGenerators} определена как связующая (isRelationTable=true), но не является промежуточной таблицей для MANY_TO_MANY или детали связи не найдены.`);
+                 if (this.serverpodProtocolModelDir) {
+                 const serverpodEntityName = this.classParser.driftClassNameLower;
+                 console.log(`Генерация Serverpod YAML для связующей таблицы ${this.classParser.driftClassNameUpper}.`);
+                 await this.generatorFactory.createServerpodYamlGenerator().generate(
+                     this.serverpodProtocolModelDir,
+                     serverpodEntityName,
+                     { classParser: this.classParser, tableParser: this.tableParser }
+                 );
+            }
             }
         }
 

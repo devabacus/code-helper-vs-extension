@@ -26,10 +26,13 @@ export async function createDataFiles() {
     
     // Имя серверного проекта (например, a3_server)
     const serverProjectName = path.basename(flutterProjectPath).replace('_flutter', '_server'); 
-    
+    const serverProjectRoot = path.join(flutterProjectPath, '..', serverProjectName); // Корень серверного проекта
+
     // Путь к директории моделей в Serverpod server-модуле
     // (например, G:\Projects\Flutter\serverpod\a3\a3_server\lib\src\models)
     const serverpodModelDir = path.join(flutterProjectPath, '..', serverProjectName, 'lib', 'src', 'models');
+    const serverProjectEndpointsDir = path.join(serverProjectRoot, 'lib', 'src', 'endpoints'); // Путь к эндпоинтам
+
     
     const featurePath = currentFilePath.split(/\Wdata\W/)[0]; // Для остальных генераторов Flutter
     const featureTestPath = path.join(flutterProjectPath, "test", featurePath.split('lib')[1]);
@@ -52,7 +55,8 @@ export async function createDataFiles() {
         featurePath,
         entityName, 
         commandData,
-        serverpodModelDir // <--- Обновленный путь
+        serverpodModelDir,
+        serverProjectEndpointsDir
     );
     const generateTestFilesCommand = new GenerateTestFilesCommand(testGeneratorFactory, featureTestPath, entityName, commandData);
 
