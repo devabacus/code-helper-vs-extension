@@ -6,8 +6,8 @@ abstract class ICategoryLocalDataSource {
   Stream<List<CategoryModel>> watchCategories();
   Future<CategoryModel> getCategoryById(String id);
   Future<String> createCategory(CategoryModel category);
-  Future<void> updateCategory(CategoryModel category);
-  Future<void> deleteCategory(String id);
+  Future<bool> updateCategory(CategoryModel category);
+  Future<bool> deleteCategory(String id);
 }
 
 `;

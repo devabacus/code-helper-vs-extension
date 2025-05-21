@@ -7,7 +7,7 @@ class DeleteCategoryUseCase {
 
   DeleteCategoryUseCase(this._repository);
 
-  Future<void> call(String id) async {
+  Future<bool> call(String id) async {
     return _repository.deleteCategory(id);
   }
 }

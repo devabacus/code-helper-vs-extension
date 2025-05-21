@@ -51,13 +51,13 @@ class ${D}RepositoryImpl implements I${D}Repository {
   }
 
   @override
-  Future<void> delete${D}(String id) async {
-    _localDataSource.delete${D}(id);
+  Future<bool> delete${D}(String id) async {
+    return _localDataSource.delete${D}(id);
   }
 
   @override
-  Future<void> update${D}(${D}Entity ${d}) async {
-    _localDataSource.update${D}(${d}.toModel());
+  Future<bool> update${D}(${D}Entity ${d}) async {
+    return _localDataSource.update${D}(${d}.toModel());
   }
 }
 `;

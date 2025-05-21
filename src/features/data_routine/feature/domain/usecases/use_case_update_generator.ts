@@ -32,7 +32,7 @@ class Update${D}UseCase {
 
   Update${D}UseCase(this._repository);
 
-  Future<void> call(${D}Entity ${d}) async {
+  Future<bool> call(${D}Entity ${d}) async {
     return _repository.update${D}(${d});
   }
 }

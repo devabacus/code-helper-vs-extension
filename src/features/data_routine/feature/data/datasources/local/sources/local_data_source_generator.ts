@@ -60,13 +60,13 @@ class ${D}LocalDataSource implements I${D}LocalDataSource {
   }
 
   @override
-  Future<void> update${D}(${D}Model ${d}) {
+  Future<bool> update${D}(${D}Model ${d}) {
     return ${d}Dao.update${D}(${d}.toCompanionWithId());
   }
 
   @override
-  Future<void> delete${D}(String id) async {
-    await ${d}Dao.delete${D}(id);
+  Future<bool> delete${D}(String id) async {
+    return ${d}Dao.delete${D}(id);
   }
 }
 

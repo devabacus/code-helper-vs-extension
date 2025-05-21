@@ -6,8 +6,8 @@ abstract class ICategoryRepository {
   Stream<List<CategoryEntity>> watchCategories();
   Future<CategoryEntity> getCategoryById(String id);
   Future<String> createCategory(CategoryEntity category);
-  Future<void> updateCategory(CategoryEntity category);
-  Future<void> deleteCategory(String id);
+  Future<bool> updateCategory(CategoryEntity category);
+  Future<bool> deleteCategory(String id);
 }
 
 `;

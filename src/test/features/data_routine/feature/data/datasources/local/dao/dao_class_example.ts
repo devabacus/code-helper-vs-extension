@@ -41,11 +41,14 @@ class CategoryDao extends DatabaseAccessor<AppDatabase>
     return idToInsert;
   }
 
-  Future<void> updateCategory(CategoryTableCompanion category) =>
-      update(categoryTable).replace(category);
+  Future<bool> updateCategory(CategoryTableCompanion category) =>
+    update(categoryTable).replace(category);
 
-  Future<void> deleteCategory(String id) =>
-      (delete(categoryTable)..where((t) => t.id.equals(id))).go();
+  Future<bool> deleteCategory(String id) async {
+    final result =
+        await (delete(categoryTable)..where((t) => t.id.equals(id))).go();
+    return result > 0;
+  }
 }
 
 `;

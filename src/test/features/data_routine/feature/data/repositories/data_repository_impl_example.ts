@@ -35,13 +35,13 @@ class CategoryRepositoryImpl implements ICategoryRepository {
   }
 
   @override
-  Future<void> deleteCategory(String id) async {
-    _localDataSource.deleteCategory(id);
+  Future<bool> deleteCategory(String id) async {
+    return _localDataSource.deleteCategory(id);
   }
 
   @override
-  Future<void> updateCategory(CategoryEntity category) async {
-    _localDataSource.updateCategory(category.toModel());
+  Future<bool> updateCategory(CategoryEntity category) async {
+    return _localDataSource.updateCategory(category.toModel());
   }
 }
 

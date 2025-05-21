@@ -66,11 +66,14 @@ class ${D}Dao extends DatabaseAccessor<AppDatabase>
     return idToInsert;
   }
 
-  Future<void> update${D}(${D}TableCompanion ${d}) =>
-      update(${d}Table).replace(${d});
+  Future<bool> update${D}(${D}TableCompanion ${d}) =>
+    update(${d}Table).replace(${d});
 
-  Future<void> delete${D}(String id) =>
-      (delete(${d}Table)..where((t) => t.id.equals(id))).go();
+  Future<bool> delete${D}(String id) async {
+    final result =
+        await (delete(${d}Table)..where((t) => t.id.equals(id))).go();
+    return result > 0;
+  }
 }
 
 `;

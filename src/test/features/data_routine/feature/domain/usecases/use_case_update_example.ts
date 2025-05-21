@@ -8,7 +8,7 @@ class UpdateCategoryUseCase {
 
   UpdateCategoryUseCase(this._repository);
 
-  Future<void> call(CategoryEntity category) async {
+  Future<bool> call(CategoryEntity category) async {
     return _repository.updateCategory(category);
   }
 }

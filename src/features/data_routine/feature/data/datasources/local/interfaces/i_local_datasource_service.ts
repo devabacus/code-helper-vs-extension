@@ -34,8 +34,8 @@ abstract class I${D}LocalDataSource {
   Stream<List<${D}Model>> watch${Ds}();
   Future<${D}Model> get${D}ById(String id);
   Future<String> create${D}(${D}Model ${d});
-  Future<void> update${D}(${D}Model ${d});
-  Future<void> delete${D}(String id);
+  Future<bool> update${D}(${D}Model ${d});
+  Future<bool> delete${D}(String id);
 }
 
 `;

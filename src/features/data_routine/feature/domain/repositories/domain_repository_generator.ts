@@ -34,8 +34,8 @@ abstract class I${D}Repository {
   Stream<List<${D}Entity>> watch${Ds}();
   Future<${D}Entity> get${D}ById(String id);
   Future<String> create${D}(${D}Entity ${d});
-  Future<void> update${D}(${D}Entity ${d});
-  Future<void> delete${D}(String id);
+  Future<bool> update${D}(${D}Entity ${d});
+  Future<bool> delete${D}(String id);
 }
 `;
   }

@@ -32,13 +32,13 @@ class CategoryLocalDataSource implements ICategoryLocalDataSource {
   }
 
   @override
-  Future<void> updateCategory(CategoryModel category) {
+  Future<bool> updateCategory(CategoryModel category) {
     return categoryDao.updateCategory(category.toCompanionWithId());
   }
 
   @override
-  Future<void> deleteCategory(String id) async {
-    await categoryDao.deleteCategory(id);
+  Future<bool> deleteCategory(String id) async {
+    return categoryDao.deleteCategory(id);
   }
 }
 

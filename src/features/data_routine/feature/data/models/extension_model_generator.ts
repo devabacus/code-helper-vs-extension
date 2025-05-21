@@ -28,10 +28,7 @@ export class DataExtensionModelGenerator extends DataRoutineGenerator {
 
         return `
 import 'package:drift/drift.dart';
-// Важно: Убедитесь, что путь к database.dart корректен для вашей структуры
-// Если он находится в lib/core/database/local/database.dart, то:
 import '../../../../../../../core/database/local/database.dart';
-// Если путь другой, скорректируйте его
 import '../../../domain/entities/${d}/${d}.dart';
 import '../${d}/${d}_model.dart';
 
@@ -39,7 +36,7 @@ extension ${D}ModelExtension on ${D}Model {
   ${D}Entity toEntity() => ${D}Entity(${fieldsSimple});
 
   ${D}TableCompanion toCompanion() =>
-      ${D}TableCompanion.insert(${insertCompanionParams}); // <--- ОБНОВЛЕНО
+      ${D}TableCompanion.insert(${insertCompanionParams});
 
   ${D}TableCompanion toCompanionWithId() =>
       ${D}TableCompanion(${paramsWrapValue});
