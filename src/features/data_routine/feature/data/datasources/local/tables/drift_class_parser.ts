@@ -7,7 +7,7 @@ import { IDriftCodeFormatter } from "../../../../../formatters/drift_code_format
 export interface Field {
     type: string,
     name: string,
-    isNullable: boolean; // <--- Добавлено новое поле
+    isNullable: boolean;
 }
 
 export interface FieldValue {
@@ -39,16 +39,18 @@ export class DriftClassParser implements IDriftClassParser {
     }
 
     private driftTypeConverter(dType: string): string {
+        // Тип приходит уже без 'Column'
         if (dType === 'Text') {
             return 'String';
         } else if (dType === 'Int' || dType === 'Bool') {
             return unCap(dType);
         }
-        return dType;
+        return dType; // DateTime и другие остаются как есть (с большой буквы)
     }
 
     get driftClassNameUpper(): string {
-        return this.driftClass.match(/\s(\w+)Table/)![1];
+        const match = this.driftClass.match(/class\s+(\w+)Table\s+extends\s+Table/);
+        return match ? match[1] : "";
     }
 
     get driftClassNameLower(): string {
@@ -56,17 +58,17 @@ export class DriftClassParser implements IDriftClassParser {
     }
 
     get fields(): Field[] {
-        // Обновленный регэкс для захвата типа, имени поля и опционального "?" для nullable
-        const fieldsRegex = /(\w+Column(?:\??))\s+get\s+(\w+)/g;
+        const fieldsRegex = /(\w+Column)\s+get\s+(\w+)\s*=>\s*(.+?);/g;
         const fields: Field[] = [];
         let fieldMatch;
         while ((fieldMatch = fieldsRegex.exec(this.driftClass)) !== null) {
-            const driftTypeWithNull = fieldMatch[1]; // e.g., "TextColumn" or "TextColumn?"
-            const fieldName = fieldMatch[2];
+            const columnTypeString = fieldMatch[1]; // e.g., "TextColumn"
+            const fieldName = fieldMatch[2];    // e.g., "categoryId"
+            const fieldDefinition = fieldMatch[3]; // e.g., "text().nullable().references(CategoryTable, #id)()"
 
-            const isNullable = driftTypeWithNull.endsWith('?');
-            const driftType = isNullable ? driftTypeWithNull.slice(0, -1) : driftTypeWithNull; // Удаляем '?' если есть
-            const convertedType = this.driftTypeConverter(driftType.replace('Column', '')); // Удаляем 'Column' перед конвертацией
+            const isNullable = fieldDefinition.includes(".nullable()");
+            const baseType = columnTypeString.replace('Column', ''); // "Text"
+            const convertedType = this.driftTypeConverter(baseType);  // "String"
 
             fields.push({
                 type: convertedType,
@@ -76,6 +78,9 @@ export class DriftClassParser implements IDriftClassParser {
         }
         return fields;
     }
+
+    // ... остальные геттеры остаются без изменений, так как они используют this.fields
+    // Убедитесь, что DriftCodeFormatter корректно обрабатывает nullable поля при необходимости
 
     get fieldsClass(): string {
         return this.formatter.formatClassFields(this.fields);
@@ -123,11 +128,9 @@ export class DriftClassParser implements IDriftClassParser {
 
     get fieldsForTest() : string[] {
         return this.formatter.getFieldsValueForTest(this.fields);
-
     }
 
     get fieldsExpectedForTest() : string[] {
         return this.formatter.getFieldsExpectValueTest(this.fields);
-
     }
 }
