@@ -6,8 +6,8 @@ suite('Relation Table Parser', () => {
   test('должен корректно определять связанную таблицу', () => {
     // Имитация полей для связанной таблицы (task_tag_map)
     const fields: Field[] = [
-      { name: 'taskId', type: 'int' },
-      { name: 'tagId', type: 'int' }
+      { name: 'taskId', type: 'int', isNullable: false },
+      { name: 'tagId', type: 'int' , isNullable: false }
     ];
 
     // Имитация внешних ключей
@@ -39,8 +39,8 @@ suite('Relation Table Parser', () => {
   test('должен корректно обрабатывать обычную таблицу', () => {
     // Имитация полей для обычной таблицы
     const fields: Field[] = [
-      { name: 'id', type: 'int' },
-      { name: 'title', type: 'String' }
+      { name: 'id', type: 'int', isNullable: false },
+      { name: 'title', type: 'String', isNullable: false }
     ];
 
     // Создаем мок парсера

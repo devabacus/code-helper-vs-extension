@@ -12,11 +12,11 @@ suite('DriftCodeFormatter', () => {
   ];
 
   const testFieldsFull = [
-    { type: 'int', name: 'id' },
-    { type: 'String', name: 'title' },
-    { type: 'DateTime', name: 'createdAt' },
-    { type: 'bool', name: 'isCompleted' },
-    { type: 'int', name: 'categoryId' },
+    { type: 'int', name: 'id', isNullable: false },
+    { type: 'String', name: 'title', isNullable: false },
+    { type: 'DateTime', name: 'createdAt', isNullable: false },
+    { type: 'bool', name: 'isCompleted', isNullable: false },
+    { type: 'int', name: 'categoryId', isNullable: false },
   ];
 
   setup(() => {

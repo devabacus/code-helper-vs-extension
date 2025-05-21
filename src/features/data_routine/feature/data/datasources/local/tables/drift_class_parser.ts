@@ -6,11 +6,12 @@ import { IDriftCodeFormatter } from "../../../../../formatters/drift_code_format
 
 export interface Field {
     type: string,
-    name: string
+    name: string,
+    isNullable: boolean; // <--- Добавлено новое поле
 }
 
 export interface FieldValue {
-    name: string, 
+    name: string,
     value: string
 }
 
@@ -45,7 +46,7 @@ export class DriftClassParser implements IDriftClassParser {
         }
         return dType;
     }
-     
+
     get driftClassNameUpper(): string {
         return this.driftClass.match(/\s(\w+)Table/)![1];
     }
@@ -55,15 +56,22 @@ export class DriftClassParser implements IDriftClassParser {
     }
 
     get fields(): Field[] {
-        const fieldsRegex = /(\w+)Column get (\w+)/g;
+        // Обновленный регэкс для захвата типа, имени поля и опционального "?" для nullable
+        const fieldsRegex = /(\w+Column(?:\??))\s+get\s+(\w+)/g;
         const fields: Field[] = [];
         let fieldMatch;
         while ((fieldMatch = fieldsRegex.exec(this.driftClass)) !== null) {
-            const fieldType = this.driftTypeConverter(fieldMatch[1]);
+            const driftTypeWithNull = fieldMatch[1]; // e.g., "TextColumn" or "TextColumn?"
+            const fieldName = fieldMatch[2];
+
+            const isNullable = driftTypeWithNull.endsWith('?');
+            const driftType = isNullable ? driftTypeWithNull.slice(0, -1) : driftTypeWithNull; // Удаляем '?' если есть
+            const convertedType = this.driftTypeConverter(driftType.replace('Column', '')); // Удаляем 'Column' перед конвертацией
 
             fields.push({
-                type: fieldType, // тип колонки (Int, Text и т.д.)
-                name: fieldMatch[2]  // имя колонки (id, title и т.д.)
+                type: convertedType,
+                name: fieldName,
+                isNullable: isNullable
             });
         }
         return fields;
@@ -115,11 +123,11 @@ export class DriftClassParser implements IDriftClassParser {
 
     get fieldsForTest() : string[] {
         return this.formatter.getFieldsValueForTest(this.fields);
-        
+
     }
 
     get fieldsExpectedForTest() : string[] {
         return this.formatter.getFieldsExpectValueTest(this.fields);
-        
+
     }
 }
