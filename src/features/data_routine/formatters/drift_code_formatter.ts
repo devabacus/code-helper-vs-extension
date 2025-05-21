@@ -91,7 +91,15 @@ export class DriftCodeFormatter implements IDriftCodeFormatter {
   }
 
     formatInsertCompanionParams(fields: Field[]): string {
-    const insertFields = fields.filter(field => field.name !== 'id'); // id обычно не указывается при insert
-    return insertFields.map(field => `${field.name}: Value(${field.name})`).join(', ');
+    const insertFields = fields.filter(field => field.name !== 'id');
+    return insertFields.map(field => {
+      if (field.isNullable) {
+        // Для nullable полей всегда используем Value()
+        return `${field.name}: Value(${field.name})`;
+      } else {
+        // Для non-nullable полей передаем значение напрямую
+        return `${field.name}: ${field.name}`;
+      }
+    }).join(', ');
   }
 }
