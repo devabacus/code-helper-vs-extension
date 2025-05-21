@@ -52,17 +52,17 @@ export class ServerpodYamlGenerator extends BaseGenerator {
         const driftReferences = tableParser.getReferences(); 
 
         const fkFieldsHandledAsObjectRelations = new Set<string>();
-
         for (const ref of driftReferences) {
             fkFieldsHandledAsObjectRelations.add(ref.columnName);
         }
         
-        if (tableParser.isRelationTable()) {
-            const m2mRefs = relations.filter(r => r.relationType === RelationType.MANY_TO_MANY && r.intermediateTable === className);
-            for (const m2mRef of m2mRefs) {
-                // No specific action needed here as fkFieldsHandledAsObjectRelations covers these via getReferences()
-            }
-        }
+        // Этот блок не нужен, если isRelationTable() проверяется для связующей таблицы, 
+        // а не для основных таблиц, участвующих в M2M
+        // if (tableParser.isRelationTable()) { 
+        //     const m2mRefs = relations.filter(r => r.relationType === RelationType.MANY_TO_MANY && r.intermediateTable === className);
+        //     for (const m2mRef of m2mRefs) {
+        //     }
+        // }
 
         for (const field of classParser.fields) {
             if (field.name === 'id' && field.type === 'String') {
@@ -73,12 +73,15 @@ export class ServerpodYamlGenerator extends BaseGenerator {
             }
         }
 
+        // Добавляем поля для прямых FK (они станут объектными связями)
         for (const ref of driftReferences) {
             const referencedClassName = ref.referencedTable.replace('Table', '');
             const relationFieldName = unCap(referencedClassName); 
             yamlContent += `  ${relationFieldName}: ${referencedClassName}?, relation\n`;
         }
 
+        // Добавляем поля-списки для ОБРАТНЫХ O2M связей 
+        // (если ТЕКУЩАЯ таблица является "один", например, Category, на которую ссылается Task)
         const oneToManySources = relations.filter(r => r.relationType === RelationType.ONE_TO_MANY && r.targetTable === className);
         for (const o2mSource of oneToManySources) {
             const sourceClassName = o2mSource.sourceTable; 
@@ -86,33 +89,43 @@ export class ServerpodYamlGenerator extends BaseGenerator {
             yamlContent += `  ${listFieldName}: List<${sourceClassName}>?, relation\n`;
         }
 
-        const isIntermediateM2MTable = tableParser.isRelationTable() &&
-                                     relations.some(r => r.relationType === RelationType.MANY_TO_MANY && r.intermediateTable === className);
-        if (!isIntermediateM2MTable && className.toLowerCase() !== "protocol") {
-            const manyToManyParticipations = relations.filter(r =>
-                r.relationType === RelationType.MANY_TO_MANY &&
-                (r.sourceTable === className || r.targetTable === className)
-            );
-
-            for (const m2m of manyToManyParticipations) {
-                if (m2m.intermediateTable) {
-                     const intermediateModelName = m2m.intermediateTable; 
-                     const listFieldName = `${unCap(intermediateModelName)}s`; 
-                     
-                     yamlContent += `  ${listFieldName}: List<${intermediateModelName}>?, relation\n`;
-                }
-            }
-        }
-         
-        if (className.toLowerCase() !== "protocol" && primaryKeyFieldsDrift.length > 0) {
+        // Удаляем блок manyToManyParticipations отсюда, он будет обрабатываться в `generate`
+        // const isIntermediateM2MTable = tableParser.isRelationTable() &&
+        //                                      relations.some(r => r.relationType === RelationType.MANY_TO_MANY && r.intermediateTable === className);
+        // if (!isIntermediateM2MTable && className.toLowerCase() !== "protocol") {
+        //     const manyToManyParticipations = relations.filter(r =>
+        //         r.relationType === RelationType.MANY_TO_MANY &&
+        //         (r.sourceTable === className || r.targetTable === className)
+        //     );
+        //     for (const m2m of manyToManyParticipations) {
+        //         if (m2m.intermediateTable) {
+        //              const intermediateModelName = m2m.intermediateTable; 
+        //              const listFieldName = `${unCap(intermediateModelName)}s`; // Используем pluralConvert здесь
+        //              yamlContent += `  ${listFieldName}: List<${intermediateModelName}>?, relation\n`;
+        //         }
+        //     }
+        // }
+         
+        if (className.toLowerCase() !== "protocol") { // Убрал primaryKeyFieldsDrift.length > 0, т.к. Serverpod может генерировать PK для id
             const isSimpleUuidIdPk = primaryKeyFieldsDrift.length === 1 && primaryKeyFieldsDrift[0] === 'id' &&
                                    classParser.fields.find(f => f.name === 'id')?.type === 'String';
             
-            if (!isSimpleUuidIdPk && primaryKeyFieldsDrift.length > 0) { 
+            // Если это связующая M2M таблица, определяем её PK из FK
+            const m2mRelationDetails = relations.find(r => r.relationType === RelationType.MANY_TO_MANY && r.intermediateTable === className);
+
+            if (m2mRelationDetails) {
                 yamlContent += `indexes:\n`;
-                yamlContent += `  ${tableName}_pkey:\n`; // Убрал имя индекса, Serverpod сам сгенерирует
+                const fk1NameInYaml = `${unCap(m2mRelationDetails.sourceTable)}Id`; // e.g. taskId
+                const fk2NameInYaml = `${unCap(m2mRelationDetails.targetTable)}Id`; // e.g. tagId
+                // Имя индекса может быть более явным
+                yamlContent += `  idx_${tableName}_${fk1NameInYaml}_${fk2NameInYaml}:\n`; 
+                yamlContent += `    fields: ${fk1NameInYaml}, ${fk2NameInYaml}\n`;
+                yamlContent += `    unique: true\n`; // Составной ключ M2M должен быть уникален
+            } else if (!isSimpleUuidIdPk && primaryKeyFieldsDrift.length > 0) { 
+                yamlContent += `indexes:\n`;
+                yamlContent += `  idx_${tableName}_${primaryKeyFieldsDrift.join('_')}:\n`;
                 yamlContent += `    fields: ${primaryKeyFieldsDrift.join(', ')}\n`;
-                yamlContent += `    unique: true\n`;
+                yamlContent += `    unique: true\n`; // PK по определению уникален
             }
         }
         return yamlContent;
@@ -127,74 +140,95 @@ export class ServerpodYamlGenerator extends BaseGenerator {
         await this.fileSystem.createFile(primaryYamlPath, primaryYamlContent);
         console.log(`Сгенерирован YAML для ${currentEntityClassName} в ${primaryYamlPath}`);
 
-        const oneToManyRelations = tableParser.getTableRelations().filter(
+        // --- Логика обновления ДРУГИХ файлов ---
+
+        // 1. Обновление файла на стороне "один" для O2M связей (когда ТЕКУЩАЯ сущность - "многие")
+        // Например, если текущая Task, она ссылается на Category. Обновляем Category.yaml.
+        const oneToManyRelationsWhereCurrentIsMany = tableParser.getTableRelations().filter(
             r => r.relationType === RelationType.ONE_TO_MANY && r.sourceTable === currentEntityClassName
         );
 
-        for (const relation of oneToManyRelations) {
+        for (const relation of oneToManyRelationsWhereCurrentIsMany) {
             const oneSideClassName = relation.targetTable;
             const manySideClassName = relation.sourceTable;
-            const listFieldName = `${unCap(pluralConvert(manySideClassName))}`;
-            const oneSideYamlFileName = `${toSnakeCase(oneSideClassName)}.spy.yaml`;
-            const oneSideYamlPath = path.join(basePath, oneSideYamlFileName);
+            const listFieldName = `${unCap(pluralConvert(manySideClassName))}`; // например, 'tasks' для Category
+            await this.addRelationFieldToYaml(basePath, oneSideClassName, listFieldName, `List<${manySideClassName}>?`);
+        }
 
-            console.log(`Попытка обновить файл "${oneSideClassName}" (${oneSideYamlPath}) для связи с ${manySideClassName}`);
+        // 2. Если ТЕКУЩАЯ сущность - это промежуточная таблица M2M (например, TaskTagMap)
+        // Обновляем YAML-файлы основных таблиц (Task.yaml и Tag.yaml).
+        if (tableParser.isRelationTable()) {
+            const m2mRelationDetails = tableParser.getTableRelations().find(r => r.relationType === RelationType.MANY_TO_MANY && r.intermediateTable === currentEntityClassName);
+            if (m2mRelationDetails) {
+                const sourceTableForM2M = m2mRelationDetails.sourceTable; // Например, Task
+                const targetTableForM2M = m2mRelationDetails.targetTable; // Например, Tag
+                const intermediateTableName = m2mRelationDetails.intermediateTable!; // TaskTagMap
 
-            try {
-                const fileExists = await this.fileSystem.fileExists(oneSideYamlPath);
-                
-                if (fileExists) {
-                    let oneSideYamlContent = await this.fileSystem.readFile(oneSideYamlPath);
-                    const fullLineRegex = new RegExp(`^\\s*${listFieldName}:`, "m");
+                // Имя поля-списка в основных таблицах будет основано на имени промежуточной таблицы
+                const listFieldNameForIntermediate = `${unCap(pluralConvert(intermediateTableName))}`; // например, taskTagMaps
 
-                    if (!fullLineRegex.test(oneSideYamlContent)) {
-                        const lines = oneSideYamlContent.split('\n');
-                        let fieldsStartIndex = -1;
-                        let indent = "  "; 
+                // Обновляем YAML для sourceTable (например, Task), добавляя List<TaskTagMap>
+                await this.addRelationFieldToYaml(basePath, sourceTableForM2M, listFieldNameForIntermediate, `List<${intermediateTableName}>?`);
 
-                        for (let i = 0; i < lines.length; i++) {
-                            if (lines[i].trim() === "fields:") {
-                                fieldsStartIndex = i;
-                                if (i + 1 < lines.length && lines[i+1].match(/^(\s+)\w+:/)) {
-                                    indent = lines[i+1].match(/^(\s+)/)![0];
-                                }
+                // Обновляем YAML для targetTable (например, Tag), добавляя List<TaskTagMap>
+                await this.addRelationFieldToYaml(basePath, targetTableForM2M, listFieldNameForIntermediate, `List<${intermediateTableName}>?`);
+            }
+        }
+    }
+
+    private async addRelationFieldToYaml(basePath: string, targetEntityClassName: string, fieldName: string, fieldTypeWithList: string) {
+        const targetYamlFileName = `${toSnakeCase(targetEntityClassName)}.spy.yaml`;
+        const targetYamlPath = path.join(basePath, targetYamlFileName);
+
+        console.log(`Попытка добавить поле '${fieldName}' в файл ${targetYamlFileName}`);
+
+        try {
+            const fileExists = await this.fileSystem.fileExists(targetYamlPath);
+            if (fileExists) {
+                let targetYamlContent = await this.fileSystem.readFile(targetYamlPath);
+                const fieldLineRegex = new RegExp(`^\\s*${fieldName}:`, "m");
+
+                if (!fieldLineRegex.test(targetYamlContent)) {
+                    const lines = targetYamlContent.split('\n');
+                    let fieldsStartIndex = -1;
+                    let indent = "  "; // Используем два пробела по умолчанию, как в вашем getContent
+
+                    for (let i = 0; i < lines.length; i++) {
+                        if (lines[i].trim() === "fields:") {
+                            fieldsStartIndex = i;
+                            if (i + 1 < lines.length && lines[i + 1].match(/^(\s+)\w+:/)) {
+                                indent = lines[i + 1].match(/^(\s+)/)![0];
+                            }
+                            break;
+                        }
+                    }
+                    
+                    const lineToAdd = `${indent}${fieldName}: ${fieldTypeWithList}, relation`;
+
+                    if (fieldsStartIndex !== -1) {
+                        let insertAtIndex = fieldsStartIndex + 1; 
+                        for (let j = fieldsStartIndex + 1; j < lines.length; j++) {
+                            if (lines[j].startsWith(indent) && lines[j].trim() !== "") {
+                                insertAtIndex = j + 1; 
+                            } else if (lines[j].trim() !== "" && !lines[j].startsWith(indent)) {
                                 break;
                             }
                         }
-                        
-                        const lineToAdd = `${indent}${listFieldName}: List<${manySideClassName}>?, relation`;
-
-                        if (fieldsStartIndex !== -1) {
-                            let insertAtIndex = fieldsStartIndex + 1; // По умолчанию вставляем сразу после 'fields:'
-                            // Ищем последнюю строку, которая является полем (имеет отступ и не пустая)
-                            for (let j = fieldsStartIndex + 1; j < lines.length; j++) {
-                                if (lines[j].startsWith(indent) && lines[j].trim() !== "") {
-                                    insertAtIndex = j + 1; // Следующая строка после текущего поля
-                                } else if (lines[j].trim() !== "" && !lines[j].startsWith(indent)) {
-                                     // Нашли строку, которая не является полем и не пустая - это конец блока fields
-                                    break;
-                                }
-                          
-                            }
-                          
-                            lines.splice(insertAtIndex, 0, lineToAdd);
-                            oneSideYamlContent = lines.join('\n');
-
-                        } else { 
-                            oneSideYamlContent += (oneSideYamlContent.endsWith('\n\n') ? '' : (oneSideYamlContent.endsWith('\n') ? '\n' : '\n\n')) + `fields:\n${lineToAdd}\n`;
-                        }
-
-                        await this.fileSystem.createFile(oneSideYamlPath, oneSideYamlContent);
-                        console.log(`Обновлен ${oneSideYamlFileName} добавлением поля: ${listFieldName}`);
-                    } else {
-                        console.log(`Поле, начинающееся с '${listFieldName}:' уже существует в ${oneSideYamlFileName}.`);
+                        lines.splice(insertAtIndex, 0, lineToAdd);
+                        targetYamlContent = lines.join('\n');
+                    } else { 
+                        targetYamlContent += (targetYamlContent.endsWith('\n\n') ? '' : (targetYamlContent.endsWith('\n') ? '\n' : '\n\n')) + `fields:\n${lineToAdd}\n`;
                     }
+                    await this.fileSystem.createFile(targetYamlPath, targetYamlContent);
+                    console.log(`Обновлен ${targetYamlFileName} добавлением поля: ${fieldName}`);
                 } else {
-                    console.warn(`Файл ${oneSideYamlPath} для сущности "${oneSideClassName}" не существует. Не удалось добавить поле-список ${listFieldName}.`);
+                    console.log(`Поле '${fieldName}' уже существует в ${targetYamlFileName}.`);
                 }
-            } catch (error) {
-                console.error(`Ошибка при обновлении ${oneSideYamlFileName}: ${error}`);
+            } else {
+                console.warn(`Файл ${targetYamlPath} для сущности "${targetEntityClassName}" не существует. Не удалось добавить поле ${fieldName}.`);
             }
+        } catch (error) {
+            console.error(`Ошибка при обновлении ${targetYamlFileName}: ${error}`);
         }
     }
 }
