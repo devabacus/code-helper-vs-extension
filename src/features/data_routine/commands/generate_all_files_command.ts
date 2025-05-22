@@ -46,7 +46,7 @@ export class GenerateAllFilesCommand implements Command {
         if (!this.isRelationTable) {
             console.log(`Обычная таблица: ${entityNameForGenerators}. Запуск стандартной генерации файлов.`);
             // data layer
-            await this.generatorFactory.createDataRepositoryGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
+            await this.generatorFactory.createDataRepositoryGenerator().generate(this.featurePath, entityNameForGenerators, parsersData);
             await this.generatorFactory.createModelGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
             await this.generatorFactory.createDaoGenerator().generate(this.featurePath, entityNameForGenerators, parsersData);
             await this.generatorFactory.createLocalSourcesGenerator().generate(this.featurePath, entityNameForGenerators, parsersData);
