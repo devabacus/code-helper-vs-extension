@@ -59,7 +59,7 @@ export class GenerateAllFilesCommand implements Command {
             // domain layer
             await this.generatorFactory.createEntityGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
             await this.generatorFactory.createDomainRepositoryGenerator().generate(this.featurePath, entityNameForGenerators, parsersData);
-            await this.generatorFactory.createDomainProviderGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
+            await this.generatorFactory.createDomainProviderGenerator().generate(this.featurePath, entityNameForGenerators, parsersData);
             await this.generatorFactory.createDomainEntityExtensionGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
             await this.generatorFactory.createLocalDataSourceServiceGenerator().generate(this.featurePath, entityNameForGenerators, parsersData);
 
@@ -87,8 +87,6 @@ export class GenerateAllFilesCommand implements Command {
                     { classParser: this.classParser, tableParser: this.tableParser }
                 );
             }
-
-
 
         } else {
             const manyToManyRelation = this.relations.find(r => r.relationType === RelationType.MANY_TO_MANY);
