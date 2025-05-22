@@ -41,12 +41,17 @@ export class GenerateAllFilesCommand implements Command {
     async execute(): Promise<void> {
         const entityNameForGenerators = this.driftClassName; // Используем camelCase имя для большинства генераторов
 
+        console.log('GenerateAllFilesCommand: classParser defined?', !!this.classParser);
+        console.log('GenerateAllFilesCommand: tableParser defined?', !!this.tableParser);
+        const parsersData = { classParser: this.classParser, tableParser: this.tableParser };
+        console.log('GenerateAllFilesCommand: parsersData.tableParser defined?', !!parsersData.tableParser);
+
         if (!this.isRelationTable) {
             console.log(`Обычная таблица: ${entityNameForGenerators}. Запуск стандартной генерации файлов.`);
             // data layer
             await this.generatorFactory.createDataRepositoryGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
             await this.generatorFactory.createModelGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
-            await this.generatorFactory.createDaoGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
+            await this.generatorFactory.createDaoGenerator().generate(this.featurePath, entityNameForGenerators, parsersData);
             await this.generatorFactory.createLocalSourcesGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
             await this.generatorFactory.createDataProviderGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
 
@@ -106,7 +111,7 @@ export class GenerateAllFilesCommand implements Command {
                 await this.generatorFactory.createPresentFilterRelateProviderGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
 
                 // Генерация Serverpod эндпоинта для связующей таблицы
-                if (this.serverProjectEndpointsDir) {
+            if (this.serverProjectEndpointsDir) {
                     const intermediateTableNamePascal = this.classParser.driftClassNameUpper; // e.g., TaskTagMap
                     console.log(`Генерация Serverpod Relate Endpoint для ${intermediateTableNamePascal}.`);
                     await this.generatorFactory.createServerpodRelateEndpointGenerator().generate(
