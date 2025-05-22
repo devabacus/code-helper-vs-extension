@@ -104,6 +104,19 @@ export class GenerateAllFilesCommand implements Command {
                 await this.generatorFactory.createUseCaseRelateProvidersGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
                 await this.generatorFactory.createPresentStateRelateProviderGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
                 await this.generatorFactory.createPresentFilterRelateProviderGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
+
+                // Генерация Serverpod эндпоинта для связующей таблицы
+                if (this.serverProjectEndpointsDir) {
+                    const intermediateTableNamePascal = this.classParser.driftClassNameUpper; // e.g., TaskTagMap
+                    console.log(`Генерация Serverpod Relate Endpoint для ${intermediateTableNamePascal}.`);
+                    await this.generatorFactory.createServerpodRelateEndpointGenerator().generate(
+                        this.serverProjectEndpointsDir,    // Путь к эндпоинтам сервера
+                        intermediateTableNamePascal,      // Имя промежуточной таблицы в PascalCase
+                        this.classParser                  // Передаем DriftClassParser
+                    );
+                }
+
+
             } else {
                  console.warn(`Таблица ${entityNameForGenerators} определена как связующая (isRelationTable=true), но не является промежуточной таблицей для MANY_TO_MANY или детали связи не найдены.`);
                  if (this.serverpodProtocolModelDir) {

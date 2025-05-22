@@ -1,3 +1,4 @@
+// src/features/data_routine/generators/relate_data_routine_generator.ts
 import path from "path";
 import { DefaultProjectStructure } from "../../../core/implementations/default_project_structure";
 import { IFileSystem } from "../../../core/interfaces/file_system";
@@ -36,6 +37,7 @@ export abstract class RelateDataRoutineGenerator extends DataRoutineGenerator {
   protected manyToManyRelation!: TableRelation;
 
   private initialized: boolean = false;
+  protected currentBasePath!: string; // Добавлено для хранения basePath
 
   constructor(fileSystem: IFileSystem, projectStructure?: ProjectStructure) {
     super(fileSystem);
@@ -86,22 +88,26 @@ export abstract class RelateDataRoutineGenerator extends DataRoutineGenerator {
 
   protected override getPath(featurePath: string, entityName: string, parser?: DriftClassParser): string {
     if (!parser) {
-      // This check ensures that 'parser' is treated as non-optional for the rest of the method.
-      // Given DataRoutineGenerator.generate always passes a parser, this error shouldn't be hit in normal flow.
       throw new Error(
         `DriftClassParser instance is required for getPath in ${this.constructor.name}. ` +
         `The 'parser' argument was not provided.`
       );
     }
+    this.currentBasePath = featurePath; // Сохраняем basePath (featurePath)
     this.initializeRelationProperties(parser);
     return this.getRelatePath(featurePath, entityName, parser);
   }
 
-  protected override getContent(parser: DriftClassParser): string {
-    return this.getRelateContent(parser);
+  // Изменена сигнатура для приема basePathForContent
+  protected override getContent(parser: DriftClassParser, entityName?: string, basePathForContent?: string): string {
+    this.initializeRelationProperties(parser); // Убедимся, что свойства инициализированы
+    // Если basePathForContent не передан явно, используем сохраненный из getPath
+    const effectiveBasePath = basePathForContent ?? this.currentBasePath;
+    return this.getRelateContent(parser, entityName, effectiveBasePath);
   }
 
-  // New abstract methods for subclasses to implement
+  // Абстрактные методы для реализации подклассами
   protected abstract getRelatePath(featurePath: string, entityName: string, parser: DriftClassParser): string;
-  protected abstract getRelateContent(parser: DriftClassParser): string;
+  // Изменена сигнатура для приема basePathForContent
+  protected abstract getRelateContent(parser: DriftClassParser, entityName?: string, basePathForContent?: string): string;
 }

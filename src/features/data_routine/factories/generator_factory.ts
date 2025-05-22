@@ -35,6 +35,7 @@ import { PresentGetByIdProviderGenerator } from "../feature/presentation/provide
 import { PresentStateProviderGenerator } from "../feature/presentation/providers/present_state_prov_generator";
 import { PresentStateRelateProviderGenerator } from "../feature/presentation/providers/present_state_relate_provider_generator";
 import { ServerpodEndpointGenerator } from "../generators/serverpod_endpoint_generator";
+import { ServerpodRelateEndpointGenerator } from "../generators/serverpod_relate_endpoint_generator";
 import { ServerpodYamlGenerator } from "../generators/serverpod_yaml_generator";
 
 
@@ -184,5 +185,9 @@ export class GeneratorFactory {
 
     createServerpodEndpointGenerator(): FileGenerator {
         return new ServerpodEndpointGenerator(this.fileSystem);
+    }
+
+     createServerpodRelateEndpointGenerator(): ServerpodRelateEndpointGenerator { // Измените возвращаемый тип если нужно
+        return new ServerpodRelateEndpointGenerator(this.fileSystem);
     }
 }
