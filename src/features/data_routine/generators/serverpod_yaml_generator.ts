@@ -1,3 +1,5 @@
+// src/features/data_routine/generators/serverpod_yaml_generator.ts
+
 import * as path from 'path';
 import { BaseGenerator } from '../../../core/generators/base_generator';
 import { IFileSystem } from '../../../core/interfaces/file_system';
@@ -65,23 +67,24 @@ export class ServerpodYamlGenerator extends BaseGenerator {
             }
         }
 
-        // --- Изменения здесь ---
+        // --- Начало изменений для обработки связанных полей ---
         for (const ref of driftReferences) {
-            const referencedClassName = ref.referencedTable.replace('Table', '');
-            const relationFieldName = unCap(referencedClassName);
+            const referencedClassName = ref.referencedTable.replace('Table', ''); // Например, 'Category'
+            const relationFieldName = unCap(referencedClassName); // Например, 'category'
 
+            // Находим соответствующее поле в Drift-таблице, чтобы проверить его nullability
             const fkDriftField = tableParser.getFields().find(f => f.name === ref.columnName);
             const isFkExplicitlyNullableInDrift = fkDriftField ? fkDriftField.isNullable : false;
 
-            // Если текущая таблица (для которой генерируется YAML) является связующей (M2M),
-            // то поля-ссылки в YAML для этой связующей таблицы всегда должны быть nullable.
-            // В остальных случаях nullability зависит от явного указания в Drift схеме.
-            const shouldBeNullable = tableParser.isRelationTable() || isFkExplicitlyNullableInDrift;
+            // Правило 1: Тип связанной сущности в YAML всегда nullable
+            const serverpodRelationType = `${referencedClassName}?`; // Например, 'Category?'
 
-            const serverpodRelationType = `${referencedClassName}${shouldBeNullable ? '?' : ''}`;
-            yamlContent += `  ${relationFieldName}: ${serverpodRelationType}, relation\n`;
+            // Правило 2: Добавляем '(optional)', если поле внешнего ключа в Drift было nullable
+            const relationSuffix = isFkExplicitlyNullableInDrift ? 'relation(optional)' : 'relation';
+
+            yamlContent += `  ${relationFieldName}: ${serverpodRelationType}, ${relationSuffix}\n`;
         }
-        // --- Конец изменений ---
+        // --- Конец изменений для обработки связанных полей ---
 
         if (className.toLowerCase() !== "protocol") {
             const isSimpleUuidIdPk = primaryKeyFieldsDrift.length === 1 && primaryKeyFieldsDrift[0] === 'id' &&
@@ -106,6 +109,11 @@ export class ServerpodYamlGenerator extends BaseGenerator {
         return yamlContent;
     }
 
+    // Метод generate и addRelationFieldToYaml остаются без изменений,
+    // так как основная логика скорректирована в getContent.
+    // Убедись, что addRelationFieldToYaml корректно обрабатывает тип `List<SomeType>?` для списочных отношений.
+    // Судя по коду, `addRelationFieldToYaml` уже получает `fieldTypeWithList` в виде `List<...>?`, что соответствует части первого правила.
+
     async generate(basePath: string, entityName: string, data: { classParser: DriftClassParser, tableParser: DriftTableParser }): Promise<void> {
         const { classParser, tableParser } = data;
         const currentEntityClassName = classParser.driftClassNameUpper;
@@ -117,7 +125,6 @@ export class ServerpodYamlGenerator extends BaseGenerator {
         // --- Логика обновления ДРУГИХ файлов ---
 
         // 1. Обновление файла на стороне "один" для O2M связей (когда ТЕКУЩАЯ сущность - "многие")
-        // Например, если текущая Task, она ссылается на Category. Обновляем Category.yaml.
         const oneToManyRelationsWhereCurrentIsMany = tableParser.getTableRelations().filter(
             r => r.relationType === RelationType.ONE_TO_MANY && r.sourceTable === currentEntityClassName
         );
@@ -125,26 +132,25 @@ export class ServerpodYamlGenerator extends BaseGenerator {
         for (const relation of oneToManyRelationsWhereCurrentIsMany) {
             const oneSideClassName = relation.targetTable;
             const manySideClassName = relation.sourceTable;
-            const listFieldName = `${unCap(pluralConvert(manySideClassName))}`; // например, 'tasks' для Category
+            const listFieldName = `${unCap(pluralConvert(manySideClassName))}`; 
+            // Тип для списка связей всегда nullable (List<Type>?)
             await this.addRelationFieldToYaml(basePath, oneSideClassName, listFieldName, `List<${manySideClassName}>?`);
         }
 
-        // 2. Если ТЕКУЩАЯ сущность - это промежуточная таблица M2M (например, TaskTagMap)
-        // Обновляем YAML-файлы основных таблиц (Task.yaml и Tag.yaml).
+        // 2. Если ТЕКУЩАЯ сущность - это промежуточная таблица M2M
         if (tableParser.isRelationTable()) {
             const m2mRelationDetails = tableParser.getTableRelations().find(r => r.relationType === RelationType.MANY_TO_MANY && r.intermediateTable === currentEntityClassName);
             if (m2mRelationDetails) {
-                const sourceTableForM2M = m2mRelationDetails.sourceTable; // Например, Task
-                const targetTableForM2M = m2mRelationDetails.targetTable; // Например, Tag
-                const intermediateTableName = m2mRelationDetails.intermediateTable!; // TaskTagMap
+                const sourceTableForM2M = m2mRelationDetails.sourceTable; 
+                const targetTableForM2M = m2mRelationDetails.targetTable; 
+                const intermediateTableName = m2mRelationDetails.intermediateTable!; 
 
-                // Имя поля-списка в основных таблицах будет основано на имени промежуточной таблицы
-                const listFieldNameForIntermediate = `${unCap(pluralConvert(intermediateTableName))}`; // например, taskTagMaps
+                const listFieldNameForIntermediate = `${unCap(pluralConvert(intermediateTableName))}`; 
 
-                // Обновляем YAML для sourceTable (например, Task), добавляя List<TaskTagMap>
+                // Обновляем YAML для sourceTable, добавляя List<IntermediateTable>?
                 await this.addRelationFieldToYaml(basePath, sourceTableForM2M, listFieldNameForIntermediate, `List<${intermediateTableName}>?`);
 
-                // Обновляем YAML для targetTable (например, Tag), добавляя List<TaskTagMap>
+                // Обновляем YAML для targetTable, добавляя List<IntermediateTable>?
                 await this.addRelationFieldToYaml(basePath, targetTableForM2M, listFieldNameForIntermediate, `List<${intermediateTableName}>?`);
             }
         }
@@ -165,7 +171,7 @@ export class ServerpodYamlGenerator extends BaseGenerator {
                 if (!fieldLineRegex.test(targetYamlContent)) {
                     const lines = targetYamlContent.split('\n');
                     let fieldsStartIndex = -1;
-                    let indent = "  "; // Используем два пробела по умолчанию, как в вашем getContent
+                    let indent = "  "; 
 
                     for (let i = 0; i < lines.length; i++) {
                         if (lines[i].trim() === "fields:") {
@@ -177,7 +183,9 @@ export class ServerpodYamlGenerator extends BaseGenerator {
                         }
                     }
                     
+                    // Для списочных отношений (List<Type>?) суффикс (optional) обычно не добавляется к 'relation'
                     const lineToAdd = `${indent}${fieldName}: ${fieldTypeWithList}, relation`;
+
 
                     if (fieldsStartIndex !== -1) {
                         let insertAtIndex = fieldsStartIndex + 1; 
