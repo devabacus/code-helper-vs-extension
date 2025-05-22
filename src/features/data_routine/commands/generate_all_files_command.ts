@@ -52,7 +52,7 @@ export class GenerateAllFilesCommand implements Command {
             await this.generatorFactory.createDataRepositoryGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
             await this.generatorFactory.createModelGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
             await this.generatorFactory.createDaoGenerator().generate(this.featurePath, entityNameForGenerators, parsersData);
-            await this.generatorFactory.createLocalSourcesGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
+            await this.generatorFactory.createLocalSourcesGenerator().generate(this.featurePath, entityNameForGenerators, parsersData);
             await this.generatorFactory.createDataProviderGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
 
             //extensions
