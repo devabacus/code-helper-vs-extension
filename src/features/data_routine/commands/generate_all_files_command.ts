@@ -41,10 +41,7 @@ export class GenerateAllFilesCommand implements Command {
     async execute(): Promise<void> {
         const entityNameForGenerators = this.driftClassName; // Используем camelCase имя для большинства генераторов
 
-        console.log('GenerateAllFilesCommand: classParser defined?', !!this.classParser);
-        console.log('GenerateAllFilesCommand: tableParser defined?', !!this.tableParser);
         const parsersData = { classParser: this.classParser, tableParser: this.tableParser };
-        console.log('GenerateAllFilesCommand: parsersData.tableParser defined?', !!parsersData.tableParser);
 
         if (!this.isRelationTable) {
             console.log(`Обычная таблица: ${entityNameForGenerators}. Запуск стандартной генерации файлов.`);
@@ -61,7 +58,7 @@ export class GenerateAllFilesCommand implements Command {
 
             // domain layer
             await this.generatorFactory.createEntityGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
-            await this.generatorFactory.createDomainRepositoryGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
+            await this.generatorFactory.createDomainRepositoryGenerator().generate(this.featurePath, entityNameForGenerators, parsersData);
             await this.generatorFactory.createDomainProviderGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
             await this.generatorFactory.createDomainEntityExtensionGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
             await this.generatorFactory.createLocalDataSourceServiceGenerator().generate(this.featurePath, entityNameForGenerators, parsersData);
