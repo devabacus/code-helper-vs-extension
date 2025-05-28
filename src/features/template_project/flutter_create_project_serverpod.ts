@@ -11,6 +11,7 @@ import { startDependency } from "./flutter_content/package_pubscpec";
 import { pubGet } from "./flutter_content/terminal_commands";
 import { startAppFix } from "./start_app_fix";
 import { gitignoreCont } from "./flutter_content/files_content/_gitignore";
+import { serverpodDataYaml } from "../serverpod/server_data_yaml";
 
 export async function flutterCreateNewServerPodProject(addTemplateFolders?: (fullProjectPath: string) => void): Promise<void> {
 
@@ -25,10 +26,13 @@ export async function flutterCreateNewServerPodProject(addTemplateFolders?: (ful
     }
     // createFolder(path.join(projectsPath, projectName));
     const create_command = `serverpod create ${projectName}`;
-    // const projectPath = path.join(projectsPath, projectName);
     await executeCommand(create_command, projectsPath);
     const fullProjectPath = path.join(projectsPath, projectName, `${projectName}_flutter`);
-    
+    const serverDataYamlPath = path.join(projectsPath, projectName, "server_data.yaml");
+
+    createFile(serverDataYamlPath, serverpodDataYaml(projectName));
+
+
     if (addTemplateFolders) {
         addTemplateFolders(fullProjectPath);
     }

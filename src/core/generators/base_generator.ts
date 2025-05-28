@@ -22,5 +22,4 @@ export abstract class BaseGenerator<TData = any> implements IGenerator<TData> {
     protected handleError(basePath: string, error: unknown, name?: string, ): never {
         throw new Error(`Ошибка генерации ${name} в ${basePath}: ${String(error)}`);
     }
-
 }
