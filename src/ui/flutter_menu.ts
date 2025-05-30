@@ -24,7 +24,7 @@ export async function flutterHandler() {
     const options: { [key: string]: () => Promise<any> } = {
         'Новый проект': () => flutterCreateNewProject(addBaseTemplate),
         'Новый проект c serverpod': () => flutterCreateNewServerPodProject(addBaseTemplate),
-        'Сгенерировать файлы для serverpod': () => serverpodFileGenerate(),
+        'Сгенерировать файлы для serverpod': () => serverpodFileGenerate(getRootWorkspaceFolders()),
         'Новый базовый проект': () => flutterCreateNewProject(startAppRoutine),
         'Добавить base template': () => addBaseTemplate(getRootWorkspaceFolders()),
         'Добавить template files': () => createTemplateFiles(getRootWorkspaceFolders()),

@@ -6,9 +6,9 @@ project:
   
 server:
   ip: ""
-  http_port: "8080:80"
+  http_port: "80:80"
   https_port: "443:443"
-  domain: "domain.com"
+  domain: "my-points.ru"
   subdomain:
     api: "api"
     web: "web"
@@ -21,6 +21,6 @@ database:
   
 deployment:
   organization: "devabacus"
-  ssh_user: "github-actions-devabacus"
+  ssh_user: "serverpod"
 
 `;};

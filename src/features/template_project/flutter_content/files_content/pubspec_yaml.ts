@@ -21,7 +21,10 @@ dependencies:
 #   path: ../Packages/mlogger
 # ui_kit:
 #   path: ../Packages/ui_kit
-
+  serverpod_flutter: 2.7.0
+  ${projName}_client:
+    path: ../${projName}_client
+  
   flutter:
     sdk: flutter
     

@@ -1,7 +1,7 @@
 import * as path from 'path';
-import { BaseGenerator } from '../../core/generators/base_generator'; // Убедитесь, что путь корректен
-import { IFileSystem } from '../../core/interfaces/file_system';   // Убедитесь, что путь корректен
-import { ServerDataConfig } from './server_yaml_parser'; // Импорт из вашего парсера
+import { BaseGenerator } from '../../../core/generators/base_generator'; // Убедитесь, что путь корректен
+import { IFileSystem } from '../../../core/interfaces/file_system';   // Убедитесь, что путь корректен
+import { ServerDataConfig } from '../server_yaml_parser'; // Импорт из вашего парсера
 
 export class DockerComposeProductionGenerator extends BaseGenerator<ServerDataConfig> {
   constructor(fileSystem: IFileSystem) {
@@ -9,8 +9,8 @@ export class DockerComposeProductionGenerator extends BaseGenerator<ServerDataCo
   }
 
   protected getPath(basePath: string, _name?: string, _data?: ServerDataConfig): string {
-    // Предполагаем, что basePath - это корень проекта Serverpod, где должен лежать docker-compose.yml
-    return path.join(basePath, 'docker-compose.production.yaml');
+    const projectName = path.basename(basePath);
+    return path.join(basePath, `${projectName}_server`, 'docker-compose.production.yaml');
   }
 
   protected getContent(data?: ServerDataConfig): string {
@@ -20,13 +20,9 @@ export class DockerComposeProductionGenerator extends BaseGenerator<ServerDataCo
 
     const appName = data.project.name;
 
-    // Формируем FQDN для Traefik правил
     const apiFqdn = `${data.server.subdomain.api}.${data.server.domain}`;
     const insightsFqdn = `${data.server.subdomain.insights}.${data.server.domain}`;
     const webFqdn = `${data.server.subdomain.web}.${data.server.domain}`;
-
-    // const ghcrOrg = data.deployment.organization; // Из server_data.yaml
-
 
     return `
 services:
@@ -102,19 +98,19 @@ services:
       ]
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.api.rule=Host(${apiFqdn})"
+      - "traefik.http.routers.api.rule=Host(\`${apiFqdn}\`)"
       - "traefik.http.routers.api.entrypoints=websecure"
       - "traefik.http.routers.api.service=api-service"
       - "traefik.http.routers.api.tls.certresolver=myresolver"
       - "traefik.http.services.api-service.loadbalancer.server.port=8080"
 
-      - "traefik.http.routers.insights.rule=Host(${insightsFqdn})"
+      - "traefik.http.routers.insights.rule=Host(\`${insightsFqdn}\`)"
       - "traefik.http.routers.insights.entrypoints=websecure"
       - "traefik.http.routers.insights.service=insights-service"
       - "traefik.http.routers.insights.tls.certresolver=myresolver"
       - "traefik.http.services.insights-service.loadbalancer.server.port=8081"
 
-      - "traefik.http.routers.web.rule=Host(${webFqdn})"
+      - "traefik.http.routers.web.rule=Host(\`${webFqdn}\`)"
       - "traefik.http.routers.web.entrypoints=websecure"
       - "traefik.http.routers.web.service=web-service"
       - "traefik.http.routers.web.tls.certresolver=myresolver"

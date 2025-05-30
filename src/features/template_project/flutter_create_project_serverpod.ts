@@ -11,7 +11,7 @@ import { startDependency } from "./flutter_content/package_pubscpec";
 import { pubGet } from "./flutter_content/terminal_commands";
 import { startAppFix } from "./start_app_fix";
 import { gitignoreCont } from "./flutter_content/files_content/_gitignore";
-import { serverpodDataYaml } from "../serverpod/server_data_yaml";
+import { serverpodDataYaml } from "../serverpod/generators/default_server_data_yaml";
 
 export async function flutterCreateNewServerPodProject(addTemplateFolders?: (fullProjectPath: string) => void): Promise<void> {
 
@@ -27,40 +27,44 @@ export async function flutterCreateNewServerPodProject(addTemplateFolders?: (ful
     // createFolder(path.join(projectsPath, projectName));
     const create_command = `serverpod create ${projectName}`;
     await executeCommand(create_command, projectsPath);
-    const fullProjectPath = path.join(projectsPath, projectName, `${projectName}_flutter`);
-    const serverDataYamlPath = path.join(projectsPath, projectName, "server_data.yaml");
+    
+    const monoRepoPath = path.join(projectsPath, projectName);
+    
+    const fullFlutterProjectPath = path.join(monoRepoPath, `${projectName}_flutter`);
+    
+    const serverPath = path.join(monoRepoPath, `${projectName}_server`);
+    await executeCommand(`serverpod generate --experimental-features`, serverPath);
+
+    const serverDataYamlPath = path.join(serverPath, "server_data.yaml");
 
     createFile(serverDataYamlPath, serverpodDataYaml(projectName));
 
 
     if (addTemplateFolders) {
-        addTemplateFolders(fullProjectPath);
+        addTemplateFolders(fullFlutterProjectPath);
     }
-    startAppFix(fullProjectPath);
+    startAppFix(fullFlutterProjectPath);
 
-    insertAtFileEnd(path.join(fullProjectPath, '.gitignore'), gitignoreCont);
+    insertAtFileEnd(path.join(fullFlutterProjectPath, '.gitignore'), gitignoreCont);
 
-    const serviceFilesPth = path.join(fullProjectPath, "_service_files");
-    const vscodePth = path.join(fullProjectPath, ".vscode");
+    const serviceFilesPth = path.join(fullFlutterProjectPath, "_service_files");
+    const vscodePth = path.join(fullFlutterProjectPath, ".vscode");
     await createFolder(serviceFilesPth);
     await createFolder(vscodePth);
 
 
-    createRootTemplateFiles(fullProjectPath);
+    createRootTemplateFiles(fullFlutterProjectPath);
 
 
-    // createFile(path.join(serviceFilesPth, "flutter_handle.ps1"), flutter_handle_ps1);
-    // createFile(path.join(serviceFilesPth, "git_handle.ps1"), git_handle_ps1);
-    // createFile(path.join(serviceFilesPth, "shell_commands.ps1"), "//shell commands");
-    createFile(path.join(fullProjectPath, "pubspec.yaml"), pubspec_yaml(projectName));
+    createFile(path.join(fullFlutterProjectPath, "pubspec.yaml"), pubspec_yaml(projectName));
 
-    gitInit(fullProjectPath);
+    gitInit(monoRepoPath);
 
-    const homePagePath = path.join(fullProjectPath, 'lib', 'features', 'home', 'presentation', 'pages', 'home_page.dart');
-    const openCommand = `code -g "${homePagePath}" "${fullProjectPath}"`;
+    const homePagePath = path.join(fullFlutterProjectPath, 'lib', 'features', 'home', 'presentation', 'pages', 'home_page.dart');
+    const openCommand = `code -g "${homePagePath}" "${fullFlutterProjectPath}"`;
 
     await executeCommand(openCommand, projectsPath);
-    await executeCommand(pubGet, fullProjectPath);
+    await executeCommand(pubGet, fullFlutterProjectPath);
     // insertTextToFile(startApp, mainDartPath);
 
 }
