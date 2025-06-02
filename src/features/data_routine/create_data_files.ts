@@ -1,4 +1,4 @@
-import { executeInTerminal } from "../../utils";
+import { executeCommand, executeInTerminal } from "../../utils";
 import { getActiveEditorPath } from "../../utils/path_util";
 import { unCap } from "../../utils/text_work/text_util";
 import { getDocText } from "../../utils/ui/ui_util";
@@ -61,6 +61,8 @@ export async function createDataFiles() {
     const generateTestFilesCommand = new GenerateTestFilesCommand(testGeneratorFactory, featureTestPath, entityName, commandData);
 
     await generatorCommands.execute(); // await, если execute асинхронный
+    await executeCommand("serverpod generate --experimental-features=all", serverProjectRoot);
+    
     await generateTestFilesCommand.execute(); // await, если execute асинхронный
 
     await appDatabaseRoutine(currentFilePath, entityName);

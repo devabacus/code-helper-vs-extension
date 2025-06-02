@@ -47,7 +47,6 @@ dependencies:
   talker_riverpod_logger: ^4.7.1
 
   chopper: ^8.1.0
-  chopper_generator: ^8.1.0
 
   drift: ^2.26.0
   drift_flutter: ^0.2.4
@@ -55,7 +54,6 @@ dependencies:
   path_provider: ^2.1.5
   flutter_dotenv: ^5.2.1
 
-  mockito: ^5.4.5
   uuid: ^4.5.1
   shared_preferences: ^2.5.3
   connectivity_plus: ^6.1.4
@@ -65,14 +63,16 @@ dev_dependencies:
     sdk: flutter
 
   build_runner: ^2.4.15
-  flutter_lints: ^5.0.0
+  chopper_generator: ^8.1.0
   riverpod_generator: ^2.6.5
+  drift_dev: ^2.26.0
+  json_serializable: ^6.9.4
+  freezed: ^3.0.4
+  mockito: ^5.4.5
+  
+  flutter_lints: ^5.0.0
   custom_lint: ^0.7.5
   riverpod_lint: ^2.6.5
-  freezed: ^3.0.4
-  json_serializable: ^6.9.4
-
-  drift_dev: ^2.26.0
 
 flutter:
   uses-material-design: true

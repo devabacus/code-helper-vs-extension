@@ -1,8 +1,7 @@
 import * as path from 'path';
 import { BaseGenerator } from '../../../core/generators/base_generator'; // Убедитесь, что путь корректен
-import { IFileSystem } from '../../../core/interfaces/file_system';   // Убедитесь, что путь корректен
+import { IFileSystem } from '../../../core/interfaces/file_system'; // Убедитесь, что путь корректен
 import { ServerDataConfig } from '../server_yaml_parser'; // Импорт из вашего парсера
-import { readFile } from '../../../utils';
 
 export class EnvGenerator extends BaseGenerator<ServerDataConfig> {
   constructor(fileSystem: IFileSystem) {
@@ -25,7 +24,9 @@ export class EnvGenerator extends BaseGenerator<ServerDataConfig> {
     const insightsFqdn = `${data.server.subdomain.insights}.${data.server.domain}`;
     const webFqdn = `${data.server.subdomain.web}.${data.server.domain}`;
 
-    return `PAT_USER_GITHUB = devabacus
+    return `
+GITHUB_SECRETS_URL = https://github.com/devabacus/${appName}/settings/secrets/actions    
+PAT_USER_GITHUB = devabacus
 PAT_GITHUB = G:\\Obsidian vault\\Blogging\\Кодинг\\Serverpod
 SSH_HOST = ${data.server.ip}
 SSH_USER = ${data.deployment.ssh_user}
