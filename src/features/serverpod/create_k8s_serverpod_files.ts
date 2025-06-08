@@ -7,6 +7,11 @@ import { EnvGenerator } from "./generators/env_generator";
 import { ConfigMapGenerator } from "./k8s/configmap_generate";
 import { parseServerDataYaml, ServerDataConfig } from "./server_yaml_parser";
 import { DockerfileProdGenerator } from "./k8s/dockerfile_prod_generate";
+import { DeploymentGenerator } from "./k8s/deployment_generator";
+import { IngressGenerator } from "./k8s/ingress_generator";
+import { JobGenerator } from "./k8s/job_generator";
+import { ServiceGenerator } from "./k8s/service_generator";
+import { SecretGenerator } from "./k8s/secret_generator";
 
 
 export async function serverpodK8sFileGenerate(projectPath: string): Promise<void> {
@@ -29,9 +34,25 @@ export async function serverpodK8sFileGenerate(projectPath: string): Promise<voi
     const configMapGenerator = new ConfigMapGenerator(fileSystem);
     await configMapGenerator.generate(projectPath, undefined, serverYamlData);
 
+    // k8s/deployment.yaml    
+    const deploymentGenerator = new DeploymentGenerator(fileSystem);
+    await deploymentGenerator.generate(projectPath, undefined, serverYamlData);
 
-    await dockerfileProdGenerator.generate(projectPath, undefined, undefined);
+    // k8s/ingress.yaml    
+    const ingressGenerator = new IngressGenerator(fileSystem);
+    await ingressGenerator.generate(projectPath, undefined, serverYamlData);
 
+    // k8s/ingress.yaml    
+    const jobGenerator = new JobGenerator(fileSystem);
+    await jobGenerator.generate(projectPath, undefined, serverYamlData);
+
+    // k8s/service.yaml    
+    const serviceGenerator = new ServiceGenerator(fileSystem);
+    await serviceGenerator.generate(projectPath, undefined, serverYamlData);
+
+    // k8s/secret.yaml    
+    const secretGenerator = new SecretGenerator(fileSystem);
+    await secretGenerator.generate(projectPath, undefined, serverYamlData);
 
 
     //env
