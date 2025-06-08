@@ -17,6 +17,7 @@ import { createFlutterPackage } from "../features/flutter_create_package";
 import { getActiveEditorPath, getLibPath, getRootWorkspaceFolders } from "../utils/path_util";
 import { flutterCreateNewServerPodProject } from "../features/template_project/flutter_create_project_serverpod";
 import { serverpodFileGenerate } from "../features/serverpod/create_serverpod_files";
+import { serverpodK8sFileGenerate } from "../features/serverpod/create_k8s_serverpod_files";
 
 
 
@@ -24,7 +25,7 @@ export async function flutterHandler() {
     const options: { [key: string]: () => Promise<any> } = {
         // 'Новый проект': () => flutterCreateNewProject(addBaseTemplate),
         'Новый проект c serverpod': () => flutterCreateNewServerPodProject(addBaseTemplate),
-        'Сгенерировать файлы для serverpod': () => serverpodFileGenerate(getRootWorkspaceFolders()),
+        'Сгенерировать файлы для serverpod': () => serverpodK8sFileGenerate(getRootWorkspaceFolders()),
         'Новый базовый проект': () => flutterCreateNewProject(startAppRoutine),
         'Добавить base template': () => addBaseTemplate(getRootWorkspaceFolders()),
         'Добавить template files': () => createTemplateFiles(getRootWorkspaceFolders()),

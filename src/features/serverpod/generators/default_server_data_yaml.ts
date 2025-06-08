@@ -16,8 +16,15 @@ server:
   email: "frolprank@gmail.com"
   
 database:
-  name: "serverpod"
-  user: "postgres"  
+  host: "192.168.0.6"
+  port: "5432"
+  name: "${projectName}_db"
+  user: "${projectName}_user"  
+
+reddis:
+  host: "192.168.0.7"
+  port: "6379"
+  user: "default"
   
 deployment:
   organization: "devabacus"

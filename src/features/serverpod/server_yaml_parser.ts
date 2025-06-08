@@ -18,9 +18,17 @@ export interface ServerDataConfig {
     email: string;
   };
   database: {
+    host: string;
+    port: string;
     name: string;
     user: string;
   };
+  reddis: {
+    host: string;
+    port: string;
+    user: string;    
+  };
+
   deployment: {
     organization: string;
     ssh_user: string;

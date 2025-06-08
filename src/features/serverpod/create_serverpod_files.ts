@@ -4,7 +4,7 @@ import { readFile } from "../../utils";
 import { parseServerDataYaml, ServerDataConfig } from "./server_yaml_parser";
 import { DockerComposeProductionGenerator } from "./generators/docker_compose_production_generator";
 import { ServiceLocator } from "../../core/services/service_locator";
-import { DockerfileProdGenerator } from "./generators/dockerfile_prod_generate";
+import { DockerfileProdGeneratorLegacy } from "./generators/dockerfile_prod_generate";
 import { ConfigProductionGenerator } from "./generators/config_production_generate";
 import { WorkflowDeploymentDockerGenerator } from "./generators/workflow_deployment_docker_generator";
 import { EnvGenerator } from "./generators/env_generator";
@@ -27,7 +27,7 @@ export async function serverpodFileGenerate(projectPath: string): Promise<void> 
     await dockerComposeProdGenerator.generate(projectPath, undefined, serverYamlData);
 
     // Dockerfile.prod 
-    const dockerfileProdGenerator = new DockerfileProdGenerator(fileSystem);
+    const dockerfileProdGenerator = new DockerfileProdGeneratorLegacy(fileSystem);
     await dockerfileProdGenerator.generate(projectPath, undefined, undefined);
 
     // config/production.yaml
@@ -41,7 +41,7 @@ export async function serverpodFileGenerate(projectPath: string): Promise<void> 
     //env
     const envGenerator = new EnvGenerator(fileSystem);
     await envGenerator.generate(projectPath, undefined, serverYamlData);
-    insertAtFileEnd(path.join(path.join(projectPath, `${projectName}_server`), '.gitignore'),'.env');
+    insertAtFileEnd(path.join(path.join(projectPath, `${projectName}_server`), '.gitignore'), '.env');
 }
 
 

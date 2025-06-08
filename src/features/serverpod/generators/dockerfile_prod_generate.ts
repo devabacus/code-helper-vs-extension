@@ -3,7 +3,7 @@ import { BaseGenerator } from '../../../core/generators/base_generator';
 import { IFileSystem } from '../../../core/interfaces/file_system';
 import { ServerDataConfig } from '../server_yaml_parser';
 
-export class DockerfileProdGenerator extends BaseGenerator<ServerDataConfig> {
+export class DockerfileProdGeneratorLegacy extends BaseGenerator<ServerDataConfig> {
   constructor(fileSystem: IFileSystem) {
     super(fileSystem);
   }
