@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:serverpod_flutter/serverpod_flutter.dart';
 import 'package:${projectName}_client/${projectName}_client.dart';
 
+// var client = Client('https://api5.my-points.ru/')
 var client = Client('http://localhost:8080/')
   ..connectivityMonitor = FlutterConnectivityMonitor();
 

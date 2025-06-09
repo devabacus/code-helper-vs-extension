@@ -21,24 +21,12 @@ export class WorkflowDeploymentDockerGenerator extends BaseGenerator<ServerDataC
     const appName = data.project.name;
 
     return `
-name: Deploy to Docker
+name: Build and Deploy to Kubernetes
+
 on:
   push:
-    branches: [master]
+    branches: [ master ] # Убедитесь, что это ваша основная ветка
   workflow_dispatch:
-    inputs:
-      target:
-        description: "Target"
-        required: true
-        default: "production"
-        type: choice
-        options:
-          - "production"
-
-env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: \${{ github.repository }}
-  GHCR_ORG: "${data.deployment.organization}"
 
 jobs:
   build-and-push-image:
@@ -46,144 +34,85 @@ jobs:
     permissions:
       contents: read
       packages: write
-    defaults:
-      run:
-        working-directory: ./${appName}_server
+    # "Выводим" наружу сгенерированный тег, чтобы другие задачи могли его использовать
+    outputs:
+      tag: \${{ steps.meta.outputs.version }}
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Log in to the Container registry
-        uses: docker/login-action@v3
-        with:
-          registry: \${{ env.REGISTRY }}
-          username: \${{ github.actor }}
-          password: \${{ secrets.GITHUB_TOKEN }}
-
-      - name: Extract metadata (tags, labels) for Docker
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+        
+      # Этот шаг извлекает метаданные, включая уникальный тег (хеш коммита)
+      - name: Extract Docker metadata
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: \${{ env.REGISTRY }}/\${{ env.IMAGE_NAME }}
+          images: dbe81550-wise-chickadee.registry.twcstorage.ru/${appName}-server
+          tags: |
+            type=sha,prefix=,format=short
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+      - name: Log in to Timeweb Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: dbe81550-wise-chickadee.registry.twcstorage.ru
+          username: \${{ secrets.REGISTRY_USER }}
+          password: \${{ secrets.REGISTRY_PASSWORD }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
-          build-args: |
-            GITHUB_PAT=\${{ secrets.PAT_GITHUB }}
-            GITHUB_USER=\${{ secrets.PAT_USER_GITHUB }}
           context: ./${appName}_server
           file: ./${appName}_server/Dockerfile.prod
           push: true
-          tags: ghcr.io/\${{ env.GHCR_ORG }}/${appName}_server:latest
+          tags: \${{ steps.meta.outputs.tags }} # Используем сгенерированный уникальный тег
           labels: \${{ steps.meta.outputs.labels }}
-          # This determines which hardware platforms the image will run on
-          # further details: https://docs.docker.com/build/building/multi-platform/
-          platforms: linux/amd64, linux/arm/v7, linux/arm64/v8
 
-  deploy:
-    needs: build-and-push-image
-    name: deploy to production
+  deploy-to-cluster:
+    needs: build-and-push-image # Запускается после сборки
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install ssh keys
-        run: |
-          install -m 600 -D /dev/null ~/.ssh/id_rsa
-          echo "\${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          ssh-keyscan -H \${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
-
-      - name: Add SSH key to the agent
-        run: |
-          eval "$(ssh-agent -s)"
-          ssh-add ~/.ssh/id_rsa
-
-      - name: Test SSH Connection
-        run: ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa \${{ secrets.SSH_USER }}@\${{ secrets.SSH_HOST }} "echo SSH connection successful"
-
-      - name: Log in to the Container registry
-        uses: docker/login-action@v3
+      - name: Set up Kubeconfig
+        uses: azure/k8s-set-context@v4
         with:
-          registry: \${{ env.REGISTRY }}
-          username: \${{ github.actor }}
-          password: \${{ secrets.GITHUB_TOKEN }}
+          kubeconfig: \${{ secrets.KUBE_CONFIG }}
 
-      - name: List files in the directory
-        run: ls -la ./${appName}_server/
-
-      - name: Run docker-compose
+      - name: Create or Update Kubernetes Secret
         run: |
-          docker compose -f ./${appName}_server/docker-compose.production.yaml pull
-          docker compose -f ./${appName}_server/docker-compose.production.yaml up -d
-        env:
-          DOCKER_HOST: "ssh://\${{ secrets.SSH_USER }}@\${{ secrets.SSH_HOST }}"
-          # The database name
-          POSTGRES_DB: \${{ secrets.SERVERPOD_DATABASE_NAME }}
-          # The user name for the database
-          POSTGRES_USER: \${{ secrets.SERVERPOD_DATABASE_USER }}
-          # The password for the database
-          POSTGRES_PASSWORD: \${{ secrets.SERVERPOD_DATABASE_PASSWORD }}
-          # The database name
-          SERVERPOD_DATABASE_NAME: \${{ secrets.SERVERPOD_DATABASE_NAME }}
-          # The user name for the database
-          SERVERPOD_DATABASE_USER: \${{ secrets.SERVERPOD_DATABASE_USER }}
-          # The password for the database
-          SERVERPOD_DATABASE_PASSWORD: \${{ secrets.SERVERPOD_DATABASE_PASSWORD }}
-          # The public host address of the API server
-          SERVERPOD_API_SERVER_PUBLIC_HOST: \${{ secrets.SERVERPOD_API_SERVER_PUBLIC_HOST }}
-          # The public port number for the API server, 443 for https
-          SERVERPOD_API_SERVER_PUBLIC_PORT: 443
-          # This is the internal port number for the API server
-          SERVERPOD_API_SERVER_PORT: 8080
-          # The public scheme (http/https) for the API server
-          SERVERPOD_API_SERVER_PUBLIC_SCHEME: "https"
-          # The public host address of the Insights server
-          SERVERPOD_INSIGHTS_SERVER_PUBLIC_HOST: \${{ secrets.SERVERPOD_INSIGHTS_SERVER_PUBLIC_HOST }}
-          # The public port number for the Insights server
-          SERVERPOD_INSIGHTS_SERVER_PUBLIC_PORT: 443
-          # This is the internal port number for the Insights server
-          SERVERPOD_INSIGHTS_SERVER_PORT: 8081
-          # The public scheme (http/https) for the Insights server
-          SERVERPOD_INSIGHTS_SERVER_PUBLIC_SCHEME: "https"
-          # The public host address of the Web server
-          SERVERPOD_WEB_SERVER_PUBLIC_HOST: \${{ secrets.SERVERPOD_WEB_SERVER_PUBLIC_HOST }}
-          # The public port number for the Web server
-          SERVERPOD_WEB_SERVER_PUBLIC_PORT: 443
-          # This is the internal port number for the Web server
-          SERVERPOD_WEB_SERVER_PORT: 8082
-          # The public scheme (http/https) for the Web server
-          SERVERPOD_WEB_SERVER_PUBLIC_SCHEME: "https"
-          # The host address of the database
-          # This is hardcoded since the connection is done internally through
-          # the docker network. If you want to have access from the outside, you
-          # need to connect to your server with ssh
-          SERVERPOD_DATABASE_HOST: postgres
-          # The port number for the database connection
-          # If you need to change this port, you will also have to adjust
-          # postgres configuration in the docker-compose.production.yaml file
-          SERVERPOD_DATABASE_PORT: 5432
-          # Indicates if SSL is required for the database
-          # Set to false since it is behind the firewall and the database can
-          # only be accessed by utilizing the SSH tunnel
-          SERVERPOD_DATABASE_REQUIRE_SSL: false
-          # Specifies if the database connection is a Unix socket
-          SERVERPOD_DATABASE_IS_UNIX_SOCKET: false
-          # Redis is not required for this setup
-          # Disabled since right if supplying any of the redis settings, you
-          # MUST supply all of them, otherwise serverpod will fail to start
-          # SERVERPOD_REDIS_ENABLED: false
-          # The maximum size of requests allowed in bytes
-          SERVERPOD_MAX_REQUEST_SIZE: \${{ secrets.SERVERPOD_MAX_REQUEST_SIZE }}
-          # The token used to connect with insights must be at least 20 chars
-          SERVERPOD_SERVICE_SECRET: \${{ secrets.SERVERPOD_SERVICE_SECRET }}
+          kubectl create secret generic serverpod-secrets-${appName} \
+            --from-literal=database-password='\${{ secrets.DB_PASSWORD }}' \
+            --from-literal=redis-password='\${{ secrets.REDIS_PASSWORD }}' \
+            --from-literal=service-secret='\${{ secrets.SERVICE_SECRET }}' \
+            --dry-run=client -o yaml | kubectl apply -f -
 
-      - name: cleanup
-        run: rm -rf ~/.ssh
+      # НОВЫЙ ШАГ: Вписываем правильный тег в манифесты
+      - name: Update manifests with new image tag
+        run: |
+          sed -i 's|image: .*|image: dbe81550-wise-chickadee.registry.twcstorage.ru/${appName}-server:\${{ needs.build-and-push-image.outputs.tag }}|g' ${appName}_server/k8s/deployment.yaml
+          sed -i 's|image: .*|image: dbe81550-wise-chickadee.registry.twcstorage.ru/${appName}-server:\${{ needs.build-and-push-image.outputs.tag }}|g' ${appName}_server/k8s/job.yaml
+
+      - name: Apply Kubernetes manifests
+        run: |
+          kubectl apply -f ${appName}_server/k8s/configmap.yaml
+          kubectl apply -f ${appName}_server/k8s/service.yaml
+          kubectl apply -f ${appName}_server/k8s/ingress.yaml
+          # Удаляем старый Job перед применением нового, чтобы он гарантированно запустился
+          kubectl delete job serverpod-migration-job-${appName} --ignore-not-found=true
+          kubectl apply -f ${appName}_server/k8s/job.yaml
+          
+      - name: Wait for migration job to complete
+        run: kubectl wait --for=condition=complete job/serverpod-migration-job-${appName} --timeout=5m
+
+      - name: Deploy main application
+        run: |
+          kubectl apply -f ${appName}_server/k8s/deployment.yaml
+          kubectl rollout status deployment/${appName}-server-deployment --timeout=2m
 
     `;
   }

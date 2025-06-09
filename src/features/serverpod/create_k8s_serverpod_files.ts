@@ -19,6 +19,8 @@ import { testDataEndpoint } from "./server_test/test_data_endpoint";
 import { dockerignore } from "./dockerignore";
 import { SERVERPOD_GENERATE } from "./commands";
 import { serverServiceFile } from "./server_service_file";
+import { ConfigProductionGenerator } from "./generators/config_production_generate";
+import { WorkflowDeploymentDockerGenerator } from "./generators/workflow_deployment_docker_generator";
 
 
 export async function serverpodK8sFileGenerate(projectPath: string): Promise<void> {
@@ -48,7 +50,7 @@ export async function serverpodK8sFileGenerate(projectPath: string): Promise<voi
     createFile(mainPath, mainFile(projectName));
     createFile(serverCheckUilPath, serverCheckUi(projectName));
     createFile(serverCheckUilPath, serverCheckUi(projectName));
-    
+
     createFile(testDataSpyPath, testDataSpy);
     createFile(testDataEndPointPath, testDataEndpoint);
     createFile(serverHandleCmdsPath, serverServiceFile(projectName));
@@ -81,6 +83,13 @@ export async function serverpodK8sFileGenerate(projectPath: string): Promise<voi
     const secretGenerator = new SecretGenerator(fileSystem);
     await secretGenerator.generate(projectPath, undefined, serverYamlData);
 
+    const configProductionGenerator = new ConfigProductionGenerator(fileSystem);
+    await configProductionGenerator.generate(projectPath, undefined, serverYamlData);
+
+
+    // workflows/deployment-docker.yml
+    const workflowDeploymentDockerGenerator = new WorkflowDeploymentDockerGenerator(fileSystem);
+    await workflowDeploymentDockerGenerator.generate(projectPath, undefined, serverYamlData);
 
     //env
     const envGenerator = new EnvGenerator(fileSystem);
