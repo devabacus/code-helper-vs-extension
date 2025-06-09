@@ -55,7 +55,7 @@ export const templatefiles: Record<string, string> = {
 
 
 
-    'main.dart': mainFile,
+    // 'main.dart': mainFile,
     'app.dart': appFile,
 };
 

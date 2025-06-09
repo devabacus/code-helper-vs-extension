@@ -26,7 +26,7 @@ export async function flutterHandler() {
         // 'Новый проект': () => flutterCreateNewProject(addBaseTemplate),
         'Новый проект c serverpod': () => flutterCreateNewServerPodProject(addBaseTemplate),
         'Сгенерировать файлы для serverpod': () => serverpodK8sFileGenerate(getRootWorkspaceFolders()),
-        'Новый базовый проект': () => flutterCreateNewProject(startAppRoutine),
+        // 'Новый базовый проект': () => flutterCreateNewProject(startAppRoutine),
         'Добавить base template': () => addBaseTemplate(getRootWorkspaceFolders()),
         'Добавить template files': () => createTemplateFiles(getRootWorkspaceFolders()),
         'Добавить плагины': () => executeCommand(addStartPlugins, getRootWorkspaceFolders()),
@@ -51,6 +51,6 @@ export async function flutterHandler() {
 }
 
 // функция для создания простого приложения в main.dart
-export function startAppRoutine(fullProjectPath: string) {
-    writeToFile(path.join(fullProjectPath, "lib", "main.dart"), mainFile);
-}
+// export function startAppRoutine(fullProjectPath: string) {
+//     writeToFile(path.join(fullProjectPath, "lib", "main.dart"), mainFile);
+// }

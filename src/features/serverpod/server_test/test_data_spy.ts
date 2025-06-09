@@ -1,0 +1,7 @@
+export const testDataSpy = `
+class: TestData
+table: test_data
+fields:
+  id: UuidValue?, defaultPersist=random_v7
+  title: String
+`;

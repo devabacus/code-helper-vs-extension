@@ -12,6 +12,8 @@ import { build_runner, pubGet } from "./flutter_content/terminal_commands";
 import { startAppFix } from "./start_app_fix";
 import { gitignoreCont } from "./flutter_content/files_content/_gitignore";
 import { serverpodDataYaml } from "../serverpod/generators/default_server_data_yaml";
+import { mainFile } from "./flutter_content/files_content/main_file";
+import { serverCheckUi } from "./flutter_content/files_content/server_check_ui";
 
 export async function flutterCreateNewServerPodProject(addTemplateFolders?: (fullProjectPath: string) => void): Promise<void> {
 
@@ -33,11 +35,18 @@ export async function flutterCreateNewServerPodProject(addTemplateFolders?: (ful
     const fullFlutterProjectPath = path.join(monoRepoPath, `${projectName}_flutter`);
     
     const serverPath = path.join(monoRepoPath, `${projectName}_server`);
+    const flutterPath = path.join(monoRepoPath, `${projectName}_flutter`);
+
     // await executeCommand(`serverpod generate --experimental-features`, serverPath);
 
     const serverDataYamlPath = path.join(serverPath, "server_data.yaml");
+    const mainPath = path.join(flutterPath, "lib", "main.dart");
+    const serverCheckUilPath = path.join(flutterPath, "lib", "check", "server_check_ui.dart");
+   
 
     createFile(serverDataYamlPath, serverpodDataYaml(projectName));
+    createFile(mainPath, mainFile(projectName));
+    createFile(serverCheckUilPath, serverCheckUi(projectName));
 
 
     if (addTemplateFolders) {

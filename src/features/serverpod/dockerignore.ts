@@ -1,0 +1,20 @@
+export const dockerignore = `
+# Служебные файлы Dart и Pub
+.dart_tool/
+.packages
+build/
+
+# Системы контроля версий
+.git/
+
+# Настройки IDE
+.idea/
+.vscode/
+
+# Локальные конфигурации и пароли, которые не должны попасть в образ
+config/development.yaml
+config/passwords.yaml
+
+# Файл для локальной сборки
+Dockerfile.dev
+`;

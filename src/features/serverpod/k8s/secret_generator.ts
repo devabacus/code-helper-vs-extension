@@ -27,7 +27,7 @@ export class SecretGenerator extends BaseGenerator<ServerDataConfig> {
 
 
     return `
-apiVersion: v1
+apiV   ersion: v1
 kind: Secret
 metadata:
   name: serverpod-secrets-${appName}
