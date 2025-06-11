@@ -9,6 +9,8 @@ KUBE_CONFIG
 DB_PASSWORD
 
 
+
+
 # serverpod
 docker compose up -d
 serverpod generate --experimental-features=all
@@ -18,6 +20,15 @@ serverpod create-migration --experimental-features=all
 docker compose down -v
 
 #kubernaties
+1. Установить дополнение cert-manager
+# Секрет для Docker Registry
+kubectl apply -f k8s_1/
+
+kubectl create secret docker-registry timeweb-registry-secret --docker-server=dbe81550-wise-chickadee.registry.twcstorage.ru --docker-username=ВАШ_ПОЛЬЗОВАТЕЛЬ --docker-password=ВАШ_ПАРОЛЬ --docker-email=frolprank@gmail.com
+kubectl create secret generic serverpod-secrets-${projectName} --from-literal=database-password='пароль' --from-literal=redis-password='пароль' --from-literal=service-secret='пароль'
+
+
+kubectl apply -f k8s/
 
 [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes('пароль'))
 
@@ -70,5 +81,5 @@ kubectl delete deployment ${projectName}-server-deployment
 #restart deployment
 kubectl rollout restart deployment ${projectName}-server-deployment
 
-kubectl create secret generic serverpod-secrets-${projectName} --from-literal=database-password='пароль' --from-literal=redis-password='пароль' --from-literal=service-secret='пароль'
+
 `;};

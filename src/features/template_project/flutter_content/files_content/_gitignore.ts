@@ -3,4 +3,5 @@ export const gitignoreCont = `
 #*.g.*
 #*.freezed.*
 */secret.yaml
+*/_server_commands.ps1
 `;

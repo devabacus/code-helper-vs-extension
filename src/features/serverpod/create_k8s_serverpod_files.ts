@@ -21,6 +21,8 @@ import { SERVERPOD_GENERATE } from "./commands";
 import { serverServiceFile } from "./server_service_file";
 import { ConfigProductionGenerator } from "./generators/config_production_generate";
 import { WorkflowDeploymentDockerGenerator } from "./generators/workflow_deployment_docker_generator";
+import { nginxServiceFile } from "./k8s/nginx-service";
+import { clusterIssuerFile } from "./k8s/cluster_issuer_file";
 
 
 export async function serverpodK8sFileGenerate(projectPath: string): Promise<void> {
@@ -32,6 +34,8 @@ export async function serverpodK8sFileGenerate(projectPath: string): Promise<voi
     const serverDataYamlPath = path.join(serverPath, "server_data.yaml");
     const dockerignorePath = path.join(serverPath, ".dockerignore");
     const serverHandleCmdsPath = path.join(serverPath, "_server_handle_files", "_server_commands.ps1");
+    const clusterIssuerPath = path.join(serverPath, "k8s_1", "cluster_issuer.yaml");
+    const nginxServicePath = path.join(serverPath, "k8s_1", "nginx_service.yaml");
 
 
     const serverYamlContent = await readFile(serverDataYamlPath);
@@ -54,6 +58,8 @@ export async function serverpodK8sFileGenerate(projectPath: string): Promise<voi
     createFile(testDataSpyPath, testDataSpy);
     createFile(testDataEndPointPath, testDataEndpoint);
     createFile(serverHandleCmdsPath, serverServiceFile(projectName));
+    createFile(clusterIssuerPath, clusterIssuerFile);
+    createFile(nginxServicePath, nginxServiceFile);
 
     // Dockerfile.prod 
     const dockerfileProdGenerator = new DockerfileProdGenerator(fileSystem);
