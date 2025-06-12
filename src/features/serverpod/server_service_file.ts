@@ -1,4 +1,8 @@
-export const serverServiceFile = (projectName: string) => {
+import { ServerDataConfig } from "./server_yaml_parser";
+
+export const serverServiceFile = (data: ServerDataConfig) => {
+    const projectName = data.project.name;
+
 return `
 
 SERVICE_SECRET
@@ -7,28 +11,25 @@ REGISTRY_PASSWORD
 REDIS_PASSWORD
 KUBE_CONFIG
 DB_PASSWORD
-
-
-
+REGISTRY_EMAIL
 
 # serverpod
 docker compose up -d
+serverpod create-migration --experimental-features=all
 serverpod generate --experimental-features=all
 dart bin/main.dart --apply-migrations
-serverpod create-migration --experimental-features=all
 
 docker compose down -v
 
 #kubernaties
-1. Установить дополнение cert-manager
+# 1. Установить nginx ingress
+# 2. Установить дополнение cert-manager
 # Секрет для Docker Registry
 kubectl apply -f k8s_1/
 
-kubectl create secret docker-registry timeweb-registry-secret --docker-server=dbe81550-wise-chickadee.registry.twcstorage.ru --docker-username=ВАШ_ПОЛЬЗОВАТЕЛЬ --docker-password=ВАШ_ПАРОЛЬ --docker-email=frolprank@gmail.com
-kubectl create secret generic serverpod-secrets-${projectName} --from-literal=database-password='пароль' --from-literal=redis-password='пароль' --from-literal=service-secret='пароль'
+# проброс порта для бд
+kubectl port-forward pod/db-proxy 54321:${data.database.port}
 
-
-kubectl apply -f k8s/
 
 [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes('пароль'))
 

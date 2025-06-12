@@ -23,6 +23,7 @@ import { ConfigProductionGenerator } from "./generators/config_production_genera
 import { WorkflowDeploymentDockerGenerator } from "./generators/workflow_deployment_docker_generator";
 import { nginxServiceFile } from "./k8s/nginx-service";
 import { clusterIssuerFile } from "./k8s/cluster_issuer_file";
+import { pgProxyPodFile } from "./k8s/pg_proxy_pod";
 
 
 export async function serverpodK8sFileGenerate(projectPath: string): Promise<void> {
@@ -36,6 +37,7 @@ export async function serverpodK8sFileGenerate(projectPath: string): Promise<voi
     const serverHandleCmdsPath = path.join(serverPath, "_server_handle_files", "_server_commands.ps1");
     const clusterIssuerPath = path.join(serverPath, "k8s_1", "cluster_issuer.yaml");
     const nginxServicePath = path.join(serverPath, "k8s_1", "nginx_service.yaml");
+    const pgProxyPodPath = path.join(serverPath, "k8s_1", "pg-proxy-pod.yaml");
 
 
     const serverYamlContent = await readFile(serverDataYamlPath);
@@ -57,9 +59,12 @@ export async function serverpodK8sFileGenerate(projectPath: string): Promise<voi
 
     createFile(testDataSpyPath, testDataSpy);
     createFile(testDataEndPointPath, testDataEndpoint);
-    createFile(serverHandleCmdsPath, serverServiceFile(projectName));
+    createFile(serverHandleCmdsPath, serverServiceFile(serverYamlData));
     createFile(clusterIssuerPath, clusterIssuerFile);
     createFile(nginxServicePath, nginxServiceFile);
+    createFile(pgProxyPodPath, pgProxyPodFile(serverYamlData));
+
+
 
     // Dockerfile.prod 
     const dockerfileProdGenerator = new DockerfileProdGenerator(fileSystem);
@@ -86,8 +91,8 @@ export async function serverpodK8sFileGenerate(projectPath: string): Promise<voi
     await serviceGenerator.generate(projectPath, undefined, serverYamlData);
 
     // k8s/secret.yaml    
-    const secretGenerator = new SecretGenerator(fileSystem);
-    await secretGenerator.generate(projectPath, undefined, serverYamlData);
+    // const secretGenerator = new SecretGenerator(fileSystem);
+    // await secretGenerator.generate(projectPath, undefined, serverYamlData);
 
     const configProductionGenerator = new ConfigProductionGenerator(fileSystem);
     await configProductionGenerator.generate(projectPath, undefined, serverYamlData);
