@@ -16,6 +16,7 @@ export interface ServerDataConfig {
       insights: string;
     };
     email: string;
+    domain_registy: string;
   };
   database: {
     host: string;

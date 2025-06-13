@@ -84,7 +84,7 @@ jobs:
 
       - name: Create or Update Image Pull Secret
         run: |
-          kubectl create secret docker-registry timeweb-registry-secret             --docker-server=\${{ secrets.REGISTRY_DOMAIN }}             --docker-username=\${{ secrets.REGISTRY_USER }}             --docker-password=\${{ secrets.REGISTRY_PASSWORD }}             --docker-email=\${{ secrets.REGISTRY_EMAIL }}             --dry-run=client -o yaml | kubectl apply -f -
+          kubectl create secret docker-registry timeweb-registry-secret             --docker-server=\${{ secrets.REGISTRY_DOMAIN }}             --docker-username=\${{ secrets.REGISTRY_USER }}             --docker-password=\${{ secrets.REGISTRY_PASSWORD }}             --docker-email=${data.server.email}             --dry-run=client -o yaml | kubectl apply -f -
 
       - name: Create or Update Kubernetes Secret for Serverpod
         run: |
@@ -95,8 +95,8 @@ jobs:
           echo "Updating manifests with image tag: \${{ needs.build-and-push-image.outputs.tag }}"
           
           # Более универсальная замена - заменяет любой тег после ${appName}-server:
-          sed -i 's|\${{ secrets.REGISTRY_DOMAIN }}/${appName}-server:.*|\${{ secrets.REGISTRY_DOMAIN  }}/${appName}-server:\${{ needs.build-and-push-image.outputs.tag }}|g' ${appName}_server/k8s/deployment.yaml
-          sed -i 's|\${{ secrets.REGISTRY_DOMAIN }}/${appName}-server:.*|\${{ secrets.REGISTRY_DOMAIN  }}/${appName}-server:\${{ needs.build-and-push-image.outputs.tag }}|g' ${appName}_server/k8s/job.yaml
+          sed -i 's|.*/${appName}-server:.*|\${{ secrets.REGISTRY_DOMAIN }}/${appName}-server:\${{ needs.build-and-push-image.outputs.tag }}|g' ${appName}_server/k8s/deployment.yaml
+          sed -i 's|.*/${appName}-server:.*|\${{ secrets.REGISTRY_DOMAIN }}/${appName}-server:\${{ needs.build-and-push-image.outputs.tag }}|g' ${appName}_server/k8s/job.yaml
           
           # Проверяем только строку с образом
           echo "Updated deployment image:"
