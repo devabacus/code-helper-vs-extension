@@ -21,6 +21,7 @@ export class WorkflowDeploymentDockerGenerator extends BaseGenerator<ServerDataC
     const appName = data.project.name;
 
     return `
+
 name: Build and Deploy to Kubernetes
 
 on:
@@ -48,14 +49,14 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: dbe81550-wise-chickadee.registry.twcstorage.ru/${appName}-server
+          images: \${{ secrets.REGISTRY_DOMAIN }}/${appName}-server
           tags: |
             type=sha,prefix=,format=short
 
       - name: Log in to Timeweb Container Registry
         uses: docker/login-action@v3
         with:
-          registry: dbe81550-wise-chickadee.registry.twcstorage.ru
+          registry: \${{ secrets.REGISTRY_DOMAIN }}
           username: \${{ secrets.REGISTRY_USER }}
           password: \${{ secrets.REGISTRY_PASSWORD }}
 
@@ -83,34 +84,25 @@ jobs:
 
       - name: Create or Update Image Pull Secret
         run: |
-          kubectl create secret docker-registry timeweb-registry-secret \
-            --docker-server=dbe81550-wise-chickadee.registry.twcstorage.ru \
-            --docker-username=\${{ secrets.REGISTRY_USER }} \
-            --docker-password=\${{ secrets.REGISTRY_PASSWORD }} \
-            --docker-email=\${{ secrets.REGISTRY_EMAIL }} \
-            --dry-run=client -o yaml | kubectl apply -f -
+          kubectl create secret docker-registry timeweb-registry-secret             --docker-server=\${{ secrets.REGISTRY_DOMAIN }}             --docker-username=\${{ secrets.REGISTRY_USER }}             --docker-password=\${{ secrets.REGISTRY_PASSWORD }}             --docker-email=\${{ secrets.REGISTRY_EMAIL }}             --dry-run=client -o yaml | kubectl apply -f -
 
       - name: Create or Update Kubernetes Secret for Serverpod
         run: |
-          kubectl create secret generic serverpod-secrets-${appName} \
-            --from-literal=database-password='\${{ secrets.DB_PASSWORD }}' \
-            --from-literal=redis-password='\${{ secrets.REDIS_PASSWORD }}' \
-            --from-literal=service-secret='\${{ secrets.SERVICE_SECRET }}' \
-            --dry-run=client -o yaml | kubectl apply -f -
+          kubectl create secret generic serverpod-secrets-${appName}             --from-literal=database-password='\${{ secrets.DB_PASSWORD }}'             --from-literal=redis-password='\${{ secrets.REDIS_PASSWORD }}'             --from-literal=service-secret='\${{ secrets.SERVICE_SECRET }}'             --dry-run=client -o yaml | kubectl apply -f -
 
       - name: Update manifests with new image tag
         run: |
           echo "Updating manifests with image tag: \${{ needs.build-and-push-image.outputs.tag }}"
           
           # Более универсальная замена - заменяет любой тег после ${appName}-server:
-          sed -i 's|dbe81550-wise-chickadee.registry.twcstorage.ru/${appName}-server:.*|dbe81550-wise-chickadee.registry.twcstorage.ru/${appName}-server:\${{ needs.build-and-push-image.outputs.tag }}|g' ${appName}_server/k8s/deployment.yaml
-          sed -i 's|dbe81550-wise-chickadee.registry.twcstorage.ru/${appName}-server:.*|dbe81550-wise-chickadee.registry.twcstorage.ru/${appName}-server:\${{ needs.build-and-push-image.outputs.tag }}|g' ${appName}_server/k8s/job.yaml
+          sed -i 's|\${{ secrets.REGISTRY_DOMAIN }}/${appName}-server:.*|\${{ secrets.REGISTRY_DOMAIN  }}/${appName}-server:\${{ needs.build-and-push-image.outputs.tag }}|g' ${appName}_server/k8s/deployment.yaml
+          sed -i 's|\${{ secrets.REGISTRY_DOMAIN }}/${appName}-server:.*|\${{ secrets.REGISTRY_DOMAIN  }}/${appName}-server:\${{ needs.build-and-push-image.outputs.tag }}|g' ${appName}_server/k8s/job.yaml
           
           # Проверяем только строку с образом
           echo "Updated deployment image:"
-          grep "dbe81550-wise-chickadee.registry.twcstorage.ru/${appName}-server:" ${appName}_server/k8s/deployment.yaml
+          grep "\${{ secrets.REGISTRY_DOMAIN }}/${appName}-server:" ${appName}_server/k8s/deployment.yaml
           echo "Updated job image:"
-          grep "dbe81550-wise-chickadee.registry.twcstorage.ru/${appName}-server:" ${appName}_server/k8s/job.yaml
+          grep "\${{ secrets.REGISTRY_DOMAIN }}/${appName}-server:" ${appName}_server/k8s/job.yaml
 
       - name: Apply infrastructure manifests
         run: |
@@ -134,6 +126,7 @@ jobs:
           
           # Показываем финальный статус
           kubectl get pods -l app=${appName}-server
+    
     `;
   }
 }

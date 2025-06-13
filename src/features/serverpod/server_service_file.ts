@@ -5,13 +5,14 @@ export const serverServiceFile = (data: ServerDataConfig) => {
 
 return `
 
-SERVICE_SECRET
-REGISTRY_USER = dbe81550-wise-chickadee
+REGISTRY_DOMAIN
+REGISTRY_USER
 REGISTRY_PASSWORD
-REDIS_PASSWORD
-KUBE_CONFIG
-DB_PASSWORD
 REGISTRY_EMAIL
+REDIS_PASSWORD
+DB_PASSWORD
+SERVICE_SECRET
+KUBE_CONFIG
 
 # serverpod
 docker compose up -d
@@ -28,7 +29,8 @@ docker compose down -v
 kubectl apply -f k8s_1/
 
 # проброс порта для бд
-kubectl port-forward pod/db-proxy 54321:${data.database.port}
+Start-Job -ScriptBlock { kubectl port-forward pod/pg-proxy-pod 54321:${data.database.port} }
+kubectl port-forward pod/pg-proxy-pod 54321:${data.database.port}
 
 
 [Convert]::ToBase64String([System.Text.Encoding]::UTF8.GetBytes('пароль'))
