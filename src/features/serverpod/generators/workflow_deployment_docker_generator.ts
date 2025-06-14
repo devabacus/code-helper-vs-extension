@@ -91,19 +91,20 @@ jobs:
           kubectl create secret generic serverpod-secrets-${appName}             --from-literal=database-password='\${{ secrets.DB_PASSWORD }}'             --from-literal=redis-password='\${{ secrets.REDIS_PASSWORD }}'             --from-literal=service-secret='\${{ secrets.SERVICE_SECRET }}'             --dry-run=client -o yaml | kubectl apply -f -
 
       - name: Update manifests with new image tag
+        env:
+            REGISTRY_DOMAIN: \${{ secrets.REGISTRY_DOMAIN }}
+            IMAGE_TAG: \${{ needs.build-and-push-image.outputs.tag }}
         run: |
-          echo "Updating manifests with image tag: \${{ needs.build-and-push-image.outputs.tag }}"
-          
-          # Более универсальная замена - заменяет любой тег после ${appName}-server:
-          sed -i 's|.*/${appName}-server:.*|\${{ secrets.REGISTRY_DOMAIN }}/${appName}-server:\${{ needs.build-and-push-image.outputs.tag }}|g' ${appName}_server/k8s/deployment.yaml
-          sed -i 's|.*/${appName}-server:.*|\${{ secrets.REGISTRY_DOMAIN }}/${appName}-server:\${{ needs.build-and-push-image.outputs.tag }}|g' ${appName}_server/k8s/job.yaml
-          
-          # Проверяем только строку с образом
-          echo "Updated deployment image:"
-          grep "\${{ secrets.REGISTRY_DOMAIN }}/${appName}-server:" ${appName}_server/k8s/deployment.yaml
-          echo "Updated job image:"
-          grep "\${{ secrets.REGISTRY_DOMAIN }}/${appName}-server:" ${appName}_server/k8s/job.yaml
+          echo "Updating manifests with image tag: $IMAGE_TAG"
 
+          # Команда замены
+          sed -i "s|^\\(\\s*image:\\s*\\).*$|\\1\${REGISTRY_DOMAIN}/${appName}-server:\${IMAGE_TAG}|" ${appName}_server/k8s/deployment.yaml
+          sed -i "s|^\\(\\s*image:\\s*\\).*$|\\1\${REGISTRY_DOMAIN}/${appName}-server:\${IMAGE_TAG}|" ${appName}_server/k8s/job.yaml
+          
+          echo "Updated deployment image:"
+          grep "image:" ${appName}_server/k8s/deployment.yaml
+          echo "Updated job image:"
+          grep "image:" ${appName}_server/k8s/job.yaml
       - name: Apply infrastructure manifests
         run: |
           kubectl apply -f ${appName}_server/k8s/configmap.yaml

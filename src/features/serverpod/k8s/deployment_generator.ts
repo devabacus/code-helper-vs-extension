@@ -49,7 +49,7 @@ spec:
       containers:
       - name: ${appName}-server
         
-        image: dbe81550-wise-chickadee.registry.twcstorage.ru/${appName}-server:latest
+        image: ...registry.twcstorage.ru/${appName}-server:latest
         command: ["/usr/local/bin/server", "--mode", "production", "--role", "monolith"]
 
         imagePullPolicy: Always 

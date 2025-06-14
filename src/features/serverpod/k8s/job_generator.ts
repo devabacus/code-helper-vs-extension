@@ -39,7 +39,7 @@ spec:
       - name: timeweb-registry-secret
       containers:
       - name: migrator-${appName}
-        image: dbe81550-wise-chickadee.registry.twcstorage.ru/${appName}-server:latest
+        image: ...registry.twcstorage.ru/${appName}-server:latest
         command: ["/usr/local/bin/server", "--apply-migrations", "--mode", "production", "--role", "maintenance"]
 
         envFrom:
