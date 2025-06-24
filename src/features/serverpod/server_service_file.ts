@@ -4,6 +4,8 @@ export const serverServiceFile = (data: ServerDataConfig) => {
     const projectName = data.project.name;
 
 return `
+dart run build_runner build --delete-conflicting-outputs
+
 
 REGISTRY_DOMAIN
 REGISTRY_USER
