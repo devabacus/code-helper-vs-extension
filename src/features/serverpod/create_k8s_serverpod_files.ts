@@ -47,15 +47,14 @@ export async function serverpodK8sFileGenerate(projectPath: string): Promise<voi
     const fileSystem = serviceLocator.getFileSystem();
 
 
-    const mainPath = path.join(flutterPath, "lib", "main.dart");
-    const serverCheckUilPath = path.join(flutterPath, "lib", "check", "server_check_ui.dart");
+    // const mainPath = path.join(flutterPath, "lib", "main.dart");
+    // const serverCheckUilPath = path.join(flutterPath, "lib", "check", "server_check_ui.dart");
     const testDataSpyPath = path.join(serverPath, "lib", "src", "models", "test_data.spy.yaml");
     const testDataEndPointPath = path.join(serverPath, "lib", "src", "endpoints", "test_data_endpoint.dart");
-
+    
     createFile(dockerignorePath, dockerignore);
-    createFile(mainPath, mainFile(projectName));
-    createFile(serverCheckUilPath, serverCheckUi(projectName));
-    createFile(serverCheckUilPath, serverCheckUi(projectName));
+    // createFile(mainPath, mainFile(projectName));
+    // createFile(serverCheckUilPath, serverCheckUi(projectName));
 
     createFile(testDataSpyPath, testDataSpy);
     createFile(testDataEndPointPath, testDataEndpoint);

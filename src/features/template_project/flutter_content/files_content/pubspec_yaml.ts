@@ -17,8 +17,6 @@ dependencies:
 #   path: ../Packages/common_package
 # simple_storage:
 #   path: ../Packages/simple_storage  
-# mlogger:
-#   path: ../Packages/mlogger
 # ui_kit:
 #   path: ../Packages/ui_kit
   serverpod_flutter: 2.8.0
@@ -57,6 +55,9 @@ dependencies:
   uuid: ^4.5.1
   shared_preferences: ^2.5.3
   connectivity_plus: ^6.1.4
+  serverpod_auth_email_flutter: ^2.8.0
+  serverpod_auth_client: ^2.8.0
+  serverpod_auth_shared_flutter: ^2.8.0
 
 dev_dependencies:
   flutter_test:

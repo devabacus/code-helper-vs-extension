@@ -20,6 +20,19 @@ export async function createFolder(path: string) {
     }
 }
 
+export function pathExists(path: string): boolean {
+   return fs.existsSync(path);
+}
+
+export async function createFileOneTime(path: string, content: string) {
+   if (!fs.existsSync(path)) {
+        createFile(path, content);
+   }         
+}
+
+
+
+
 export async function createFile(mpath: string, content: string) {
     if (!fs.existsSync(path.dirname(mpath))) {
         await fs.promises.mkdir(path.dirname(mpath), { recursive: true });

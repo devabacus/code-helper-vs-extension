@@ -1,4 +1,4 @@
-import { executeCommand, executeInTerminal } from "../../utils";
+import { createFile, createFileOneTime, executeCommand, executeInTerminal, pathExists } from "../../utils";
 import { getActiveEditorPath } from "../../utils/path_util";
 import { unCap } from "../../utils/text_work/text_util";
 import { getDocText } from "../../utils/ui/ui_util";
@@ -13,6 +13,12 @@ import { DartTestGeneratorFactory } from "./factories/test_generator_factory";
 import { GenerateTestFilesCommand } from "./commands/generate_test_files_commands";
 import path from "path";
 import { DriftTableParser } from "./feature/data/datasources/local/tables/drift_table_parser";
+import { syncMetaDataTableFile } from "./feature/data/datasources/local/tables/sync_metadata_table_file";
+import { sync_metadata_dao_file } from "./core/database/local/daos/sync_metadata_dao_file";
+import { sync_registry_file } from "./core/sync/sync_registry_file";
+import { sync_controller_provider_file } from "./core/sync/sync_controller_provider_file";
+import { base_sync_repository } from "./core/sync/base_sync_repository_file";
+import { database_types_file } from "./core/database/local/database_types_file";
 
 export async function createDataFiles() {
     const driftClassCode = getDocText();
@@ -23,9 +29,9 @@ export async function createDataFiles() {
     const currentFilePath = getActiveEditorPath()!; // Путь к Drift-файлу в a3_flutter
     // Корень Flutter-проекта (например, G:\Projects\Flutter\serverpod\a3\a3_flutter)
     const flutterProjectPath = currentFilePath.split(/\Wlib\W/)[0];
-    
+
     // Имя серверного проекта (например, a3_server)
-    const serverProjectName = path.basename(flutterProjectPath).replace('_flutter', '_server'); 
+    const serverProjectName = path.basename(flutterProjectPath).replace('_flutter', '_server');
     const serverProjectRoot = path.join(flutterProjectPath, '..', serverProjectName); // Корень серверного проекта
 
     // Путь к директории моделей в Serverpod server-модуле
@@ -33,9 +39,14 @@ export async function createDataFiles() {
     const serverpodModelDir = path.join(flutterProjectPath, '..', serverProjectName, 'lib', 'src', 'models');
     const serverProjectEndpointsDir = path.join(serverProjectRoot, 'lib', 'src', 'endpoints'); // Путь к эндпоинтам
 
-    
     const featurePath = currentFilePath.split(/\Wdata\W/)[0]; // Для остальных генераторов Flutter
     const featureTestPath = path.join(flutterProjectPath, "test", featurePath.split('lib')[1]);
+
+    const syncMetaDataTablePath = path.join(featurePath, "data", "datasource", "data", "local", "tables", "sync_metadata_table.dart");
+     const syncMetaDataDaoPath = path.join(flutterProjectPath, "lib", "core", "database", "local", "daos", "sync_metadata_dao.dart");
+
+    createFileOneTime(syncMetaDataTablePath, syncMetaDataTableFile);
+    createFileOneTime(syncMetaDataDaoPath, sync_metadata_dao_file);
 
     const serviceLocator = ServiceLocator.getInstance();
     const fileSystem = serviceLocator.getFileSystem();
@@ -53,7 +64,7 @@ export async function createDataFiles() {
     const generatorCommands = new GenerateAllFilesCommand(
         generatorFactory,
         featurePath,
-        entityName, 
+        entityName,
         commandData,
         serverpodModelDir,
         serverProjectEndpointsDir
@@ -62,7 +73,7 @@ export async function createDataFiles() {
 
     await generatorCommands.execute(); // await, если execute асинхронный
     await executeCommand("serverpod generate --experimental-features=all", serverProjectRoot);
-    
+
     await generateTestFilesCommand.execute(); // await, если execute асинхронный
 
     await appDatabaseRoutine(currentFilePath, entityName);
