@@ -14,7 +14,7 @@ export class ServerpodYamlGenerator extends BaseGenerator {
     }
 
     protected getPath(basePath: string, entityName: string): string {
-        return path.join(basePath, `${toSnakeCase(entityName)}.spy.yaml`);
+        return path.join(basePath, `${entityName}`,  `${toSnakeCase(entityName)}.spy.yaml`);
     }
 
     private mapDriftTypeToServerpod(
@@ -25,6 +25,7 @@ export class ServerpodYamlGenerator extends BaseGenerator {
         if (fieldName === 'id' && driftFieldType === 'String') {
             return 'UuidValue?';
         }
+        if(fieldName == 'lastModified') {return 'DateTime?';}
         if (isForeignKeyFieldThatShouldBeUuid && driftFieldType === 'String') {
             return 'UuidValue?';
         }
@@ -61,7 +62,11 @@ export class ServerpodYamlGenerator extends BaseGenerator {
         for (const field of tableParser.getFields()) {
             if (field.name === 'id' && field.type === 'String') {
                 yamlContent += `  id: UuidValue?, defaultPersist=random_v7\n`;
-            } else if (!fkFieldsHandledAsObjectRelations.has(field.name)) {
+                yamlContent += `  isDeleted: bool, default=false\n`; //пока для всех нужно просто добавить потом надо будет что-то придумать
+                
+            } else if (field.name === 'syncStatus') {continue;}
+            
+            else if (!fkFieldsHandledAsObjectRelations.has(field.name)) {
                 const serverpodType = this.mapDriftTypeToServerpod(field.type, field.name, false);
                 yamlContent += `  ${field.name}: ${serverpodType}${field.isNullable ? '?' : ''}\n`;
             }

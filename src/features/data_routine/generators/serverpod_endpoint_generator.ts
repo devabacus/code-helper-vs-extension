@@ -11,10 +11,7 @@ export class ServerpodEndpointGenerator extends BaseGenerator<{ classParser: Dri
     }
 
     protected getPath(basePath: string, entityNamePascalCase?: string): string {
-        if (!entityNamePascalCase) {
-            throw new Error("Имя сущности (PascalCase) обязательно для пути ServerpodEndpointGenerator.");
-        }
-        return path.join(basePath, `${toSnakeCase(entityNamePascalCase)}_endpoint.dart`); //
+        return path.join(basePath, `${toSnakeCase(entityNamePascalCase!)}_endpoint.dart`); 
     }
 
     private getFkIdServerpodType(fkDriftFieldType: string, isNullable: boolean): string {
@@ -58,13 +55,7 @@ export class ServerpodEndpointGenerator extends BaseGenerator<{ classParser: Dri
             } else if (pkDriftFieldInfo.type === "String") {
                 findByIdParamType = "UuidValue";
             }
-        } else {
-            // Если поле 'id' не найдено или его тип неизвестен, используем UuidValue по умолчанию,
-            // но это может потребовать внимания, если PK не 'id' или не String/int.
-            // Для Serverpod стандартный PK - это 'id' типа int (по умолчанию) или UuidValue.
-            // console.warn(`Поле первичного ключа 'id' не найдено или имеет неожиданный тип для ${classNamePascal} в DriftClassParser. Тип ID для эндпоинта по умолчанию UuidValue.`);
-        }
-        
+        } 
         const driftFields: DriftClassField[] = classParser.fields;
         let orderByField = "id"; 
         if (driftFields.find(f => f.name === "title")) {
@@ -72,9 +63,6 @@ export class ServerpodEndpointGenerator extends BaseGenerator<{ classParser: Dri
         } else if (driftFields.find(f => f.name === "name")) {
             orderByField = "name";
         }
-        // Если orderByField это 'id', а тип 'id' в Drift был String (стал UuidValue в Serverpod),
-        // то для orderBy может потребоваться t.id.uuid если бы мы сортировали по строковому представлению.
-        // Но так как t.id в Serverpod уже правильного типа (int или UuidValue), просто t.id должно работать.
 
         const tableLambdaVar = classNameCamel.charAt(0); 
 

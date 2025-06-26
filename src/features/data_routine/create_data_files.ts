@@ -19,6 +19,8 @@ import { sync_registry_file } from "./core/sync/sync_registry_file";
 import { sync_controller_provider_file } from "./core/sync/sync_controller_provider_file";
 import { base_sync_repository } from "./core/sync/base_sync_repository_file";
 import { database_types_file } from "./core/database/local/database_types_file";
+import { sync_event_type_spy } from "./generators/sync_event_type_spy";
+import { entity_sync_event_spy_file } from "./generators/entity_sync_event_spy_file";
 
 export async function createDataFiles() {
     const driftClassCode = getDocText();
@@ -43,7 +45,13 @@ export async function createDataFiles() {
     const featureTestPath = path.join(flutterProjectPath, "test", featurePath.split('lib')[1]);
 
     const syncMetaDataTablePath = path.join(featurePath, "data", "datasource", "data", "local", "tables", "sync_metadata_table.dart");
-     const syncMetaDataDaoPath = path.join(flutterProjectPath, "lib", "core", "database", "local", "daos", "sync_metadata_dao.dart");
+    const syncMetaDataDaoPath = path.join(flutterProjectPath, "lib", "core", "database", "local", "daos", "sync_metadata_dao.dart");
+    // serverpod
+    const syncEventTypePath = path.join(serverProjectRoot, "lib", "src", "models", "sync_event_type.spy.yaml");
+    const entitySyncEventPath = path.join(serverProjectRoot, "lib", "src", "models", `${entityName}`, `${entityName}_sync_event.spy.yaml`);
+    createFileOneTime(syncEventTypePath, sync_event_type_spy);
+    
+    createFileOneTime(entitySyncEventPath, entity_sync_event_spy_file(entityName));
 
     createFileOneTime(syncMetaDataTablePath, syncMetaDataTableFile);
     createFileOneTime(syncMetaDataDaoPath, sync_metadata_dao_file);

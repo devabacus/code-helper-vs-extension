@@ -133,7 +133,7 @@ export class GenerateAllFilesCommand implements Command {
             }
             }
         }
-
+        
         // Генерация Serverpod YAML файла, если serverpodProtocolModelDir предоставлен
         if (this.serverpodProtocolModelDir) {
             // entityName для Serverpod YAML файла - это имя класса Drift (PascalCase),
@@ -147,6 +147,8 @@ export class GenerateAllFilesCommand implements Command {
                 serverpodEntityName, // camelCase имя, которое getPath преобразует в snake_case для имени файла
                 { classParser: this.classParser, tableParser: this.tableParser }
             );
+
+            
         }
     }
 }
