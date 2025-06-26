@@ -1,86 +1,29 @@
+import * as yaml from 'js-yaml';
 import { ServerpodModel, ServerpodField, ServerpodIndex } from './types';
 import { RelationAnalyzer } from './relation-analyzer';
-import { IndexParser } from './index-parser';
 
 export class ServerpodYamlParser {
   
   static parse(yamlContent: string): ServerpodModel {
-    // filter(line => line); удаляет пустые строки
-    const lines = yamlContent.split('\n').map(line => line.trim()).filter(line => line);
-    
-    let className = '';
-    let tableName = '';
-    const fields: ServerpodField[] = [];
-    let indexes: ServerpodIndex[] = [];
-    
-    let inFieldsSection = false;
-    let inIndexesSection = false;
-    
-    for (let i = 0; i < lines.length; i++) {
-      const line = lines[i];
-      
-      // Парсим class
-      if (line.startsWith('class:')) {
-        className = line.split(':')[1].trim();
-        continue;
-      }
-      
-      // Парсим table
-      if (line.startsWith('table:')) {
-        tableName = line.split(':')[1].trim();
-        continue;
-      }
-      
-      // Начало секции fields
-      if (line.startsWith('fields:')) {
-        inFieldsSection = true;
-        inIndexesSection = false;
-        continue;
-      }
-      
-      // Начало секции indexes
-      if (line.startsWith('indexes:')) {
-        inFieldsSection = false;
-        inIndexesSection = true;
-        continue;
-      }
-      
-      // Парсим поля
-      if (inFieldsSection && line.includes(':')) {
-        const field = this.parseField(line);
-        if (field) {
-          fields.push(field);
-        }
-      }
-      
-      // Парсим индексы
-      if (inIndexesSection && line.includes(':')) {
-        // Делегируем парсинг индексов в IndexParser
-        const remainingLines = lines.slice(i);
-        const parsedIndexes = IndexParser.parseIndexesSection(remainingLines, 0);
-        indexes = parsedIndexes;
-        break; // Прекращаем обработку, так как индексы обработаны
-      }
-    }
+    const parsed = yaml.load(yamlContent) as any;
     
     return {
-      className,
-      tableName,
-      fields,
-      indexes: indexes.length > 0 ? indexes : undefined
+      className: parsed.class || '',
+      tableName: parsed.table || '',
+      fields: this.parseFields(parsed.fields || {}),
+      indexes: this.parseIndexes(parsed.indexes)
     };
   }
   
-  private static parseField(line: string): ServerpodField | null {
-    // Разделяем по первому двоеточию
-    const colonIndex = line.indexOf(':');
-    if (colonIndex === -1) return null;
-    
-    const fieldName = line.substring(0, colonIndex).trim();
-    const fieldDefinition = line.substring(colonIndex + 1).trim();
-    
+  private static parseFields(fieldsObj: any): ServerpodField[] {
+    return Object.entries(fieldsObj).map(([name, definition]) => 
+      this.parseField(name, definition as string)
+    );
+  }
+  
+  private static parseField(name: string, definition: string): ServerpodField {
     // Парсим тип и параметры
-    const parts = fieldDefinition.split(',').map(part => part.trim());
+    const parts = definition.split(',').map(part => part.trim());
     const typePart = parts[0];
     
     // Определяем nullable (если тип заканчивается на ?)
@@ -91,7 +34,7 @@ export class ServerpodYamlParser {
     const isRelation = parts.includes('relation');
     
     const field: ServerpodField = {
-      name: fieldName,
+      name,
       type,
       nullable,
       isRelation
@@ -119,18 +62,22 @@ export class ServerpodYamlParser {
     return field;
   }
   
-  // Парсинг нескольких моделей из одного файла
-  static parseMultiple(yamlContent: string): ServerpodModel[] {
-    const models: ServerpodModel[] = [];
-    const sections = yamlContent.split(/(?=^class:)/m).filter(section => section.trim());
-    
-    for (const section of sections) {
-      const model = this.parse(section);
-      if (model.className) {
-        models.push(model);
-      }
+  private static parseIndexes(indexesObj: any): ServerpodIndex[] | undefined {
+    if (!indexesObj || typeof indexesObj !== 'object') {
+      return undefined;
     }
     
-    return models;
+    return Object.entries(indexesObj).map(([name, definition]) => 
+      this.parseIndex(name, definition as any)
+    );
   }
+  
+  private static parseIndex(name: string, definition: any): ServerpodIndex {
+    return {
+      name,
+      fields: definition.fields || [],
+      unique: definition.unique || false
+    };
+  }
+
 }
