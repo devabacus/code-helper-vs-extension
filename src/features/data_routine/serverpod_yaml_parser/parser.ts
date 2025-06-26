@@ -79,5 +79,4 @@ export class ServerpodYamlParser {
       unique: definition.unique || false
     };
   }
-
 }
