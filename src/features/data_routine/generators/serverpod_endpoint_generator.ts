@@ -13,7 +13,6 @@ export class ServerpodEndpointGenerator extends BaseGenerator<{ classParser: Dri
     protected getPath(basePath: string, entityNamePascalCase?: string): string {
         return path.join(basePath, `${toSnakeCase(entityNamePascalCase!)}_endpoint.dart`); 
     }
-
     
     protected getContent(
         data?: { classParser: DriftClassParser, tableParser: DriftTableParser },
@@ -26,66 +25,28 @@ export class ServerpodEndpointGenerator extends BaseGenerator<{ classParser: Dri
 
         const { classParser, tableParser } = data;
 
-        const classNamePascal = entityNamePascalCase; // Task
-        const classNameCamel = unCap(classNamePascal); // task
-        const classNamePluralPascal = pluralConvert(classNamePascal); // Tasks
+        const D = entityNamePascalCase; // Task
+        const d = unCap(D); // task
+        const Ds = pluralConvert(D); // Tasks
 
-        // Определение имени серверного проекта для импортов
-        // baseEndpointsPath = <server_project_root>/lib/src/endpoints
-        // Нам нужен <server_project_name>
-        const serverProjectLibSrcPath = path.join(baseEndpointsPath, '..'); // <server_project_root>/lib/src
-        const serverProjectLibPath = path.join(serverProjectLibSrcPath, '..'); // <server_project_root>/lib
-        const serverProjectRootPath = path.join(serverProjectLibPath, '..'); // <server_project_root>
-        const serverProjectNameSnake = path.basename(serverProjectRootPath); // server_project_name
-
-        const pkDriftFieldInfo = classParser.fields.find(f => f.name === 'id'); // Ищем поле ID в DriftClassParser
-        let findByIdParamType = "UuidValue"; // Тип для getById, delete (Serverpod ID type)
-
-        if (pkDriftFieldInfo) {
-            if (pkDriftFieldInfo.type === "int") {
-                findByIdParamType = "int";
-            } else if (pkDriftFieldInfo.type === "String") {
-                findByIdParamType = "UuidValue";
-            }
-        } 
-        const driftFields: DriftClassField[] = classParser.fields;
-        let orderByField = "id"; 
-        if (driftFields.find(f => f.name === "title")) {
-            orderByField = "title";
-        } else if (driftFields.find(f => f.name === "name")) {
-            orderByField = "name";
-        }
-
-        const tableLambdaVar = classNameCamel.charAt(0); 
-
+     
         let foreignKeyEndpointMethods = '';
         const references = tableParser.getReferences(); //
 
         if (references && references.length > 0) {
             foreignKeyEndpointMethods = references.map(ref => {
-                const fkColumnName = ref.columnName; // e.g., categoryId (из Drift таблицы)
+                const fkColumnName = ref.columnName; // e.g., ${d}Id (из Drift таблицы)
                 
-                const fkFieldDetailsInDrift = classParser.fields.find(f => f.name === fkColumnName);
-                if (!fkFieldDetailsInDrift) {
-                    console.warn(`ServerpodEndpointGenerator: Не найдены детали для поля внешнего ключа ${fkColumnName} в classParser для ${classNamePascal}. Пропуск генерации метода.`);
-                    return '';
-                }
-                
-                // Имя для части метода: categoryId -> Category
                 let methodNamePart = cap(fkColumnName.replace(/Id$/, '')); 
 
-                const endpointMethodName = `get${classNamePluralPascal}By${methodNamePart}Id`;
+                const endpointMethodName = `get${Ds}By${methodNamePart}Id`;
 
-                // В Serverpod, если у вас в YAML есть 'category: Category?, relation',
-                // то в сгенерированном Dart классе для таблицы Task будет поле 'categoryId'
-                // (или то имя, которое Serverpod выберет/вы укажете для хранения ID).
-                // Мы будем использовать имя столбца fkColumnName (categoryId) для запроса.
                 return `
-  Future<List<${classNamePascal}>> ${endpointMethodName}(Session session, UuidValue ${fkColumnName}) async {
-    return await ${classNamePascal}.db.find(
+  Future<List<${D}>> ${endpointMethodName}(Session session, UuidValue ${fkColumnName}) async {
+    return await ${D}.db.find(
       session,
-      where: (${tableLambdaVar}) => ${tableLambdaVar}.${fkColumnName}.equals(${fkColumnName}),
-      orderBy: (${tableLambdaVar}) => ${tableLambdaVar}.${orderByField},
+      where: (c) => c.${fkColumnName}.equals(${fkColumnName}),
+      orderBy: (c) => c.id,
     );
   }
 `;
@@ -93,46 +54,158 @@ export class ServerpodEndpointGenerator extends BaseGenerator<{ classParser: Dri
         }
 
         return `import 'package:serverpod/serverpod.dart';
-import 'package:${serverProjectNameSnake}/src/generated/protocol.dart';
+import 'package:sync1_server/src/generated/protocol.dart';
 
-class ${classNamePascal}Endpoint extends Endpoint {
-  Future<${classNamePascal}> create${classNamePascal}(Session session, ${classNamePascal} ${classNameCamel}) async {
-    await ${classNamePascal}.db.insertRow(session, ${classNameCamel});
-    return ${classNameCamel};
+const _${d}ChannelBase = 'sync1_${d}_events_for_user_';
+
+class ${D}Endpoint extends Endpoint {
+  
+  Future<int> _getAuthenticatedUserId(Session session) async {
+    final authInfo = await session.authenticated;
+    final userId = authInfo?.userId;
+
+    if (userId == null) {
+      throw Exception('Пользователь не авторизован.');
+    }
+    return userId;
   }
 
-  Future<${classNamePascal}?> get${classNamePascal}ById(Session session, ${findByIdParamType} id) async {
-    return await ${classNamePascal}.db.findById(session, id);
+  Future<void> _notifyChange(Session session, ${D}SyncEvent event, int userId) async {
+    final channel = '$_${d}ChannelBase$userId';
+    await session.messages.postMessage(channel, event);
+    session.log('🔔 Событие \${event.type.name} отправлено в канал "$channel"');
   }
 
-  Future<List<${classNamePascal}>> get${classNamePluralPascal}(Session session) async {
-    return await ${classNamePascal}.db.find(
+  Future<${D}> create${D}(Session session, ${D} ${d}) async {
+  final userId = await _getAuthenticatedUserId(session);
+
+  final existing${D} = await ${D}.db.findFirstRow(
+    session,
+    where: (c) => c.id.equals(${d}.id) & c.userId.equals(userId),
+  );
+
+  final server${D} = ${d}.copyWith(
+      userId: userId,
+      lastModified: DateTime.now().toUtc(),
+      isDeleted: false,
+  );
+
+  if (existing${D} != null) {
+    session.log('ℹ️ "create${D}" вызван для существующего ID. Выполняется обновление (воскрешение).');
+    final updated${D} = await ${D}.db.updateRow(session, server${D});
+
+    await _notifyChange(session, ${D}SyncEvent(
+        type: SyncEventType.update, 
+        ${d}: updated${D},
+    ), userId);
+    return updated${D};
+
+  } else {
+    final created${D} = await ${D}.db.insertRow(session, server${D});
+    await _notifyChange(session, ${D}SyncEvent(
+        type: SyncEventType.create,
+        ${d}: created${D},
+    ), userId);
+    return created${D};
+  }
+}
+
+${foreignKeyEndpointMethods}
+
+  Future<List<${D}>> get${Ds}(Session session, {int? limit}) async {
+    final userId = await _getAuthenticatedUserId(session);
+    return await ${D}.db.find(
       session,
-      orderBy: (${tableLambdaVar}) => ${tableLambdaVar}.${orderByField},
+      where: (c) => c.userId.equals(userId) & c.isDeleted.equals(false),
+      orderBy: (c) => c.title,         
+      limit: limit
+    );
+  }     
+
+   Future<${D}?> get${D}ById(Session session, UuidValue id) async {
+    final userId = await _getAuthenticatedUserId(session);
+    
+    return await ${D}.db.findFirstRow(
+      session,
+      where: (c) => c.id.equals(id) & c.userId.equals(userId) & c.isDeleted.equals(false),
     );
   }
-${foreignKeyEndpointMethods}
-  Future<bool> update${classNamePascal}(Session session, ${classNamePascal} ${classNameCamel}) async {
+
+  Future<List<${D}>> get${Ds}Since(Session session, DateTime? since) async {
+    final userId = await _getAuthenticatedUserId(session);
+    if (since == null) {
+      return get${Ds}(session);
+    }
+    return await ${D}.db.find(
+      session,
+      where: (c) => c.userId.equals(userId) & (c.lastModified >= since),
+      orderBy: (c) => c.lastModified,
+    );
+  }
+
+  Future<bool> update${D}(Session session, ${D} ${d}) async {
+    final userId = await _getAuthenticatedUserId(session);
+    final original${D} = await ${D}.db.findFirstRow(
+      session,
+      where: (c) => c.id.equals(${d}.id) & c.userId.equals(userId) & c.isDeleted.equals(false),
+    );
+    if (original${D} == null) {
+      return false; 
+    }
+    final server${D} = ${d}.copyWith(
+      userId: userId,
+      lastModified: DateTime.now().toUtc(),
+    );
     try {
-      await ${classNamePascal}.db.updateRow(session, ${classNameCamel});
+      await ${D}.db.updateRow(session, server${D});
+      await _notifyChange(session, ${D}SyncEvent(
+        type: SyncEventType.update,
+        ${d}: server${D},
+      ), userId);
       return true;
     } catch (e) {
       return false;
     }
   }
 
-  Future<bool> delete${classNamePascal}(Session session, ${findByIdParamType} id) async {
+  Future<bool> delete${D}(Session session, UuidValue id) async {
+    final userId = await _getAuthenticatedUserId(session);
+    final original${D} = await ${D}.db.findFirstRow(
+      session,
+      where: (c) => c.id.equals(id) & c.userId.equals(userId),
+    );
+
+    if (original${D} == null) return false;
+    final tombstone = original${D}.copyWith(
+      isDeleted: true,
+      lastModified: DateTime.now().toUtc(),
+    );
+
+    final result = await ${D}.db.updateRow(session, tombstone);
+
+    await _notifyChange(session, ${D}SyncEvent(
+      type: SyncEventType.delete,
+      ${d}: result, 
+      id: id,
+    ), userId);
+
+    return true;
+  }
+
+  Stream<${D}SyncEvent> watchEvents(Session session) async* {
+    final userId = await _getAuthenticatedUserId(session);
+    final channel = '$_${d}ChannelBase$userId';
+    session.log('🟢 Клиент (user: $userId) подписался на события в канале "$channel"');
     try {
-      var result = await ${classNamePascal}.db.deleteWhere(
-        session,
-        where: (${tableLambdaVar}) => ${tableLambdaVar}.id.equals(id),
-      );
-      return result.isNotEmpty;
-    } catch (e) {
-      return false;
+      await for (var event in session.messages.createStream<${D}SyncEvent>(channel)) {
+        session.log('🔄 Пересылаем событие \${event.type.name} клиенту (user: $userId)');
+        yield event;
+      }
+    } finally {
+      session.log('🔴 Клиент (user: $userId) отписался от канала "$channel"');
     }
   }
-}
+}          
 `;
     }
 }
