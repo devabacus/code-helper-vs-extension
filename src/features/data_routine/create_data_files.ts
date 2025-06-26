@@ -74,8 +74,6 @@ export async function createDataFiles() {
         featurePath,
         entityName,
         commandData,
-        serverpodModelDir,
-        serverProjectEndpointsDir
     );
     const generateTestFilesCommand = new GenerateTestFilesCommand(testGeneratorFactory, featureTestPath, entityName, commandData);
 

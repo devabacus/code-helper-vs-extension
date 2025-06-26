@@ -15,6 +15,7 @@ import { updateRoutingFls } from "../features/template_project/update_files";
 import { executeCommand } from "../utils";
 import { getActiveEditorPath, getLibPath, getRootWorkspaceFolders } from "../utils/path_util";
 import { createDataFilesFromYaml } from "../features/data_routine/create_data_files_from_yaml";
+import { addServerpodModel } from "../features/data_routine/generators/add_serverpod_model";
 
 
 export async function flutterHandler() {
@@ -35,6 +36,7 @@ export async function flutterHandler() {
         'удалить страницу': () => deletePage(getActiveEditorPath()!),
         'Обновить barrel': () => crBarrelFls(getLibPath()),
         'Создать файлы данных': () => createDataFiles(),
+        'Добавить serverpod модель': () => addServerpodModel(),
     };
 
     const choice = await window.showQuickPick(Object.keys(options), {

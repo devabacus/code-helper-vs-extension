@@ -22,44 +22,46 @@ import { database_types_file } from "./core/database/local/database_types_file";
 import { sync_event_type_spy } from "./generators/sync_event_type_spy";
 import { entity_sync_event_spy_file } from "./generators/entity_sync_event_spy_file";
 import { ServerpodYamlParser } from "./serverpod_yaml_parser/parser";
+import { ServerpodEndpointGenerator } from "./generators/serverpod_endpoint_generator";
+import { SERVERPOD_GENERATE } from "../serverpod/commands";
 
 export async function createDataFilesFromYaml() {
     const serverpodYamlModel = getDocText();
     const model = ServerpodYamlParser.parse(serverpodYamlModel);
     // const tableParser = new DriftTableParser(driftClassCode);
+
+    const entityNameCap = model.className;
     const entityName = unCap(model.className);
 
 
-    const currentFilePath = getActiveEditorPath()!; 
+    const currentFilePath = getActiveEditorPath()!;
     const serverProjectRoot = currentFilePath.split(/\Wlib\W/)[0];
-    
+
     // const flutterProjectPath = currentFilePath.split(/\Wlib\W/)[0];
 
     // const serverProjectName = path.basename(flutterProjectPath).replace('_flutter', '_server');
 
     const syncEventTypePath = path.join(serverProjectRoot, "lib", "src", "models", "sync_event_type.spy.yaml");
-    const entitySyncEventPath = path.join(serverProjectRoot, "lib", "src", "models", `${entityName}`, `${entityName}_sync_event.spy.yaml`);
+    const entitySyncEventPath = path.join(serverProjectRoot, "lib", "src", "models", `${entityName}_sync_event.spy.yaml`);
     createFileOneTime(syncEventTypePath, sync_event_type_spy);
     createFileOneTime(entitySyncEventPath, entity_sync_event_spy_file(entityName));
-         
-    const serverProjectEndpointsDir = path.join(serverProjectRoot, 'lib', 'src', 'endpoints'); 
 
-    
+    const serverEndpointsPath = path.join(serverProjectRoot, 'lib', 'src', 'endpoints');
 
-    // const featurePath = currentFilePath.split(/\Wdata\W/)[0]; // Для остальных генераторов Flutter
-    // const featureTestPath = path.join(flutterProjectPath, "test", featurePath.split('lib')[1]);
+    const serviceLocator = ServiceLocator.getInstance();
+    const fileSystem = serviceLocator.getFileSystem();
+    const generatorFactory = new GeneratorFactory(fileSystem);
 
-    // const syncMetaDataTablePath = path.join(featurePath, "data", "datasource", "data", "local", "tables", "sync_metadata_table.dart");
-    // const syncMetaDataDaoPath = path.join(flutterProjectPath, "lib", "core", "database", "local", "daos", "sync_metadata_dao.dart");
-    // // serverpod
+    const serverpodEndpointGenerator = new ServerpodEndpointGenerator(fileSystem);
+    await serverpodEndpointGenerator.generate(serverProjectRoot, model);
 
-    // createFileOneTime(syncMetaDataTablePath, syncMetaDataTableFile);
-    // createFileOneTime(syncMetaDataDaoPath, sync_metadata_dao_file);
 
-    // const serviceLocator = ServiceLocator.getInstance();
-    // const fileSystem = serviceLocator.getFileSystem();
-    // const generatorFactory = new GeneratorFactory(fileSystem);
-    // const testGeneratorFactory = new DartTestGeneratorFactory(fileSystem);
+    // await executeCommand(SERVERPOD_GENERATE, serverProjectRoot);
+            // await executeInTerminal(`cd "${serverProjectRoot}"; ${SERVERPOD_GENERATE}`);
+    executeInTerminal(SERVERPOD_GENERATE, serverProjectRoot);
+
+
+
 
     // const commandData = {
     //     classParser: classParser,

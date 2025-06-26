@@ -1,62 +1,55 @@
 import * as path from 'path';
-import { BaseGenerator } from '../../../core/generators/base_generator'; //
-import { IFileSystem } from '../../../core/interfaces/file_system'; //
-import { DriftClassParser, Field as DriftClassField } from '../feature/data/datasources/local/tables/drift_class_parser'; //
-import { cap, unCap, toSnakeCase, pluralConvert } from '../../../utils/text_work/text_util'; //
-import { DriftTableParser } from '../feature/data/datasources/local/tables/drift_table_parser';
+import { IFileSystem } from '../../../core/interfaces/file_system';
+import { ServerpodModel } from '../serverpod_yaml_parser/types';
+import { cap, unCap, toSnakeCase, pluralConvert } from '../../../utils/text_work/text_util';
 
-export class ServerpodEndpointGenerator extends BaseGenerator<{ classParser: DriftClassParser, tableParser: DriftTableParser }> {
-    constructor(fileSystem: IFileSystem) {
-        super(fileSystem);
+export class ServerpodEndpointGenerator {
+    constructor(private fileSystem: IFileSystem) {}
+
+    async generate(
+        serverProjectPath: string,
+        model: ServerpodModel
+    ): Promise<void> {
+        const endpointsDir = path.join(serverProjectPath, 'lib', 'src', 'endpoints');
+        const filePath = path.join(endpointsDir, `${toSnakeCase(model.className)}_endpoint.dart`);
+        const projectName = path.basename(serverProjectPath).split('_')[0];
+
+        const content = this.getContent(projectName, model);
+        
+        await this.fileSystem.createFile(filePath, content);
     }
 
-    protected getPath(basePath: string, entityNamePascalCase?: string): string {
-        return path.join(basePath, `${toSnakeCase(entityNamePascalCase!)}_endpoint.dart`); 
-    }
-    
-    protected getContent(
-        data?: { classParser: DriftClassParser, tableParser: DriftTableParser },
-        entityNamePascalCase?: string, // Это classNamePascal
-        baseEndpointsPath?: string     // Путь к директории endpoints серверного проекта
-    ): string {
-        if (!data || !entityNamePascalCase || !baseEndpointsPath) {
-            throw new Error("Данные (classParser, tableParser), имя сущности (PascalCase) и baseEndpointsPath обязательны для содержимого ServerpodEndpointGenerator.");
-        }
-
-        const { classParser, tableParser } = data;
-
-        const D = entityNamePascalCase; // Task
+    private getContent(projectName: string, model: ServerpodModel): string {
+        const entityName = model.className;
+        const D = entityName; // Task
         const d = unCap(D); // task
         const Ds = pluralConvert(D); // Tasks
 
-     
+        // Получаем поля связей для генерации методов foreign key
         let foreignKeyEndpointMethods = '';
-        const references = tableParser.getReferences(); //
+        const relationFields = model.fields.filter(field => field.isRelation && field.relationType === 'manyToOne');
 
-        if (references && references.length > 0) {
-            foreignKeyEndpointMethods = references.map(ref => {
-                const fkColumnName = ref.columnName; // e.g., ${d}Id (из Drift таблицы)
-                
-                let methodNamePart = cap(fkColumnName.replace(/Id$/, '')); 
-
+        if (relationFields.length > 0) {
+            foreignKeyEndpointMethods = relationFields.map(field => {
+                const methodNamePart = cap(field.name.replace(/Id$/, ''));
                 const endpointMethodName = `get${Ds}By${methodNamePart}Id`;
+                const paramType = this.getFieldType(field.type);
 
                 return `
-  Future<List<${D}>> ${endpointMethodName}(Session session, UuidValue ${fkColumnName}) async {
+  Future<List<${D}>> ${endpointMethodName}(Session session, ${paramType} ${field.name}) async {
     return await ${D}.db.find(
       session,
-      where: (c) => c.${fkColumnName}.equals(${fkColumnName}),
+      where: (c) => c.${field.name}.equals(${field.name}),
       orderBy: (c) => c.id,
     );
-  }
-`;
+  }`;
             }).join('\n');
         }
 
         return `import 'package:serverpod/serverpod.dart';
-import 'package:sync1_server/src/generated/protocol.dart';
+import 'package:${projectName}_server/src/generated/protocol.dart';
 
-const _${d}ChannelBase = 'sync1_${d}_events_for_user_';
+const _${d}ChannelBase = '${projectName}_${d}_events_for_user_';
 
 class ${D}Endpoint extends Endpoint {
   
@@ -109,8 +102,6 @@ class ${D}Endpoint extends Endpoint {
     return created${D};
   }
 }
-
-${foreignKeyEndpointMethods}
 
   Future<List<${D}>> get${Ds}(Session session, {int? limit}) async {
     final userId = await _getAuthenticatedUserId(session);
@@ -205,7 +196,24 @@ ${foreignKeyEndpointMethods}
       session.log('🔴 Клиент (user: $userId) отписался от канала "$channel"');
     }
   }
-}          
-`;
+    ${foreignKeyEndpointMethods}
+}          `;
+    }
+
+    private getFieldType(serverpodType: string): string {
+        switch (serverpodType.toLowerCase()) {
+            case 'string':
+                return 'UuidValue';
+            case 'int':
+                return 'int';
+            case 'double':
+                return 'double';
+            case 'bool':
+                return 'bool';
+            case 'datetime':
+                return 'DateTime';
+            default:
+                return 'UuidValue';
+        }
     }
 }

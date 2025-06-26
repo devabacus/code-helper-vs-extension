@@ -12,8 +12,6 @@ export class GenerateAllFilesCommand implements Command {
     private relations: TableRelation[];
     private classParser: DriftClassParser;
     private tableParser: DriftTableParser; // <--- Добавлено поле tableParser
-    private serverpodProtocolModelDir?: string; // Опциональный параметр для Serverpod
-    private serverProjectEndpointsDir?: string; // Новое поле
 
 
     constructor(
@@ -26,15 +24,11 @@ export class GenerateAllFilesCommand implements Command {
             isRelationTable: boolean;
             relations: TableRelation[];
         },
-        serverpodProtocolModelDir?: string,
-        serverProjectEndpointsDir?: string // Новый параметр
     ) {
         this.classParser = commandData.classParser;
         this.tableParser = commandData.tableParser;
         this.isRelationTable = commandData.isRelationTable;
         this.relations = commandData.relations;
-        this.serverpodProtocolModelDir = serverpodProtocolModelDir;
-        this.serverProjectEndpointsDir = serverProjectEndpointsDir; // Присваиваем новое поле
     }
 
 
@@ -77,22 +71,12 @@ export class GenerateAllFilesCommand implements Command {
             //presentation layer
             await this.generatorFactory.createPresentStateProviderGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
             await this.generatorFactory.createPresentGetByIdProviderGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
-            if (this.serverProjectEndpointsDir) {
-                const serverpodEntityNamePascal = this.classParser.driftClassNameUpper; // Используем PascalCase
-
-                console.log(`Генерация Serverpod Endpoint для ${serverpodEntityNamePascal}.`);
-                await this.generatorFactory.createServerpodEndpointGenerator().generate(
-                    this.serverProjectEndpointsDir, // Это директория для эндпоинтов, например, <server_proj>/lib/src/endpoints
-                    serverpodEntityNamePascal,    // Передаем имя в PascalCase
-                    { classParser: this.classParser, tableParser: this.tableParser }
-                );
-            }
 
         } else {
             const manyToManyRelation = this.relations.find(r => r.relationType === RelationType.MANY_TO_MANY);
             if (manyToManyRelation && manyToManyRelation.intermediateTable === this.classParser.driftClassNameUpper) {
                 console.log(`Обнаружена связующая таблица: ${entityNameForGenerators}. Связывает ${manyToManyRelation.sourceTable} и ${manyToManyRelation.targetTable}.`);
-                
+
                 await this.generatorFactory.createDaoRelateGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
                 await this.generatorFactory.createDataLocalRelateDataSourceServiceGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
                 await this.generatorFactory.createDataLocalRelateSourceGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
@@ -108,47 +92,7 @@ export class GenerateAllFilesCommand implements Command {
                 await this.generatorFactory.createPresentStateRelateProviderGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
                 await this.generatorFactory.createPresentFilterRelateProviderGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
 
-                // Генерация Serverpod эндпоинта для связующей таблицы
-            if (this.serverProjectEndpointsDir) {
-                    const intermediateTableNamePascal = this.classParser.driftClassNameUpper; // e.g., TaskTagMap
-                    console.log(`Генерация Serverpod Relate Endpoint для ${intermediateTableNamePascal}.`);
-                    await this.generatorFactory.createServerpodRelateEndpointGenerator().generate(
-                        this.serverProjectEndpointsDir,    // Путь к эндпоинтам сервера
-                        intermediateTableNamePascal,      // Имя промежуточной таблицы в PascalCase
-                        this.classParser                  // Передаем DriftClassParser
-                    );
-                }
-
-
-            } else {
-                 console.warn(`Таблица ${entityNameForGenerators} определена как связующая (isRelationTable=true), но не является промежуточной таблицей для MANY_TO_MANY или детали связи не найдены.`);
-                 if (this.serverpodProtocolModelDir) {
-                 const serverpodEntityName = this.classParser.driftClassNameLower;
-                 console.log(`Генерация Serverpod YAML для связующей таблицы ${this.classParser.driftClassNameUpper}.`);
-                 await this.generatorFactory.createServerpodYamlGenerator().generate(
-                     this.serverpodProtocolModelDir,
-                     serverpodEntityName,
-                     { classParser: this.classParser, tableParser: this.tableParser }
-                 );
             }
-            }
-        }
-        
-        // Генерация Serverpod YAML файла, если serverpodProtocolModelDir предоставлен
-        if (this.serverpodProtocolModelDir) {
-            // entityName для Serverpod YAML файла - это имя класса Drift (PascalCase),
-            // которое ServerpodYamlGenerator преобразует в snake_case для имени файла.
-            // А для содержимого YAML (class: Name) используется PascalCase.
-            const serverpodEntityName = this.classParser.driftClassNameLower; // Используем camelCase, ServerpodYamlGenerator сделает toSnakeCase для имени файла
-
-            console.log(`Генерация Serverpod YAML для ${this.classParser.driftClassNameUpper}.`);
-            await this.generatorFactory.createServerpodYamlGenerator().generate(
-                this.serverpodProtocolModelDir,
-                serverpodEntityName, // camelCase имя, которое getPath преобразует в snake_case для имени файла
-                { classParser: this.classParser, tableParser: this.tableParser }
-            );
-
-            
         }
     }
 }

@@ -42,11 +42,11 @@ export async function flutterCreateNewServerPodProject(addTemplateFolders?: (ful
     // createFolder(path.join(projectsPath, projectName));
     const create_command = `serverpod create ${projectName}`;
     await executeCommand(create_command, projectsPath);
-    
+
     const monoRepoPath = path.join(projectsPath, projectName);
-    
+
     const fullFlutterProjectPath = path.join(monoRepoPath, `${projectName}_flutter`);
-    
+
     const serverPath = path.join(monoRepoPath, `${projectName}_server`);
     const flutterPath = path.join(monoRepoPath, `${projectName}_flutter`);
 
@@ -54,7 +54,7 @@ export async function flutterCreateNewServerPodProject(addTemplateFolders?: (ful
 
     const serverDataYamlPath = path.join(serverPath, "server_data.yaml");
     const serverPubSpecYamlPath = path.join(serverPath, "pubspec.yaml");
-    
+
     const mainPath = path.join(flutterPath, "lib", "main.dart");
     const serverCheckUilPath = path.join(flutterPath, "lib", "check", "server_check_ui.dart");
     const authWrapperFilePath = path.join(flutterPath, "lib", "auth_wrapper.dart");
@@ -62,12 +62,12 @@ export async function flutterCreateNewServerPodProject(addTemplateFolders?: (ful
     const serverpodClientProviderFilePath = path.join(flutterPath, "lib", "core", "providers", "serverpod_client_provider.dart");
     const testDataSpyPath = path.join(serverPath, "lib", "src", "models", "test_data.spy.yaml");
     const testDataEndPointPath = path.join(serverPath, "lib", "src", "endpoints", "test_data_endpoint.dart");
-    
+
     const serverFilePath = path.join(serverPath, "lib", "server.dart");
 
     createFile(serverDataYamlPath, serverpodDataYaml(projectName));
     createFile(mainPath, mainFile(projectName));
-    
+
     createFile(appFilePath, appFile);
     createFile(authWrapperFilePath, authWrapperFile());
     createFile(serverpodClientProviderFilePath, serverpodClientProviderFile(projectName));
@@ -85,12 +85,12 @@ export async function flutterCreateNewServerPodProject(addTemplateFolders?: (ful
 
     // 'core/database/local/daos/sync_metadata_dao.dart': sync_metadata_dao_file,
 
-    
+
     createFileOneTime(syncRegistryPath, sync_registry_file);
     createFileOneTime(syncControllerPath, sync_controller_provider_file);
     createFileOneTime(baseSyncRepositoryPath, base_sync_repository);
     createFileOneTime(databaseTypesPath, database_types_file);
-    
+
     createFile(serverCheckUilPath, serverCheckUi(projectName));
 
 
@@ -117,13 +117,11 @@ export async function flutterCreateNewServerPodProject(addTemplateFolders?: (ful
     const homePagePath = path.join(fullFlutterProjectPath, 'lib', 'features', 'home', 'presentation', 'pages', 'home_page.dart');
     const openCommand = `code -g "${homePagePath}" "${monoRepoPath}"`;
 
-    await executeCommand(openCommand, projectsPath);
     await executeCommand(pubGet, fullFlutterProjectPath);
+    await executeCommand(pubGet, serverPath);
     await executeCommand(build_runner, fullFlutterProjectPath);
-    // insertTextToFile(startApp, mainDartPath);
-
-
-    // serverpodK8sFileGenerate(projectsPath);
     await executeCommand(SERVERPOD_GENERATE, serverPath);
+    await executeCommand(openCommand, projectsPath);
+    // serverpodK8sFileGenerate(projectsPath);
 
 }

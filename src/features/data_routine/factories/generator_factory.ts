@@ -189,9 +189,9 @@ export class GeneratorFactory {
         return new ServerpodYamlGenerator(this.fileSystem);
     }
 
-    createServerpodEndpointGenerator(): FileGenerator {
-        return new ServerpodEndpointGenerator(this.fileSystem);
-    }
+    // createServerpodEndpointGenerator(): FileGenerator {
+    //     return new ServerpodEndpointGenerator(this.fileSystem);
+    // }
 
      createServerpodRelateEndpointGenerator(): ServerpodRelateEndpointGenerator { // Измените возвращаемый тип если нужно
         return new ServerpodRelateEndpointGenerator(this.fileSystem);

@@ -38,9 +38,22 @@ export function executeCommandSync(command: string, cwd: string): void {
 
 // import { window } from 'vscode';
 
-export async function executeInTerminal(command: string): Promise<void> {
+export async function executeInTerminal(command: string, path?: string): Promise<void> {
     const terminal = window.createTerminal('Build Runner');
     terminal.show();
-    terminal.sendText(command);
+    if (path) {
+        terminal.sendText(`cd "${path}"; ${command}`);
+    } else {
+        terminal.sendText(command);
+    }
 
 }
+
+
+export async function executeInTerminalBatch(commands: string[], path?: string): Promise<void> {
+    for(const command of commands) {
+        await executeInTerminal(command, path);
+            
+}
+}
+
