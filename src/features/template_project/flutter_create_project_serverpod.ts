@@ -112,7 +112,7 @@ export async function flutterCreateNewServerPodProject(addTemplateFolders?: (ful
 
     createFile(path.join(fullFlutterProjectPath, "pubspec.yaml"), pubspec_yaml(projectName));
 
-    gitInit(monoRepoPath);
+    // gitInit(monoRepoPath);
 
     const homePagePath = path.join(fullFlutterProjectPath, 'lib', 'features', 'home', 'presentation', 'pages', 'home_page.dart');
     const openCommand = `code -g "${homePagePath}" "${monoRepoPath}"`;
@@ -121,6 +121,7 @@ export async function flutterCreateNewServerPodProject(addTemplateFolders?: (ful
     await executeCommand(pubGet, serverPath);
     await executeCommand(build_runner, fullFlutterProjectPath);
     await executeCommand(SERVERPOD_GENERATE, serverPath);
+    gitInit(monoRepoPath);
     await executeCommand(openCommand, projectsPath);
     // serverpodK8sFileGenerate(projectsPath);
 
