@@ -18,11 +18,13 @@ import { getActiveEditorPath, getLibPath, getRootWorkspaceFolders } from "../uti
 import { flutterCreateNewServerPodProject } from "../features/template_project/flutter_create_project_serverpod";
 import { serverpodFileGenerate } from "../features/serverpod/create_serverpod_files";
 import { serverpodK8sFileGenerate } from "../features/serverpod/create_k8s_serverpod_files";
+import { parseYaml } from "../features/data_routine/serverpod_yaml_parser/parse_yaml";
 
 
 
 export async function flutterHandler() {
     const options: { [key: string]: () => Promise<any> } = {
+        'Парсинг serverpod yaml модели': () => parseYaml(),
         // 'Новый проект': () => flutterCreateNewProject(addBaseTemplate),
         'Новый проект c serverpod': () => flutterCreateNewServerPodProject(addBaseTemplate),
         'Сгенерировать файлы для serverpod': () => serverpodK8sFileGenerate(getRootWorkspaceFolders()),

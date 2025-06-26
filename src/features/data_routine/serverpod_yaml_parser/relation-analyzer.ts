@@ -1,0 +1,74 @@
+import { RelationType, ServerpodModel, ManyToManyRelation } from './types';
+
+export class RelationAnalyzer {
+  
+  // Анализ типа связи по строке типа
+  static analyzeRelationType(type: string): RelationType | undefined {
+    if (type.startsWith('List<') && type.endsWith('>')) {
+      return 'oneToMany';
+    } else {
+      return 'manyToOne';
+    }
+  }
+  
+  // Извлечение связанной модели из типа
+  static extractRelatedModel(type: string): string | undefined {
+    if (type.startsWith('List<') && type.endsWith('>')) {
+      // List<Task> -> Task
+      return type.slice(5, -1);
+    } else {
+      // Category -> Category
+      return type;
+    }
+  }
+  
+  // Определение many-to-many связей через промежуточные таблицы
+  static detectManyToMany(models: ServerpodModel[]): ManyToManyRelation[] {
+    const manyToManyRelations: ManyToManyRelation[] = [];
+    
+    // Ищем таблицы-связки (содержат только relation поля к другим таблицам)
+    const junctionTables = models.filter(model => 
+      this.isJunctionTable(model)
+    );
+    
+    for (const junction of junctionTables) {
+      const relationFields = junction.fields.filter(field => field.isRelation);
+      
+      if (relationFields.length === 2) {
+        const field1 = relationFields[0];
+        const field2 = relationFields[1];
+        
+        if (field1.relatedModel && field2.relatedModel) {
+          manyToManyRelations.push({
+            table1: field1.relatedModel,
+            table2: field2.relatedModel,
+            junctionTable: junction.className,
+            field1: field1.name,
+            field2: field2.name
+          });
+        }
+      }
+    }
+    
+    return manyToManyRelations;
+  }
+  
+  // Проверка, является ли таблица промежуточной (junction table)
+  private static isJunctionTable(model: ServerpodModel): boolean {
+    const relationFields = model.fields.filter(field => field.isRelation);
+    const nonRelationFields = model.fields.filter(field => !field.isRelation);
+    
+    // Промежуточная таблица: содержит 2 relation поля и возможно ID
+    return relationFields.length === 2 && 
+           nonRelationFields.every(field => field.name === 'id');
+  }
+  
+  // Получение всех связей модели
+  static getModelRelations(model: ServerpodModel) {
+    return {
+      oneToMany: model.fields.filter(f => f.relationType === 'oneToMany'),
+      manyToOne: model.fields.filter(f => f.relationType === 'manyToOne'),
+      belongsTo: model.fields.filter(f => f.relationType === 'manyToOne')
+    };
+  }
+}
