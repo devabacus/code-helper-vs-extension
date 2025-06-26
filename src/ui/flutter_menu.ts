@@ -1,31 +1,25 @@
-import path from "path";
 import { window } from "vscode";
 import { addApiService } from "../features/add_api_service/add_api_service";
 import { addFeatureFolders } from "../features/add_feature/add_feature";
 import { deleteFuture } from "../features/add_feature/delete_feature";
 import { deletePage } from "../features/add_feature/delete_page";
-import { setMainPage } from "../features/template_project/set_main_page";
-import { addBaseTemplate, createTemplateFiles } from "../features/template_project/flutter_add_template_file";
-import { mainFile } from "../features/template_project/flutter_content/files_content/main_file";
-import { addStartPlugins } from "../features/template_project/flutter_content/terminal_commands";
-import { flutterCreateNewProject } from "../features/template_project/flutter_create_project";
-import { updateRoutingFls } from "../features/template_project/update_files";
-import { crBarrelFls } from "../features/template_project/add_barrel_files";
 import { createDataFiles } from "../features/data_routine/create_data_files";
-import { executeCommand, writeToFile } from "../utils";
 import { createFlutterPackage } from "../features/flutter_create_package";
-import { getActiveEditorPath, getLibPath, getRootWorkspaceFolders } from "../utils/path_util";
-import { flutterCreateNewServerPodProject } from "../features/template_project/flutter_create_project_serverpod";
-import { serverpodFileGenerate } from "../features/serverpod/create_serverpod_files";
 import { serverpodK8sFileGenerate } from "../features/serverpod/create_k8s_serverpod_files";
-import { parseYaml } from "../features/data_routine/serverpod_yaml_parser/parse_yaml";
-
+import { crBarrelFls } from "../features/template_project/add_barrel_files";
+import { addBaseTemplate, createTemplateFiles } from "../features/template_project/flutter_add_template_file";
+import { addStartPlugins } from "../features/template_project/flutter_content/terminal_commands";
+import { flutterCreateNewServerPodProject } from "../features/template_project/flutter_create_project_serverpod";
+import { setMainPage } from "../features/template_project/set_main_page";
+import { updateRoutingFls } from "../features/template_project/update_files";
+import { executeCommand } from "../utils";
+import { getActiveEditorPath, getLibPath, getRootWorkspaceFolders } from "../utils/path_util";
+import { createDataFilesFromYaml } from "../features/data_routine/create_data_files_from_yaml";
 
 
 export async function flutterHandler() {
     const options: { [key: string]: () => Promise<any> } = {
-        'Парсинг serverpod yaml модели': () => parseYaml(),
-        // 'Новый проект': () => flutterCreateNewProject(addBaseTemplate),
+        'Создать файлы данных из yaml': () => createDataFilesFromYaml(),
         'Новый проект c serverpod': () => flutterCreateNewServerPodProject(addBaseTemplate),
         'Сгенерировать файлы для serverpod': () => serverpodK8sFileGenerate(getRootWorkspaceFolders()),
         // 'Новый базовый проект': () => flutterCreateNewProject(startAppRoutine),
@@ -52,7 +46,3 @@ export async function flutterHandler() {
     }
 }
 
-// функция для создания простого приложения в main.dart
-// export function startAppRoutine(fullProjectPath: string) {
-//     writeToFile(path.join(fullProjectPath, "lib", "main.dart"), mainFile);
-// }

@@ -14,15 +14,7 @@ export class ServerpodEndpointGenerator extends BaseGenerator<{ classParser: Dri
         return path.join(basePath, `${toSnakeCase(entityNamePascalCase!)}_endpoint.dart`); 
     }
 
-    private getFkIdServerpodType(fkDriftFieldType: string, isNullable: boolean): string {
-        let type = 'UuidValue'; // По умолчанию для String ID из Drift
-        if (fkDriftFieldType === 'int') {
-            type = 'int';
-        }
-        // Добавьте другие маппинги при необходимости
-        return type + (isNullable ? '?' : '');
-    }
-
+    
     protected getContent(
         data?: { classParser: DriftClassParser, tableParser: DriftTableParser },
         entityNamePascalCase?: string, // Это classNamePascal
@@ -78,8 +70,6 @@ export class ServerpodEndpointGenerator extends BaseGenerator<{ classParser: Dri
                     console.warn(`ServerpodEndpointGenerator: Не найдены детали для поля внешнего ключа ${fkColumnName} в classParser для ${classNamePascal}. Пропуск генерации метода.`);
                     return '';
                 }
-
-                const fkParamServerpodType = this.getFkIdServerpodType(fkFieldDetailsInDrift.type, fkFieldDetailsInDrift.isNullable);
                 
                 // Имя для части метода: categoryId -> Category
                 let methodNamePart = cap(fkColumnName.replace(/Id$/, '')); 
@@ -91,7 +81,7 @@ export class ServerpodEndpointGenerator extends BaseGenerator<{ classParser: Dri
                 // (или то имя, которое Serverpod выберет/вы укажете для хранения ID).
                 // Мы будем использовать имя столбца fkColumnName (categoryId) для запроса.
                 return `
-  Future<List<${classNamePascal}>> ${endpointMethodName}(Session session, ${fkParamServerpodType} ${fkColumnName}) async {
+  Future<List<${classNamePascal}>> ${endpointMethodName}(Session session, UuidValue ${fkColumnName}) async {
     return await ${classNamePascal}.db.find(
       session,
       where: (${tableLambdaVar}) => ${tableLambdaVar}.${fkColumnName}.equals(${fkColumnName}),
