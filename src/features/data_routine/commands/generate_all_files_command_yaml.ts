@@ -29,15 +29,16 @@ export class GenerateAllFilesCommandYaml implements Command {
             console.log(`Генерация файлов для обычной таблицы: ${entityName}`);
             
             // data layer
-            // await this.generatorFactory.createDataRepositoryGenerator().generate(this.featurePath, entityName, this.model);
+            await this.generatorFactory.createDriftTableGenerator().generate(this.featurePath, entityName, this.model);
+            await this.generatorFactory.createDaoGenerator().generate(this.featurePath, entityName, this.model);
             // await this.generatorFactory.createModelGenerator().generate(this.featurePath, entityName, this.model);
-            // await this.generatorFactory.createDaoGenerator().generate(this.featurePath, entityName, this.model);
+            await this.generatorFactory.createLocalDataSourceServiceGenerator().generate(this.featurePath, entityName, this.model);
             await this.generatorFactory.createLocalSourcesGenerator().generate(this.featurePath, entityName, this.model);
             // await this.generatorFactory.createDataProviderGenerator().generate(this.featurePath, entityName, this.model);
-            await this.generatorFactory.createLocalDataSourceServiceGenerator().generate(this.featurePath, entityName, this.model);
+            // await this.generatorFactory.createDataRepositoryGenerator().generate(this.featurePath, entityName, this.model);
 
-            // //extensions
-            // await this.generatorFactory.createDataTableExtensionGenerator().generate(this.featurePath, entityName, this.model);
+            //extensions
+            await this.generatorFactory.createDataTableExtensionGenerator().generate(this.featurePath, entityName, this.model);
             // await this.generatorFactory.createDataModelExtensionGenerator().generate(this.featurePath, entityName, this.model);
 
             // // domain layer

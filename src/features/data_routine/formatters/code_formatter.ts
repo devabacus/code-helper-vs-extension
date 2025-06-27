@@ -54,8 +54,14 @@ export class CodeFormatter implements ICodeFormatter {
     return wrapped.join(', ');
   }
 
+  fieldsFilter(fields: Field[]): Field[] {
+    const excludeList :any[] = ['isDeleted', 'id', 'userId', 'lastModified', 'syncStatus'];
+    return fields.filter(field => !excludeList.includes(field.name));
+  }
+
+
   formatSimpleFields(fields: Field[] | ServerpodField[]): string {
-    const simple = fields.map(field => `${field.name}: ${field.name}`);
+    const simple = this.fieldsFilter(fields as Field[]).map(field => `${field.name}: ${field.name}`);
     return simple.join(', ');
   }
 
@@ -80,10 +86,11 @@ export class CodeFormatter implements ICodeFormatter {
   }
 
   formatInsertCompanionParams(fields: Field[]): string {
-    const params = fields.map(field => {
-      if (field.name === 'id') {
-        return `${field.name}: Value(testId)`;
-      }
+    const paramFilter = this.fieldsFilter(fields);
+    const params = paramFilter.map(field => {
+      // if (field.name === 'id') {
+      //   return `${field.name}: Value(testId)`;
+      // }
       return `${field.name}: Value(${field.name})`;
     });
     return params.join(', ');

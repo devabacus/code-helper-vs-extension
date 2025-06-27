@@ -75,15 +75,11 @@ export async function createDataFilesFromYaml() {
     // TODO раскомментировать
     // executeInTerminal(SERVERPOD_GENERATE, serverProjectRoot);
 
-    const driftTableGenerator = new DriftTableGenerator(fileSystem);
-    await driftTableGenerator.generate(featurePath, entityName, model);
+    // const driftTableGenerator = new DriftTableGenerator(fileSystem);
+    // await driftTableGenerator.generate(featurePath, entityName, model);
 
-    const dataDaoGenerator = new DataDaoGenerator(fileSystem);
-    await dataDaoGenerator.generate(featurePath, entityName, model);
-
-    // const dataLocalSourcesGenerator = new DataLocalSourcesGenerator(fileSystem);
-    // await dataLocalSourcesGenerator.generate(featurePath, entityName, model);
-
+    // const dataDaoGenerator = new DataDaoGenerator(fileSystem);
+    // await dataDaoGenerator.generate(featurePath, entityName, model);
 
     const generatorCommands = new GenerateAllFilesCommandYaml(
         generatorFactory,
