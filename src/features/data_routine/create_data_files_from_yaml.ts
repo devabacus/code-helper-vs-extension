@@ -26,14 +26,18 @@ import { ServerpodEndpointGenerator } from "./generators/serverpod_endpoint_gene
 import { SERVERPOD_GENERATE } from "../serverpod/commands";
 import { pickPath } from "../../utils/ui/ui_ask_folder";
 import { DriftTableGenerator } from "./feature/data/datasources/local/tables/drift_table_generator";
+import { DataDaoGenerator } from "./feature/data/datasources/local/dao/data_local_dao_generator";
+import { appDatabasePath } from "./core/database/local/app_database_file_dart";
+import { sync_metadata_table_file } from "./generators/sync_metadata_table";
 
 export async function createDataFilesFromYaml() {
     
     const currentFilePath = getActiveEditorPath()!;
     const rootProjectPath = currentFilePath.split(/\w*_server/)[0];
     const projectName = path.basename(rootProjectPath);
-    const featureSPath = path.join(rootProjectPath, `${projectName}_flutter`, "lib", "features");
-    const featurePath = path.join(rootProjectPath, `${projectName}_flutter`, "lib", "features", "home"); //TODO  временно для отладки
+    const flutterDirPath = path.join(rootProjectPath, `${projectName}_flutter`,);
+    const featureSPath = path.join(flutterDirPath, "lib", "features");
+    const featurePath = path.join(flutterDirPath, "lib", "features", "home"); //TODO  временно для отладки
 
     const serverProjectRoot = currentFilePath.split(/\Wlib\W/)[0];
 
@@ -50,8 +54,13 @@ export async function createDataFilesFromYaml() {
 
     const syncEventTypePath = path.join(serverProjectRoot, "lib", "src", "models", "sync_event_type.spy.yaml");
     const entitySyncEventPath = path.join(serverProjectRoot, "lib", "src", "models", `${entityName}_sync_event.spy.yaml`);
+    const syncMetaDataTablePath = path.join(flutterDirPath, "lib", "core", "database", "local", "tables", "sync_metadata_table.dart");
+    const syncMetaDataDaoPath = path.join(flutterDirPath, "lib", "core", "database", "local", "daos", "sync_metadata_dao.dart");
+
     createFileOneTime(syncEventTypePath, sync_event_type_spy);
     createFileOneTime(entitySyncEventPath, entity_sync_event_spy_file(entityName));
+    createFileOneTime(syncMetaDataTablePath, sync_metadata_table_file);
+    createFileOneTime(syncMetaDataDaoPath, sync_metadata_dao_file);
 
     const serviceLocator = ServiceLocator.getInstance();
     const fileSystem = serviceLocator.getFileSystem();
@@ -65,6 +74,9 @@ export async function createDataFilesFromYaml() {
 
     const driftTableGenerator = new DriftTableGenerator(fileSystem);
     await driftTableGenerator.generate(featurePath, entityName, model);
+
+    const dataDaoGenerator = new DataDaoGenerator(fileSystem);
+    await dataDaoGenerator.generate(featurePath, entityName, model);
 
     // const commandData = {
     //     classParser: classParser,
@@ -88,7 +100,6 @@ export async function createDataFilesFromYaml() {
     // await executeCommand("serverpod generate --experimental-features=all", serverProjectRoot);
 
     // await generateTestFilesCommand.execute(); // await, если execute асинхронный
-
-    // await appDatabaseRoutine(currentFilePath, entityName);
-    // await executeInTerminal(build_runner);
+    await appDatabaseRoutine(featurePath, entityName);
+    await executeInTerminal(build_runner, flutterDirPath);
 }

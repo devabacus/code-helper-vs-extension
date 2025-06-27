@@ -2,11 +2,9 @@ import path from "path";
 import { DefaultProjectStructure } from "../../../../../../../core/implementations/default_project_structure"; //
 import { IFileSystem } from "../../../../../../../core/interfaces/file_system"; //
 import { ProjectStructure } from "../../../../../../../core/interfaces/project_structure"; //
-import { pluralConvert, cap } from "../../../../../../../utils/text_work/text_util"; //
+import { pluralConvert, unCap } from "../../../../../../../utils/text_work/text_util"; //
 import { DataRoutineGenerator } from "../../../../../generators/data_routine_generator"; //
-import { DriftClassParser, Field as DriftClassField } from "../tables/drift_class_parser"; //
-import { Reference } from "../../../../../../../core/interfaces/drift_table_parser"; //
-import { DriftTableParser } from "../tables/drift_table_parser";
+import { ServerpodModel } from "../../../../../serverpod_yaml_parser/types";
 
 export class DataDaoGenerator extends DataRoutineGenerator {
 
@@ -21,50 +19,17 @@ export class DataDaoGenerator extends DataRoutineGenerator {
     return path.join(this.structure.getDaoPath(featurePath), entityName, `${entityName}_dao.dart`); //
   }
 
-  protected getContent(data: { classParser: DriftClassParser, tableParser: DriftTableParser }): string {
-    const classParser = data.classParser;
-    const tableParser = data.tableParser;
-    const d = classParser.driftClassNameLower;
-    const D = classParser.driftClassNameUpper;
-    const Ds = pluralConvert(D); //
+  protected getContent(model: ServerpodModel): string {
+    const D = model.className;
+    const d = unCap(model.className);
+    const Ds = pluralConvert(D); 
 
-    let foreignKeyMethods = '';
-    // Проверяем, что tableParser действительно был передан
-    if (tableParser) {
-      const references: Reference[] = tableParser.getReferences(); //
-
-      if (references && references.length > 0) {
-        foreignKeyMethods = references.map(ref => {
-          const fkFieldName = ref.columnName;
-          let methodNamePart = cap(fkFieldName); //
-          if (methodNamePart.endsWith('Id')) {
-            methodNamePart = methodNamePart.slice(0, -2);
-          }
-
-          const fkFieldDetails = classParser.fields.find(f => f.name === fkFieldName); //
-          const fkFieldType = fkFieldDetails ? fkFieldDetails.type : 'String';
-          const paramNullableMarker = fkFieldDetails && fkFieldDetails.nullable ? '?' : '';
-
-          const nullCheckLogic = fkFieldDetails?.nullable
-            ? `if (${fkFieldName} == null) {
-      return []; 
-    }\n    `
-            : '';
-
-          return `
-  Future<List<${D}TableData>> get${Ds}By${methodNamePart}Id(${fkFieldType}${paramNullableMarker} ${fkFieldName}) async {
-    ${nullCheckLogic}return (select(${d}Table)..where((t) => t.${fkFieldName}.equals(${fkFieldName}))).get();
-  }
-`;
-        }).join('');
-      }
-    }
-
-    return `import 'package:uuid/uuid.dart';
-import 'package:drift/drift.dart';
-
+    
+    return `
+    import 'package:drift/drift.dart';
 import '../../../../../../../core/database/local/interface/i_database_service.dart';
 import '../../../../../../../core/database/local/database.dart';
+import '../../../../../../../core/database/local/database_types.dart';
 import '../../tables/${d}_table.dart';
 
 part '${d}_dao.g.dart';
@@ -72,43 +37,106 @@ part '${d}_dao.g.dart';
 @DriftAccessor(tables: [${D}Table])
 class ${D}Dao extends DatabaseAccessor<AppDatabase>
     with _$${D}DaoMixin {
-  final Uuid _uuid = Uuid();
-
   ${D}Dao(IDatabaseService databaseService)
     : super(databaseService.database);
 
-  Future<List<${D}TableData>> get${Ds}() =>
-      select(${d}Table).get();
+  AppDatabase get db => attachedDatabase;
 
-  Stream<List<${D}TableData>> watch${Ds}() =>
-      select(${d}Table).watch();
+  Future<List<${D}TableData>> get${Ds}({int? userId}) =>
+    (select(${d}Table)
+      ..where((t) => t.syncStatus.equals(SyncStatus.deleted.name).not())
+      ..where((t) => userId != null ? t.userId.equals(userId) : const Constant(true)))
+    .get();     
 
-  Future<${D}TableData> get${D}ById(String id) =>
-      (select(${d}Table)..where((t) => t.id.equals(id))).getSingle();
-${foreignKeyMethods}
+  Stream<List<${D}TableData>> watch${Ds}({int? userId}) =>
+    (select(${d}Table)
+      ..where((t) => t.syncStatus.equals(SyncStatus.deleted.name).not())
+      ..where((t) => userId != null ? t.userId.equals(userId) : const Constant(true)))
+    .watch();
+
+  Future<${D}TableData> get${D}ById(String id, {required int userId}) =>
+      (select(${d}Table)
+        ..where((t) => t.id.equals(id) & t.userId.equals(userId)))
+      .getSingle();
+
   Future<String> create${D}(${D}TableCompanion companion) async {
-    String idToInsert;
-    ${D}TableCompanion companionForInsert;
+    final id = companion.id.value;
+    try {
+      final existing${D} =
+          await (select(${d}Table)
+            ..where((t) => t.id.equals(id))).getSingleOrNull();
 
-    if (companion.id.present && companion.id.value != null && companion.id.value.isNotEmpty) {
-      idToInsert = companion.id.value;
-      companionForInsert = companion;
-    } else {
-      idToInsert = _uuid.v7();
-      companionForInsert = companion.copyWith(id: Value(idToInsert));
+      if (existing${D} != null) {
+        throw StateError('${d} with ID $id exists');
+      }
+
+      await into(${d}Table).insert(companion);
+      return id;
+    } catch (e) {
+      print('fail of creating ${d}: $e');
+      rethrow;
     }
-
-    await into(${d}Table).insert(companionForInsert);
-    return idToInsert;
   }
 
-  Future<bool> update${D}(${D}TableCompanion ${d}) =>
-    update(${d}Table).replace(${d});
+Future<bool> update${D}(${D}TableCompanion companion, {required int userId}) async {    
+    final idToUpdate = companion.id.value;
+    final updatedRows = await (update(${d}Table)
+      ..where((t) => t.id.equals(idToUpdate) & t.userId.equals(userId))) 
+      .write(companion); 
+    return updatedRows > 0;
+}
 
-  Future<bool> delete${D}(String id) async {
-    final result =
-        await (delete(${d}Table)..where((t) => t.id.equals(id))).go();
-    return result > 0;
+  Future<bool> softDelete${D}(String id, {required int userId}) async {
+    
+    final companion = ${D}TableCompanion(
+      syncStatus: Value(SyncStatus.deleted),
+      lastModified: Value(DateTime.now()), 
+    );
+    
+    final updatedRows = await (update(${d}Table)
+      ..where((t) => t.id.equals(id) & t.userId.equals(userId)))
+      .write(companion);
+    
+    return updatedRows > 0;
+  }
+
+  Future<int> physicallyDelete${D}(String id, {required int userId}) async {
+    return (delete(${d}Table)
+      ..where((t) => t.id.equals(id) & t.userId.equals(userId)))
+      .go();
+  }
+
+  Future<bool> ${d}Exists(String id) async {
+    if (id.isEmpty) return false;
+
+    final ${d} =
+        await (select(${d}Table)
+          ..where((t) => t.id.equals(id))).getSingleOrNull();
+
+    return ${d} != null;
+  }
+
+  Future<int> get${Ds}Count({int? userId}) async {
+    final countQuery = selectOnly(${d}Table)
+      ..addColumns([${d}Table.id.count()])
+      ..where(userId != null ? ${d}Table.userId.equals(userId) : const Constant(true));
+
+    final result = await countQuery.getSingle();
+    return result.read(${d}Table.id.count()) ?? 0;
+  }
+
+  Future<void> insert${Ds}(List<${D}TableCompanion> companions) async {
+    await batch((batch) {
+      batch.insertAll(${d}Table, companions);
+    });
+  }
+
+  Future<int> deleteAll${Ds}({int? userId}) {
+    if (userId != null) {
+      return (delete(${d}Table)..where((t) => t.userId.equals(userId))).go();
+    } else {
+      return delete(${d}Table).go();
+    }
   }
 }
 `;

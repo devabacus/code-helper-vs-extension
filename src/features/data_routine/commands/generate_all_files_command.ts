@@ -11,7 +11,7 @@ export class GenerateAllFilesCommand implements Command {
     private isRelationTable: boolean;
     private relations: TableRelation[];
     private classParser: DriftClassParser;
-    private tableParser: DriftTableParser; // <--- Добавлено поле tableParser
+    private tableParser: DriftTableParser; 
 
 
     constructor(

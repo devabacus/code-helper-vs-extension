@@ -13,7 +13,7 @@ import { DatabaseProvider } from "../../../../template_project/drift_db/database
 import { TestDatabaseService } from "../../../test/core/database/local/test_database_service_generator";
 
 
-export async function appDatabaseRoutine(currentFilePath: string, driftClassName: string) {
+export async function appDatabaseRoutine(currentFilePath: string, entityName: string) {
     const pathData = new PathData(currentFilePath).data;
     const appDatabaseP = appDatabasePath(pathData.rootPath);
     
@@ -36,9 +36,9 @@ export async function appDatabaseRoutine(currentFilePath: string, driftClassName
     }
 
     const content = fs.readFileSync(appDatabaseP, { encoding: "utf-8" });
-    const newContent = textGroupReplacer(content, /tables: \[(.*)\]/g, `${cap(driftClassName)}Table`);
+    const newContent = textGroupReplacer(content, /tables: \[(.*)\]/g, `${cap(entityName)}Table`);
 
-    const contWithImport = imAppDatabase(pathData.featName, driftClassName) + newContent;
+    const contWithImport = imAppDatabase(pathData.featName, entityName) + newContent;
     fs.writeFileSync(appDatabaseP, contWithImport, { encoding: "utf-8" });
 
     await executeInTerminal(build_runner);
