@@ -37,27 +37,17 @@ export async function createDataFilesFromYaml() {
     const featurePath = await pickPath("Выберите feature", featureSPath);
         if (!featurePath) {
             return;
-        }
-    
+        }    
+
     const serverpodYamlModel = getDocText();
     const model = ServerpodYamlParser.parse(serverpodYamlModel);
-    // const tableParser = new DriftTableParser(driftClassCode);
-
     const entityNameCap = model.className;
     const entityName = unCap(model.className);
-
-
-
-    // const flutterProjectPath = currentFilePath.split(/\Wlib\W/)[0];
-
-    // const serverProjectName = path.basename(flutterProjectPath).replace('_flutter', '_server');
 
     const syncEventTypePath = path.join(serverProjectRoot, "lib", "src", "models", "sync_event_type.spy.yaml");
     const entitySyncEventPath = path.join(serverProjectRoot, "lib", "src", "models", `${entityName}_sync_event.spy.yaml`);
     createFileOneTime(syncEventTypePath, sync_event_type_spy);
     createFileOneTime(entitySyncEventPath, entity_sync_event_spy_file(entityName));
-
-    const serverEndpointsPath = path.join(serverProjectRoot, 'lib', 'src', 'endpoints');
 
     const serviceLocator = ServiceLocator.getInstance();
     const fileSystem = serviceLocator.getFileSystem();
