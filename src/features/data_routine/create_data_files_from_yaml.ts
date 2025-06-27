@@ -33,12 +33,15 @@ export async function createDataFilesFromYaml() {
     const rootProjectPath = currentFilePath.split(/\w*_server/)[0];
     const projectName = path.basename(rootProjectPath);
     const featureSPath = path.join(rootProjectPath, `${projectName}_flutter`, "lib", "features");
+    const featurePath = path.join(rootProjectPath, `${projectName}_flutter`, "lib", "features", "home"); //TODO  временно для отладки
+
     const serverProjectRoot = currentFilePath.split(/\Wlib\W/)[0];
 
-    const featurePath = await pickPath("Выберите feature", featureSPath);
-        if (!featurePath) {
-            return;
-        }    
+    // TODO нужно будет раскомментировать после отладки
+    // const featurePath = await pickPath("Выберите feature", featureSPath);
+    //     if (!featurePath) {
+    //         return;
+    //     }    
 
     const serverpodYamlModel = getDocText();
     const model = ServerpodYamlParser.parse(serverpodYamlModel);
