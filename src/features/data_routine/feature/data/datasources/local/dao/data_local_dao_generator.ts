@@ -1,9 +1,8 @@
-// G:/Projects/vs_code_extensions/snippet/code-helper/src/features/data_routine/feature/data/datasources/local/dao/data_local_dao_generator.ts
 import path from "path";
 import { DefaultProjectStructure } from "../../../../../../../core/implementations/default_project_structure"; //
 import { IFileSystem } from "../../../../../../../core/interfaces/file_system"; //
 import { ProjectStructure } from "../../../../../../../core/interfaces/project_structure"; //
-import { pluralConvert, unCap, cap } from "../../../../../../../utils/text_work/text_util"; //
+import { pluralConvert, unCap, cap, toSnakeCase } from "../../../../../../../utils/text_work/text_util"; //
 import { DataRoutineGenerator } from "../../../../../generators/data_routine_generator"; //
 import { ServerpodModel } from "../../../../../serverpod_yaml_parser/types";
 
@@ -17,7 +16,8 @@ export class DataDaoGenerator extends DataRoutineGenerator {
   }
 
   protected getPath(featurePath: string, entityName: string): string {
-    return path.join(this.structure.getDaoPath(featurePath), entityName, `${entityName}_dao.dart`); //
+    const snakeCaseEntityName = toSnakeCase(entityName);
+    return path.join(this.structure.getDaoPath(featurePath), entityName, `${snakeCaseEntityName}_dao.dart`); 
   }
 
   protected getContent(model: ServerpodModel): string {

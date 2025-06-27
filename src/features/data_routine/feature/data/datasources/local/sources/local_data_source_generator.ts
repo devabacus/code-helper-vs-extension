@@ -2,113 +2,222 @@ import path from "path";
 import { DefaultProjectStructure } from "../../../../../../../core/implementations/default_project_structure"; //
 import { IFileSystem } from "../../../../../../../core/interfaces/file_system"; //
 import { ProjectStructure } from "../../../../../../../core/interfaces/project_structure"; //
-import { pluralConvert, cap } from "../../../../../../../utils/text_work/text_util"; //
+import { pluralConvert, unCap, cap, toSnakeCase } from "../../../../../../../utils/text_work/text_util"; //
 import { DataRoutineGenerator } from "../../../../../generators/data_routine_generator"; //
-import { DriftClassParser } from "../tables/drift_class_parser"; //
-import { Reference } from "../../../../../../../core/interfaces/drift_table_parser"; //
-import { DriftTableParser } from "../tables/drift_table_parser";
+import { ServerpodModel } from "../../../../../serverpod_yaml_parser/types";
 
-export class DataSourcesGenerator extends DataRoutineGenerator {
+export class DataLocalRelateSourceGenerator extends DataRoutineGenerator {
 
   private structure: ProjectStructure;
 
   constructor(fileSystem: IFileSystem, structure?: ProjectStructure) {
     super(fileSystem);
-    this.structure = structure || new DefaultProjectStructure(); //
+    this.structure = structure || new DefaultProjectStructure();
   }
 
   protected getPath(featurePath: string, entityName: string): string {
-    return path.join(this.structure.getLocalDataSourcePath(featurePath), `${entityName}_local_data_source.dart`); //
+    // entityName is intermediate table name like "taskTagMap"
+    const snakeCaseEntityName = toSnakeCase(entityName);
+    return path.join(this.structure.getLocalDataSourcePath(featurePath), `${snakeCaseEntityName}_local_data_source.dart`);
   }
 
-  protected getContent(data: { classParser: DriftClassParser, tableParser: DriftTableParser }): string {
-    const classParser = data.classParser;
-    const tableParser = data.tableParser;
+  protected getContent(model: ServerpodModel): string {
+    const D = model.className;
+    const d = unCap(model.className);
+    const Ds = pluralConvert(D);
 
-    if (!classParser) {
-      console.error("DataSourcesGenerator: classParser не определен в 'data'.");
-      return "// Ошибка: Не удалось получить classParser для генерации DataSource.";
+    // Генерация методов для получения по внешнему ключу
+    let foreignKeyMethods = '';
+    const relationFields = model.fields.filter(field => field.isRelation && field.relationType === 'manyToOne');
+
+    if (relationFields.length > 0) {
+      foreignKeyMethods = relationFields.map(field => {
+        const fieldName = field.name.endsWith('Id') ? field.name : `${field.name}Id`;
+        const methodNamePart = cap(field.name.replace(/Id$/, ''));
+        const daoMethodName = `get${Ds}By${methodNamePart}Id`;
+        const parameterName = fieldName;
+        const parameterType = 'String';
+
+        return `
+  Future<List<${D}TableData>> ${daoMethodName}(${parameterType} ${parameterName}, {required int userId}) =>
+    (select(${d}Table)
+      ..where((t) => t.${parameterName}.equals(${parameterName}) & t.userId.equals(userId) & t.syncStatus.equals(SyncStatus.deleted.name).not()))
+    .get();`;
+      }).join('\n');
     }
 
-    const D = classParser.driftClassNameUpper;
-    const d = classParser.driftClassNameLower;
-    const ds = pluralConvert(d); // используется в именах переменных, например list of items
-    const Ds = pluralConvert(D); // используется в именах методов, например getItems
+    return `import 'package:drift/drift.dart';
+import 'package:sync1_client/sync1_client.dart' as serverpod;
 
-    let foreignKeyMethodsImplementations = '';
-    if (tableParser) { // Проверяем наличие tableParser
-      const references: Reference[] = tableParser.getReferences(); //
-
-      if (references && references.length > 0) {
-        foreignKeyMethodsImplementations = references.map(ref => {
-          const fkFieldName = ref.columnName;
-          let methodNamePart = cap(fkFieldName); //
-          if (methodNamePart.endsWith('Id')) {
-            methodNamePart = methodNamePart.slice(0, -2);
-          }
-
-          const fkFieldDetails = classParser.fields.find(f => f.name === fkFieldName); //
-          const fkFieldType = fkFieldDetails ? fkFieldDetails.type : 'String';
-          const paramNullableMarker = fkFieldDetails && fkFieldDetails.nullable ? '?' : '';
-
-          return `
-  @override
-  Future<List<${D}Model>> get${Ds}By${methodNamePart}Id(${fkFieldType}${paramNullableMarker} ${fkFieldName}) async {
-    final ${ds}Data = await ${d}Dao.get${Ds}By${methodNamePart}Id(${fkFieldName});
-    return ${ds}Data.toModels();
-  }`;
-        }).join('\n');
-      }
-    } else {
-      // console.warn(`DataSourcesGenerator: tableParser не был предоставлен для сущности ${D}. Методы по внешним ключам не будут сгенерированы в реализации DataSource.`);
-    }
-
-    return `import '../../../models/extensions/${d}_model_extension.dart';
+import '../../../../../../core/database/local/database.dart';
 import '../../../datasources/local/tables/extensions/${d}_table_extension.dart';
 import '../../../models/${d}/${d}_model.dart';
+import '../../../models/extensions/${d}_model_extension.dart';
+import '../../../../../../core/database/local/database_types.dart';
 import '../dao/${d}/${d}_dao.dart';
 import '../interfaces/${d}_local_datasource_service.dart';
 
 class ${D}LocalDataSource implements I${D}LocalDataSource {
-  final ${D}Dao ${d}Dao;
+  final ${D}Dao _${d}Dao;
 
-  ${D}LocalDataSource(this.${d}Dao);
+  ${D}LocalDataSource(this._${d}Dao);
 
   @override
-  Future<List<${D}Model>> get${Ds}() async {
-    final ${ds} = await ${d}Dao.get${Ds}();
-    return ${ds}.toModels();
+  Future<List<${D}Model>> get${Ds}({int? userId}) async {
+    final categories = await _${d}Dao.get${Ds}(userId: userId);
+    return categories.toModels();
   }
 
   @override
-  Stream<List<${D}Model>> watch${Ds}() {
-    return ${d}Dao.watch${Ds}().map((list) => list.toModels());
+  Stream<List<${D}Model>> watch${Ds}({int? userId}) {
+    return _${d}Dao
+        .watch${Ds}(userId: userId)
+        .map((list) => list.toModels());
   }
 
   @override
-  Future<${D}Model> get${D}ById(String id) async {
-    final ${d} = await ${d}Dao.get${D}ById(id);
-    return ${d}.toModel();
+  Future<${D}Model?> get${D}ById(String id,
+      {required int userId}) async {
+    try {
+      final ${d} = await _${d}Dao.get${D}ById(id, userId: userId);
+      return ${d}.toModel();
+    } catch (e) {
+      return null;
+    }
   }
 
   @override
   Future<String> create${D}(${D}Model ${d}) {
-    return ${d}Dao.create${D}(${d}.toCompanion());
+    final companion =
+        ${d}.toCompanion().copyWith(syncStatus: const Value(SyncStatus.local));
+    return _${d}Dao.create${D}(companion);
   }
 
   @override
   Future<bool> update${D}(${D}Model ${d}) {
-    return ${d}Dao.update${D}(${d}.toCompanionWithId());
+    final companion = ${d}
+        .toCompanionWithId()
+        .copyWith(syncStatus: const Value(SyncStatus.local));
+    return _${d}Dao.update${D}(companion, userId: ${d}.userId);
   }
 
   @override
-  Future<bool> delete${D}(String id) async {
-    return ${d}Dao.delete${D}(id);
+  Future<bool> delete${D}(String id, {required int userId}) async {
+    return _${d}Dao.softDelete${D}(id, userId: userId);
   }
-${foreignKeyMethodsImplementations}
-}
 
+  @override
+  Future<List<${D}TableData>> getAllLocalChanges(int userId) {
+    return (_${d}Dao.select(_${d}Dao.${d}Table)
+          ..where((t) =>
+              (t.syncStatus.equals(SyncStatus.synced.name)).not() &
+              t.userId.equals(userId)))
+        .get();
+  }
+
+  @override
+  Future<void> physicallyDelete${D}(String id, {required int userId}) async {
+    await _${d}Dao.physicallyDelete${D}(id, userId: userId);
+  }
+
+  @override
+  Future<void> insertOrUpdateFromServer(
+      dynamic serverChange, SyncStatus status) async {
+    await _${d}Dao.db
+        .into(_${d}Dao.${d}Table)
+        .insertOnConflictUpdate(
+          (serverChange as serverpod.${D}).toCompanion(status),
+        );
+  }
+
+  @override
+  Future<List<${D}TableData>> reconcileServerChanges(
+      List<dynamic> serverChanges, int userId) async {
+    final allLocalChanges = await getAllLocalChanges(userId);
+    final localChangesMap = {for (var c in allLocalChanges) c.id: c};
+
+    await _${d}Dao.db.transaction(() async {
+      for (final serverChange in serverChanges as List<serverpod.${D}>) {
+        if (serverChange.userId != userId) continue;
+
+        final localRecord = await (_${d}Dao.select(_${d}Dao.${d}Table)
+              ..where((t) => t.id.equals(serverChange.id.toString())))
+            .getSingleOrNull();
+
+        if (localRecord == null) {
+          if (!serverChange.isDeleted) {
+            await insertOrUpdateFromServer(serverChange, SyncStatus.synced);
+            print('    -> СОЗДАНО с сервера: "\${serverChange.title}"');
+          }
+          continue;
+        }
+
+        final serverTime =
+            serverChange.lastModified ?? DateTime.fromMicrosecondsSinceEpoch(0);
+        final localTime = localRecord.lastModified;
+
+        if (serverChange.isDeleted) {
+          if (localTime.isAfter(serverTime) &&
+              localRecord.syncStatus == SyncStatus.local) {
+            print(
+                '    -> КОНФЛИКТ: Локальная версия "\${localRecord.title}" новее серверного "надгробия". Локальное изменение побеждает.');
+          } else {
+            print(
+                '    -> ✅ Серверное "надгробие" новее или нет локального конфликта. Удаляем локальную запись: ID=\${localRecord.id}, Title="\${localRecord.title}".');
+            await physicallyDelete${D}(localRecord.id, userId: userId);
+            localChangesMap.remove(localRecord.id);
+          }
+        } else {
+          if (localRecord.syncStatus == SyncStatus.local ||
+              localRecord.syncStatus == SyncStatus.deleted) {
+            if (serverTime.isAfter(localTime)) {
+              print(
+                  '    -> КОНФЛИКТ: Сервер новее для "\${serverChange.title}". Применяем серверные изменения.');
+              await insertOrUpdateFromServer(serverChange, SyncStatus.synced);
+              localChangesMap.remove(localRecord.id);
+            } else {
+              print(
+                  '    -> КОНФЛИКТ: Локальная версия новее для "\${localRecord.title}". Она будет отправлена на сервер.');
+            }
+          } else {
+            await insertOrUpdateFromServer(serverChange, SyncStatus.synced);
+            print('    -> ОБНОВЛЕНО с сервера: "\${serverChange.title}"');
+          }
+        }
+      }
+    });
+    return localChangesMap.values.toList();
+  }
+
+  @override
+  Future<void> handleSyncEvent(dynamic event, int userId) async {
+    if (event is! serverpod.${D}SyncEvent) return;
+
+    switch (event.type) {
+      case serverpod.SyncEventType.create:
+      case serverpod.SyncEventType.update:
+        if (event.${d} != null && event.${d}!.userId == userId) {
+          await insertOrUpdateFromServer(event.${d}!, SyncStatus.synced);
+          print(
+              '  -> (Real-time) СОЗДАНА/ОБНОВЛЕНА: "\${event.${d}!.title}"');
+        }
+        break;
+      case serverpod.SyncEventType.delete:
+        if (event.id != null) {
+          final localRecord = await (_${d}Dao.select(_${d}Dao.${d}Table)
+                ..where((t) => t.id.equals(event.id!.toString())))
+              .getSingleOrNull();
+          if (localRecord?.userId == userId) {
+            await physicallyDelete${D}(event.id!.toString(), userId: userId);
+            print('  -> (Real-time) УДАЛЕНА ID: "\${event.id}"');
+          }
+        }
+        break;
+    }
+  }
+}
   `;
   }
-
 }
+
+
