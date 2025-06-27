@@ -20,14 +20,14 @@ export class DataRepositoryGenerator extends DataRoutineGenerator {
   protected getPath(featurePath: string, entityName: string): string {
     return path.join(this.structure.getDataRepositoryPath(featurePath), `${entityName}_repository_impl.dart`); //
   }
-  
+
   protected getContent(data: { classParser: DriftClassParser, tableParser: DriftTableParser }): string {
     const classParser = data.classParser;
     const tableParser = data.tableParser;
 
     if (!classParser) {
-        console.error("DataRepositoryGenerator: classParser не определен в 'data'.");
-        return "// Ошибка: Не удалось получить classParser для генерации реализации репозитория.";
+      console.error("DataRepositoryGenerator: classParser не определен в 'data'.");
+      return "// Ошибка: Не удалось получить classParser для генерации реализации репозитория.";
     }
 
     const D = classParser.driftClassNameUpper;
@@ -36,28 +36,28 @@ export class DataRepositoryGenerator extends DataRoutineGenerator {
 
     let foreignKeyMethodsImplementations = '';
     if (tableParser) { // Проверяем наличие tableParser
-        const references: Reference[] = tableParser.getReferences(); //
+      const references: Reference[] = tableParser.getReferences(); //
 
-        if (references && references.length > 0) {
-            foreignKeyMethodsImplementations = references.map(ref => {
-                const fkFieldName = ref.columnName;
-                let methodNamePart = cap(fkFieldName); //
-                if (methodNamePart.endsWith('Id')) {
-                    methodNamePart = methodNamePart.slice(0, -2);
-                }
-                
-                const fkFieldDetails = classParser.fields.find(f => f.name === fkFieldName); //
-                const fkFieldType = fkFieldDetails ? fkFieldDetails.type : 'String';
-                const paramNullableMarker = fkFieldDetails && fkFieldDetails.isNullable ? '?' : '';
+      if (references && references.length > 0) {
+        foreignKeyMethodsImplementations = references.map(ref => {
+          const fkFieldName = ref.columnName;
+          let methodNamePart = cap(fkFieldName); //
+          if (methodNamePart.endsWith('Id')) {
+            methodNamePart = methodNamePart.slice(0, -2);
+          }
 
-                return `
+          const fkFieldDetails = classParser.fields.find(f => f.name === fkFieldName); //
+          const fkFieldType = fkFieldDetails ? fkFieldDetails.type : 'String';
+          const paramNullableMarker = fkFieldDetails && fkFieldDetails.nullable ? '?' : '';
+
+          return `
   @override
   Future<List<${D}Entity>> get${Ds}By${methodNamePart}Id(${fkFieldType}${paramNullableMarker} ${fkFieldName}) async {
     final ${d}Models = await _localDataSource.get${Ds}By${methodNamePart}Id(${fkFieldName});
     return ${d}Models.toEntities();
   }`;
-            }).join('\n');
-        }
+        }).join('\n');
+      }
     }
 
     return `import '../datasources/local/interfaces/${d}_local_datasource_service.dart';

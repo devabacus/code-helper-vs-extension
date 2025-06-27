@@ -41,6 +41,10 @@ export class DefaultProjectStructure implements ProjectStructure {
         return path.join(featurePath, this.data, this.dataSources, this.local, this.sources);
     }
 
+    getTablePath(featurePath: string): string {
+        return path.join(featurePath, this.data, this.dataSources, this.local, this.tables);
+    }
+
     getTableExtension(featurePath: string): string {
         return path.join(featurePath, this.data, this.dataSources, this.local, this.tables, this.extensions);
     }

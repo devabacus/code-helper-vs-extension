@@ -25,6 +25,7 @@ import { ServerpodYamlParser } from "./serverpod_yaml_parser/parser";
 import { ServerpodEndpointGenerator } from "./generators/serverpod_endpoint_generator";
 import { SERVERPOD_GENERATE } from "../serverpod/commands";
 import { pickPath } from "../../utils/ui/ui_ask_folder";
+import { DriftTableGenerator } from "./feature/data/datasources/local/tables/drift_table_generator";
 
 export async function createDataFilesFromYaml() {
     
@@ -57,6 +58,10 @@ export async function createDataFilesFromYaml() {
     await serverpodEndpointGenerator.generate(serverProjectRoot, model);
 
     executeInTerminal(SERVERPOD_GENERATE, serverProjectRoot);
+
+    const driftTableGenerator = new DriftTableGenerator(fileSystem);
+    await driftTableGenerator.generate(featurePath, entityName, model);
+
 
     // const commandData = {
     //     classParser: classParser,

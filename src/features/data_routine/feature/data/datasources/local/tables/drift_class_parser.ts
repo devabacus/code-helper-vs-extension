@@ -7,7 +7,7 @@ import { IDriftCodeFormatter } from "../../../../../formatters/drift_code_format
 export interface Field {
     type: string,
     name: string,
-    isNullable: boolean;
+    nullable: boolean;
 }
 
 export interface FieldValue {
@@ -74,7 +74,7 @@ export class DriftClassParser implements IDriftClassParser {
             fields.push({
                 type: convertedType,
                 name: fieldName,
-                isNullable: isNullable
+                nullable: isNullable
             });
         }
         return fields;
@@ -131,11 +131,11 @@ export class DriftClassParser implements IDriftClassParser {
         return this.formatter.formatInsertCompanionParams(this.fields);
     }
 
-    get fieldsForTest() : string[] {
+    get fieldsForTest(): string[] {
         return this.formatter.getFieldsValueForTest(this.fields);
     }
 
-    get fieldsExpectedForTest() : string[] {
+    get fieldsExpectedForTest(): string[] {
         return this.formatter.getFieldsExpectValueTest(this.fields);
     }
 }

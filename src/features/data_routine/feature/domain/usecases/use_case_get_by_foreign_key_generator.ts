@@ -25,8 +25,8 @@ export class UseCaseGetByForeignKeyGenerator extends DataRoutineGenerator {
 
   protected getPath(featurePath: string, entityName: string, fkDetails?: { fkFieldName: string, methodNamePart: string }): string {
     if (!fkDetails) {
-        // Этот путь не должен использоваться напрямую без деталей о внешнем ключе
-        return path.join(this.structure.getDomainUseCasesPath(featurePath), entityName, `get_${entityName}_by_foreign_key_base.dart`);
+      // Этот путь не должен использоваться напрямую без деталей о внешнем ключе
+      return path.join(this.structure.getDomainUseCasesPath(featurePath), entityName, `get_${entityName}_by_foreign_key_base.dart`);
     }
     // entityName здесь - имя основной сущности (например, "task")
     // fkDetails.methodNamePart - часть имени, относящаяся к внешнему ключу (например, "Category")
@@ -46,13 +46,13 @@ export class UseCaseGetByForeignKeyGenerator extends DataRoutineGenerator {
     const fkFieldName = ref.columnName; // categoryId
     let methodNamePart = cap(fkFieldName); // CategoryId
     if (methodNamePart.endsWith('Id')) {
-        methodNamePart = methodNamePart.slice(0, -2); // Category
+      methodNamePart = methodNamePart.slice(0, -2); // Category
     }
-    
+
     const fkFieldDetails = classParser.fields.find(f => f.name === fkFieldName);
     const fkFieldType = fkFieldDetails ? fkFieldDetails.type : 'String';
-    const paramNullableMarker = fkFieldDetails && fkFieldDetails.isNullable ? '?' : '';
-    
+    const paramNullableMarker = fkFieldDetails && fkFieldDetails.nullable ? '?' : '';
+
     const useCaseClassName = `Get${Ds}By${methodNamePart}IdUseCase`;
 
     return `import '../../repositories/${d}_repository.dart';
@@ -74,23 +74,23 @@ class ${useCaseClassName} {
     const { classParser, tableParser } = data;
 
     if (!tableParser) {
-        console.warn(`UseCaseGetByForeignKeyGenerator: tableParser не предоставлен для сущности ${entityName}. Файлы не будут сгенерированы.`);
-        return;
+      console.warn(`UseCaseGetByForeignKeyGenerator: tableParser не предоставлен для сущности ${entityName}. Файлы не будут сгенерированы.`);
+      return;
     }
 
     const references = tableParser.getReferences();
 
     for (const ref of references) {
-        const fkFieldName = ref.columnName;
-        let methodNamePart = cap(fkFieldName);
-        if (methodNamePart.endsWith('Id')) {
-            methodNamePart = methodNamePart.slice(0, -2);
-        }
+      const fkFieldName = ref.columnName;
+      let methodNamePart = cap(fkFieldName);
+      if (methodNamePart.endsWith('Id')) {
+        methodNamePart = methodNamePart.slice(0, -2);
+      }
 
-        const filePath = this.getPath(featurePath, entityName, {fkFieldName, methodNamePart });
-        const content = this.getContent({ classParser, fkReference: ref });
-        await this.fileSystem.createFile(filePath, content);
-        // console.log(`${useCaseClassName} успешно сгенерирован в ${filePath}`);
+      const filePath = this.getPath(featurePath, entityName, { fkFieldName, methodNamePart });
+      const content = this.getContent({ classParser, fkReference: ref });
+      await this.fileSystem.createFile(filePath, content);
+      // console.log(`${useCaseClassName} успешно сгенерирован в ${filePath}`);
     }
   }
 }

@@ -6,8 +6,8 @@ suite('Relation Table Parser', () => {
   test('должен корректно определять связанную таблицу', () => {
     // Имитация полей для связанной таблицы (task_tag_map)
     const fields: Field[] = [
-      { name: 'taskId', type: 'int', isNullable: false },
-      { name: 'tagId', type: 'int' , isNullable: false }
+      { name: 'taskId', type: 'int', nullable: false },
+      { name: 'tagId', type: 'int', nullable: false }
     ];
 
     // Имитация внешних ключей
@@ -28,7 +28,7 @@ suite('Relation Table Parser', () => {
 
     // Проверяем определение связанной таблицы
     assert.strictEqual(parser.isRelationTable(), true);
-    
+
     // Проверяем получение связанных таблиц
     const relatedTables = parser.getRelatedTables();
     assert.strictEqual(relatedTables.length, 2);
@@ -39,8 +39,8 @@ suite('Relation Table Parser', () => {
   test('должен корректно обрабатывать обычную таблицу', () => {
     // Имитация полей для обычной таблицы
     const fields: Field[] = [
-      { name: 'id', type: 'int', isNullable: false },
-      { name: 'title', type: 'String', isNullable: false }
+      { name: 'id', type: 'int', nullable: false },
+      { name: 'title', type: 'String', nullable: false }
     ];
 
     // Создаем мок парсера
@@ -52,7 +52,7 @@ suite('Relation Table Parser', () => {
 
     // Проверяем определение обычной таблицы
     assert.strictEqual(parser.isRelationTable(), false);
-    
+
     // Проверяем, что связанных таблиц нет
     const relatedTables = parser.getRelatedTables();
     assert.strictEqual(relatedTables.length, 0);

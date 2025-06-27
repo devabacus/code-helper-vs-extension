@@ -26,8 +26,8 @@ export class DataSourcesGenerator extends DataRoutineGenerator {
     const tableParser = data.tableParser;
 
     if (!classParser) {
-        console.error("DataSourcesGenerator: classParser не определен в 'data'.");
-        return "// Ошибка: Не удалось получить classParser для генерации DataSource.";
+      console.error("DataSourcesGenerator: classParser не определен в 'data'.");
+      return "// Ошибка: Не удалось получить classParser для генерации DataSource.";
     }
 
     const D = classParser.driftClassNameUpper;
@@ -37,30 +37,30 @@ export class DataSourcesGenerator extends DataRoutineGenerator {
 
     let foreignKeyMethodsImplementations = '';
     if (tableParser) { // Проверяем наличие tableParser
-        const references: Reference[] = tableParser.getReferences(); //
+      const references: Reference[] = tableParser.getReferences(); //
 
-        if (references && references.length > 0) {
-            foreignKeyMethodsImplementations = references.map(ref => {
-                const fkFieldName = ref.columnName;
-                let methodNamePart = cap(fkFieldName); //
-                if (methodNamePart.endsWith('Id')) {
-                    methodNamePart = methodNamePart.slice(0, -2);
-                }
-                
-                const fkFieldDetails = classParser.fields.find(f => f.name === fkFieldName); //
-                const fkFieldType = fkFieldDetails ? fkFieldDetails.type : 'String';
-                const paramNullableMarker = fkFieldDetails && fkFieldDetails.isNullable ? '?' : '';
+      if (references && references.length > 0) {
+        foreignKeyMethodsImplementations = references.map(ref => {
+          const fkFieldName = ref.columnName;
+          let methodNamePart = cap(fkFieldName); //
+          if (methodNamePart.endsWith('Id')) {
+            methodNamePart = methodNamePart.slice(0, -2);
+          }
 
-                return `
+          const fkFieldDetails = classParser.fields.find(f => f.name === fkFieldName); //
+          const fkFieldType = fkFieldDetails ? fkFieldDetails.type : 'String';
+          const paramNullableMarker = fkFieldDetails && fkFieldDetails.nullable ? '?' : '';
+
+          return `
   @override
   Future<List<${D}Model>> get${Ds}By${methodNamePart}Id(${fkFieldType}${paramNullableMarker} ${fkFieldName}) async {
     final ${ds}Data = await ${d}Dao.get${Ds}By${methodNamePart}Id(${fkFieldName});
     return ${ds}Data.toModels();
   }`;
-            }).join('\n');
-        }
+        }).join('\n');
+      }
     } else {
-        // console.warn(`DataSourcesGenerator: tableParser не был предоставлен для сущности ${D}. Методы по внешним ключам не будут сгенерированы в реализации DataSource.`);
+      // console.warn(`DataSourcesGenerator: tableParser не был предоставлен для сущности ${D}. Методы по внешним ключам не будут сгенерированы в реализации DataSource.`);
     }
 
     return `import '../../../models/extensions/${d}_model_extension.dart';

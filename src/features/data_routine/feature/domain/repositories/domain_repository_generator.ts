@@ -26,8 +26,8 @@ export class DomainRepositoryGenerator extends DataRoutineGenerator {
     const tableParser = data.tableParser;
 
     if (!classParser) {
-        console.error("DomainRepositoryGenerator: classParser не определен в 'data'.");
-        return "// Ошибка: Не удалось получить classParser для генерации интерфейса репозитория.";
+      console.error("DomainRepositoryGenerator: classParser не определен в 'data'.");
+      return "// Ошибка: Не удалось получить classParser для генерации интерфейса репозитория.";
     }
 
     const d = classParser.driftClassNameLower;
@@ -36,23 +36,23 @@ export class DomainRepositoryGenerator extends DataRoutineGenerator {
 
     let foreignKeyMethodsSignatures = '';
     if (tableParser) { // Проверяем наличие tableParser
-        const references: Reference[] = tableParser.getReferences(); //
+      const references: Reference[] = tableParser.getReferences(); //
 
-        if (references && references.length > 0) {
-            foreignKeyMethodsSignatures = references.map(ref => {
-                const fkFieldName = ref.columnName;
-                let methodNamePart = cap(fkFieldName); //
-                if (methodNamePart.endsWith('Id')) {
-                    methodNamePart = methodNamePart.slice(0, -2);
-                }
-                
-                const fkFieldDetails = classParser.fields.find(f => f.name === fkFieldName); //
-                const fkFieldType = fkFieldDetails ? fkFieldDetails.type : 'String';
-                const paramNullableMarker = fkFieldDetails && fkFieldDetails.isNullable ? '?' : '';
+      if (references && references.length > 0) {
+        foreignKeyMethodsSignatures = references.map(ref => {
+          const fkFieldName = ref.columnName;
+          let methodNamePart = cap(fkFieldName); //
+          if (methodNamePart.endsWith('Id')) {
+            methodNamePart = methodNamePart.slice(0, -2);
+          }
 
-                return `  Future<List<${D}Entity>> get${Ds}By${methodNamePart}Id(${fkFieldType}${paramNullableMarker} ${fkFieldName});`;
-            }).join('\n');
-        }
+          const fkFieldDetails = classParser.fields.find(f => f.name === fkFieldName); //
+          const fkFieldType = fkFieldDetails ? fkFieldDetails.type : 'String';
+          const paramNullableMarker = fkFieldDetails && fkFieldDetails.nullable ? '?' : '';
+
+          return `  Future<List<${D}Entity>> get${Ds}By${methodNamePart}Id(${fkFieldType}${paramNullableMarker} ${fkFieldName});`;
+        }).join('\n');
+      }
     }
 
     return `import '../entities/${d}/${d}.dart';

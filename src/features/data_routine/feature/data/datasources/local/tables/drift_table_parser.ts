@@ -46,7 +46,7 @@ export class DriftTableParser implements IDriftTableParser {
     }
     const referenceFields = this._references.map(ref => ref.columnName);
     return this._primaryKey.length === referenceFields.length &&
-           this._primaryKey.every(field => referenceFields.includes(field));
+      this._primaryKey.every(field => referenceFields.includes(field));
   }
 
   getRelatedTables(): string[] {
@@ -70,19 +70,19 @@ export class DriftTableParser implements IDriftTableParser {
     let fieldMatch;
 
     while ((fieldMatch = fieldsRegex.exec(this.driftClass)) !== null) {
-        const columnTypeString = fieldMatch[1]; // e.g., "TextColumn"
-        const fieldName = fieldMatch[2];    // e.g., "categoryId"
-        const fieldDefinition = fieldMatch[3]; // e.g., "text().nullable().references(CategoryTable, #id)()"
+      const columnTypeString = fieldMatch[1]; // e.g., "TextColumn"
+      const fieldName = fieldMatch[2];    // e.g., "categoryId"
+      const fieldDefinition = fieldMatch[3]; // e.g., "text().nullable().references(CategoryTable, #id)()"
 
-        const isNullable = fieldDefinition.includes(".nullable()");
-        const baseType = columnTypeString.replace('Column', ''); // "Text"
-        const convertedType = this.convertDriftType(baseType);  // "String"
+      const isNullable = fieldDefinition.includes(".nullable()");
+      const baseType = columnTypeString.replace('Column', ''); // "Text"
+      const convertedType = this.convertDriftType(baseType);  // "String"
 
-        fields.push({
-            name: fieldName,
-            type: convertedType,
-            isNullable: isNullable
-        });
+      fields.push({
+        name: fieldName,
+        type: convertedType,
+        nullable: isNullable
+      });
     }
     return fields;
   }

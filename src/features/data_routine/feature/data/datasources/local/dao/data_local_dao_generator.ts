@@ -10,57 +10,57 @@ import { DriftTableParser } from "../tables/drift_table_parser";
 
 export class DataDaoGenerator extends DataRoutineGenerator {
 
-    private structure: ProjectStructure;
+  private structure: ProjectStructure;
 
-    constructor(fileSystem: IFileSystem, structure?: ProjectStructure) {
-        super(fileSystem);
-        this.structure = structure || new DefaultProjectStructure(); //
-    }
+  constructor(fileSystem: IFileSystem, structure?: ProjectStructure) {
+    super(fileSystem);
+    this.structure = structure || new DefaultProjectStructure(); //
+  }
 
-    protected getPath(featurePath: string, entityName: string): string {
-        return path.join(this.structure.getDaoPath(featurePath), entityName, `${entityName}_dao.dart`); //
-    }
+  protected getPath(featurePath: string, entityName: string): string {
+    return path.join(this.structure.getDaoPath(featurePath), entityName, `${entityName}_dao.dart`); //
+  }
 
-    protected getContent(data: { classParser: DriftClassParser, tableParser: DriftTableParser }): string {
-        const classParser = data.classParser;
-        const tableParser = data.tableParser;       
-        const d = classParser.driftClassNameLower;
-        const D = classParser.driftClassNameUpper;
-        const Ds = pluralConvert(D); //
+  protected getContent(data: { classParser: DriftClassParser, tableParser: DriftTableParser }): string {
+    const classParser = data.classParser;
+    const tableParser = data.tableParser;
+    const d = classParser.driftClassNameLower;
+    const D = classParser.driftClassNameUpper;
+    const Ds = pluralConvert(D); //
 
-        let foreignKeyMethods = '';
-        // Проверяем, что tableParser действительно был передан
-        if (tableParser) {
-            const references: Reference[] = tableParser.getReferences(); //
+    let foreignKeyMethods = '';
+    // Проверяем, что tableParser действительно был передан
+    if (tableParser) {
+      const references: Reference[] = tableParser.getReferences(); //
 
-            if (references && references.length > 0) {
-                foreignKeyMethods = references.map(ref => {
-                    const fkFieldName = ref.columnName;
-                    let methodNamePart = cap(fkFieldName); //
-                    if (methodNamePart.endsWith('Id')) {
-                        methodNamePart = methodNamePart.slice(0, -2);
-                    }
-                    
-                    const fkFieldDetails = classParser.fields.find(f => f.name === fkFieldName); //
-                    const fkFieldType = fkFieldDetails ? fkFieldDetails.type : 'String';
-                    const paramNullableMarker = fkFieldDetails && fkFieldDetails.isNullable ? '?' : '';
+      if (references && references.length > 0) {
+        foreignKeyMethods = references.map(ref => {
+          const fkFieldName = ref.columnName;
+          let methodNamePart = cap(fkFieldName); //
+          if (methodNamePart.endsWith('Id')) {
+            methodNamePart = methodNamePart.slice(0, -2);
+          }
 
-                    const nullCheckLogic = fkFieldDetails?.isNullable 
-                        ? `if (${fkFieldName} == null) {
+          const fkFieldDetails = classParser.fields.find(f => f.name === fkFieldName); //
+          const fkFieldType = fkFieldDetails ? fkFieldDetails.type : 'String';
+          const paramNullableMarker = fkFieldDetails && fkFieldDetails.nullable ? '?' : '';
+
+          const nullCheckLogic = fkFieldDetails?.nullable
+            ? `if (${fkFieldName} == null) {
       return []; 
-    }\n    ` 
-                        : '';
+    }\n    `
+            : '';
 
-                    return `
+          return `
   Future<List<${D}TableData>> get${Ds}By${methodNamePart}Id(${fkFieldType}${paramNullableMarker} ${fkFieldName}) async {
     ${nullCheckLogic}return (select(${d}Table)..where((t) => t.${fkFieldName}.equals(${fkFieldName}))).get();
   }
 `;
-                }).join('');
-            }
-        } 
-        
-        return `import 'package:uuid/uuid.dart';
+        }).join('');
+      }
+    }
+
+    return `import 'package:uuid/uuid.dart';
 import 'package:drift/drift.dart';
 
 import '../../../../../../../core/database/local/interface/i_database_service.dart';
@@ -112,5 +112,5 @@ ${foreignKeyMethods}
   }
 }
 `;
-    }
+  }
 }

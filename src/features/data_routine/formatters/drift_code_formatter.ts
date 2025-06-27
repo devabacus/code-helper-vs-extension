@@ -9,7 +9,7 @@ export class DriftCodeFormatter implements IDriftCodeFormatter {
 
   formatClassFields(fields: Field[]): string { // Используем обновленный Field
     // Для объявления полей класса в Freezed, тип также должен быть nullable
-    const fieldRows = fields.map(field => `final ${field.type}${field.isNullable ? '?' : ''} ${field.name};`);
+    const fieldRows = fields.map(field => `final ${field.type}${field.nullable ? '?' : ''} ${field.name};`);
     return fieldRows.join('\n');
   }
 
@@ -24,12 +24,12 @@ export class DriftCodeFormatter implements IDriftCodeFormatter {
 
   formatRequiredTypeFields(fields: Field[]): string { // Используем обновленный Field
     const fieldRows = fields.map(field => {
-      const typeString = `${field.type}${field.isNullable ? '?' : ''}`;
+      const typeString = `${field.type}${field.nullable ? '?' : ''}`;
       // Для Freezed: non-nullable поля без @Default становятся required автоматически.
       // Nullable поля - опциональные.
       // Мы можем явно указывать required для non-nullable для ясности или если того требует стиль.
       // Для nullable 'required' не ставим.
-      if (field.isNullable) {
+      if (field.nullable) {
         return `${typeString} ${field.name},`;
       } else {
         // Поля id часто имеют clientDefault, поэтому они не должны быть required в конструкторе модели/сущности,
@@ -90,10 +90,10 @@ export class DriftCodeFormatter implements IDriftCodeFormatter {
     return [firstRow, secondRow];
   }
 
-    formatInsertCompanionParams(fields: Field[]): string {
+  formatInsertCompanionParams(fields: Field[]): string {
     const insertFields = fields.filter(field => field.name !== 'id');
     return insertFields.map(field => {
-      if (field.isNullable) {
+      if (field.nullable) {
         // Для nullable полей всегда используем Value()
         return `${field.name}: Value(${field.name})`;
       } else {

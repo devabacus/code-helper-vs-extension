@@ -25,6 +25,7 @@ export interface ProjectStructure {
     getDataRepositoryPath(featurePath: string): string;
     getDataModelPath(featurePath: string): string;
     getDaoPath(featurePath: string): string;
+    getTablePath(featurePath: string): string;
     getTableExtension(featurePath: string): string;
     getLocalDataSourcePath(featurePath: string): string;
     getDataProvderPath(featurePath: string): string;

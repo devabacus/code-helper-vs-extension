@@ -14,7 +14,7 @@ export class ServerpodYamlGenerator extends BaseGenerator {
     }
 
     protected getPath(basePath: string, entityName: string): string {
-        return path.join(basePath, `${entityName}`,  `${toSnakeCase(entityName)}.spy.yaml`);
+        return path.join(basePath, `${entityName}`, `${toSnakeCase(entityName)}.spy.yaml`);
     }
 
     private mapDriftTypeToServerpod(
@@ -25,7 +25,7 @@ export class ServerpodYamlGenerator extends BaseGenerator {
         if (fieldName === 'id' && driftFieldType === 'String') {
             return 'UuidValue?';
         }
-        if(fieldName == 'lastModified') {return 'DateTime?';}
+        if (fieldName == 'lastModified') { return 'DateTime?'; }
         if (isForeignKeyFieldThatShouldBeUuid && driftFieldType === 'String') {
             return 'UuidValue?';
         }
@@ -39,7 +39,7 @@ export class ServerpodYamlGenerator extends BaseGenerator {
         }
     }
 
-     protected getContent(data: { classParser: DriftClassParser, tableParser: DriftTableParser }): string {
+    protected getContent(data: { classParser: DriftClassParser, tableParser: DriftTableParser }): string {
         const { classParser, tableParser } = data;
         const className = tableParser.getClassName();
         const tableName = toSnakeCase(className);
@@ -47,28 +47,28 @@ export class ServerpodYamlGenerator extends BaseGenerator {
 
         let yamlContent = `class: ${className}\n`;
         if (className.toLowerCase() !== "protocol") {
-             yamlContent += `table: ${tableName}\n`;
+            yamlContent += `table: ${tableName}\n`;
         }
         yamlContent += `fields:\n`;
 
         const relations = tableParser.getTableRelations();
         const primaryKeyFieldsDrift = tableParser.getPrimaryKey();
-        
+
         const fkFieldsHandledAsObjectRelations = new Set<string>();
         for (const ref of driftReferences) {
             fkFieldsHandledAsObjectRelations.add(ref.columnName);
         }
-        
+
         for (const field of tableParser.getFields()) {
             if (field.name === 'id' && field.type === 'String') {
                 yamlContent += `  id: UuidValue?, defaultPersist=random_v7\n`;
                 yamlContent += `  isDeleted: bool, default=false\n`; //пока для всех нужно просто добавить потом надо будет что-то придумать
-                
-            } else if (field.name === 'syncStatus') {continue;}
-            
+
+            } else if (field.name === 'syncStatus') { continue; }
+
             else if (!fkFieldsHandledAsObjectRelations.has(field.name)) {
                 const serverpodType = this.mapDriftTypeToServerpod(field.type, field.name, false);
-                yamlContent += `  ${field.name}: ${serverpodType}${field.isNullable ? '?' : ''}\n`;
+                yamlContent += `  ${field.name}: ${serverpodType}${field.nullable ? '?' : ''}\n`;
             }
         }
 
@@ -79,7 +79,7 @@ export class ServerpodYamlGenerator extends BaseGenerator {
 
             // Находим соответствующее поле в Drift-таблице, чтобы проверить его nullability
             const fkDriftField = tableParser.getFields().find(f => f.name === ref.columnName);
-            const isFkExplicitlyNullableInDrift = fkDriftField ? fkDriftField.isNullable : false;
+            const isFkExplicitlyNullableInDrift = fkDriftField ? fkDriftField.nullable : false;
 
             // Правило 1: Тип связанной сущности в YAML всегда nullable
             const serverpodRelationType = `${referencedClassName}?`; // Например, 'Category?'
@@ -93,18 +93,18 @@ export class ServerpodYamlGenerator extends BaseGenerator {
 
         if (className.toLowerCase() !== "protocol") {
             const isSimpleUuidIdPk = primaryKeyFieldsDrift.length === 1 && primaryKeyFieldsDrift[0] === 'id' &&
-                                   tableParser.getFields().find(f => f.name === 'id')?.type === 'String';
-            
+                tableParser.getFields().find(f => f.name === 'id')?.type === 'String';
+
             const m2mRelationDetails = relations.find(r => r.relationType === RelationType.MANY_TO_MANY && r.intermediateTable === className);
 
             if (m2mRelationDetails) {
                 yamlContent += `indexes:\n`;
                 const fk1NameInYaml = `${unCap(m2mRelationDetails.sourceTable)}Id`;
                 const fk2NameInYaml = `${unCap(m2mRelationDetails.targetTable)}Id`;
-                yamlContent += `  idx_${tableName}_${fk1NameInYaml}_${fk2NameInYaml}:\n`; 
+                yamlContent += `  idx_${tableName}_${fk1NameInYaml}_${fk2NameInYaml}:\n`;
                 yamlContent += `    fields: ${fk1NameInYaml}, ${fk2NameInYaml}\n`;
                 yamlContent += `    unique: true\n`;
-            } else if (!isSimpleUuidIdPk && primaryKeyFieldsDrift.length > 0) { 
+            } else if (!isSimpleUuidIdPk && primaryKeyFieldsDrift.length > 0) {
                 yamlContent += `indexes:\n`;
                 yamlContent += `  idx_${tableName}_${primaryKeyFieldsDrift.join('_')}:\n`;
                 yamlContent += `    fields: ${primaryKeyFieldsDrift.join(', ')}\n`;
@@ -137,7 +137,7 @@ export class ServerpodYamlGenerator extends BaseGenerator {
         for (const relation of oneToManyRelationsWhereCurrentIsMany) {
             const oneSideClassName = relation.targetTable;
             const manySideClassName = relation.sourceTable;
-            const listFieldName = `${unCap(pluralConvert(manySideClassName))}`; 
+            const listFieldName = `${unCap(pluralConvert(manySideClassName))}`;
             // Тип для списка связей всегда nullable (List<Type>?)
             await this.addRelationFieldToYaml(basePath, oneSideClassName, listFieldName, `List<${manySideClassName}>?`);
         }
@@ -146,11 +146,11 @@ export class ServerpodYamlGenerator extends BaseGenerator {
         if (tableParser.isRelationTable()) {
             const m2mRelationDetails = tableParser.getTableRelations().find(r => r.relationType === RelationType.MANY_TO_MANY && r.intermediateTable === currentEntityClassName);
             if (m2mRelationDetails) {
-                const sourceTableForM2M = m2mRelationDetails.sourceTable; 
-                const targetTableForM2M = m2mRelationDetails.targetTable; 
-                const intermediateTableName = m2mRelationDetails.intermediateTable!; 
+                const sourceTableForM2M = m2mRelationDetails.sourceTable;
+                const targetTableForM2M = m2mRelationDetails.targetTable;
+                const intermediateTableName = m2mRelationDetails.intermediateTable!;
 
-                const listFieldNameForIntermediate = `${unCap(pluralConvert(intermediateTableName))}`; 
+                const listFieldNameForIntermediate = `${unCap(pluralConvert(intermediateTableName))}`;
 
                 // Обновляем YAML для sourceTable, добавляя List<IntermediateTable>?
                 await this.addRelationFieldToYaml(basePath, sourceTableForM2M, listFieldNameForIntermediate, `List<${intermediateTableName}>?`);
@@ -176,7 +176,7 @@ export class ServerpodYamlGenerator extends BaseGenerator {
                 if (!fieldLineRegex.test(targetYamlContent)) {
                     const lines = targetYamlContent.split('\n');
                     let fieldsStartIndex = -1;
-                    let indent = "  "; 
+                    let indent = "  ";
 
                     for (let i = 0; i < lines.length; i++) {
                         if (lines[i].trim() === "fields:") {
@@ -187,23 +187,23 @@ export class ServerpodYamlGenerator extends BaseGenerator {
                             break;
                         }
                     }
-                    
+
                     // Для списочных отношений (List<Type>?) суффикс (optional) обычно не добавляется к 'relation'
                     const lineToAdd = `${indent}${fieldName}: ${fieldTypeWithList}, relation`;
 
 
                     if (fieldsStartIndex !== -1) {
-                        let insertAtIndex = fieldsStartIndex + 1; 
+                        let insertAtIndex = fieldsStartIndex + 1;
                         for (let j = fieldsStartIndex + 1; j < lines.length; j++) {
                             if (lines[j].startsWith(indent) && lines[j].trim() !== "") {
-                                insertAtIndex = j + 1; 
+                                insertAtIndex = j + 1;
                             } else if (lines[j].trim() !== "" && !lines[j].startsWith(indent)) {
                                 break;
                             }
                         }
                         lines.splice(insertAtIndex, 0, lineToAdd);
                         targetYamlContent = lines.join('\n');
-                    } else { 
+                    } else {
                         targetYamlContent += (targetYamlContent.endsWith('\n\n') ? '' : (targetYamlContent.endsWith('\n') ? '\n' : '\n\n')) + `fields:\n${lineToAdd}\n`;
                     }
                     await this.fileSystem.createFile(targetYamlPath, targetYamlContent);
