@@ -35,9 +35,6 @@ export class DataDaoGenerator extends DataRoutineGenerator {
             const methodNamePart = cap(field.name.replace(/Id$/, ''));
             const daoMethodName = `get${Ds}By${methodNamePart}Id`;
             const parameterName = fieldName;
-
-            // Мы предполагаем, что ID связанных таблиц всегда UuidValue, как в Serverpod.
-            // В Drift это будет String.
             const parameterType = 'String'; 
 
             return `
