@@ -111,13 +111,6 @@ export class CodeFormatter implements ICodeFormatter {
     return columns.join('\n');
   }
 
-  // private generateColumnDefinition(field: ServerpodField): string {
-  //   const columnType = this.mapServerpodTypeToDriftColumn(field.type);
-  //   const nullable = field.nullable ? '.nullable()' : '';
-
-  //   return `${columnType}Column get ${field.name} => ${columnType}()${nullable}();`;
-  // }
-  
   private generateColumnDefinition(field: ServerpodField): string {
     const columnType = this.mapServerpodTypeToDriftColumn(field.type);
     let columnClass = cap(columnType);
@@ -142,7 +135,7 @@ export class CodeFormatter implements ICodeFormatter {
 
   shouldSkipServerpodField(field: ServerpodField): boolean {
     // Пропускаем служебные поля, которые уже определены статично
-    const staticFields = ['id', 'userId', 'lastModified', 'syncStatus'];
+    const staticFields = ['id', 'userId', 'lastModified', 'syncStatus', 'isDeleted'];
     if (staticFields.includes(field.name)) {
       return true;
     }

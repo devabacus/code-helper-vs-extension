@@ -4,7 +4,7 @@ import { DefaultProjectStructure } from "../../../../../../../core/implementatio
 import { IFileSystem } from "../../../../../../../core/interfaces/file_system";
 import { ProjectStructure } from "../../../../../../../core/interfaces/project_structure";
 import { DataRoutineGenerator } from "../../../../../generators/data_routine_generator";
-import { ServerpodModel } from "../../../../../serverpod_yaml_parser/types";
+import { ServerpodField, ServerpodModel } from "../../../../../serverpod_yaml_parser/types";
 import { unCap } from "../../../../../../../utils/text_work/text_util";
 import { CodeFormatter } from "../../../../../formatters/code_formatter";
 
@@ -28,11 +28,13 @@ export class DriftTableGenerator extends DataRoutineGenerator {
     const formatter = new CodeFormatter();
     // Генерируем колонки для полей модели
     const fieldColumns = formatter.generateDriftTableColumns(model.fields);
+    const relatedTableImports = this.generateRelatedTableImports(model.fields);
+
     
     return `
 import 'package:drift/drift.dart';
 import 'package:uuid/uuid.dart';
-import '../../../../../../core/database/local/database_types.dart';
+import '../../../../../../core/database/local/database_types.dart';${relatedTableImports}
 
 class ${D}Table extends Table {
 
@@ -48,5 +50,27 @@ class ${D}Table extends Table {
 }
 
 `;
+  }
+
+    private generateRelatedTableImports(fields: ServerpodField[]): string {
+    const relationFields = fields.filter(field => 
+      field.isRelation && 
+      field.relationType === 'manyToOne' && 
+      field.relatedModel
+    );
+
+    if (relationFields.length === 0) {
+      return '';
+    }
+
+    const imports = relationFields.map(field => {
+      const relatedModelName = field.relatedModel!;
+      const tableFileName = `${relatedModelName.toLowerCase()}_table.dart`;
+      return `import '${tableFileName}';`;
+    });
+
+    // Убираем дубликаты и добавляем перенос строки в начале
+    const uniqueImports = [...new Set(imports)];
+    return '\n' + uniqueImports.join('\n');
   }
 }
