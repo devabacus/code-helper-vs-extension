@@ -32,7 +32,7 @@ export class LocalDataSourceServiceGenerator extends BaseGenerator<ServerpodMode
     const D = model.className;
     const d = unCap(model.className);
     const Ds = pluralConvert(D);
-
+ 
     // Генерация методов для получения по внешнему ключу
     let foreignKeyMethods = '';
     const relationFields = model.fields.filter(field => field.isRelation && field.relationType === 'manyToOne');
