@@ -116,6 +116,7 @@ ${fieldColumns}
   private generateRelatedTableImports(fields: ServerpodField[]): string {
     const relationFields = fields.filter(field => 
       field.isRelation && 
+      field.relationType === 'manyToOne' && // Только manyToOne связи
       field.relatedModel
     );
 
