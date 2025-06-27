@@ -3,11 +3,11 @@ import { BaseGenerator } from "../../../../../../../core/generators/base_generat
 import { DefaultProjectStructure } from "../../../../../../../core/implementations/default_project_structure";
 import { IFileSystem } from "../../../../../../../core/interfaces/file_system";
 import { ProjectStructure } from "../../../../../../../core/interfaces/project_structure";
-import { cap, pluralConvert, toSnakeCase, unCap } from "../../../../../../../utils/text_work/text_util";
+import { cap, pluralConvert, unCap } from "../../../../../../../utils/text_work/text_util";
 import { PathData } from "../../../../../../utils/path_util";
 import { ServerpodModel } from "../../../../../serverpod_yaml_parser/types";
 
-export class LocalDataSourceServiceGenerator extends BaseGenerator<ServerpodModel> {
+export class RemoteDataSourceServiceGenerator extends BaseGenerator<ServerpodModel> {
 
   private structure: ProjectStructure;
 
@@ -17,9 +17,7 @@ export class LocalDataSourceServiceGenerator extends BaseGenerator<ServerpodMode
   }
 
   protected getPath(featurePath: string, entityName: string): string {
-    const snakeCaseEntityName = toSnakeCase(entityName);
-    
-    return path.join(this.structure.getDataLocalInterfacesPath(featurePath), `${snakeCaseEntityName}_local_datasource_service.dart`); 
+    return path.join(this.structure.getDataRemoteInterfacesPath(featurePath), `${entityName}_remote_datasource_service.dart`); 
   }
 
   protected getContent(model: ServerpodModel, _: string, featurePath: string): string {
@@ -42,33 +40,23 @@ export class LocalDataSourceServiceGenerator extends BaseGenerator<ServerpodMode
         const parameterType = 'String';
 
         return `
-  Future<List<${D}Model>> ${dsMethodName}(${parameterType} ${parameterName}, {required int userId}); `;
+  Future<${D}>> ${dsMethodName}(${parameterType} ${parameterName});`;
       }).join('');
     }
     return `
-import 'package:${projectName}/core/database/local/database.dart';
+import 'package:${projectName}_client/${projectName}_client.dart';
 
-import '../../../models/${d}/${d}_model.dart';
-import '../../../../../../core/database/local/database_types.dart';
-
-abstract class I${D}LocalDataSource {
-  Future<List<${D}Model>> get${Ds}({int? userId});
-  Stream<List<${D}Model>> watch${Ds}({int? userId});
-  Future<${D}Model?> get${D}ById(String id, {required int userId});
-  Future<String> create${D}(${D}Model ${d});
-  Future<bool> update${D}(${D}Model ${d});
-  Future<bool> delete${D}(String id, {required int userId});
-  Future<List<${D}TableData>> getAllLocalChanges(int userId);
-  Future<List<${D}TableData>> reconcileServerChanges(
-    List<dynamic> serverChanges,
-    int userId,
-  );
-  Future<void> physicallyDelete${D}(String id, {required int userId});
-  Future<void> insertOrUpdateFromServer(
-    dynamic serverChange,
-    SyncStatus status,
-  );
-  Future<void> handleSyncEvent(dynamic event, int userId);
+abstract class I${D}RemoteDataSource {
+  Stream<${D}SyncEvent> watchEvents();
+  Future<List<${D}>> get${Ds}();
+  Future<List<${D}>> get${Ds}Since(DateTime? since); 
+  Future<List<${D}>> sync${Ds}(List<${D}> local${Ds});
+  Future<${D}?> get${D}ById(UuidValue id);
+  Future<${D}> create${D}(${D} ${d});
+  Future<bool> update${D}(${D} ${d});
+  Future<bool> delete${D}(UuidValue id);
+  Future<bool> checkConnection();
+  Future<void> closeStreams();
 ${foreignKeyMethods}
 }
 

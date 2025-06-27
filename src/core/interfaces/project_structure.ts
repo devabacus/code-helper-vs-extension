@@ -13,7 +13,7 @@ export interface ProjectStructure {
     domain: string;
     usecases: string;
     entities: string;
-
+    remote: string
     extensions: string;
 
     presentation: string;
@@ -31,6 +31,7 @@ export interface ProjectStructure {
     getDataProvderPath(featurePath: string): string;
     getDataExtensionPath(featurePath: string): string;
     getDataLocalInterfacesPath(featurePath: string): string;
+    getDataRemoteInterfacesPath(featurePath: string): string;
 
 
     getEntityPath(featurePath: string): string;

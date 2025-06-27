@@ -12,6 +12,7 @@ export class DefaultProjectStructure implements ProjectStructure {
     dataSources: string = "datasources";
     sources: string = "sources";
     tables: string = "tables";
+    remote: string = "remote";
 
 
     domain: string = "domain";
@@ -69,6 +70,10 @@ export class DefaultProjectStructure implements ProjectStructure {
 
     getDataLocalInterfacesPath(featurePath: string): string {
         return path.join(featurePath, this.data, this.dataSources, this.local, this.interfaces);
+    }
+
+    getDataRemoteInterfacesPath(featurePath: string): string {
+        return path.join(featurePath, this.data, this.dataSources, this.remote, this.interfaces);
     }
 
     // domain     

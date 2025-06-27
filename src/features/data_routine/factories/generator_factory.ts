@@ -8,6 +8,7 @@ import { DataLocalRelateSourceGenerator } from "../feature/data/datasources/loca
 import { DataLocalSourcesGenerator } from "../feature/data/datasources/local/sources/local_data_source_generator";
 import { DriftTableGenerator } from "../feature/data/datasources/local/tables/drift_table_generator";
 import { TableExtensionGenerator } from "../feature/data/datasources/local/tables/extensions/table_extension_generator";
+import { RemoteDataSourceServiceGenerator } from "../feature/data/datasources/remote/interfaces/i_remote_datasource_service";
 import { ModelGenerator } from "../feature/data/models/data_model_generator";
 import { DataExtensionModelGenerator } from "../feature/data/models/extension_model_generator";
 import { DataProviderGenerator } from "../feature/data/providers/data_prov_generator";
@@ -63,6 +64,9 @@ export class GeneratorFactory {
 
     createLocalDataSourceServiceGenerator(): FileGenerator {
         return new LocalDataSourceServiceGenerator(this.fileSystem);
+    }
+    createRemoteDataSourceServiceGenerator(): FileGenerator {
+        return new RemoteDataSourceServiceGenerator(this.fileSystem);
     }
     createLocalSourcesGenerator(): FileGenerator {
         return new DataLocalSourcesGenerator(this.fileSystem);
