@@ -1,6 +1,7 @@
 // src/features/data_routine/formatters/code_formatter.ts
 
 
+import { cap } from '../../../utils/text_work/text_util';
 import { Field, FieldValue } from '../feature/data/datasources/local/tables/drift_class_parser';
 import { ServerpodField } from '../serverpod_yaml_parser/types';
 import { ICodeFormatter } from './code_formatter.interface';
@@ -110,11 +111,20 @@ export class CodeFormatter implements ICodeFormatter {
     return columns.join('\n');
   }
 
+  // private generateColumnDefinition(field: ServerpodField): string {
+  //   const columnType = this.mapServerpodTypeToDriftColumn(field.type);
+  //   const nullable = field.nullable ? '.nullable()' : '';
+
+  //   return `${columnType}Column get ${field.name} => ${columnType}()${nullable}();`;
+  // }
+  
   private generateColumnDefinition(field: ServerpodField): string {
     const columnType = this.mapServerpodTypeToDriftColumn(field.type);
+    let columnClass = cap(columnType);
+    if (columnType === 'boolean') { columnClass = 'Bool'; }
     const nullable = field.nullable ? '.nullable()' : '';
 
-    return `${columnType}Column get ${field.name} => ${columnType}()${nullable}();`;
+    return `${columnClass}Column get ${field.name} => ${columnType}()${nullable}();`;
   }
 
   mapServerpodTypeToDriftColumn(serverpodType: string): string {
