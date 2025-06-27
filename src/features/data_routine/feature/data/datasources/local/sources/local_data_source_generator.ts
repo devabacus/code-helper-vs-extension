@@ -32,18 +32,19 @@ export class DataLocalRelateSourceGenerator extends DataRoutineGenerator {
 
     if (relationFields.length > 0) {
       foreignKeyMethods = relationFields.map(field => {
-        const fieldName = field.name.endsWith('Id') ? field.name : `${field.name}Id`;
+        const fkFieldName = field.name.endsWith('Id') ? field.name : `${field.name}Id`;
         const methodNamePart = cap(field.name.replace(/Id$/, ''));
-        const daoMethodName = `get${Ds}By${methodNamePart}Id`;
-        const parameterName = fieldName;
+        const dsMethodName = `get${Ds}By${methodNamePart}Id`;
+        const parameterName = fkFieldName;
         const parameterType = 'String';
 
         return `
-  Future<List<${D}TableData>> ${daoMethodName}(${parameterType} ${parameterName}, {required int userId}) =>
-    (select(${d}Table)
-      ..where((t) => t.${parameterName}.equals(${parameterName}) & t.userId.equals(userId) & t.syncStatus.equals(SyncStatus.deleted.name).not()))
-    .get();`;
-      }).join('\n');
+  @override
+  Future<List<${D}Model>> ${dsMethodName}(${parameterType} ${parameterName}, {required int userId}) async {
+    final ${d}s = await _${d}Dao.${dsMethodName}(${parameterName}, userId: userId);
+    return ${d}s.toModels();
+  }`;
+      }).join('\\n');
     }
 
     return `import 'package:drift/drift.dart';
@@ -55,7 +56,7 @@ import '../../../models/${d}/${d}_model.dart';
 import '../../../models/extensions/${d}_model_extension.dart';
 import '../../../../../../core/database/local/database_types.dart';
 import '../dao/${d}/${d}_dao.dart';
-import '../interfaces/${d}_local_datasource_service.dart';
+import '../interfaces/${d}_local_datasource_service.dart'; // Предполагается, что интерфейс находится здесь
 
 class ${D}LocalDataSource implements I${D}LocalDataSource {
   final ${D}Dao _${d}Dao;
@@ -215,6 +216,7 @@ class ${D}LocalDataSource implements I${D}LocalDataSource {
         break;
     }
   }
+  ${foreignKeyMethods}
 }
   `;
   }

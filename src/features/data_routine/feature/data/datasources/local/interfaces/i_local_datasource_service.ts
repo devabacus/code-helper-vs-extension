@@ -1,12 +1,13 @@
 import path from "path";
-import { DefaultProjectStructure } from "../../../../../../../core/implementations/default_project_structure"; //
-import { IFileSystem } from "../../../../../../../core/interfaces/file_system"; //
-import { ProjectStructure } from "../../../../../../../core/interfaces/project_structure"; //
-import { pluralConvert, cap } from "../../../../../../../utils/text_work/text_util"; //
-import { DataRoutineGenerator } from "../../../../../generators/data_routine_generator"; //
-import { DriftClassParser } from "../tables/drift_class_parser"; //
-import { Reference } from "../../../../../../../core/interfaces/drift_table_parser"; //
-import { DriftTableParser } from "../tables/drift_table_parser";
+import { DefaultProjectStructure } from "../../../../../../../core/implementations/default_project_structure"; 
+import { IFileSystem } from "../../../../../../../core/interfaces/file_system"; 
+import { ProjectStructure } from "../../../../../../../core/interfaces/project_structure"; 
+import { cap, pluralConvert, toSnakeCase, unCap } from "../../../../../../../utils/text_work/text_util"; 
+import { DataRoutineGenerator } from "../../../../../generators/data_routine_generator"; 
+import { ServerpodModel } from "../../../../../serverpod_yaml_parser/types";
+
+
+
 
 export class LocalDataSourceServiceGenerator extends DataRoutineGenerator {
 
@@ -18,56 +19,57 @@ export class LocalDataSourceServiceGenerator extends DataRoutineGenerator {
   }
 
   protected getPath(featurePath: string, entityName: string): string {
-    return path.join(this.structure.getDataLocalInterfacesPath(featurePath), `${entityName}_local_datasource_service.dart`); //
+    const snakeCaseEntityName = toSnakeCase(entityName);
+    
+    return path.join(this.structure.getDataLocalInterfacesPath(featurePath), `${snakeCaseEntityName}_local_datasource_service.dart`); 
   }
 
-  protected getContent(data: { classParser: DriftClassParser, tableParser: DriftTableParser }): string {
-    const classParser = data.classParser;
-    const tableParser = data.tableParser;
+  protected getContent(model: ServerpodModel): string {
+    const D = model.className;
+    const d = unCap(model.className);
+    const Ds = pluralConvert(D);
 
-    if (!classParser) {
-      console.error("LocalDataSourceServiceGenerator: classParser не определен в 'data'.");
-      return "// Ошибка: Не удалось получить classParser для генерации интерфейса DataSource.";
+    // Генерация методов для получения по внешнему ключу
+    let foreignKeyMethods = '';
+    const relationFields = model.fields.filter(field => field.isRelation && field.relationType === 'manyToOne');
+
+    if (relationFields.length > 0) {
+      foreignKeyMethods = relationFields.map(field => {
+        const fkFieldName = field.name.endsWith('Id') ? field.name : `${field.name}Id`;
+        const methodNamePart = cap(field.name.replace(/Id$/, ''));
+        const dsMethodName = `get${Ds}By${methodNamePart}Id`;
+        const parameterName = fkFieldName;
+        const parameterType = 'String';
+
+        return `
+  Future<List<${D}Model>> ${dsMethodName}(${parameterType} ${parameterName}, {required int userId}); `;
+      }).join('\\n');
     }
-
-    const d = classParser.driftClassNameLower;
-    const D = classParser.driftClassNameUpper;
-    const Ds = pluralConvert(D); //
-
-    let foreignKeyMethodsSignatures = '';
-    if (tableParser) { // Проверяем наличие tableParser
-      const references: Reference[] = tableParser.getReferences(); //
-
-      if (references && references.length > 0) {
-        foreignKeyMethodsSignatures = references.map(ref => {
-          const fkFieldName = ref.columnName;
-          let methodNamePart = cap(fkFieldName); //
-          if (methodNamePart.endsWith('Id')) {
-            methodNamePart = methodNamePart.slice(0, -2);
-          }
-
-          const fkFieldDetails = classParser.fields.find(f => f.name === fkFieldName); //
-          const fkFieldType = fkFieldDetails ? fkFieldDetails.type : 'String';
-          const paramNullableMarker = fkFieldDetails && fkFieldDetails.nullable ? '?' : '';
-
-          return `  Future<List<${D}Model>> get${Ds}By${methodNamePart}Id(${fkFieldType}${paramNullableMarker} ${fkFieldName});`;
-        }).join('\n');
-      }
-    } else {
-      // console.warn(`LocalDataSourceServiceGenerator: tableParser не был предоставлен для сущности ${D}. Методы по внешним ключам не будут сгенерированы в интерфейсе.`);
-    }
-
     return `
+import 'package:sync1/core/database/local/database.dart';
+
 import '../../../models/${d}/${d}_model.dart';
+import '../../../../../../core/database/local/database_types.dart';
 
 abstract class I${D}LocalDataSource {
-  Future<List<${D}Model>> get${Ds}();
-  Stream<List<${D}Model>> watch${Ds}();
-  Future<${D}Model> get${D}ById(String id);
+  Future<List<${D}Model>> get${Ds}({int? userId});
+  Stream<List<${D}Model>> watch${Ds}({int? userId});
+  Future<${D}Model?> get${D}ById(String id, {required int userId});
   Future<String> create${D}(${D}Model ${d});
   Future<bool> update${D}(${D}Model ${d});
-  Future<bool> delete${D}(String id);
-${foreignKeyMethodsSignatures}
+  Future<bool> delete${D}(String id, {required int userId});
+  Future<List<${D}TableData>> getAllLocalChanges(int userId);
+  Future<List<${D}TableData>> reconcileServerChanges(
+    List<dynamic> serverChanges,
+    int userId,
+  );
+  Future<void> physicallyDelete${D}(String id, {required int userId});
+  Future<void> insertOrUpdateFromServer(
+    dynamic serverChange,
+    SyncStatus status,
+  );
+  Future<void> handleSyncEvent(dynamic event, int userId);
+${foreignKeyMethods}
 }
 
 `;
