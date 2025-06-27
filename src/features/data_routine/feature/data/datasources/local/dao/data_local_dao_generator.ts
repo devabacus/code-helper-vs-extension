@@ -1,8 +1,9 @@
+// G:/Projects/vs_code_extensions/snippet/code-helper/src/features/data_routine/feature/data/datasources/local/dao/data_local_dao_generator.ts
 import path from "path";
 import { DefaultProjectStructure } from "../../../../../../../core/implementations/default_project_structure"; //
 import { IFileSystem } from "../../../../../../../core/interfaces/file_system"; //
 import { ProjectStructure } from "../../../../../../../core/interfaces/project_structure"; //
-import { pluralConvert, unCap } from "../../../../../../../utils/text_work/text_util"; //
+import { pluralConvert, unCap, cap } from "../../../../../../../utils/text_work/text_util"; //
 import { DataRoutineGenerator } from "../../../../../generators/data_routine_generator"; //
 import { ServerpodModel } from "../../../../../serverpod_yaml_parser/types";
 
@@ -22,11 +23,33 @@ export class DataDaoGenerator extends DataRoutineGenerator {
   protected getContent(model: ServerpodModel): string {
     const D = model.className;
     const d = unCap(model.className);
-    const Ds = pluralConvert(D); 
+    const Ds = pluralConvert(D);
 
-    
+    // Генерация методов для получения по внешнему ключу
+    let foreignKeyMethods = '';
+    const relationFields = model.fields.filter(field => field.isRelation && field.relationType === 'manyToOne');
+
+    if (relationFields.length > 0) {
+        foreignKeyMethods = relationFields.map(field => {
+            const fieldName = field.name.endsWith('Id') ? field.name : `${field.name}Id`;
+            const methodNamePart = cap(field.name.replace(/Id$/, ''));
+            const daoMethodName = `get${Ds}By${methodNamePart}Id`;
+            const parameterName = fieldName;
+
+            // Мы предполагаем, что ID связанных таблиц всегда UuidValue, как в Serverpod.
+            // В Drift это будет String.
+            const parameterType = 'String'; 
+
+            return `
+  Future<List<${D}TableData>> ${daoMethodName}(${parameterType} ${parameterName}, {required int userId}) =>
+    (select(${d}Table)
+      ..where((t) => t.${parameterName}.equals(${parameterName}) & t.userId.equals(userId) & t.syncStatus.equals(SyncStatus.deleted.name).not()))
+    .get();`;
+        }).join('\n');
+    }
+
     return `
-    import 'package:drift/drift.dart';
+import 'package:drift/drift.dart';
 import '../../../../../../../core/database/local/interface/i_database_service.dart';
 import '../../../../../../../core/database/local/database.dart';
 import '../../../../../../../core/database/local/database_types.dart';
@@ -138,6 +161,7 @@ Future<bool> update${D}(${D}TableCompanion companion, {required int userId}) asy
       return delete(${d}Table).go();
     }
   }
+  ${foreignKeyMethods}
 }
 `;
   }
