@@ -24,8 +24,21 @@ import { entity_sync_event_spy_file } from "./generators/entity_sync_event_spy_f
 import { ServerpodYamlParser } from "./serverpod_yaml_parser/parser";
 import { ServerpodEndpointGenerator } from "./generators/serverpod_endpoint_generator";
 import { SERVERPOD_GENERATE } from "../serverpod/commands";
+import { pickPath } from "../../utils/ui/ui_ask_folder";
 
 export async function createDataFilesFromYaml() {
+    
+    const currentFilePath = getActiveEditorPath()!;
+    const rootProjectPath = currentFilePath.split(/\w*_server/)[0];
+    const projectName = path.basename(rootProjectPath);
+    const featureSPath = path.join(rootProjectPath, `${projectName}_flutter`, "lib", "features");
+    const serverProjectRoot = currentFilePath.split(/\Wlib\W/)[0];
+
+    const featurePath = await pickPath("Выберите feature", featureSPath);
+        if (!featurePath) {
+            return;
+        }
+    
     const serverpodYamlModel = getDocText();
     const model = ServerpodYamlParser.parse(serverpodYamlModel);
     // const tableParser = new DriftTableParser(driftClassCode);
@@ -34,8 +47,6 @@ export async function createDataFilesFromYaml() {
     const entityName = unCap(model.className);
 
 
-    const currentFilePath = getActiveEditorPath()!;
-    const serverProjectRoot = currentFilePath.split(/\Wlib\W/)[0];
 
     // const flutterProjectPath = currentFilePath.split(/\Wlib\W/)[0];
 
@@ -55,13 +66,7 @@ export async function createDataFilesFromYaml() {
     const serverpodEndpointGenerator = new ServerpodEndpointGenerator(fileSystem);
     await serverpodEndpointGenerator.generate(serverProjectRoot, model);
 
-
-    // await executeCommand(SERVERPOD_GENERATE, serverProjectRoot);
-            // await executeInTerminal(`cd "${serverProjectRoot}"; ${SERVERPOD_GENERATE}`);
     executeInTerminal(SERVERPOD_GENERATE, serverProjectRoot);
-
-
-
 
     // const commandData = {
     //     classParser: classParser,

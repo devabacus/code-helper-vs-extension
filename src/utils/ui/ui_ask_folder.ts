@@ -1,4 +1,4 @@
-import { OpenDialogOptions, window, workspace } from "vscode";
+import { OpenDialogOptions, Uri, window, workspace } from "vscode";
 
 
 // ---------------------------------ввод пользователя-----------------------------------------
@@ -27,20 +27,20 @@ export const getUserInput = async (prompt: string, placeHolder = "", validateInp
 // ------------------------выбор папки----------------------------------------------------
 
 // Вспомогательная функция для выбора папки
-async function promptForTargetDirectory(): Promise<string | undefined> {
+async function promptForTargetDirectory(prompt?: string, defaultUri?: string): Promise<string | undefined> {
     const options: OpenDialogOptions = {
         canSelectMany: false,
-        openLabel: "Выберите папку для создания",
+        openLabel: prompt??"Выберите папку для создания",
         canSelectFolders: true,
-        defaultUri: workspace.workspaceFolders?.[0]?.uri
+        defaultUri: defaultUri ? Uri.file(defaultUri) : workspace.workspaceFolders?.[0]?.uri
     };
 
     return (await window.showOpenDialog(options))?.[0]?.fsPath;
 }
 
 // Функция для выбора папки через диалоговое окно
-export const pickPath = async (): Promise<string | undefined> => {
-    const path = await promptForTargetDirectory();
+export const pickPath = async (prompt?: string, defaultUri?: string): Promise<string | undefined> => {
+    const path = await promptForTargetDirectory(prompt, defaultUri);
     if (!path) {
         window.showErrorMessage("Выбор директории отменён.");
     }
