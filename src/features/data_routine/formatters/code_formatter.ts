@@ -21,7 +21,8 @@ export class CodeFormatter implements ICodeFormatter {
     return fieldRows.join('\n');
   }
 
-  formatRequiredTypeFields(fields: Field[] | ServerpodField[]): string {
+  formatRequiredTypeFields(fieldsWithStatic: Field[] | ServerpodField[]): string {
+    const fields = this.fieldsFilter(fieldsWithStatic);
     const fieldRows = fields.map(field => {
       const typeString = `${field.type}${field.nullable ? '?' : ''}`;
       // Для Freezed: non-nullable поля без @Default становятся required автоматически.
@@ -78,7 +79,7 @@ export class CodeFormatter implements ICodeFormatter {
   getFieldsValueForTest(fields: Field[]): string[] {
     // return prepareFieldsForTest(fields);
     return [];
-  }
+  }  
 
   getFieldsExpectValueTest(fields: Field[]): string[] {
     // Реализация для ожидаемых значений в тестах

@@ -6,6 +6,8 @@ import { ProjectStructure } from "../../../../../core/interfaces/project_structu
 import { DataRoutineGenerator } from "../../../generators/data_routine_generator";
 import { DriftClassParser } from "../datasources/local/tables/drift_class_parser";
 import { CodeFormatter } from "../../../formatters/code_formatter";
+import { ServerpodModel } from "../../../serverpod_yaml_parser/types";
+import { unCap } from "../../../../../utils/text_work/text_util";
 
 export class ModelGenerator extends DataRoutineGenerator {
 
@@ -20,14 +22,12 @@ export class ModelGenerator extends DataRoutineGenerator {
   protected getPath(featurePath: string, entityName: string): string {
     return path.join(this.structure.getDataModelPath(featurePath), entityName, `${entityName}_model.dart`);
   }
-  protected getContent(parser: DriftClassParser): string {
-    const d = parser.driftClassNameLower;
-    const D = parser.driftClassNameUpper;
+  protected getContent(model: ServerpodModel): string {
+    const D = model.className;
+    const d = unCap(D);
 
     const formatter = new CodeFormatter();
-    const formattedFields = formatter.formatRequiredTypeFields(parser.fields);
-
-
+    const params = formatter.formatRequiredTypeFields(model.fields);
     return `
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -37,12 +37,14 @@ part '${d}_model.g.dart';
 @freezed
 abstract class ${D}Model with _$${D}Model {
   const factory ${D}Model({
-    ${formattedFields}
+    required String id,
+    required DateTime lastModified,
+    required int userId,
+    ${params}
   }) = _${D}Model;
 
   factory ${D}Model.fromJson(Map<String, dynamic> json) => _$${D}ModelFromJson(json);
 }
-
 `;
   }
 
