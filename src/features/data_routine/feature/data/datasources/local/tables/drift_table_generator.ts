@@ -6,7 +6,7 @@ import { ProjectStructure } from "../../../../../../../core/interfaces/project_s
 import { DataRoutineGenerator } from "../../../../../generators/data_routine_generator";
 import { ServerpodModel } from "../../../../../serverpod_yaml_parser/types";
 import { unCap } from "../../../../../../../utils/text_work/text_util";
-import { CodeFormatter } from "../../../../../formatters/drift_code_formatter";
+import { CodeFormatter } from "../../../../../formatters/code_formatter";
 
 export class DriftTableGenerator extends DataRoutineGenerator {
 

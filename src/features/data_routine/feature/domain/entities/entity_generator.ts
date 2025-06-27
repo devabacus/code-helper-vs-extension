@@ -5,7 +5,7 @@ import { DriftClassParser } from "../../data/datasources/local/tables/drift_clas
 import { ProjectStructure } from "../../../../../core/interfaces/project_structure";
 import { DefaultProjectStructure } from "../../../../../core/implementations/default_project_structure";
 import { IFileSystem } from "../../../../../core/interfaces/file_system";
-import { CodeFormatter } from "../../../formatters/drift_code_formatter";
+import { CodeFormatter } from "../../../formatters/code_formatter";
 
 export class EntityGenerator extends DataRoutineGenerator {
 

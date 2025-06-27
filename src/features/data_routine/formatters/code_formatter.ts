@@ -1,9 +1,9 @@
-// src/features/data_routine/formatters/drift_code_formatter.ts
+// src/features/data_routine/formatters/code_formatter.ts
 
-import { cap } from '../../../utils/text_work/text_util';
-import { Field } from '../feature/data/datasources/local/tables/drift_class_parser'; // Field теперь с isNullable
+
+import { Field, FieldValue } from '../feature/data/datasources/local/tables/drift_class_parser';
 import { ServerpodField } from '../serverpod_yaml_parser/types';
-import { ICodeFormatter } from './drift_code_formatter.interface';
+import { ICodeFormatter } from './code_formatter.interface';
 import { prepareFieldsForTest } from './drift_prepare_fields_for_test';
 
 export class CodeFormatter implements ICodeFormatter {
@@ -69,8 +69,8 @@ export class CodeFormatter implements ICodeFormatter {
 
   // Методы для тестов (только для Field)
   getFieldsValueForTest(fields: Field[]): string[] {
+    // return prepareFieldsForTest(fields);
     return [];
-    // TODOreturn prepareFieldsForTest(fields);
   }
 
   getFieldsExpectValueTest(fields: Field[]): string[] {
@@ -97,8 +97,14 @@ export class CodeFormatter implements ICodeFormatter {
         continue;
       }
 
-      const columnDefinition = this.generateColumnDefinition(field);
-      columns.push(`  ${columnDefinition}`);
+      // Если это поле связи, генерируем foreign key поле
+      if (field.isRelation && field.relationType === 'manyToOne') {
+        const foreignKeyColumn = this.generateForeignKeyColumn(field);
+        columns.push(`  ${foreignKeyColumn}`);
+      } else {
+        const columnDefinition = this.generateColumnDefinition(field);
+        columns.push(`  ${columnDefinition}`);
+      }
     }
 
     return columns.join('\n');
@@ -106,11 +112,9 @@ export class CodeFormatter implements ICodeFormatter {
 
   private generateColumnDefinition(field: ServerpodField): string {
     const columnType = this.mapServerpodTypeToDriftColumn(field.type);
-    let columnClass = cap(columnType);
-    if (columnType === 'boolean') { columnClass = 'Bool'; }
     const nullable = field.nullable ? '.nullable()' : '';
 
-    return `${columnClass}Column get ${field.name} => ${columnType}()${nullable}();`;
+    return `${columnType}Column get ${field.name} => ${columnType}()${nullable}();`;
   }
 
   mapServerpodTypeToDriftColumn(serverpodType: string): string {
@@ -128,16 +132,24 @@ export class CodeFormatter implements ICodeFormatter {
 
   shouldSkipServerpodField(field: ServerpodField): boolean {
     // Пропускаем служебные поля, которые уже определены статично
-    const staticFields = ['id', 'userId', 'lastModified', 'syncStatus', 'isDeleted'];
+    const staticFields = ['id', 'userId', 'lastModified', 'syncStatus'];
     if (staticFields.includes(field.name)) {
       return true;
     }
 
-    // Пропускаем поля связей (они будут обрабатываться отдельно)
-    if (field.isRelation) {
-      return true;
-    }
-
+    // НЕ пропускаем поля связей - они будут обработаны как foreign key
     return false;
+  }
+
+  private generateForeignKeyColumn(field: ServerpodField): string {
+    // Для связи category: Category?, relation создаем поле categoryId
+    const foreignKeyFieldName = field.name.endsWith('Id') ? field.name : `${field.name}Id`;
+    const nullable = field.nullable ? '.nullable()' : '';
+
+    // Получаем имя связанной таблицы из типа поля
+    const relatedTableName = field.relatedModel ? `${field.relatedModel}Table` : '';
+    const references = relatedTableName ? `.references(${relatedTableName}, #id)` : '';
+
+    return `TextColumn get ${foreignKeyFieldName} => text()${nullable}${references}();`;
   }
 }

@@ -5,7 +5,7 @@ import { IFileSystem } from "../../../../../core/interfaces/file_system";
 import { ProjectStructure } from "../../../../../core/interfaces/project_structure";
 import { DataRoutineGenerator } from "../../../generators/data_routine_generator";
 import { DriftClassParser } from "../datasources/local/tables/drift_class_parser";
-import { CodeFormatter } from "../../../formatters/drift_code_formatter";
+import { CodeFormatter } from "../../../formatters/code_formatter";
 
 export class ModelGenerator extends DataRoutineGenerator {
 
