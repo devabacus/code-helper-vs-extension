@@ -5,11 +5,13 @@ import { ProjectStructure } from "../../../../../../../core/interfaces/project_s
 import { cap, pluralConvert, toSnakeCase, unCap } from "../../../../../../../utils/text_work/text_util"; 
 import { DataRoutineGenerator } from "../../../../../generators/data_routine_generator"; 
 import { ServerpodModel } from "../../../../../serverpod_yaml_parser/types";
+import { BaseGenerator } from "../../../../../../../core/generators/base_generator";
+import { PathData } from "../../../../../../utils/path_util";
 
 
 
 
-export class LocalDataSourceServiceGenerator extends DataRoutineGenerator {
+export class LocalDataSourceServiceGenerator extends BaseGenerator<ServerpodModel> {
 
   private structure: ProjectStructure;
 
@@ -24,7 +26,9 @@ export class LocalDataSourceServiceGenerator extends DataRoutineGenerator {
     return path.join(this.structure.getDataLocalInterfacesPath(featurePath), `${snakeCaseEntityName}_local_datasource_service.dart`); 
   }
 
-  protected getContent(model: ServerpodModel): string {
+  protected getContent(model: ServerpodModel, _: string, featurePath: string): string {
+    const projectName = new PathData(featurePath).projectName;
+    
     const D = model.className;
     const d = unCap(model.className);
     const Ds = pluralConvert(D);
@@ -43,10 +47,10 @@ export class LocalDataSourceServiceGenerator extends DataRoutineGenerator {
 
         return `
   Future<List<${D}Model>> ${dsMethodName}(${parameterType} ${parameterName}, {required int userId}); `;
-      }).join('\\n');
+      }).join('');
     }
     return `
-import 'package:sync1/core/database/local/database.dart';
+import 'package:${projectName}/core/database/local/database.dart';
 
 import '../../../models/${d}/${d}_model.dart';
 import '../../../../../../core/database/local/database_types.dart';

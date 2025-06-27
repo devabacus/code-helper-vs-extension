@@ -10,6 +10,7 @@ export interface IPathHandle {
     unCapPageName: string,
     isPage: boolean,
     widgetPageName: string,
+    projectFlutterName: string,
     projectName: string,
 }
 
@@ -36,12 +37,18 @@ export class PathData {
             unCapPageName: this.unCapPageName,
             isPage: this.isPage,
             widgetPageName: this.widgetPageName,
+            projectFlutterName: this.projectFlutterName,
             projectName: this.projectName,
         };
 
     }
 
-    get projectName() : string {
+    get projectName(): string {
+        return this.projectFlutterName.split('_')[0];
+    }
+
+
+    get projectFlutterName(): string {
         return path.basename(this.rootPath);
     }
 

@@ -29,9 +29,11 @@ import { DriftTableGenerator } from "./feature/data/datasources/local/tables/dri
 import { DataDaoGenerator } from "./feature/data/datasources/local/dao/data_local_dao_generator";
 import { appDatabasePath } from "./core/database/local/app_database_file_dart";
 import { sync_metadata_table_file } from "./generators/sync_metadata_table";
+import { GenerateAllFilesCommandYaml } from "./commands/generate_all_files_command_yaml";
+import { DataLocalSourcesGenerator } from "./feature/data/datasources/local/sources/local_data_source_generator";
 
 export async function createDataFilesFromYaml() {
-    
+
     const currentFilePath = getActiveEditorPath()!;
     const rootProjectPath = currentFilePath.split(/\w*_server/)[0];
     const projectName = path.basename(rootProjectPath);
@@ -65,6 +67,7 @@ export async function createDataFilesFromYaml() {
     const serviceLocator = ServiceLocator.getInstance();
     const fileSystem = serviceLocator.getFileSystem();
     const generatorFactory = new GeneratorFactory(fileSystem);
+    const testGeneratorFactory = new DartTestGeneratorFactory(fileSystem);
 
     const serverpodEndpointGenerator = new ServerpodEndpointGenerator(fileSystem);
     await serverpodEndpointGenerator.generate(serverProjectRoot, model);
@@ -78,28 +81,17 @@ export async function createDataFilesFromYaml() {
     const dataDaoGenerator = new DataDaoGenerator(fileSystem);
     await dataDaoGenerator.generate(featurePath, entityName, model);
 
-    // const commandData = {
-    //     classParser: classParser,
-    //     tableParser: tableParser,
-    //     isRelationTable: tableParser.isRelationTable(),
-    //     relations: tableParser.getTableRelations(),
-    // };
+    // const dataLocalSourcesGenerator = new DataLocalSourcesGenerator(fileSystem);
+    // await dataLocalSourcesGenerator.generate(featurePath, entityName, model);
 
-    // // Передаем serverpodModelDir в команду генерации
-    // const generatorCommands = new GenerateAllFilesCommand(
-    //     generatorFactory,
-    //     featurePath,
-    //     entityName,
-    //     commandData,
-    //     serverpodModelDir,
-    //     serverProjectEndpointsDir
-    // );
-    // const generateTestFilesCommand = new GenerateTestFilesCommand(testGeneratorFactory, featureTestPath, entityName, commandData);
 
-    // await generatorCommands.execute(); // await, если execute асинхронный
-    // await executeCommand("serverpod generate --experimental-features=all", serverProjectRoot);
+    const generatorCommands = new GenerateAllFilesCommandYaml(
+        generatorFactory,
+        featurePath,
+        model,
+    );
 
-    // await generateTestFilesCommand.execute(); // await, если execute асинхронный
+    await generatorCommands.execute();
     await appDatabaseRoutine(featurePath, entityName);
     await executeInTerminal(build_runner, flutterDirPath);
 }

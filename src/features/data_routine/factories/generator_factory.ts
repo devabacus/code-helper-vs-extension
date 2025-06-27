@@ -5,7 +5,7 @@ import { DataDaoRelateGenerator } from "../feature/data/datasources/local/dao/da
 import { LocalDataSourceServiceGenerator } from "../feature/data/datasources/local/interfaces/i_local_datasource_service";
 import { DataLocalRelateDataSourceServiceGenerator } from "../feature/data/datasources/local/interfaces/i_local_relate_datasource_service";
 import { DataLocalRelateSourceGenerator } from "../feature/data/datasources/local/sources/local_data_relate_source_generator";
-import { DataSourcesGenerator } from "../feature/data/datasources/local/sources/local_data_source_generator";
+import { DataLocalSourcesGenerator } from "../feature/data/datasources/local/sources/local_data_source_generator";
 import { TableExtensionGenerator } from "../feature/data/datasources/local/tables/extensions/table_extension_generator";
 import { ModelGenerator } from "../feature/data/models/data_model_generator";
 import { DataExtensionModelGenerator } from "../feature/data/models/extension_model_generator";
@@ -56,9 +56,11 @@ export class GeneratorFactory {
         return new DataDaoRelateGenerator(this.fileSystem);
     }
 
-
+    createLocalDataSourceServiceGenerator(): FileGenerator {
+        return new LocalDataSourceServiceGenerator(this.fileSystem);
+    }
     createLocalSourcesGenerator(): FileGenerator {
-        return new DataSourcesGenerator(this.fileSystem);
+        return new DataLocalSourcesGenerator(this.fileSystem);
     }
 
     createDataLocalRelateSourceGenerator(): FileGenerator {
@@ -81,9 +83,7 @@ export class GeneratorFactory {
         return new DataExtensionModelGenerator(this.fileSystem);
     }
 
-    createLocalDataSourceServiceGenerator(): FileGenerator {
-        return new LocalDataSourceServiceGenerator(this.fileSystem);
-    }
+
 
     createDataLocalRelateDataSourceServiceGenerator(): FileGenerator {
         return new DataLocalRelateDataSourceServiceGenerator(this.fileSystem);
@@ -176,7 +176,7 @@ export class GeneratorFactory {
         return new UseCaseRelateProvidersGenerator(this.fileSystem);
     }
 
-      createPresentStateRelateProviderGenerator(): PresentStateRelateProviderGenerator {
+    createPresentStateRelateProviderGenerator(): PresentStateRelateProviderGenerator {
         return new PresentStateRelateProviderGenerator(this.fileSystem);
     }
 
@@ -193,7 +193,7 @@ export class GeneratorFactory {
     //     return new ServerpodEndpointGenerator(this.fileSystem);
     // }
 
-     createServerpodRelateEndpointGenerator(): ServerpodRelateEndpointGenerator { // Измените возвращаемый тип если нужно
+    createServerpodRelateEndpointGenerator(): ServerpodRelateEndpointGenerator { // Измените возвращаемый тип если нужно
         return new ServerpodRelateEndpointGenerator(this.fileSystem);
     }
 }

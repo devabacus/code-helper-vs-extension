@@ -16,23 +16,23 @@ import { TestDatabaseService } from "../../../test/core/database/local/test_data
 export async function appDatabaseRoutine(currentFilePath: string, entityName: string) {
     const pathData = new PathData(currentFilePath).data;
     const appDatabaseP = appDatabasePath(pathData.rootPath);
-    
+
     if (!fs.existsSync(appDatabaseP)) {
-     
+
         await createFile(appDatabaseP, database_cont(path.basename(pathData.rootPath)));
-        
+
         const databaseService = new DatabaseService(new DefaultFileSystem);
         databaseService.generate(pathData.rootPath);
-     
+
         const databaseInterface = new DatabaseInterface(new DefaultFileSystem);
         databaseInterface.generate(pathData.rootPath);
-     
+
         const databaseProvider = new DatabaseProvider(new DefaultFileSystem);
         databaseProvider.generate(pathData.rootPath);
 
         const testDatabaseService = new TestDatabaseService(new DefaultFileSystem);
-        testDatabaseService.generate(pathData.rootPath, pathData.projectName);
-        
+        testDatabaseService.generate(pathData.rootPath, pathData.projectFlutterName);
+
     }
 
     const content = fs.readFileSync(appDatabaseP, { encoding: "utf-8" });

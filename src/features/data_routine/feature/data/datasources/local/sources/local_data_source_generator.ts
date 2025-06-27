@@ -5,8 +5,10 @@ import { ProjectStructure } from "../../../../../../../core/interfaces/project_s
 import { pluralConvert, unCap, cap, toSnakeCase } from "../../../../../../../utils/text_work/text_util"; //
 import { DataRoutineGenerator } from "../../../../../generators/data_routine_generator"; //
 import { ServerpodModel } from "../../../../../serverpod_yaml_parser/types";
+import { BaseGenerator } from "../../../../../../../core/generators/base_generator";
+import { PathData } from "../../../../../../utils/path_util";
 
-export class DataLocalRelateSourceGenerator extends DataRoutineGenerator {
+export class DataLocalSourcesGenerator extends BaseGenerator {
 
   private structure: ProjectStructure;
 
@@ -16,17 +18,17 @@ export class DataLocalRelateSourceGenerator extends DataRoutineGenerator {
   }
 
   protected getPath(featurePath: string, entityName: string): string {
-    // entityName is intermediate table name like "taskTagMap"
     const snakeCaseEntityName = toSnakeCase(entityName);
     return path.join(this.structure.getLocalDataSourcePath(featurePath), `${snakeCaseEntityName}_local_data_source.dart`);
   }
 
-  protected getContent(model: ServerpodModel): string {
+  protected getContent(model: ServerpodModel, _: string, featurePath: string): string {
+     const projectName = new PathData(featurePath).projectName;
     const D = model.className;
     const d = unCap(model.className);
     const Ds = pluralConvert(D);
+    
 
-    // Генерация методов для получения по внешнему ключу
     let foreignKeyMethods = '';
     const relationFields = model.fields.filter(field => field.isRelation && field.relationType === 'manyToOne');
 
@@ -48,7 +50,7 @@ export class DataLocalRelateSourceGenerator extends DataRoutineGenerator {
     }
 
     return `import 'package:drift/drift.dart';
-import 'package:sync1_client/sync1_client.dart' as serverpod;
+import 'package:${projectName}_client/${projectName}_client.dart' as serverpod;
 
 import '../../../../../../core/database/local/database.dart';
 import '../../../datasources/local/tables/extensions/${d}_table_extension.dart';
