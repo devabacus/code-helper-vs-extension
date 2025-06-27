@@ -1,15 +1,17 @@
-// src/features/data_routine/generators/entity_generator.ts
-import { DataRoutineGenerator } from "../../../generators/data_routine_generator";
-import * as path from "path";
-import { DriftClassParser } from "../../data/datasources/local/tables/drift_class_parser";
-import { ProjectStructure } from "../../../../../core/interfaces/project_structure";
+import path from "path";
+
 import { DefaultProjectStructure } from "../../../../../core/implementations/default_project_structure";
 import { IFileSystem } from "../../../../../core/interfaces/file_system";
+import { ProjectStructure } from "../../../../../core/interfaces/project_structure";
+import { toCamelCase } from "../../../../../utils/text_work/text_util";
 import { CodeFormatter } from "../../../formatters/code_formatter";
+import { DataRoutineGenerator } from "../../../generators/data_routine_generator";
+import { ServerpodModel } from "../../../serverpod_yaml_parser/types";
 
 export class EntityGenerator extends DataRoutineGenerator {
 
   private structure: ProjectStructure;
+
 
   constructor(fileSystem: IFileSystem, structure?: ProjectStructure) {
     super(fileSystem);
@@ -19,19 +21,13 @@ export class EntityGenerator extends DataRoutineGenerator {
   protected getPath(featurePath: string, entityName: string): string {
     return path.join(this.structure.getEntityPath(featurePath), entityName, `${entityName}.dart`);
   }
+  protected getContent(model: ServerpodModel): string {
+    const D = model.className;
+    const d = toCamelCase(D);
 
-  protected getContent(parser: DriftClassParser): string {
-    const D = parser.driftClassNameUpper;
-    const d = parser.driftClassNameLower;
-    // const fields = parser.fieldsRequired;
-
-    // Создаем форматтер
     const formatter = new CodeFormatter();
-    // Используем метод formatRequiredTypeFields для получения полей в правильном формате
-    const formattedFields = formatter.formatRequiredTypeFields(parser.fields);
-
-    return `
-import 'package:freezed_annotation/freezed_annotation.dart';
+    const params = formatter.formatRequiredTypeFields(model.fields);
+    return `import 'package:freezed_annotation/freezed_annotation.dart';
 
 part '${d}.freezed.dart';
 part '${d}.g.dart';
@@ -39,11 +35,17 @@ part '${d}.g.dart';
 @freezed
 abstract class ${D}Entity with _$${D}Entity {
   const factory ${D}Entity({
-    ${formattedFields}
+    required String id,
+    required DateTime lastModified,
+    required int userId,
+    ${params}
   }) = _${D}Entity;
 
   factory ${D}Entity.fromJson(Map<String, dynamic> json) => _$${D}EntityFromJson(json);
 }
 `;
   }
+
 }
+
+

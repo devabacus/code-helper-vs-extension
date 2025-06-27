@@ -1,12 +1,14 @@
 // src/features/data_routine/feature/data/models/extension_model_generator.ts
 import path from "path";
+import { BaseGenerator } from "../../../../../core/generators/base_generator";
 import { DefaultProjectStructure } from "../../../../../core/implementations/default_project_structure";
 import { IFileSystem } from "../../../../../core/interfaces/file_system";
 import { ProjectStructure } from "../../../../../core/interfaces/project_structure";
-import { DataRoutineGenerator } from "../../../generators/data_routine_generator";
-import { DriftClassParser } from "../datasources/local/tables/drift_class_parser";
+import { toCamelCase } from "../../../../../utils/text_work/text_util";
+import { CodeFormatter } from "../../../formatters/code_formatter";
+import { ServerpodModel } from "../../../serverpod_yaml_parser/types";
 
-export class DataExtensionModelGenerator extends DataRoutineGenerator {
+export class DataExtensionModelGenerator extends BaseGenerator<ServerpodModel> {
 
     private structure: ProjectStructure;
 
@@ -19,27 +21,40 @@ export class DataExtensionModelGenerator extends DataRoutineGenerator {
         return path.join(this.structure.getDataExtensionPath(featurePath), `${entityName}_model_extension.dart`);
     }
 
-    protected getContent(parser: DriftClassParser): string {
-        const d = parser.driftClassNameLower;
-        const D = parser.driftClassNameUpper;
-        const fieldsSimple = parser.fieldsSimple;       // для toEntity()
-        const paramsWrapValue = parser.paramsWrapValue; // для toCompanionWithId()
-        const insertCompanionParams = parser.insertCompanionParams; // <--- Используем новый геттер
+    protected getContent(model: ServerpodModel): string {
+            const D = model.className;
+            const d = toCamelCase(model.className);
+            const formatter = new CodeFormatter();
+            
+            const params = formatter.formatSimpleFields(model.fields);
+            const paramValueWrapped = formatter.formatInsertCompanionParams(model.fields);
 
         return `
 import 'package:drift/drift.dart';
+
 import '../../../../../../../core/database/local/database.dart';
 import '../../../domain/entities/${d}/${d}.dart';
+import '../../../../../core/database/local/database_types.dart';
 import '../${d}/${d}_model.dart';
 
 extension ${D}ModelExtension on ${D}Model {
-  ${D}Entity toEntity() => ${D}Entity(${fieldsSimple});
+  ${D}Entity toEntity() => ${D}Entity(
+        id: id,
+        lastModified: lastModified,
+        userId: userId,
+         ${params}
+      );
 
-  ${D}TableCompanion toCompanion() =>
-      ${D}TableCompanion.insert(${insertCompanionParams});
+  ${D}TableCompanion toCompanion() => ${D}TableCompanion(
+        id: Value(id),
+        lastModified: Value(lastModified), 
+        userId: Value(userId),
+        syncStatus: Value(SyncStatus.local), // По умолчанию новые записи требуют синхронизации
+        ${paramValueWrapped}
 
-  ${D}TableCompanion toCompanionWithId() =>
-      ${D}TableCompanion(${paramsWrapValue});
+      );
+  
+  ${D}TableCompanion toCompanionWithId() => toCompanion();
 }
 
 extension ${D}ModelListExtension on List<${D}Model> {

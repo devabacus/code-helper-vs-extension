@@ -7,7 +7,7 @@ import { DataRoutineGenerator } from "../../../generators/data_routine_generator
 import { DriftClassParser } from "../datasources/local/tables/drift_class_parser";
 import { CodeFormatter } from "../../../formatters/code_formatter";
 import { ServerpodModel } from "../../../serverpod_yaml_parser/types";
-import { unCap } from "../../../../../utils/text_work/text_util";
+import { toCamelCase, unCap } from "../../../../../utils/text_work/text_util";
 
 export class ModelGenerator extends DataRoutineGenerator {
 
@@ -24,11 +24,12 @@ export class ModelGenerator extends DataRoutineGenerator {
   }
   protected getContent(model: ServerpodModel): string {
     const D = model.className;
-    const d = unCap(D);
+    const d = toCamelCase(D);
 
     const formatter = new CodeFormatter();
     const params = formatter.formatRequiredTypeFields(model.fields);
     return `
+
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part '${d}_model.freezed.dart';

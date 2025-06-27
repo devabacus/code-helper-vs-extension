@@ -1,5 +1,5 @@
 import { Command } from "../../../core/interfaces/command";
-import { toPascalCase } from "../../../utils/text_work/text_util";
+import { toCamelCase, toPascalCase } from "../../../utils/text_work/text_util";
 import { GeneratorFactory } from "../factories/generator_factory";
 import { DriftClassParser } from "../feature/data/datasources/local/tables/drift_class_parser";
 import { DriftTableParser } from "../feature/data/datasources/local/tables/drift_table_parser"; // Добавлен импорт
@@ -22,7 +22,7 @@ export class GenerateAllFilesCommandYaml implements Command {
 
     async execute(): Promise<void> {
         // Имя сущности (в PascalCase) берем напрямую из модели
-        const entityName = this.model.className;
+        const entityName = toCamelCase(this.model.className);
 
         // Передаем во все генераторы объект модели (this.model)
         if (!this.isRelationTable) {
@@ -39,13 +39,13 @@ export class GenerateAllFilesCommandYaml implements Command {
 
             //extensions
             await this.generatorFactory.createDataTableExtensionGenerator().generate(this.featurePath, entityName, this.model);
-            // await this.generatorFactory.createDataModelExtensionGenerator().generate(this.featurePath, entityName, this.model);
+            await this.generatorFactory.createDataModelExtensionGenerator().generate(this.featurePath, entityName, this.model);
 
             // // domain layer
-            // await this.generatorFactory.createEntityGenerator().generate(this.featurePath, entityName, this.model);
+            await this.generatorFactory.createEntityGenerator().generate(this.featurePath, entityName, this.model);
+            await this.generatorFactory.createDomainEntityExtensionGenerator().generate(this.featurePath, entityName, this.model);
             // await this.generatorFactory.createDomainRepositoryGenerator().generate(this.featurePath, entityName, this.model);
             // await this.generatorFactory.createDomainProviderGenerator().generate(this.featurePath, entityName, this.model);
-            // await this.generatorFactory.createDomainEntityExtensionGenerator().generate(this.featurePath, entityName, this.model);
             
             // // domain layer use_cases
             // await this.generatorFactory.createUseCaseCreateGenerator().generate(this.featurePath, entityName, this.model);
