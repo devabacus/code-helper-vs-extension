@@ -60,11 +60,11 @@ export async function createDataFilesFromYaml() {
     const serverpodEndpointGenerator = new ServerpodEndpointGenerator(fileSystem);
     await serverpodEndpointGenerator.generate(serverProjectRoot, model);
 
-    executeInTerminal(SERVERPOD_GENERATE, serverProjectRoot);
+    // TODO раскомментировать
+    // executeInTerminal(SERVERPOD_GENERATE, serverProjectRoot);
 
     const driftTableGenerator = new DriftTableGenerator(fileSystem);
     await driftTableGenerator.generate(featurePath, entityName, model);
-
 
     // const commandData = {
     //     classParser: classParser,

@@ -31,16 +31,18 @@ export class ServerpodEndpointGenerator {
 
         if (relationFields.length > 0) {
             foreignKeyEndpointMethods = relationFields.map(field => {
-                const methodNamePart = cap(field.name.replace(/Id$/, ''));
-                const endpointMethodName = `get${Ds}By${methodNamePart}Id`;
-                const paramType = this.getFieldType(field.type);
+                // field.name может быть "categoryId" или "category", поэтому нужно правильно обработать
+                const fieldName = field.name.endsWith('Id') ? field.name : `${field.name}Id`;
+                const methodNamePart = cap(field.name.replace(/Id$/, '')); // category -> Category
+                const endpointMethodName = `get${Ds}By${methodNamePart}Id`; // getTasksByCategoryId
+                const parameterName = fieldName; // categoryId
 
                 return `
-  Future<List<${D}>> ${endpointMethodName}(Session session, ${paramType} ${field.name}) async {
+Future<List<${D}>> ${endpointMethodName}(Session session, UuidValue ${parameterName}) async {
     return await ${D}.db.find(
       session,
-      where: (c) => c.${field.name}.equals(${field.name}),
-      orderBy: (c) => c.id,
+      where: (t) => t.${parameterName}.equals(${parameterName}),
+      orderBy: (t) => t.title,
     );
   }`;
             }).join('\n');
@@ -198,22 +200,5 @@ class ${D}Endpoint extends Endpoint {
   }
     ${foreignKeyEndpointMethods}
 }          `;
-    }
-
-    private getFieldType(serverpodType: string): string {
-        switch (serverpodType.toLowerCase()) {
-            case 'string':
-                return 'UuidValue';
-            case 'int':
-                return 'int';
-            case 'double':
-                return 'double';
-            case 'bool':
-                return 'bool';
-            case 'datetime':
-                return 'DateTime';
-            default:
-                return 'UuidValue';
-        }
     }
 }

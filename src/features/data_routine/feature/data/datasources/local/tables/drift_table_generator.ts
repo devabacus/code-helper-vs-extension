@@ -36,14 +36,12 @@ import '../../../../../../core/database/local/database_types.dart';
 
 class ${D}Table extends Table {
 
-  // Статичные поля для всех моделей
   TextColumn get id => text().clientDefault(() => Uuid().v7())();
   IntColumn get userId => integer()();
   IntColumn get lastModified => integer().map(const MillisecondEpochConverter())();
   TextColumn get syncStatus => text().map(const SyncStatusConverter())();
-  
-  // Поля модели
-${fieldColumns}
+
+  ${fieldColumns}
   
   @override
   Set<Column> get primaryKey => {id};
