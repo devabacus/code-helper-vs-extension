@@ -140,7 +140,9 @@ export class CodeFormatter implements ICodeFormatter {
       return true;
     }
 
-    // НЕ пропускаем поля связей - они будут обработаны как foreign key
+    if (field.isRelation && field.relationType === 'oneToMany') {
+    return true;
+  }
     return false;
   }
 
