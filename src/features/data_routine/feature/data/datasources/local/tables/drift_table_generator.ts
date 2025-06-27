@@ -28,7 +28,7 @@ export class DriftTableGenerator extends DataRoutineGenerator {
     const formatter = new CodeFormatter();
     // Генерируем колонки для полей модели
     const fieldColumns = formatter.generateDriftTableColumns(model.fields);
-
+    
     return `
 import 'package:drift/drift.dart';
 import 'package:uuid/uuid.dart';
