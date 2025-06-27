@@ -1,8 +1,8 @@
 // src/features/data_routine/feature/data/datasources/local/tables/drift_class_parser.ts
 
 import { unCap } from "../../../../../../../utils/text_work/text_util";
-import { DriftCodeFormatter } from "../../../../../formatters/drift_code_formatter";
-import { IDriftCodeFormatter } from "../../../../../formatters/drift_code_formatter.interface";
+import { CodeFormatter } from "../../../../../formatters/drift_code_formatter";
+import { ICodeFormatter } from "../../../../../formatters/drift_code_formatter.interface";
 
 export interface Field {
     type: string,
@@ -32,11 +32,11 @@ export interface IDriftClassParser {
 
 export class DriftClassParser implements IDriftClassParser {
     driftClass: string;
-    formatter: IDriftCodeFormatter;
+    formatter: ICodeFormatter;
 
-    constructor(driftClass: string, formatter?: IDriftCodeFormatter) {
+    constructor(driftClass: string, formatter?: ICodeFormatter) {
         this.driftClass = driftClass;
-        this.formatter = formatter || new DriftCodeFormatter();
+        this.formatter = formatter || new CodeFormatter();
     }
 
     private driftTypeConverter(dType: string): string {

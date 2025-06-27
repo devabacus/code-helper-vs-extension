@@ -5,7 +5,7 @@ import { IFileSystem } from "../../../../../core/interfaces/file_system";
 import { ProjectStructure } from "../../../../../core/interfaces/project_structure";
 import { DataRoutineGenerator } from "../../../generators/data_routine_generator";
 import { DriftClassParser } from "../datasources/local/tables/drift_class_parser";
-import { DriftCodeFormatter } from "../../../formatters/drift_code_formatter";
+import { CodeFormatter } from "../../../formatters/drift_code_formatter";
 
 export class ModelGenerator extends DataRoutineGenerator {
 
@@ -24,7 +24,7 @@ export class ModelGenerator extends DataRoutineGenerator {
     const d = parser.driftClassNameLower;
     const D = parser.driftClassNameUpper;
 
-    const formatter = new DriftCodeFormatter();
+    const formatter = new CodeFormatter();
     const formattedFields = formatter.formatRequiredTypeFields(parser.fields);
 
 
