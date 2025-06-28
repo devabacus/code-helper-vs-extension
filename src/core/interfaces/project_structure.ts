@@ -32,6 +32,7 @@ export interface ProjectStructure {
     getDataExtensionPath(featurePath: string): string;
     getDataLocalInterfacesPath(featurePath: string): string;
     getDataRemoteInterfacesPath(featurePath: string): string;
+    getDataSourceRemotePath(featurePath: string): string;
 
 
     getEntityPath(featurePath: string): string;

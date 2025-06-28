@@ -17,7 +17,7 @@ export class RemoteDataSourceServiceGenerator extends BaseGenerator<ServerpodMod
   }
 
   protected getPath(featurePath: string, entityName: string): string {
-    return path.join(this.structure.getDataRemoteInterfacesPath(featurePath), `${entityName}_remote_datasource_service.dart`); 
+    return path.join(this.structure.getDataRemoteInterfacesPath(featurePath), `${entityName}_remote_datasource_service.dart`);            
   }
 
   protected getContent(model: ServerpodModel, _: string, featurePath: string): string {

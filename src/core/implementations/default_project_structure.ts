@@ -38,8 +38,20 @@ export class DefaultProjectStructure implements ProjectStructure {
         return path.join(featurePath, this.data, this.dataSources, this.local, this.dao);
     }
 
+     getDataLocalInterfacesPath(featurePath: string): string {
+        return path.join(featurePath, this.data, this.dataSources, this.local, this.interfaces);
+    }
+
     getLocalDataSourcePath(featurePath: string): string {
         return path.join(featurePath, this.data, this.dataSources, this.local, this.sources);
+    }
+
+     getDataRemoteInterfacesPath(featurePath: string): string {
+        return path.join(featurePath, this.data, this.dataSources, this.remote, this.interfaces);
+    }
+
+    getDataSourceRemotePath(featurePath: string): string {
+        return path.join(featurePath, this.data, this.dataSources, this.remote, this.sources);
     }
 
     getTablePath(featurePath: string): string {
@@ -68,13 +80,9 @@ export class DefaultProjectStructure implements ProjectStructure {
         return path.join(featurePath, this.data, this.models, this.extensions);
     }
 
-    getDataLocalInterfacesPath(featurePath: string): string {
-        return path.join(featurePath, this.data, this.dataSources, this.local, this.interfaces);
-    }
+   
 
-    getDataRemoteInterfacesPath(featurePath: string): string {
-        return path.join(featurePath, this.data, this.dataSources, this.remote, this.interfaces);
-    }
+   
 
     // domain     
     getEntityPath(featurePath: string): string {
