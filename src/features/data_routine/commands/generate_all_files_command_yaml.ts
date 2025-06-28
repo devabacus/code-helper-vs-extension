@@ -49,7 +49,7 @@ export class GenerateAllFilesCommandYaml implements Command {
             // // domain layer
             await this.generatorFactory.createEntityGenerator().generate(this.featurePath, entityName, this.model);
             await this.generatorFactory.createDomainEntityExtensionGenerator().generate(this.featurePath, entityName, this.model);
-            // await this.generatorFactory.createDomainRepositoryGenerator().generate(this.featurePath, entityName, this.model);
+            await this.generatorFactory.createDomainRepositoryGenerator().generate(this.featurePath, entityName, this.model);
             // await this.generatorFactory.createDomainProviderGenerator().generate(this.featurePath, entityName, this.model);
             
             // // domain layer use_cases
