@@ -38,7 +38,8 @@ export class GenerateAllFilesCommandYaml implements Command {
 
             await this.generatorFactory.createLocalSourcesGenerator().generate(this.featurePath, entityName, this.model);
             await this.generatorFactory.createRemoteSourcesGenerator().generate(this.featurePath, entityName, this.model);
-            // await this.generatorFactory.createDataProviderGenerator().generate(this.featurePath, entityName, this.model);
+            await this.generatorFactory.createDataProviderGenerator().generate(this.featurePath, entityName, this.model);
+            await this.generatorFactory.createRemoteDataProviderGenerator().generate(this.featurePath, entityName, this.model);
             // await this.generatorFactory.createDataRepositoryGenerator().generate(this.featurePath, entityName, this.model);
 
             //extensions

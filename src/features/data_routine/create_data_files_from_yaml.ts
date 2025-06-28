@@ -31,6 +31,8 @@ import { appDatabasePath } from "./core/database/local/app_database_file_dart";
 import { sync_metadata_table_file } from "./generators/sync_metadata_table";
 import { GenerateAllFilesCommandYaml } from "./commands/generate_all_files_command_yaml";
 import { DataLocalSourcesGenerator } from "./feature/data/datasources/local/sources/local_data_source_generator";
+import { sync_metadata_local_datasource_service_file } from "./core/database/local/interfaces/sync_metadata_local_datasource_service_file";
+import { sync_metadata_local_datasource_file } from "./core/database/local/sources/sync_metadata_local_data_source_file";
 
 export async function createDataFilesFromYaml() {
 
@@ -58,11 +60,16 @@ export async function createDataFilesFromYaml() {
     const entitySyncEventPath = path.join(serverProjectRoot, "lib", "src", "models", `${entityName}_sync_event.spy.yaml`);
     const syncMetaDataTablePath = path.join(flutterDirPath, "lib", "core", "database", "local", "tables", "sync_metadata_table.dart");
     const syncMetaDataDaoPath = path.join(flutterDirPath, "lib", "core", "database", "local", "daos", "sync_metadata_dao.dart");
+    const syncMetaDataInterfacePath = path.join(flutterDirPath, "lib", "core", "database", "local", "interface", "sync_metadata_local_datasource_service.dart");
+    const syncMetaDataSourcePath = path.join(flutterDirPath, "lib", "core", "database", "local", "sources", "sync_metadata_local_data_source.dart");
+
 
     createFileOneTime(syncEventTypePath, sync_event_type_spy);
     createFileOneTime(entitySyncEventPath, entity_sync_event_spy_file(entityName));
     createFileOneTime(syncMetaDataTablePath, sync_metadata_table_file);
     createFileOneTime(syncMetaDataDaoPath, sync_metadata_dao_file);
+    createFileOneTime(syncMetaDataInterfacePath, sync_metadata_local_datasource_service_file);
+    createFileOneTime(syncMetaDataSourcePath, sync_metadata_local_datasource_file);
 
     const serviceLocator = ServiceLocator.getInstance();
     const fileSystem = serviceLocator.getFileSystem();

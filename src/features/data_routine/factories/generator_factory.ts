@@ -14,6 +14,7 @@ import { ModelGenerator } from "../feature/data/models/data_model_generator";
 import { DataExtensionModelGenerator } from "../feature/data/models/extension_model_generator";
 import { DataProviderGenerator } from "../feature/data/providers/data_prov_generator";
 import { DataProviderRelateGenerator } from "../feature/data/providers/data_provider_relate_generator";
+import { RemoteDataProviderGenerator } from "../feature/data/providers/remote_data_prov_generator";
 import { DataRepositoryGenerator } from "../feature/data/repositories/data_repository_generator";
 import { DataRepositoryRelateImplGenerator } from "../feature/data/repositories/data_repository_relate_impl_generator";
 import { DomainExtensionEntityGenerator } from "../feature/domain/entities/entity_extension_generator";
@@ -83,6 +84,9 @@ export class GeneratorFactory {
 
     createDataProviderGenerator(): FileGenerator {
         return new DataProviderGenerator(this.fileSystem);
+    }
+    createRemoteDataProviderGenerator(): FileGenerator {
+        return new RemoteDataProviderGenerator(this.fileSystem);
     }
 
     createDataRepositoryGenerator(): FileGenerator {
