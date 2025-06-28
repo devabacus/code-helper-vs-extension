@@ -1,11 +1,11 @@
 
 import path from "path";
-import { DefaultFileSystem } from "../../../../../core/implementations/default_file_system";
+import { DefaultProjectStructure } from "../../../../../core/implementations/default_project_structure";
 import { IFileSystem } from "../../../../../core/interfaces/file_system";
 import { ProjectStructure } from "../../../../../core/interfaces/project_structure";
+import { unCap } from "../../../../../utils/text_work/text_util";
 import { DataRoutineGenerator } from "../../../generators/data_routine_generator";
-import { DriftClassParser } from "../../data/datasources/local/tables/drift_class_parser";
-import { DefaultProjectStructure } from "../../../../../core/implementations/default_project_structure";
+import { ServerpodModel } from "../../../serverpod_yaml_parser/types";
 
 
 export class UseCaseCreateGenerator extends DataRoutineGenerator {
@@ -20,9 +20,9 @@ export class UseCaseCreateGenerator extends DataRoutineGenerator {
   protected getPath(featurePath: string, entityName: string): string {
     return path.join(this.structure.getDomainUseCasesPath(featurePath), entityName, "create.dart");
   }
-  protected getContent(parser: DriftClassParser): string {
-    const d = parser.driftClassNameLower;
-    const D = parser.driftClassNameUpper;
+protected getContent(model: ServerpodModel): string {
+    const D = model.className;
+    const d = unCap(model.className);
 
     return `
 import '../../repositories/${d}_repository.dart';

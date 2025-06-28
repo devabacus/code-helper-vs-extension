@@ -6,6 +6,8 @@ import { ProjectStructure } from "../../../../../core/interfaces/project_structu
 import { DataRoutineGenerator } from "../../../generators/data_routine_generator";
 import { DriftClassParser } from "../../data/datasources/local/tables/drift_class_parser";
 import { DefaultProjectStructure } from "../../../../../core/implementations/default_project_structure";
+import { ServerpodModel } from "../../../serverpod_yaml_parser/types";
+import { unCap } from "../../../../../utils/text_work/text_util";
 
 
 export class UseCaseDeleteGenerator extends DataRoutineGenerator {
@@ -20,9 +22,9 @@ export class UseCaseDeleteGenerator extends DataRoutineGenerator {
   protected getPath(featurePath: string, entityName: string): string {
     return path.join(this.structure.getDomainUseCasesPath(featurePath), entityName, "delete.dart");
   }
-  protected getContent(parser: DriftClassParser): string {
-    const d = parser.driftClassNameLower;
-    const D = parser.driftClassNameUpper;
+protected getContent(model: ServerpodModel): string {
+    const D = model.className;
+    const d = unCap(model.className);
 
     return `
 import '../../repositories/${d}_repository.dart';

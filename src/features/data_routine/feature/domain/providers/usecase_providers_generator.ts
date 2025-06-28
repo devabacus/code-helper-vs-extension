@@ -2,11 +2,9 @@ import path from "path";
 import { DefaultProjectStructure } from "../../../../../core/implementations/default_project_structure"; //
 import { IFileSystem } from "../../../../../core/interfaces/file_system"; //
 import { ProjectStructure } from "../../../../../core/interfaces/project_structure"; //
-import { pluralConvert, cap, toSnakeCase, toCamelCase } from "../../../../../utils/text_work/text_util"; //
-import { Reference } from "../../../../../core/interfaces/drift_table_parser"; //
+import { cap, pluralConvert, unCap } from "../../../../../utils/text_work/text_util"; //
 import { DataRoutineGenerator } from "../../../generators/data_routine_generator";
-import { DriftClassParser } from "../../data/datasources/local/tables/drift_class_parser";
-import { DriftTableParser } from "../../data/datasources/local/tables/drift_table_parser";
+import { ServerpodModel } from "../../../serverpod_yaml_parser/types";
 
 export class UseCaseProvidersGenerator extends DataRoutineGenerator {
 
@@ -21,57 +19,52 @@ export class UseCaseProvidersGenerator extends DataRoutineGenerator {
     return path.join(this.structure.getDomainUseCaseProviderPath(featurePath), entityName, `${entityName}_usecase_providers.dart`); //
   }
 
-  protected getContent(data: { classParser: DriftClassParser, tableParser: DriftTableParser }): string {
-    const classParser = data.classParser;
-    const tableParser = data.tableParser;
+  protected getContent(model: ServerpodModel): string {
+      const D = model.className;
+      const d = unCap(model.className);
+      const Ds = pluralConvert(D);
+      
+  
+    let foreignKeyImports = '';
+    let foreignKeyProviders = '';
+    const relationFields = model.fields.filter(field => field.isRelation && field.relationType === 'manyToOne');
 
-    if (!classParser) {
-        console.error("UseCaseProvidersGenerator: classParser не определен в 'data'.");
-        return "// Ошибка: Не удалось получить classParser для генерации провайдеров UseCase.";
-    }
+    if (relationFields.length > 0) {
+      const providersData = relationFields.map(field => {
+        const methodNamePart = cap(field.name.replace(/Id$/, ''));
+        // e.g., getTasksByCategoryId
+        const useCaseMethodName = `get${Ds}By${methodNamePart}Id`; 
+        // e.g., GetTasksByCategoryIdUseCase
+        const useCaseClassName = `${cap(useCaseMethodName)}UseCase`;
+        // e.g., getTasksByCategoryIdUseCase
+        const useCaseProviderName = `${unCap(useCaseMethodName)}UseCase`;
 
-    const d = classParser.driftClassNameLower; // task
-    const D = classParser.driftClassNameUpper; // Task
-    const Ds = pluralConvert(D); // Tasks
+        // Преобразуем имя метода в snake_case для имени файла
+        // e.g., get_tasks_by_category_id
+        const snakeCaseMethodName = useCaseMethodName
+            .replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`)
+            .substring(1);
 
-    let foreignKeyUseCaseImports = '';
-    let foreignKeyUseCaseProviders = '';
+        const importStatement = `import '../../usecases/${d}/${snakeCaseMethodName}.dart';`;
 
-    if (tableParser) {
-        const references: Reference[] = tableParser.getReferences(); //
-
-        if (references && references.length > 0) {
-            foreignKeyUseCaseImports = references.map(ref => {
-                const fkFieldName = ref.columnName; // categoryId
-                let methodNamePart = cap(fkFieldName); // CategoryId
-                if (methodNamePart.endsWith('Id')) {
-                    methodNamePart = methodNamePart.slice(0, -2); // Category
-                }
-                const useCaseFileName = `get_${pluralConvert(d)}_by_${toSnakeCase(methodNamePart)}_id.dart`; // get_tasks_by_category_id.dart
-                return `import '../../usecases/${d}/${useCaseFileName}';`;
-            }).join('\n');
-
-            foreignKeyUseCaseProviders = references.map(ref => {
-                const fkFieldName = ref.columnName; // categoryId
-                let methodNamePart = cap(fkFieldName); // CategoryId
-                if (methodNamePart.endsWith('Id')) {
-                    methodNamePart = methodNamePart.slice(0, -2); // Category
-                }
-                
-                const useCaseClassName = `Get${Ds}By${methodNamePart}IdUseCase`; // GetTasksByCategoryIdUseCase
-                const providerName = `${toCamelCase(useCaseClassName)}Provider`; // getTasksByCategoryIdUseCaseProvider
-
-                return `
+        const providerStatement = `
 @riverpod
-${useCaseClassName} ${toCamelCase(useCaseClassName)}(Ref ref) {
-  final repository = ref.read(${d}RepositoryProvider);
+${useCaseClassName}? ${useCaseProviderName}(Ref ref) {
+  final repository = ref.watch(currentUser${D}RepositoryProvider);
+  if (repository == null) {
+    // пользователь не авторизован
+    return null;
+  }
   return ${useCaseClassName}(repository);
 }`;
-            }).join('\n');
-        }
-    }
+        return { importStatement, providerStatement };
+      });
 
-    return `import 'package:flutter_riverpod/flutter_riverpod.dart';
+      foreignKeyImports = providersData.map(p => p.importStatement).join('\n');
+      foreignKeyProviders = providersData.map(p => p.providerStatement).join('\n\n');
+    }
+  
+      return `import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../usecases/${d}/create.dart';
 import '../../usecases/${d}/delete.dart';
@@ -79,47 +72,67 @@ import '../../usecases/${d}/get_by_id.dart';
 import '../../usecases/${d}/update.dart';
 import '../../usecases/${d}/get_all.dart';
 import '../../usecases/${d}/watch_all.dart';
-${foreignKeyUseCaseImports}
+${foreignKeyImports}
+
 import '../../../data/providers/${d}/${d}_data_providers.dart';
 
 part '${d}_usecase_providers.g.dart';
 
 @riverpod
-Get${Ds}UseCase get${Ds}UseCase(Ref ref) {
-  final repository = ref.read(${d}RepositoryProvider);
+Get${Ds}UseCase? get${Ds}UseCase(Ref ref) {
+  final repository = ref.watch(currentUser${D}RepositoryProvider);
+  if (repository == null) {
+    // пользователь не авторизован
+    return null;
+  }
   return Get${Ds}UseCase(repository);
-}
+}   
 
 @riverpod
-Watch${Ds}UseCase watch${Ds}UseCase(Ref ref) {
-  final repository = ref.read(${d}RepositoryProvider);
+Watch${Ds}UseCase? watch${Ds}UseCase(Ref ref) {
+  final repository = ref.watch(currentUser${D}RepositoryProvider);
+  if (repository == null) {
+    return null;
+  }
   return Watch${Ds}UseCase(repository);
 }
 
 @riverpod
-Create${D}UseCase create${D}UseCase(Ref ref) {
-  final repository = ref.read(${d}RepositoryProvider);
+Create${D}UseCase? create${D}UseCase(Ref ref) {
+  final repository = ref.watch(currentUser${D}RepositoryProvider);
+  if (repository == null) {
+    return null;
+  }
   return Create${D}UseCase(repository);
 }
 
 @riverpod
-Delete${D}UseCase delete${D}UseCase(Ref ref) {
-  final repository = ref.read(${d}RepositoryProvider);
+Delete${D}UseCase? delete${D}UseCase(Ref ref) {
+  final repository = ref.watch(currentUser${D}RepositoryProvider);
+  if (repository == null) {
+    return null;
+  }
   return Delete${D}UseCase(repository);
 }
 
 @riverpod
-Update${D}UseCase update${D}UseCase(Ref ref) {
-  final repository = ref.read(${d}RepositoryProvider);
+Update${D}UseCase? update${D}UseCase(Ref ref) {
+  final repository = ref.watch(currentUser${D}RepositoryProvider);
+  if (repository == null) {
+    return null;
+  }
   return Update${D}UseCase(repository);
 }
 
 @riverpod
-Get${D}ByIdUseCase get${D}ByIdUseCase(Ref ref) {
-  final repository = ref.read(${d}RepositoryProvider);
-  return Get${D}ByIdUseCase(repository);
-}
-${foreignKeyUseCaseProviders}  
-  `;
+Get${D}ByIdUseCase? get${D}ByIdUseCase(Ref ref) {
+  final repository = ref.watch(currentUser${D}RepositoryProvider);
+  if (repository == null) {
+    return null;
   }
+  return Get${D}ByIdUseCase(repository);
+  ${foreignKeyProviders}
+}
+    `;
+    }
 }

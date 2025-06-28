@@ -18,8 +18,7 @@ export class DataLocalSourcesGenerator extends BaseGenerator {
   }
 
   protected getPath(featurePath: string, entityName: string): string {
-    const snakeCaseEntityName = toSnakeCase(entityName);
-    return path.join(this.structure.getLocalDataSourcePath(featurePath), `${snakeCaseEntityName}_local_data_source.dart`);
+    return path.join(this.structure.getLocalDataSourcePath(featurePath), `${entityName}_local_data_source.dart`);
   }
 
   protected getContent(model: ServerpodModel, _: string, featurePath: string): string {

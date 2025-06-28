@@ -40,7 +40,7 @@ export class GenerateAllFilesCommandYaml implements Command {
             await this.generatorFactory.createRemoteSourcesGenerator().generate(this.featurePath, entityName, this.model);
             await this.generatorFactory.createDataProviderGenerator().generate(this.featurePath, entityName, this.model);
             await this.generatorFactory.createRemoteDataProviderGenerator().generate(this.featurePath, entityName, this.model);
-            // await this.generatorFactory.createDataRepositoryGenerator().generate(this.featurePath, entityName, this.model);
+            await this.generatorFactory.createDataRepositoryGenerator().generate(this.featurePath, entityName, this.model);
 
             //extensions
             await this.generatorFactory.createDataTableExtensionGenerator().generate(this.featurePath, entityName, this.model);
@@ -50,24 +50,24 @@ export class GenerateAllFilesCommandYaml implements Command {
             await this.generatorFactory.createEntityGenerator().generate(this.featurePath, entityName, this.model);
             await this.generatorFactory.createDomainEntityExtensionGenerator().generate(this.featurePath, entityName, this.model);
             await this.generatorFactory.createDomainRepositoryGenerator().generate(this.featurePath, entityName, this.model);
-            // await this.generatorFactory.createDomainProviderGenerator().generate(this.featurePath, entityName, this.model);
+            await this.generatorFactory.createDomainProviderGenerator().generate(this.featurePath, entityName, this.model);
             
             // // domain layer use_cases
-            // await this.generatorFactory.createUseCaseCreateGenerator().generate(this.featurePath, entityName, this.model);
-            // await this.generatorFactory.createUseCaseUpdateGenerator().generate(this.featurePath, entityName, this.model);
-            // await this.generatorFactory.createUseCaseDeleteGenerator().generate(this.featurePath, entityName, this.model);
-            // await this.generatorFactory.createUseCaseGetByIdGenerator().generate(this.featurePath, entityName, this.model);
-            // await this.generatorFactory.createUseCaseGetAllGenerator().generate(this.featurePath, entityName, this.model);
-            // await this.generatorFactory.createUseCaseWatchAllGenerator().generate(this.featurePath, entityName, this.model);
+            await this.generatorFactory.createUseCaseCreateGenerator().generate(this.featurePath, entityName, this.model);
+            await this.generatorFactory.createUseCaseUpdateGenerator().generate(this.featurePath, entityName, this.model);
+            await this.generatorFactory.createUseCaseDeleteGenerator().generate(this.featurePath, entityName, this.model);
+            await this.generatorFactory.createUseCaseGetByIdGenerator().generate(this.featurePath, entityName, this.model);
+            await this.generatorFactory.createUseCaseGetAllGenerator().generate(this.featurePath, entityName, this.model);
+            await this.generatorFactory.createUseCaseWatchAllGenerator().generate(this.featurePath, entityName, this.model);
             
             // const hasForeignKey = this.model.fields.some(field => field.isRelation && field.relationType === 'manyToOne');
             // if (hasForeignKey) {
             //     await this.generatorFactory.createUseCaseGetByForeignKeyGenerator().generate(this.featurePath, entityName, this.model);
             // }
 
-            // //presentation layer
-            // await this.generatorFactory.createPresentStateProviderGenerator().generate(this.featurePath, entityName, this.model);
-            // await this.generatorFactory.createPresentGetByIdProviderGenerator().generate(this.featurePath, entityName, this.model);
+            //presentation layer
+            await this.generatorFactory.createPresentStateProviderGenerator().generate(this.featurePath, entityName, this.model);
+            await this.generatorFactory.createPresentGetByIdProviderGenerator().generate(this.featurePath, entityName, this.model);
 
         } else {
             console.log(`Обнаружена связующая таблица: ${entityName}.`);

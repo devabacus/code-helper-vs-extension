@@ -3,9 +3,9 @@ import path from "path";
 import { DefaultProjectStructure } from "../../../../../core/implementations/default_project_structure";
 import { IFileSystem } from "../../../../../core/interfaces/file_system";
 import { ProjectStructure } from "../../../../../core/interfaces/project_structure";
-import { pluralConvert } from "../../../../../utils/text_work/text_util";
+import { pluralConvert, unCap } from "../../../../../utils/text_work/text_util";
 import { DataRoutineGenerator } from "../../../generators/data_routine_generator";
-import { DriftClassParser } from "../../data/datasources/local/tables/drift_class_parser";
+import { ServerpodModel } from "../../../serverpod_yaml_parser/types";
 
 
 export class UseCaseGetAllGenerator extends DataRoutineGenerator {
@@ -20,9 +20,9 @@ export class UseCaseGetAllGenerator extends DataRoutineGenerator {
   protected getPath(featurePath: string, entityName: string): string {
     return path.join(this.structure.getDomainUseCasesPath(featurePath), entityName, "get_all.dart");
   }
-  protected getContent(parser: DriftClassParser): string {
-    const d = parser.driftClassNameLower;
-    const D = parser.driftClassNameUpper;
+protected getContent(model: ServerpodModel): string {
+    const D = model.className;
+    const d = unCap(model.className);
     const Ds = pluralConvert(D);
 
     return `
