@@ -3,7 +3,7 @@ import { IFileSystem } from "../../../core/interfaces/file_system";
 import { DataDaoGenerator } from "../feature/data/datasources/local/dao/data_local_dao_generator";
 import { DataDaoRelateGenerator } from "../feature/data/datasources/local/dao/data_local_dao_relate_generator";
 import { LocalDataSourceServiceGenerator } from "../feature/data/datasources/local/interfaces/i_local_datasource_service";
-import { DataLocalRelateDataSourceServiceGenerator } from "../feature/data/datasources/local/interfaces/i_local_relate_datasource_service";
+import { DataLocalRelateServiceGenerator } from "../feature/data/datasources/local/interfaces/i_local_relate_datasource_service";
 import { DataLocalRelateSourceGenerator } from "../feature/data/datasources/local/sources/local_data_relate_source_generator";
 import { DataLocalSourcesGenerator } from "../feature/data/datasources/local/sources/local_data_source_generator";
 import { DriftTableGenerator } from "../feature/data/datasources/local/tables/drift_table_generator";
@@ -68,13 +68,15 @@ export class GeneratorFactory {
         return new DataLocalSourcesGenerator(this.fileSystem);
     }
 
+    createDataLocalRelateSourceGenerator(): FileGenerator {
+        return new DataLocalRelateSourceGenerator(this.fileSystem);
+    }
+
+
     createRemoteSourcesGenerator(): FileGenerator {
         return new DataRemoteSourcesGenerator(this.fileSystem);
     }
 
-    createDataLocalRelateSourceGenerator(): FileGenerator {
-        return new DataLocalRelateSourceGenerator(this.fileSystem);
-    }
 
     createDataProviderGenerator(): FileGenerator {
         return new DataProviderGenerator(this.fileSystem);
@@ -97,8 +99,8 @@ export class GeneratorFactory {
 
 
 
-    createDataLocalRelateDataSourceServiceGenerator(): FileGenerator {
-        return new DataLocalRelateDataSourceServiceGenerator(this.fileSystem);
+    createDataLocalRelateServiceGenerator(): FileGenerator {
+        return new DataLocalRelateServiceGenerator(this.fileSystem);
     }
 
     createDataRepositoryRelateImplGenerator(): FileGenerator {

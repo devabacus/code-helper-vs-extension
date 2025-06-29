@@ -1,14 +1,15 @@
 import path from "path";
+import { BaseGenerator } from "../../../../../../../core/generators/base_generator";
 import { DefaultProjectStructure } from "../../../../../../../core/implementations/default_project_structure";
 import { IFileSystem } from "../../../../../../../core/interfaces/file_system";
 import { ProjectStructure } from "../../../../../../../core/interfaces/project_structure";
-import { cap, pluralConvert, toSnakeCase, unCap } from "../../../../../../../utils/text_work/text_util";
-import { DataRoutineGenerator } from "../../../../../generators/data_routine_generator";
-import { DriftClassParser } from "../tables/drift_class_parser";
-import { DriftTableParser } from "../tables/drift_table_parser";
-import { RelationType } from "../../../../../interfaces/table_relation.interface";
+import { cap, toSnakeCase, unCap } from "../../../../../../../utils/text_work/text_util";
+import { ServerpodModel } from "../../../../../serverpod_yaml_parser/formatters/types";
 
-export class DataLocalRelateDataSourceServiceGenerator extends DataRoutineGenerator {
+/**
+ * Generates the Interface for the Local Data Source of a many-to-many relation table.
+ */
+export class DataLocalRelateServiceGenerator extends BaseGenerator {
 
   private structure: ProjectStructure;
 
@@ -18,44 +19,54 @@ export class DataLocalRelateDataSourceServiceGenerator extends DataRoutineGenera
   }
 
   protected getPath(featurePath: string, entityName: string): string {
-    // entityName is intermediate table name like "taskTagMap"
-    const snakeCaseEntityName = toSnakeCase(entityName);
-    return path.join(featurePath, "data", "datasources", "local", "interfaces", `${snakeCaseEntityName}_local_datasource_service.dart`);
+    // Путь к файлу интерфейса
+    return path.join(this.structure.getDataLocalInterfacesPath(featurePath), `${toSnakeCase(entityName)}_local_datasource_service.dart`);
   }
 
-  protected getContent(parser: DriftClassParser): string {
-    const tableParser = new DriftTableParser(parser.driftClass);
-    const relations = tableParser.getTableRelations();
-    const manyToManyRelation = relations.find(r => r.relationType === RelationType.MANY_TO_MANY);
+  protected getContent(model: ServerpodModel): string {
 
-    if (!manyToManyRelation) {
-      throw new Error(`Could not find MANY_TO_MANY relation for table ${parser.driftClassNameUpper} to generate related local datasource service.`);
-    }
+    // Определяем имена сущностей
+    const sourceField = model.fields[0];
+    const targetField = model.fields[1];
 
-    const intermediateUpper = parser.driftClassNameUpper; // e.g., TaskTagMap
+    const D1 = cap(sourceField.name); // Task
+    const D2 = cap(targetField.name); // Tag
+    const d1 = unCap(D1); // task
+    const d2 = unCap(D2); // tag
 
-    const sourceUpper = cap(manyToManyRelation.sourceTable); // e.g., Task
-    const sourceSnake = toSnakeCase(manyToManyRelation.sourceTable); // e.g., task
-    const sourceForeignKey = manyToManyRelation.sourceField; // e.g., taskId
+    // Имена для связующей таблицы
+    const Rel = model.className; // TaskTagMap
+    const IDataSource = `I${Rel}LocalDataSource`; // ITaskTagMapLocalDataSource
+    const TableData = `${Rel}TableData`; // TaskTagMapTableData
 
-    const targetUpper = cap(manyToManyRelation.targetTable); // e.g., Tag
-    const targetPlural = pluralConvert(targetUpper); // e.g., Tags
-    const targetSnake = toSnakeCase(manyToManyRelation.targetTable); // e.g., tag
-    const targetForeignKey = manyToManyRelation.targetField; // e.g., tagId
+    const idType = 'String';
 
-    const sourcePlural = pluralConvert(sourceUpper); // e.g., Tasks
+    return `import '../../../../../../core/database/local/database.dart';
 
+abstract class ${IDataSource} {
+  /// Creates a connection between a ${D1} and a ${D2}.
+  Future<void> addRelation({
+    required ${idType} ${d1}Id,
+    required ${idType} ${d2}Id,
+  });
 
-    return `
-import '../../../models/${targetSnake}/${targetSnake}_model.dart';
-import '../../../models/${sourceSnake}/${sourceSnake}_model.dart';
+  /// Removes a connection between a ${D1} and a ${D2}.
+  Future<int> removeRelation({
+    required ${idType} ${d1}Id,
+    required ${idType} ${d2}Id,
+  });
 
-abstract class I${intermediateUpper}LocalDataSource {
-  Future<List<${targetUpper}Model>> get${targetPlural}For${sourceUpper}(String ${sourceForeignKey});
-  Future<List<${sourceUpper}Model>> get${sourcePlural}With${targetUpper}(String ${targetForeignKey});
-  Future<void> add${targetUpper}To${sourceUpper}(String ${sourceForeignKey}, String ${targetForeignKey});
-  Future<void> remove${targetUpper}From${sourceUpper}(String ${sourceForeignKey}, String ${targetForeignKey});
-  Future<void> removeAll${targetPlural}From${sourceUpper}(String ${sourceForeignKey});
+  /// Gets all relations for a specific ${D1}.
+  Future<List<${TableData}>> getRelationsFor${D1}(${idType} ${d1}Id);
+
+  /// Gets all relations for a specific ${D2}.
+  Future<List<${TableData}>> getRelationsFor${D2}(${idType} ${d2}Id);
+
+  /// Removes all connections for a specific ${D1}.
+  Future<int> removeAllFor${D1}(${idType} ${d1}Id);
+
+  /// Removes all connections for a specific ${D2}.
+  Future<int> removeAllFor${D2}(${idType} ${d2}Id);
 }
 `;
   }

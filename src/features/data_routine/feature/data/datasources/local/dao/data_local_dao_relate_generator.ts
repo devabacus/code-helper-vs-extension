@@ -17,7 +17,7 @@ export class DataDaoRelateGenerator extends DataRoutineGenerator {
 
     protected getPath(featurePath: string, entityName: string): string {
         const snakeCaseEntityName = toSnakeCase(entityName);
-        return path.join(this.structure.getDaoPath(featurePath), entityName, `${snakeCaseEntityName}_dao.dart`);
+        return path.join(this.structure.getDaoPath(featurePath), snakeCaseEntityName, `${snakeCaseEntityName}_dao.dart`);
     }
 
     protected getContent(model: ServerpodModel): string {
@@ -36,7 +36,6 @@ export class DataDaoRelateGenerator extends DataRoutineGenerator {
         const TableData = `${RelTable}Data`; // TaskTagMapTableData
         const TableCompanion = `${RelTable}Companion`; // TaskTagMapTableCompanion
         
-        // --- ИСПРАВЛЕНИЕ: Используем String вместо UuidValue ---
         const idType = 'String'; 
 
         return `

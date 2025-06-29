@@ -11,7 +11,7 @@ export class GenerateAllFilesCommand implements Command {
     private isRelationTable: boolean;
     private relations: TableRelation[];
     private classParser: DriftClassParser;
-    private tableParser: DriftTableParser; 
+    private tableParser: DriftTableParser;
 
 
     constructor(
@@ -78,7 +78,7 @@ export class GenerateAllFilesCommand implements Command {
                 console.log(`Обнаружена связующая таблица: ${entityNameForGenerators}. Связывает ${manyToManyRelation.sourceTable} и ${manyToManyRelation.targetTable}.`);
 
                 await this.generatorFactory.createDaoRelateGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
-                await this.generatorFactory.createDataLocalRelateDataSourceServiceGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
+                await this.generatorFactory.createDataLocalRelateServiceGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
                 await this.generatorFactory.createDataLocalRelateSourceGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
                 await this.generatorFactory.createDomainRelateRepositoryGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
                 await this.generatorFactory.createDataRepositoryRelateImplGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);

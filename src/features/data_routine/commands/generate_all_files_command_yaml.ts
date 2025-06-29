@@ -65,14 +65,14 @@ export class GenerateAllFilesCommandYaml implements Command {
             // Data Layer
             await this.generatorFactory.createDriftTableGenerator().generate(this.featurePath, entityName, this.model); // Таблица для связей
             await this.generatorFactory.createDaoRelateGenerator().generate(this.featurePath, entityName, this.model);
-            // await this.generatorFactory.createDataLocalRelateDataSourceServiceGenerator().generate(this.featurePath, entityName, this.model);
-            // await this.generatorFactory.createDataLocalRelateSourceGenerator().generate(this.featurePath, entityName, this.model);
+            await this.generatorFactory.createDataLocalRelateServiceGenerator().generate(this.featurePath, entityName, this.model);
+            await this.generatorFactory.createDataLocalRelateSourceGenerator().generate(this.featurePath, entityName, this.model);
             // await this.generatorFactory.createDataRepositoryRelateImplGenerator().generate(this.featurePath, entityName, this.model);
             // await this.generatorFactory.createDataProviderRelateGenerator().generate(this.featurePath, entityName, this.model);
-            
+
             // // Domain Layer
             // await this.generatorFactory.createDomainRelateRepositoryGenerator().generate(this.featurePath, entityName, this.model);
-            
+
             // // Domain Layer - Use Cases for relations
             // await this.generatorFactory.createUseCaseRelateAddTargetToSourceGenerator().generate(this.featurePath, entityName, this.model);
             // await this.generatorFactory.createUseCaseRelateGetTargetsForSourceGenerator().generate(this.featurePath, entityName, this.model);
