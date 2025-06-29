@@ -5,7 +5,7 @@ import { IFileSystem } from "../../../../../core/interfaces/file_system"; //
 import { ProjectStructure } from "../../../../../core/interfaces/project_structure"; //
 import { cap, pluralConvert, unCap } from "../../../../../utils/text_work/text_util"; //
 import { PathData } from "../../../../utils/path_util";
-import { ServerpodModel } from "../../../serverpod_yaml_parser/types";
+import { ServerpodModel } from "../../../serverpod_yaml_parser/formatters/types";
 
 export class DataRepositoryGenerator extends BaseGenerator {
 
@@ -21,34 +21,34 @@ export class DataRepositoryGenerator extends BaseGenerator {
   }
 
   protected getContent(model: ServerpodModel, _: string, featurePath: string): string {
-       const projectName = new PathData(featurePath).projectName;
-      const D = model.className;
-      const d = unCap(model.className);
-      const Ds = pluralConvert(D);
-      const ds = pluralConvert(d);
-      
-  
-      let foreignKeyMethods = '';
-      const relationFields = model.fields.filter(field => field.isRelation && field.relationType === 'manyToOne');
-  
-      if (relationFields.length > 0) {
-        foreignKeyMethods = relationFields.map(field => {
-          const fkFieldName = field.name.endsWith('Id') ? field.name : `${field.name}Id`;
-          const methodNamePart = cap(field.name.replace(/Id$/, ''));
-          const dsMethodName = `get${Ds}By${methodNamePart}Id`;
-          const parameterName = fkFieldName;
-          const parameterType = 'String';
-  
-          return `
+    const projectName = new PathData(featurePath).projectName;
+    const D = model.className;
+    const d = unCap(model.className);
+    const Ds = pluralConvert(D);
+    const ds = pluralConvert(d);
+
+
+    let foreignKeyMethods = '';
+    const relationFields = model.fields.filter(field => field.isRelation && field.relationType === 'manyToOne');
+
+    if (relationFields.length > 0) {
+      foreignKeyMethods = relationFields.map(field => {
+        const fkFieldName = field.name.endsWith('Id') ? field.name : `${field.name}Id`;
+        const methodNamePart = cap(field.name.replace(/Id$/, ''));
+        const dsMethodName = `get${Ds}By${methodNamePart}Id`;
+        const parameterName = fkFieldName;
+        const parameterType = 'String';
+
+        return `
   @override
   Future<List<${D}Entity>> ${dsMethodName}(${parameterType} ${parameterName}, {required int userId}) async {
     final ${d}s = await _${d}Dao.${dsMethodName}(${parameterName}, userId: userId);
     return ${d}s.map((e) => e.toEntity()).toList();
   }`;
       }).join('\\n');
-      }
-  
-      return `import 'package:${projectName}/features/home/data/datasources/local/tables/extensions/${d}_table_extension.dart';
+    }
+
+    return `import 'package:${projectName}/features/home/data/datasources/local/tables/extensions/${d}_table_extension.dart';
 import 'package:${projectName}/features/home/domain/entities/extensions/${d}_entity_extension.dart';
 import 'package:${projectName}_client/${projectName}_client.dart' as serverpod;
 
@@ -234,6 +234,6 @@ extension on ${D}Entity {
       );
       ${foreignKeyMethods}
 }`;
-    }
+  }
 
 }

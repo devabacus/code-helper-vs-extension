@@ -4,7 +4,7 @@ import { IFileSystem } from "../../../../../core/interfaces/file_system"; //
 import { ProjectStructure } from "../../../../../core/interfaces/project_structure"; //
 import { cap, pluralConvert, unCap } from "../../../../../utils/text_work/text_util"; //
 import { DataRoutineGenerator } from "../../../generators/data_routine_generator";
-import { ServerpodModel } from "../../../serverpod_yaml_parser/types";
+import { ServerpodModel } from "../../../serverpod_yaml_parser/formatters/types";
 
 export class UseCaseProvidersGenerator extends DataRoutineGenerator {
 
@@ -20,11 +20,11 @@ export class UseCaseProvidersGenerator extends DataRoutineGenerator {
   }
 
   protected getContent(model: ServerpodModel): string {
-      const D = model.className;
-      const d = unCap(model.className);
-      const Ds = pluralConvert(D);
-      
-  
+    const D = model.className;
+    const d = unCap(model.className);
+    const Ds = pluralConvert(D);
+
+
     let foreignKeyImports = '';
     let foreignKeyProviders = '';
     const relationFields = model.fields.filter(field => field.isRelation && field.relationType === 'manyToOne');
@@ -33,7 +33,7 @@ export class UseCaseProvidersGenerator extends DataRoutineGenerator {
       const providersData = relationFields.map(field => {
         const methodNamePart = cap(field.name.replace(/Id$/, ''));
         // e.g., getTasksByCategoryId
-        const useCaseMethodName = `get${Ds}By${methodNamePart}Id`; 
+        const useCaseMethodName = `get${Ds}By${methodNamePart}Id`;
         // e.g., GetTasksByCategoryIdUseCase
         const useCaseClassName = `${cap(useCaseMethodName)}UseCase`;
         // e.g., getTasksByCategoryIdUseCase
@@ -42,8 +42,8 @@ export class UseCaseProvidersGenerator extends DataRoutineGenerator {
         // Преобразуем имя метода в snake_case для имени файла
         // e.g., get_tasks_by_category_id
         const snakeCaseMethodName = useCaseMethodName
-            .replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`)
-            .substring(1);
+          .replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`)
+          .substring(1);
 
         const importStatement = `import '../../usecases/${d}/${snakeCaseMethodName}.dart';`;
 
@@ -63,8 +63,8 @@ ${useCaseClassName}? ${useCaseProviderName}(Ref ref) {
       foreignKeyImports = providersData.map(p => p.importStatement).join('\n');
       foreignKeyProviders = providersData.map(p => p.providerStatement).join('\n\n');
     }
-  
-      return `import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+    return `import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../usecases/${d}/create.dart';
 import '../../usecases/${d}/delete.dart';
@@ -131,8 +131,9 @@ Get${D}ByIdUseCase? get${D}ByIdUseCase(Ref ref) {
     return null;
   }
   return Get${D}ByIdUseCase(repository);
-  ${foreignKeyProviders}
 }
+  ${foreignKeyProviders}
+
     `;
-    }
+  }
 }

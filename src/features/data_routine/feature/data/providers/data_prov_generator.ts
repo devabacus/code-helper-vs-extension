@@ -4,7 +4,7 @@ import { IFileSystem } from "../../../../../core/interfaces/file_system";
 import { ProjectStructure } from "../../../../../core/interfaces/project_structure";
 import { pluralConvert, unCap } from "../../../../../utils/text_work/text_util";
 import { DataRoutineGenerator } from "../../../generators/data_routine_generator";
-import { ServerpodModel } from "../../../serverpod_yaml_parser/types";
+import { ServerpodModel } from "../../../serverpod_yaml_parser/formatters/types";
 
 export class DataProviderGenerator extends DataRoutineGenerator {
 
@@ -20,11 +20,11 @@ export class DataProviderGenerator extends DataRoutineGenerator {
   }
 
   protected getContent(model: ServerpodModel): string {
-        const D = model.className;
-        const d = unCap(D);
-        const ds = pluralConvert(d);
+    const D = model.className;
+    const d = unCap(D);
+    const ds = pluralConvert(d);
 
-return `import 'package:flutter_riverpod/flutter_riverpod.dart';
+    return `import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../../../core/database/local/provider/database_provider.dart';

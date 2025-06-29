@@ -4,7 +4,7 @@ import { IFileSystem } from "../../../../../core/interfaces/file_system"; //
 import { ProjectStructure } from "../../../../../core/interfaces/project_structure"; //
 import { cap, pluralConvert, unCap } from "../../../../../utils/text_work/text_util"; //
 import { DataRoutineGenerator } from "../../../generators/data_routine_generator"; //
-import { ServerpodModel } from "../../../serverpod_yaml_parser/types";
+import { ServerpodModel } from "../../../serverpod_yaml_parser/formatters/types";
 
 export class DomainRepositoryGenerator extends DataRoutineGenerator {
 
@@ -19,12 +19,12 @@ export class DomainRepositoryGenerator extends DataRoutineGenerator {
     return path.join(this.structure.getDomainRepositoryPath(featurePath), `${entityName}_repository.dart`); //
   }
 
-protected getContent(model: ServerpodModel): string {
-        const D = model.className;
-        const Ds = pluralConvert(D);
-        const d = unCap(D);
-   
-let foreignKeyMethods = '';
+  protected getContent(model: ServerpodModel): string {
+    const D = model.className;
+    const Ds = pluralConvert(D);
+    const d = unCap(D);
+
+    let foreignKeyMethods = '';
     const relationFields = model.fields.filter(field => field.isRelation && field.relationType === 'manyToOne');
 
     if (relationFields.length > 0) {

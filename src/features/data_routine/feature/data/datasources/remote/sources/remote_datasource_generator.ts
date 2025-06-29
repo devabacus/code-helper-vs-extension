@@ -5,7 +5,7 @@ import { IFileSystem } from "../../../../../../../core/interfaces/file_system";
 import { ProjectStructure } from "../../../../../../../core/interfaces/project_structure";
 import { cap, pluralConvert, unCap } from "../../../../../../../utils/text_work/text_util";
 import { PathData } from "../../../../../../utils/path_util";
-import { ServerpodModel } from "../../../../../serverpod_yaml_parser/types";
+import { ServerpodModel } from "../../../../../serverpod_yaml_parser/formatters/types";
 
 export class DataRemoteSourcesGenerator extends BaseGenerator<ServerpodModel> {
 
@@ -30,7 +30,7 @@ export class DataRemoteSourcesGenerator extends BaseGenerator<ServerpodModel> {
 
     // Генерация методов для получения по внешнему ключу
     let foreignKeyMethods = '';
-      const manyToOneFields = model.fields.filter(field => field.isRelation && field.relationType === 'manyToOne');
+    const manyToOneFields = model.fields.filter(field => field.isRelation && field.relationType === 'manyToOne');
 
     if (manyToOneFields.length > 0) {
       foreignKeyMethods = manyToOneFields.map(field => {
@@ -38,11 +38,10 @@ export class DataRemoteSourcesGenerator extends BaseGenerator<ServerpodModel> {
         const methodNamePart = cap(field.name.replace(/Id$/, ''));
         const dsMethodName = `get${Ds}By${methodNamePart}Id`;
         const parameterName = fkFieldName;
-        const parameterType = 'String';
 
         return `
   @override
-  Future<List<${D}>> ${dsMethodName}(${parameterType} ${parameterName}) async {
+  Future<List<${D}>> ${dsMethodName}(UuidValue ${parameterName}) async {
     try {
       final result = await _client.${d}.${dsMethodName}(${parameterName});
       return result;

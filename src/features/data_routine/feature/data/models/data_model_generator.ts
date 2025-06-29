@@ -5,8 +5,8 @@ import { IFileSystem } from "../../../../../core/interfaces/file_system";
 import { ProjectStructure } from "../../../../../core/interfaces/project_structure";
 import { DataRoutineGenerator } from "../../../generators/data_routine_generator";
 import { DriftClassParser } from "../datasources/local/tables/drift_class_parser";
-import { CodeFormatter } from "../../../formatters/code_formatter";
-import { ServerpodModel } from "../../../serverpod_yaml_parser/types";
+import { CodeFormatter } from "../../../serverpod_yaml_parser/formatters/code_formatter";
+import { ServerpodModel } from "../../../serverpod_yaml_parser/formatters/types";
 import { toCamelCase, unCap } from "../../../../../utils/text_work/text_util";
 
 export class ModelGenerator extends DataRoutineGenerator {

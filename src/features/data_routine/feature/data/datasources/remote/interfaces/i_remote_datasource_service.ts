@@ -5,7 +5,7 @@ import { IFileSystem } from "../../../../../../../core/interfaces/file_system";
 import { ProjectStructure } from "../../../../../../../core/interfaces/project_structure";
 import { cap, pluralConvert, unCap } from "../../../../../../../utils/text_work/text_util";
 import { PathData } from "../../../../../../utils/path_util";
-import { ServerpodModel } from "../../../../../serverpod_yaml_parser/types";
+import { ServerpodModel } from "../../../../../serverpod_yaml_parser/formatters/types";
 
 export class RemoteDataSourceServiceGenerator extends BaseGenerator<ServerpodModel> {
 
@@ -17,16 +17,16 @@ export class RemoteDataSourceServiceGenerator extends BaseGenerator<ServerpodMod
   }
 
   protected getPath(featurePath: string, entityName: string): string {
-    return path.join(this.structure.getDataRemoteInterfacesPath(featurePath), `${entityName}_remote_datasource_service.dart`);            
+    return path.join(this.structure.getDataRemoteInterfacesPath(featurePath), `${entityName}_remote_datasource_service.dart`);
   }
 
   protected getContent(model: ServerpodModel, _: string, featurePath: string): string {
     const projectName = new PathData(featurePath).projectName;
-    
+
     const D = model.className;
     const d = unCap(model.className);
     const Ds = pluralConvert(D);
- 
+
     // Генерация методов для получения по внешнему ключу
     let foreignKeyMethods = '';
     const relationFields = model.fields.filter(field => field.isRelation && field.relationType === 'manyToOne');
@@ -37,10 +37,9 @@ export class RemoteDataSourceServiceGenerator extends BaseGenerator<ServerpodMod
         const methodNamePart = cap(field.name.replace(/Id$/, ''));
         const dsMethodName = `get${Ds}By${methodNamePart}Id`;
         const parameterName = fkFieldName;
-        const parameterType = 'String';
 
         return `
-  Future<${D}>> ${dsMethodName}(${parameterType} ${parameterName});`;
+  Future<List<${D}>> ${dsMethodName}(UuidValue ${parameterName});`;
       }).join('');
     }
     return `

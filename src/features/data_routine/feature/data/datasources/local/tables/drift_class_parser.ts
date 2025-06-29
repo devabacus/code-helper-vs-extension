@@ -1,8 +1,8 @@
 // src/features/data_routine/feature/data/datasources/local/tables/drift_class_parser.ts
 
 import { unCap } from "../../../../../../../utils/text_work/text_util";
-import { CodeFormatter } from "../../../../../formatters/code_formatter";
-import { ICodeFormatter } from "../../../../../formatters/code_formatter.interface";
+import { CodeFormatter } from "../../../../../serverpod_yaml_parser/formatters/code_formatter";
+import { ICodeFormatter } from "../../../../../serverpod_yaml_parser/formatters/code_formatter.interface";
 
 export interface Field {
     type: string,

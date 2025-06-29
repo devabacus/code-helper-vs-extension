@@ -1,43 +1,43 @@
 import * as path from 'path';
 import { IFileSystem } from '../../../core/interfaces/file_system';
-import { ServerpodModel } from '../serverpod_yaml_parser/types';
+import { ServerpodModel } from '../serverpod_yaml_parser/formatters/types';
 import { cap, unCap, toSnakeCase, pluralConvert } from '../../../utils/text_work/text_util';
 
 export class ServerpodEndpointGenerator {
-    constructor(private fileSystem: IFileSystem) {}
+  constructor(private fileSystem: IFileSystem) { }
 
-    async generate(
-        serverProjectPath: string,
-        model: ServerpodModel
-    ): Promise<void> {
-        const endpointsDir = path.join(serverProjectPath, 'lib', 'src', 'endpoints');
-        const filePath = path.join(endpointsDir, `${toSnakeCase(model.className)}_endpoint.dart`);
-        const projectName = path.basename(serverProjectPath).split('_')[0];
+  async generate(
+    serverProjectPath: string,
+    model: ServerpodModel
+  ): Promise<void> {
+    const endpointsDir = path.join(serverProjectPath, 'lib', 'src', 'endpoints');
+    const filePath = path.join(endpointsDir, `${toSnakeCase(model.className)}_endpoint.dart`);
+    const projectName = path.basename(serverProjectPath).split('_')[0];
 
-        const content = this.getContent(projectName, model);
-        
-        await this.fileSystem.createFile(filePath, content);
-    }
+    const content = this.getContent(projectName, model);
 
-    private getContent(projectName: string, model: ServerpodModel): string {
-        const entityName = model.className;
-        const D = entityName; // Task
-        const d = unCap(D); // task
-        const Ds = pluralConvert(D); // Tasks
+    await this.fileSystem.createFile(filePath, content);
+  }
 
-        // Получаем поля связей для генерации методов foreign key
-        let foreignKeyEndpointMethods = '';
-        const relationFields = model.fields.filter(field => field.isRelation && field.relationType === 'manyToOne');
+  private getContent(projectName: string, model: ServerpodModel): string {
+    const entityName = model.className;
+    const D = entityName; // Task
+    const d = unCap(D); // task
+    const Ds = pluralConvert(D); // Tasks
 
-        if (relationFields.length > 0) {
-            foreignKeyEndpointMethods = relationFields.map(field => {
-                // field.name может быть "categoryId" или "category", поэтому нужно правильно обработать
-                const fieldName = field.name.endsWith('Id') ? field.name : `${field.name}Id`;
-                const methodNamePart = cap(field.name.replace(/Id$/, '')); // category -> Category
-                const endpointMethodName = `get${Ds}By${methodNamePart}Id`; // getTasksByCategoryId
-                const parameterName = fieldName; // categoryId
+    // Получаем поля связей для генерации методов foreign key
+    let foreignKeyEndpointMethods = '';
+    const relationFields = model.fields.filter(field => field.isRelation && field.relationType === 'manyToOne');
 
-                return `
+    if (relationFields.length > 0) {
+      foreignKeyEndpointMethods = relationFields.map(field => {
+        // field.name может быть "categoryId" или "category", поэтому нужно правильно обработать
+        const fieldName = field.name.endsWith('Id') ? field.name : `${field.name}Id`;
+        const methodNamePart = cap(field.name.replace(/Id$/, '')); // category -> Category
+        const endpointMethodName = `get${Ds}By${methodNamePart}Id`; // getTasksByCategoryId
+        const parameterName = fieldName; // categoryId
+
+        return `
 Future<List<${D}>> ${endpointMethodName}(Session session, UuidValue ${parameterName}) async {
     return await ${D}.db.find(
       session,
@@ -45,10 +45,10 @@ Future<List<${D}>> ${endpointMethodName}(Session session, UuidValue ${parameterN
       orderBy: (t) => t.title,
     );
   }`;
-            }).join('\n');
-        }
+      }).join('\n');
+    }
 
-        return `import 'package:serverpod/serverpod.dart';
+    return `import 'package:serverpod/serverpod.dart';
 import 'package:${projectName}_server/src/generated/protocol.dart';
 
 const _${d}ChannelBase = '${projectName}_${d}_events_for_user_';
@@ -200,5 +200,5 @@ class ${D}Endpoint extends Endpoint {
   }
     ${foreignKeyEndpointMethods}
 }          `;
-    }
+  }
 }

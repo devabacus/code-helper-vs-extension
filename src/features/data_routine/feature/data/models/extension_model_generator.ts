@@ -5,31 +5,31 @@ import { DefaultProjectStructure } from "../../../../../core/implementations/def
 import { IFileSystem } from "../../../../../core/interfaces/file_system";
 import { ProjectStructure } from "../../../../../core/interfaces/project_structure";
 import { toCamelCase } from "../../../../../utils/text_work/text_util";
-import { CodeFormatter } from "../../../formatters/code_formatter";
-import { ServerpodModel } from "../../../serverpod_yaml_parser/types";
+import { CodeFormatter } from "../../../serverpod_yaml_parser/formatters/code_formatter";
+import { ServerpodModel } from "../../../serverpod_yaml_parser/formatters/types";
 
 export class DataExtensionModelGenerator extends BaseGenerator<ServerpodModel> {
 
-    private structure: ProjectStructure;
+  private structure: ProjectStructure;
 
-    constructor(fileSystem: IFileSystem, structure?: ProjectStructure) {
-        super(fileSystem);
-        this.structure = structure || new DefaultProjectStructure();
-    }
+  constructor(fileSystem: IFileSystem, structure?: ProjectStructure) {
+    super(fileSystem);
+    this.structure = structure || new DefaultProjectStructure();
+  }
 
-    protected getPath(featurePath: string, entityName: string): string {
-        return path.join(this.structure.getDataExtensionPath(featurePath), `${entityName}_model_extension.dart`);
-    }
+  protected getPath(featurePath: string, entityName: string): string {
+    return path.join(this.structure.getDataExtensionPath(featurePath), `${entityName}_model_extension.dart`);
+  }
 
-    protected getContent(model: ServerpodModel): string {
-            const D = model.className;
-            const d = toCamelCase(model.className);
-            const formatter = new CodeFormatter();
-            
-            const params = formatter.formatSimpleFields(model.fields);
-            const paramValueWrapped = formatter.formatInsertCompanionParams(model.fields);
+  protected getContent(model: ServerpodModel): string {
+    const D = model.className;
+    const d = toCamelCase(model.className);
+    const formatter = new CodeFormatter();
 
-        return `
+    const params = formatter.formatSimpleFields(model.fields);
+    const paramValueWrapped = formatter.formatInsertCompanionParams(model.fields);
+
+    return `
 import 'package:drift/drift.dart';
 
 import '../../../../../../../core/database/local/database.dart';
@@ -62,5 +62,5 @@ extension ${D}ModelListExtension on List<${D}Model> {
       map((model) => model.toEntity()).toList();
 }
   `;
-    }
+  }
 }

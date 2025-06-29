@@ -1,9 +1,9 @@
 // src/features/data_routine/formatters/code_formatter.ts
 
 
-import { cap } from '../../../utils/text_work/text_util';
-import { Field, FieldValue } from '../feature/data/datasources/local/tables/drift_class_parser';
-import { ServerpodField } from '../serverpod_yaml_parser/types';
+import { cap } from '../../../../utils/text_work/text_util';
+import { Field, FieldValue } from '../../feature/data/datasources/local/tables/drift_class_parser';
+import { ServerpodField } from './types';
 import { ICodeFormatter } from './code_formatter.interface';
 import { prepareFieldsForTest } from './drift_prepare_fields_for_test';
 
@@ -25,16 +25,21 @@ export class CodeFormatter implements ICodeFormatter {
     const fields = this.fieldsFilter(fieldsWithStatic);
     const fieldRows = fields.map(field => {
       const typeString = `${field.type}${field.nullable ? '?' : ''}`;
-      // Для Freezed: non-nullable поля без @Default становятся required автоматически.
-      // Nullable поля - опциональные.
+      let _type = typeString;
+      let _name = field.name;
+
+      if (field.isRelation && field.relationType === 'manyToOne') {
+        _type = 'String';
+        _name = `${field.name}Id`;
+      }
+
       if (field.nullable) {
-        return `${typeString} ${field.name},`;
+        return `${_type}? ${_name},`;
       } else {
-        // Поля id часто имеют clientDefault, поэтому они не должны быть required в конструкторе модели/сущности
-        if (field.name === 'id') {
-          return `${typeString} ${field.name},`;
+        if (_name === 'id') {
+          return `${_type} ${_name},`;
         }
-        return `required ${typeString} ${field.name},`;
+        return `required ${_type} ${_name},`;
       }
     });
     return fieldRows.join('\n    ');
@@ -50,19 +55,29 @@ export class CodeFormatter implements ICodeFormatter {
     return fields.map(field => field.name).join(', ');
   }
 
-  formatValueWrappedFields(fields: Field[]): string {
-    const wrapped = fields.map(field => `${field.name}: Value(${field.name})`);
+  formatValueWrappedFields(fields: ServerpodField[]): string {
+    
+    const wrapped = fields.map(field => {
+      let _name = field.name;
+      if(field.isRelation && field.relationType === 'manyToOne'){
+        _name = `${field.name}Id`;
+      }
+      return `${_name}: Value(${_name})`});
     return wrapped.join(', ');
   }
 
-  fieldsFilter(fields: Field[]): Field[] {
-    const excludeList :any[] = ['isDeleted', 'id', 'userId', 'lastModified', 'syncStatus'];
+  fieldsFilter(fields: ServerpodField[]): ServerpodField[] {
+    const excludeList: any[] = ['isDeleted', 'id', 'userId', 'lastModified', 'syncStatus'];
     return fields.filter(field => !excludeList.includes(field.name));
   }
 
 
   formatSimpleFields(fields: Field[] | ServerpodField[]): string {
-    const simple = this.fieldsFilter(fields as Field[]).map(field => `${field.name}: ${field.name}`);
+
+    const simple = this.fieldsFilter(fields as Field[]).map((field) => {
+      const _field = field.isRelation ? `${field.name}Id` : `${field.name}`;
+      return `${_field}: ${_field}`;
+    });
     return simple.join(', ');
   }
 
@@ -79,20 +94,28 @@ export class CodeFormatter implements ICodeFormatter {
   getFieldsValueForTest(fields: Field[]): string[] {
     // return prepareFieldsForTest(fields);
     return [];
-  }  
+  }
 
   getFieldsExpectValueTest(fields: Field[]): string[] {
     // Реализация для ожидаемых значений в тестах
     return fields.slice(1, 3).map((field, index) => `.${field.name}, '${field.name} ${index + 1}'`);
   }
 
-  formatInsertCompanionParams(fields: Field[]): string {
+  formatInsertCompanionParams(fields: ServerpodField[]): string {
     const paramFilter = this.fieldsFilter(fields);
     const params = paramFilter.map(field => {
       // if (field.name === 'id') {
       //   return `${field.name}: Value(testId)`;
       // }
-      return `${field.name}: Value(${field.name})`;
+      let _field_name = field.name;
+      let _field_value = field.name;
+
+      if(field.isRelation && field.relationType === 'manyToOne'){
+          _field_name = `${field.name}Id`;
+          _field_value =`${field.name}Id.toString()`;
+      }
+
+      return `${_field_name}: Value(${_field_value})`;
     });
     return params.join(', ');
   }
@@ -149,8 +172,8 @@ export class CodeFormatter implements ICodeFormatter {
     }
 
     if (field.isRelation && field.relationType === 'oneToMany') {
-    return true;
-  }
+      return true;
+    }
     return false;
   }
 

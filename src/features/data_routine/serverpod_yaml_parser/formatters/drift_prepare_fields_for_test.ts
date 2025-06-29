@@ -1,9 +1,9 @@
-import { Field, FieldValue } from "../feature/data/datasources/local/tables/drift_class_parser";
+import { Field, FieldValue } from "../../feature/data/datasources/local/tables/drift_class_parser";
 
-export function prepareFieldsForTest(fields: Field[]):FieldValue[] {
+export function prepareFieldsForTest(fields: Field[]): FieldValue[] {
     // const formatted = new Map<FieldValue>();
 
-    const formattedList :FieldValue[] = [];
+    const formattedList: FieldValue[] = [];
 
     // 1. Обрабатываем входные поля (кроме id) и сохраняем в Map
     for (const field of fields) {
@@ -30,7 +30,7 @@ export function prepareFieldsForTest(fields: Field[]):FieldValue[] {
                 continue;
         }
         // formattedMap.set(field.name, formattedValue);
-        formattedList.push({name: field.name, value: formattedValue});
+        formattedList.push({ name: field.name, value: formattedValue });
 
     }
     return formattedList;

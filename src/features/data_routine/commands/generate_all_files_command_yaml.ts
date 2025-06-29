@@ -4,21 +4,20 @@ import { GeneratorFactory } from "../factories/generator_factory";
 import { DriftClassParser } from "../feature/data/datasources/local/tables/drift_class_parser";
 import { DriftTableParser } from "../feature/data/datasources/local/tables/drift_table_parser"; // Добавлен импорт
 import { RelationType, TableRelation } from "../interfaces/table_relation.interface";
-import { ServerpodModel } from "../serverpod_yaml_parser/types";
+import { ServerpodModel } from "../serverpod_yaml_parser/formatters/types";
 
 
 export class GenerateAllFilesCommandYaml implements Command {
     private isRelationTable: boolean;
-    
+
     constructor(
         private generatorFactory: GeneratorFactory,
         private featurePath: string,
         private model: ServerpodModel,
-    )
-     {
+    ) {
         this.isRelationTable = this.model.fields.every(field => field.isRelation);
 
-     }
+    }
 
     async execute(): Promise<void> {
         // Имя сущности (в PascalCase) берем напрямую из модели
@@ -27,7 +26,7 @@ export class GenerateAllFilesCommandYaml implements Command {
         // Передаем во все генераторы объект модели (this.model)
         if (!this.isRelationTable) {
             console.log(`Генерация файлов для обычной таблицы: ${entityName}`);
-            
+
             // data layer
             await this.generatorFactory.createDriftTableGenerator().generate(this.featurePath, entityName, this.model);
             await this.generatorFactory.createDaoGenerator().generate(this.featurePath, entityName, this.model);
@@ -51,7 +50,7 @@ export class GenerateAllFilesCommandYaml implements Command {
             await this.generatorFactory.createDomainEntityExtensionGenerator().generate(this.featurePath, entityName, this.model);
             await this.generatorFactory.createDomainRepositoryGenerator().generate(this.featurePath, entityName, this.model);
             await this.generatorFactory.createDomainProviderGenerator().generate(this.featurePath, entityName, this.model);
-            
+
             // // domain layer use_cases
             await this.generatorFactory.createUseCaseCreateGenerator().generate(this.featurePath, entityName, this.model);
             await this.generatorFactory.createUseCaseUpdateGenerator().generate(this.featurePath, entityName, this.model);
@@ -59,7 +58,7 @@ export class GenerateAllFilesCommandYaml implements Command {
             await this.generatorFactory.createUseCaseGetByIdGenerator().generate(this.featurePath, entityName, this.model);
             await this.generatorFactory.createUseCaseGetAllGenerator().generate(this.featurePath, entityName, this.model);
             await this.generatorFactory.createUseCaseWatchAllGenerator().generate(this.featurePath, entityName, this.model);
-            
+
             // const hasForeignKey = this.model.fields.some(field => field.isRelation && field.relationType === 'manyToOne');
             // if (hasForeignKey) {
             //     await this.generatorFactory.createUseCaseGetByForeignKeyGenerator().generate(this.featurePath, entityName, this.model);
@@ -76,6 +75,6 @@ export class GenerateAllFilesCommandYaml implements Command {
             // await this.generatorFactory.createDataLocalRelateSourceGenerator().generate(this.featurePath, entityName, this.model);
             // ... и так далее для остальных генераторов таблиц-связок
         }
-    
+
     }
 }

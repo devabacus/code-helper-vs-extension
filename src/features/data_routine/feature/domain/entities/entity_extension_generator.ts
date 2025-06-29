@@ -4,9 +4,9 @@ import { DefaultProjectStructure } from "../../../../../core/implementations/def
 import { IFileSystem } from "../../../../../core/interfaces/file_system";
 import { ProjectStructure } from "../../../../../core/interfaces/project_structure";
 import { toCamelCase } from "../../../../../utils/text_work/text_util";
-import { CodeFormatter } from "../../../formatters/code_formatter";
+import { CodeFormatter } from "../../../serverpod_yaml_parser/formatters/code_formatter";
 import { DataRoutineGenerator } from "../../../generators/data_routine_generator";
-import { ServerpodModel } from "../../../serverpod_yaml_parser/types";
+import { ServerpodModel } from "../../../serverpod_yaml_parser/formatters/types";
 
 export class DomainExtensionEntityGenerator extends DataRoutineGenerator {
 

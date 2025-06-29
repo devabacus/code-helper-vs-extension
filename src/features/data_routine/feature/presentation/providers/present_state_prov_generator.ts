@@ -5,7 +5,7 @@ import { ProjectStructure } from "../../../../../core/interfaces/project_structu
 import { DefaultProjectStructure } from "../../../../../core/implementations/default_project_structure";
 import { IFileSystem } from "../../../../../core/interfaces/file_system";
 import { pluralConvert, unCap } from "../../../../../utils/text_work/text_util";
-import { ServerpodModel } from "../../../serverpod_yaml_parser/types";
+import { ServerpodModel } from "../../../serverpod_yaml_parser/formatters/types";
 
 export class PresentStateProviderGenerator extends DataRoutineGenerator {
 
@@ -21,8 +21,8 @@ export class PresentStateProviderGenerator extends DataRoutineGenerator {
   }
 
   protected getContent(model: ServerpodModel): string {
-      const D = model.className;
-      const d = unCap(model.className);;
+    const D = model.className;
+    const d = unCap(model.className);;
     const Ds = pluralConvert(D);
     const ds = pluralConvert(d);
 

@@ -4,7 +4,7 @@ import { IFileSystem } from "../../../../../../../core/interfaces/file_system"; 
 import { ProjectStructure } from "../../../../../../../core/interfaces/project_structure"; //
 import { pluralConvert, unCap, cap, toSnakeCase } from "../../../../../../../utils/text_work/text_util"; //
 import { DataRoutineGenerator } from "../../../../../generators/data_routine_generator"; //
-import { ServerpodModel } from "../../../../../serverpod_yaml_parser/types";
+import { ServerpodModel } from "../../../../../serverpod_yaml_parser/formatters/types";
 
 export class DataDaoGenerator extends DataRoutineGenerator {
 
@@ -17,7 +17,7 @@ export class DataDaoGenerator extends DataRoutineGenerator {
 
   protected getPath(featurePath: string, entityName: string): string {
     const snakeCaseEntityName = toSnakeCase(entityName);
-    return path.join(this.structure.getDaoPath(featurePath), entityName, `${snakeCaseEntityName}_dao.dart`); 
+    return path.join(this.structure.getDaoPath(featurePath), entityName, `${snakeCaseEntityName}_dao.dart`);
   }
 
   protected getContent(model: ServerpodModel): string {
@@ -30,19 +30,19 @@ export class DataDaoGenerator extends DataRoutineGenerator {
     const relationFields = model.fields.filter(field => field.isRelation && field.relationType === 'manyToOne');
 
     if (relationFields.length > 0) {
-        foreignKeyMethods = relationFields.map(field => {
-            const fieldName = field.name.endsWith('Id') ? field.name : `${field.name}Id`;
-            const methodNamePart = cap(field.name.replace(/Id$/, ''));
-            const daoMethodName = `get${Ds}By${methodNamePart}Id`;
-            const parameterName = fieldName;
-            const parameterType = 'String'; 
+      foreignKeyMethods = relationFields.map(field => {
+        const fieldName = field.name.endsWith('Id') ? field.name : `${field.name}Id`;
+        const methodNamePart = cap(field.name.replace(/Id$/, ''));
+        const daoMethodName = `get${Ds}By${methodNamePart}Id`;
+        const parameterName = fieldName;
+        const parameterType = 'String';
 
-            return `
+        return `
   Future<List<${D}TableData>> ${daoMethodName}(${parameterType} ${parameterName}, {required int userId}) =>
     (select(${d}Table)
       ..where((t) => t.${parameterName}.equals(${parameterName}) & t.userId.equals(userId) & t.syncStatus.equals(SyncStatus.deleted.name).not()))
     .get();`;
-        }).join('\n');
+      }).join('\n');
     }
 
     return `

@@ -24,8 +24,6 @@ export class ConfigMapGenerator extends BaseGenerator<ServerDataConfig> {
     const appName = data.project.name;
     const reddis = data.reddis;
     const db = data.database;
-
-
     return `
 
 # configmap-${appName}.yaml
@@ -64,7 +62,7 @@ data:
 
   # --- Общие настройки ---
   SERVERPOD_MAX_REQUEST_SIZE: "524288"
-  SERVERPOD_LOGGING_MODE: "production"
+  SERVERPOD_LOGGING_MODE: "normal"
 
     `;
   }

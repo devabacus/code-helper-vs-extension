@@ -4,7 +4,7 @@ import { IFileSystem } from "../../../../../../../core/interfaces/file_system"; 
 import { ProjectStructure } from "../../../../../../../core/interfaces/project_structure"; //
 import { pluralConvert, unCap, cap, toSnakeCase } from "../../../../../../../utils/text_work/text_util"; //
 import { DataRoutineGenerator } from "../../../../../generators/data_routine_generator"; //
-import { ServerpodModel } from "../../../../../serverpod_yaml_parser/types";
+import { ServerpodModel } from "../../../../../serverpod_yaml_parser/formatters/types";
 import { BaseGenerator } from "../../../../../../../core/generators/base_generator";
 import { PathData } from "../../../../../../utils/path_util";
 
@@ -22,11 +22,11 @@ export class DataLocalSourcesGenerator extends BaseGenerator {
   }
 
   protected getContent(model: ServerpodModel, _: string, featurePath: string): string {
-     const projectName = new PathData(featurePath).projectName;
+    const projectName = new PathData(featurePath).projectName;
     const D = model.className;
     const d = unCap(model.className);
     const Ds = pluralConvert(D);
-    
+
 
     let foreignKeyMethods = '';
     const relationFields = model.fields.filter(field => field.isRelation && field.relationType === 'manyToOne');
