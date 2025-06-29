@@ -66,10 +66,19 @@ export class CodeFormatter implements ICodeFormatter {
     return wrapped.join(', ');
   }
 
+  // fieldsFilter(fields: ServerpodField[]): ServerpodField[] {
+  //   const excludeList: any[] = ['isDeleted', 'id', 'userId', 'lastModified', 'syncStatus', /.*Map.*/];
+  //   return fields.filter(field => !excludeList.includes(field.name));
+  // }
+
   fieldsFilter(fields: ServerpodField[]): ServerpodField[] {
-    const excludeList: any[] = ['isDeleted', 'id', 'userId', 'lastModified', 'syncStatus'];
-    return fields.filter(field => !excludeList.includes(field.name));
-  }
+  const exactExcludes = ['isDeleted', 'id', 'userId', 'lastModified', 'syncStatus'];
+  
+  return fields.filter(field => 
+    !exactExcludes.includes(field.name) && 
+    !field.name.includes('Map')
+  );
+}
 
 
   formatSimpleFields(fields: Field[] | ServerpodField[]): string {
@@ -166,7 +175,7 @@ export class CodeFormatter implements ICodeFormatter {
        
   shouldSkipServerpodField(field: ServerpodField): boolean {
     // Пропускаем служебные поля, которые уже определены статично
-    const staticFields = ['id', 'userId', 'lastModified', 'syncStatus', 'isDeleted'];
+    const staticFields = ['id', 'userId', 'lastModified', 'syncStatus', 'isDeleted', 'Map'];
     if (staticFields.includes(field.name)) {
       return true;
     }
