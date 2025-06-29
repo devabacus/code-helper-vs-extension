@@ -163,7 +163,7 @@ export class CodeFormatter implements ICodeFormatter {
 
     return typeMap[serverpodType] || 'text';
   }
-
+       
   shouldSkipServerpodField(field: ServerpodField): boolean {
     // Пропускаем служебные поля, которые уже определены статично
     const staticFields = ['id', 'userId', 'lastModified', 'syncStatus', 'isDeleted'];
@@ -184,7 +184,7 @@ export class CodeFormatter implements ICodeFormatter {
 
     // Получаем имя связанной таблицы из типа поля
     const relatedTableName = field.relatedModel ? `${field.relatedModel}Table` : '';
-    const references = relatedTableName ? `.references(${relatedTableName}, #id)` : '';
+    const references = relatedTableName ? `.references(${relatedTableName}, #id, onDelete: KeyAction.setNull)` : '';
 
     return `TextColumn get ${foreignKeyFieldName} => text()${nullable}${references}();`;
   }

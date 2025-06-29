@@ -58,15 +58,15 @@ export class GenerateAllFilesCommand implements Command {
             await this.generatorFactory.createLocalDataSourceServiceGenerator().generate(this.featurePath, entityNameForGenerators, parsersData);
 
             // domain layer use_cases
-            await this.generatorFactory.createUseCaseCreateGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
-            await this.generatorFactory.createUseCaseUpdateGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
-            await this.generatorFactory.createUseCaseDeleteGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
-            await this.generatorFactory.createUseCaseGetByIdGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
-            await this.generatorFactory.createUseCaseGetAllGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
-            await this.generatorFactory.createUseCaseWatchAllGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
-            if (this.tableParser.getReferences() && this.tableParser.getReferences().length > 0) {
-                await this.generatorFactory.createUseCaseGetByForeignKeyGenerator().generate(this.featurePath, entityNameForGenerators, parsersData);
-            }
+            // await this.generatorFactory.createUseCaseCreateGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
+            // await this.generatorFactory.createUseCaseUpdateGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
+            // await this.generatorFactory.createUseCaseDeleteGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
+            // await this.generatorFactory.createUseCaseGetByIdGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
+            // await this.generatorFactory.createUseCaseGetAllGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
+            // await this.generatorFactory.createUseCaseWatchAllGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
+            // if (this.tableParser.getReferences() && this.tableParser.getReferences().length > 0) {
+            //     await this.generatorFactory.createUseCaseGetByForeignKeyGenerator().generate(this.featurePath, entityNameForGenerators, parsersData);
+            // }
 
             //presentation layer
             await this.generatorFactory.createPresentStateProviderGenerator().generate(this.featurePath, entityNameForGenerators, this.classParser);
