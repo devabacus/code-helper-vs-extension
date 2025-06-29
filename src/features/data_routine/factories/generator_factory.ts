@@ -28,6 +28,7 @@ import { UseCaseRelateGetSourcesWithTargetGenerator } from "../feature/domain/us
 import { UseCaseRelateGetTargetsForSourceGenerator } from "../feature/domain/usecases/relate/use_case_relate_get_targets_for_source_generator";
 import { UseCaseRelateRemoveAllTargetsFromSourceGenerator } from "../feature/domain/usecases/relate/use_case_relate_remove_all_targets_from_source_generator";
 import { UseCaseRelateRemoveTargetFromSourceGenerator } from "../feature/domain/usecases/relate/use_case_relate_remove_target_from_source_generator";
+import { UseCaseBaseGenerator } from "../feature/domain/usecases/use_case_bundle_generator";
 import { UseCaseCreateGenerator } from "../feature/domain/usecases/use_case_create_generator";
 import { UseCaseDeleteGenerator } from "../feature/domain/usecases/use_case_delete_generator";
 import { UseCaseGetAllGenerator } from "../feature/domain/usecases/use_case_get_all_generator";
@@ -138,6 +139,9 @@ export class GeneratorFactory {
 
     createUseCaseCreateGenerator(): FileGenerator {
         return new UseCaseCreateGenerator(this.fileSystem);
+    }
+    createUseCaseBaseGenerator(): FileGenerator {
+        return new UseCaseBaseGenerator(this.fileSystem);
     }
     createUseCaseUpdateGenerator(): FileGenerator {
         return new UseCaseUpdateGenerator(this.fileSystem);

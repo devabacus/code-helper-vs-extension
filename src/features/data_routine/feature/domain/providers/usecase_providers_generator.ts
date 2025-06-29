@@ -23,9 +23,6 @@ export class UseCaseProvidersGenerator extends DataRoutineGenerator {
     const D = model.className;
     const d = unCap(model.className);
     const Ds = pluralConvert(D);
-
-
-    let foreignKeyImports = '';
     let foreignKeyProviders = '';
     const relationFields = model.fields.filter(field => field.isRelation && field.relationType === 'manyToOne');
 
@@ -59,21 +56,12 @@ ${useCaseClassName}? ${useCaseProviderName}(Ref ref) {
 }`;
         return { importStatement, providerStatement };
       });
-
-      foreignKeyImports = providersData.map(p => p.importStatement).join('\n');
       foreignKeyProviders = providersData.map(p => p.providerStatement).join('\n\n');
     }
 
     return `import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import '../../usecases/${d}/create.dart';
-import '../../usecases/${d}/delete.dart';
-import '../../usecases/${d}/get_by_id.dart';
-import '../../usecases/${d}/update.dart';
-import '../../usecases/${d}/get_all.dart';
-import '../../usecases/${d}/watch_all.dart';
-${foreignKeyImports}
-
+import '../../usecases/${d}/base_usecases.dart';
 import '../../../data/providers/${d}/${d}_data_providers.dart';
 
 part '${d}_usecase_providers.g.dart';

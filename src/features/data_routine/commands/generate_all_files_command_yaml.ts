@@ -52,12 +52,15 @@ export class GenerateAllFilesCommandYaml implements Command {
             await this.generatorFactory.createDomainProviderGenerator().generate(this.featurePath, entityName, this.model);
 
             // // domain layer use_cases
-            await this.generatorFactory.createUseCaseCreateGenerator().generate(this.featurePath, entityName, this.model);
-            await this.generatorFactory.createUseCaseUpdateGenerator().generate(this.featurePath, entityName, this.model);
-            await this.generatorFactory.createUseCaseDeleteGenerator().generate(this.featurePath, entityName, this.model);
-            await this.generatorFactory.createUseCaseGetByIdGenerator().generate(this.featurePath, entityName, this.model);
-            await this.generatorFactory.createUseCaseGetAllGenerator().generate(this.featurePath, entityName, this.model);
-            await this.generatorFactory.createUseCaseWatchAllGenerator().generate(this.featurePath, entityName, this.model);
+            await this.generatorFactory.createUseCaseBaseGenerator().generate(this.featurePath, entityName, this.model);
+
+
+            // await this.generatorFactory.createUseCaseCreateGenerator().generate(this.featurePath, entityName, this.model);
+            // await this.generatorFactory.createUseCaseUpdateGenerator().generate(this.featurePath, entityName, this.model);
+            // await this.generatorFactory.createUseCaseDeleteGenerator().generate(this.featurePath, entityName, this.model);
+            // await this.generatorFactory.createUseCaseGetByIdGenerator().generate(this.featurePath, entityName, this.model);
+            // await this.generatorFactory.createUseCaseGetAllGenerator().generate(this.featurePath, entityName, this.model);
+            // await this.generatorFactory.createUseCaseWatchAllGenerator().generate(this.featurePath, entityName, this.model);
 
             // const hasForeignKey = this.model.fields.some(field => field.isRelation && field.relationType === 'manyToOne');
             // if (hasForeignKey) {
