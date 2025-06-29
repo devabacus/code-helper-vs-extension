@@ -1,62 +1,69 @@
 import path from "path";
-import { DataRoutineGenerator } from "../../../generators/data_routine_generator";
-import { ProjectStructure } from "../../../../../core/interfaces/project_structure";
-import { IFileSystem } from "../../../../../core/interfaces/file_system";
 import { DefaultProjectStructure } from "../../../../../core/implementations/default_project_structure";
-import { cap, pluralConvert, toSnakeCase } from "../../../../../utils/text_work/text_util";
-import { DriftClassParser } from "../../data/datasources/local/tables/drift_class_parser";
-import { DriftTableParser } from "../../data/datasources/local/tables/drift_table_parser";
-import { RelationType } from "../../../interfaces/table_relation.interface";
-
+import { IFileSystem } from "../../../../../core/interfaces/file_system";
+import { ProjectStructure } from "../../../../../core/interfaces/project_structure";
+import { cap, unCap, toSnakeCase, pluralConvert } from "../../../../../utils/text_work/text_util";
+import { DataRoutineGenerator } from "../../../generators/data_routine_generator";
+import { ServerpodModel } from "../../../serverpod_yaml_parser/formatters/types";
 
 export class DomainRelateRepositoryGenerator extends DataRoutineGenerator {
 
-  private structure: ProjectStructure;
+    private structure: ProjectStructure;
 
-  constructor(fileSystem: IFileSystem, structure?: ProjectStructure) {
-    super(fileSystem);
-    this.structure = structure || new DefaultProjectStructure();
-  }
-
-  protected getPath(featurePath: string, entityName: string): string {
-    // entityName is intermediate table name like "taskTagMap"
-    const snakeCaseEntityName = toSnakeCase(entityName);
-    return path.join(this.structure.getDomainRepositoryPath(featurePath), `${snakeCaseEntityName}_repository.dart`);
-  }
-
-  protected getContent(parser: DriftClassParser): string {
-    const tableParser = new DriftTableParser(parser.driftClass);
-    const relations = tableParser.getTableRelations();
-    const manyToManyRelation = relations.find(r => r.relationType === RelationType.MANY_TO_MANY);
-
-    if (!manyToManyRelation) {
-      throw new Error(`Could not find MANY_TO_MANY relation for table ${parser.driftClassNameUpper} to generate related domain repository interface.`);
+    constructor(fileSystem: IFileSystem, structure?: ProjectStructure) {
+        super(fileSystem);
+        this.structure = structure || new DefaultProjectStructure();
     }
 
-    const intermediateUpper = parser.driftClassNameUpper; // e.g., TaskTagMap
+    protected getPath(featurePath: string, entityName: string): string {
+        return path.join(this.structure.getDomainRepositoryPath(featurePath), `${toSnakeCase(entityName)}_repository.dart`);
+    }
 
-    const sourceUpper = cap(manyToManyRelation.sourceTable); // e.g., Task
-    const sourceSnake = toSnakeCase(manyToManyRelation.sourceTable); // e.g., task
-    const sourceForeignKey = manyToManyRelation.sourceField; // e.g., taskId
+    protected getContent(model: ServerpodModel): string {
+        const sourceField = model.fields[0];
+        const targetField = model.fields[1];
 
-    const targetUpper = cap(manyToManyRelation.targetTable); // e.g., Tag
-    const targetPlural = pluralConvert(targetUpper); // e.g., Tags
-    const targetSnake = toSnakeCase(manyToManyRelation.targetTable); // e.g., tag
-    const targetForeignKey = manyToManyRelation.targetField; // e.g., tagId
+        const D1 = cap(sourceField.name); // Task
+        const D2 = cap(targetField.name); // Tag
+        const d1 = unCap(D1); // task
+        const d2 = unCap(D2); // tag
+        const D1s = pluralConvert(D1); // Tasks
+        const D2s = pluralConvert(D2); // Tags
 
-    const sourcePlural = pluralConvert(sourceUpper); // e.g., Tasks
+        const Rel = model.className; // TaskTagMap
+        const IRepository = `I${Rel}Repository`; // ITaskTagMapRepository
 
-    return `
-import '../entities/${targetSnake}/${targetSnake}.dart';
-import '../entities/${sourceSnake}/${sourceSnake}.dart';
+        // В доменном слое мы работаем с Entity
+        const Entity1 = `${D1}Entity`;
+        const Entity2 = `${D2}Entity`;
 
-abstract class I${intermediateUpper}Repository {
-  Future<List<${targetUpper}Entity>> get${targetPlural}For${sourceUpper}(String ${sourceForeignKey});
-  Future<List<${sourceUpper}Entity>> get${sourcePlural}With${targetUpper}(String ${targetForeignKey});
-  Future<void> add${targetUpper}To${sourceUpper}(String ${sourceForeignKey}, String ${targetForeignKey});
-  Future<void> remove${targetUpper}From${sourceUpper}(String ${sourceForeignKey}, String ${targetForeignKey});
-  Future<void> removeAll${targetPlural}From${sourceUpper}(String ${sourceForeignKey});
+        const idType = 'String';
+
+        return `import '../entities/${d1}/${d1}.dart';
+import '../entities/${d2}/${d2}.dart';
+
+abstract class ${IRepository} {
+  /// Connects a ${D2} to a ${D1}.
+  Future<void> add${D2}To${D1}({
+    required ${idType} ${d1}Id,
+    required ${idType} ${d2}Id,
+  });
+
+  /// Disconnects a ${D2} from a ${D1}.
+  Future<void> remove${D2}From${D1}({
+    required ${idType} ${d1}Id,
+    required ${idType} ${d2}Id,
+  });
+
+  /// Gets all ${D2s} associated with a specific ${D1}.
+  Future<List<${Entity2}>> get${D2s}For${D1}(${idType} ${d1}Id);
+  
+  /// Gets all ${D1s} associated with a specific ${D2}.
+  Future<List<${Entity1}>> get${D1s}For${D2}(${idType} ${d2}Id);
+
+  /// Removes all connections for a specific ${D1}.
+  Future<void> removeAllRelationsFor${D1}(${idType} ${d1}Id);
 }
 `;
-  }
+    }
 }
