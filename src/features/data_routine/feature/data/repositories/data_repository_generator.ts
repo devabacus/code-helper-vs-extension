@@ -41,8 +41,8 @@ export class DataRepositoryGenerator extends BaseGenerator {
 
         return `
   @override
-  Future<List<${D}Entity>> ${dsMethodName}(${parameterType} ${parameterName}, {required int userId}) async {
-    final ${d}s = await _${d}Dao.${dsMethodName}(${parameterName}, userId: userId);
+  Future<List<${D}Entity>> ${dsMethodName}(${parameterType} ${parameterName}) async {
+    final ${d}s = await _localDataSource.${dsMethodName}(${parameterName}, userId: userId);
     return ${d}s.map((e) => e.toEntity()).toList();
   }`;
       }).join('\\n');
@@ -222,18 +222,11 @@ class ${D}RepositoryImpl extends BaseSyncRepository
       rethrow;
     }
   }
+    ${foreignKeyMethods}
 }
 
-extension on ${D}Entity {
-  serverpod.${D} toServerpod${D}() => serverpod.${D}(
-        id: serverpod.UuidValue.fromString(id),
-        title: title,
-        lastModified: lastModified,
-        userId: userId,
-        isDeleted: false,
-      );
-      ${foreignKeyMethods}
-}`;
+
+`;
   }
 
 }

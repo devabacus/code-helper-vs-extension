@@ -96,5 +96,5 @@ export async function createDataFilesFromYaml() {
 
     await generatorCommands.execute();
     await appDatabaseRoutine(featurePath, entityName);
-    await executeInTerminal(build_runner, flutterDirPath);
+    // TODO await executeInTerminal(build_runner, flutterDirPath);
 }
