@@ -64,7 +64,7 @@ export class GenerateAllFilesCommandYaml implements Command {
             console.log(`Обнаружена связующая таблица: ${entityName}.`);
             // Data Layer
             await this.generatorFactory.createDriftTableGenerator().generate(this.featurePath, entityName, this.model); // Таблица для связей
-            // await this.generatorFactory.createDaoRelateGenerator().generate(this.featurePath, entityName, this.model);
+            await this.generatorFactory.createDaoRelateGenerator().generate(this.featurePath, entityName, this.model);
             // await this.generatorFactory.createDataLocalRelateDataSourceServiceGenerator().generate(this.featurePath, entityName, this.model);
             // await this.generatorFactory.createDataLocalRelateSourceGenerator().generate(this.featurePath, entityName, this.model);
             // await this.generatorFactory.createDataRepositoryRelateImplGenerator().generate(this.featurePath, entityName, this.model);
