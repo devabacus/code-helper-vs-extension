@@ -55,7 +55,6 @@ abstract class I${D}RemoteDataSource {
   Future<bool> update${D}(${D} ${d});
   Future<bool> delete${D}(UuidValue id);
   Future<bool> checkConnection();
-  Future<void> closeStreams();
 ${foreignKeyMethods}
 }
 

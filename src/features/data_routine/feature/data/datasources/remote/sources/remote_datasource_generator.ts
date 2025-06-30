@@ -59,9 +59,6 @@ import '../interfaces/${d}_remote_datasource_service.dart';
 class ${D}RemoteDataSource implements I${D}RemoteDataSource {
   final Client _client;
 
-  StreamSubscription<List<${D}>>? _streamSubscription;
-  StreamController<List<${D}>>? _${ds}StreamController;
-
   ${D}RemoteDataSource(this._client);
 
   @override
@@ -169,21 +166,6 @@ class ${D}RemoteDataSource implements I${D}RemoteDataSource {
     }
   }
 
-  @override
-  Future<void> closeStreams() async {
-    await _streamSubscription?.cancel();
-    _streamSubscription = null;
-    if (_${ds}StreamController != null &&
-        !_${ds}StreamController!.isClosed) {
-      await _${ds}StreamController!.close();
-      _${ds}StreamController = null;
-    }
-    print('Remote data source streams закрыты');
-  }
-
-  void dispose() {
-    closeStreams();
-  }
 ${foreignKeyMethods}
 }
 
