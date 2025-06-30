@@ -84,8 +84,19 @@ export class CodeFormatter implements ICodeFormatter {
   formatSimpleFields(fields: Field[] | ServerpodField[]): string {
 
     const simple = this.fieldsFilter(fields as Field[]).map((field) => {
-      const _field = field.isRelation ? `${field.name}Id` : `${field.name}`;
-      return `${_field}: ${_field}`;
+      // const _field = field.isRelation ? `${field.name}Id` : `${field.name}`;
+      
+
+      let _field_name = field.name;
+      let _field_value = field.name;
+
+      if(field.isRelation && field.relationType === 'manyToOne'){
+          _field_name = `${field.name}Id`;
+          _field_value =`${field.name}Id.toString()`;
+      }
+
+
+      return `${_field_name}: ${_field_value}`;
     });
     return simple.join(', ');
   }

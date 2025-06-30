@@ -7,6 +7,7 @@ import { ProjectStructure } from "../../../../../core/interfaces/project_structu
 import { toCamelCase } from "../../../../../utils/text_work/text_util";
 import { CodeFormatter } from "../../../serverpod_yaml_parser/formatters/code_formatter";
 import { ServerpodModel } from "../../../serverpod_yaml_parser/formatters/types";
+import { PathData } from "../../../../utils/path_util";
 
 export class DataExtensionModelGenerator extends BaseGenerator<ServerpodModel> {
 
@@ -21,7 +22,8 @@ export class DataExtensionModelGenerator extends BaseGenerator<ServerpodModel> {
     return path.join(this.structure.getDataExtensionPath(featurePath), `${entityName}_model_extension.dart`);
   }
 
-  protected getContent(model: ServerpodModel): string {
+  protected getContent(model: ServerpodModel, _: string, featurePath: string): string {
+    const projectName = new PathData(featurePath).projectName;
     const D = model.className;
     const d = toCamelCase(model.className);
     const formatter = new CodeFormatter();
@@ -33,6 +35,7 @@ export class DataExtensionModelGenerator extends BaseGenerator<ServerpodModel> {
 import 'package:drift/drift.dart';
 
 import '../../../../../../../core/database/local/database.dart';
+import 'package:${projectName}_client/${projectName}_client.dart' as serverpod;
 import '../../../domain/entities/${d}/${d}.dart';
 import '../../../../../core/database/local/database_types.dart';
 import '../${d}/${d}_model.dart';
@@ -61,6 +64,22 @@ extension ${D}ModelListExtension on List<${D}Model> {
   List<${D}Entity> toEntities() =>
       map((model) => model.toEntity()).toList();
 }
+
+extension Serverpod${D}ToModelExtension on serverpod.${D} {
+  ${D}Model toModel() => ${D}Model(
+        id: id.toString(),
+        lastModified: lastModified ?? DateTime.now().toUtc(),
+        userId: userId,
+        ${params}
+      );
+}
+
+
+extension Serverpod${D}ListToModelListExtension on List<serverpod.${D}> {
+  List<${D}Model> toModels() =>
+      map((serverpodModel) => serverpodModel.toModel()).toList();
+}
+
   `;
   }
 }

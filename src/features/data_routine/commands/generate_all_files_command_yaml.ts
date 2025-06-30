@@ -67,7 +67,7 @@ export class GenerateAllFilesCommandYaml implements Command {
             await this.generatorFactory.createDaoRelateGenerator().generate(this.featurePath, entityName, this.model);
             await this.generatorFactory.createDataLocalRelateServiceGenerator().generate(this.featurePath, entityName, this.model);
             await this.generatorFactory.createDataLocalRelateSourceGenerator().generate(this.featurePath, entityName, this.model);
-            // await this.generatorFactory.createDataRepositoryRelateImplGenerator().generate(this.featurePath, entityName, this.model);
+            await this.generatorFactory.createDataRepositoryRelateImplGenerator().generate(this.featurePath, entityName, this.model);
             // await this.generatorFactory.createDataProviderRelateGenerator().generate(this.featurePath, entityName, this.model);
 
             // // Domain Layer

@@ -37,32 +37,33 @@ export class DomainRelateRepositoryGenerator extends DataRoutineGenerator {
         const Entity1 = `${D1}Entity`;
         const Entity2 = `${D2}Entity`;
 
-        const idType = 'String';
-
         return `import '../entities/${d1}/${d1}.dart';
 import '../entities/${d2}/${d2}.dart';
 
 abstract class ${IRepository} {
   /// Connects a ${D2} to a ${D1}.
   Future<void> add${D2}To${D1}({
-    required ${idType} ${d1}Id,
-    required ${idType} ${d2}Id,
+    required String ${d1}Id,
+    required String ${d2}Id,
   });
 
   /// Disconnects a ${D2} from a ${D1}.
   Future<void> remove${D2}From${D1}({
-    required ${idType} ${d1}Id,
-    required ${idType} ${d2}Id,
+    required String ${d1}Id,
+    required String ${d2}Id,
   });
 
   /// Gets all ${D2s} associated with a specific ${D1}.
-  Future<List<${Entity2}>> get${D2s}For${D1}(${idType} ${d1}Id);
+  Future<List<${Entity2}>> get${D2s}For${D1}(String ${d1}Id);
   
   /// Gets all ${D1s} associated with a specific ${D2}.
-  Future<List<${Entity1}>> get${D1s}For${D2}(${idType} ${d2}Id);
+  Future<List<${Entity1}>> get${D1s}For${D2}(String ${d2}Id);
 
   /// Removes all connections for a specific ${D1}.
-  Future<void> removeAllRelationsFor${D1}(${idType} ${d1}Id);
+  Future<void> removeAllRelationsFor${D1}(String ${d1}Id);
+
+  /// Removes all connections for a specific ${D2}.
+  Future<void> removeAllRelationsFor${D2}(String ${d2}Id);
 }
 `;
     }
