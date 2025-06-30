@@ -68,7 +68,7 @@ export class GenerateAllFilesCommandYaml implements Command {
             await this.generatorFactory.createDataLocalRelateServiceGenerator().generate(this.featurePath, entityName, this.model);
             await this.generatorFactory.createDataLocalRelateSourceGenerator().generate(this.featurePath, entityName, this.model);
             await this.generatorFactory.createDataRepositoryRelateImplGenerator().generate(this.featurePath, entityName, this.model);
-            // await this.generatorFactory.createDataProviderRelateGenerator().generate(this.featurePath, entityName, this.model);
+            await this.generatorFactory.createDataProviderRelateGenerator().generate(this.featurePath, entityName, this.model);
 
             // // Domain Layer
             await this.generatorFactory.createDomainRelateRepositoryGenerator().generate(this.featurePath, entityName, this.model);
@@ -77,12 +77,12 @@ export class GenerateAllFilesCommandYaml implements Command {
             // // Domain Layer - Use Cases for relations
             await this.generatorFactory.createUseCaseRelateGenerator().generate(this.featurePath, entityName, this.model);
 
-            // // Domain Layer - Providers for Use Cases
-            // await this.generatorFactory.createUseCaseRelateProvidersGenerator().generate(this.featurePath, entityName, this.model);
+            // Domain Layer - Providers for Use Cases
+            await this.generatorFactory.createUseCaseRelateProvidersGenerator().generate(this.featurePath, entityName, this.model);
 
             // // Presentation Layer
-            // await this.generatorFactory.createPresentStateRelateProviderGenerator().generate(this.featurePath, entityName, this.model);
-            // await this.generatorFactory.createPresentFilterRelateProviderGenerator().generate(this.featurePath, entityName, this.model);
+            await this.generatorFactory.createPresentStateRelateProviderGenerator().generate(this.featurePath, entityName, this.model);
+            await this.generatorFactory.createPresentFilterRelateProviderGenerator().generate(this.featurePath, entityName, this.model);
         }
 
     }

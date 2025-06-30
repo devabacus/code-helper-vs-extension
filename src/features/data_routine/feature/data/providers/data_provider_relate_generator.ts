@@ -1,47 +1,91 @@
 import path from "path";
+import { DefaultProjectStructure } from "../../../../../core/implementations/default_project_structure";
 import { IFileSystem } from "../../../../../core/interfaces/file_system";
 import { ProjectStructure } from "../../../../../core/interfaces/project_structure";
-import { DriftClassParser } from "../datasources/local/tables/drift_class_parser";
-import { RelateDataRoutineGenerator } from "../../../generators/relate_data_routine_generator";
+import { unCap, toSnakeCase } from "../../../../../utils/text_work/text_util";
+import { DataRoutineGenerator } from "../../../generators/data_routine_generator";
+import { ServerpodModel } from "../../../serverpod_yaml_parser/formatters/types";
 
-export class DataProviderRelateGenerator extends RelateDataRoutineGenerator {
+/**
+ * Generates Riverpod providers for the Data layer of a many-to-many relation table.
+ */
+export class DataProviderRelateGenerator extends DataRoutineGenerator {
 
-  constructor(fileSystem: IFileSystem, structure?: ProjectStructure) {
-    super(fileSystem, structure);
-  }
+    private structure: ProjectStructure;
 
-  protected getRelatePath(featurePath: string, _entityName: string, _parser: DriftClassParser): string {
-    // _entityName здесь будет именем промежуточной таблицы, например, "TaskTagMap"
-    // this.intermediateSnake доступен из базового класса
-    return path.join(this.projectStructure.getDataProvderPath(featurePath), this.intermediateSnake, `${this.intermediateSnake}_data_providers.dart`);
-  }
+    constructor(fileSystem: IFileSystem, structure?: ProjectStructure) {
+        super(fileSystem);
+        this.structure = structure || new DefaultProjectStructure();
+    }
 
-  protected getRelateContent(_parser: DriftClassParser): string {
-    // this.intermediateUpper, this.intermediateCamel, this.intermediateSnake
-    // доступны из базового класса RelateDataRoutineGenerator.
-    // _parser здесь передается, но его свойства уже извлечены в базовом классе.
-    return `import 'package:flutter_riverpod/flutter_riverpod.dart';
+    protected getPath(featurePath: string, entityName: string): string {
+        // e.g., .../providers/task_tag_map/task_tag_map_relate_data_providers.dart
+        return path.join(this.structure.getDataProvderPath(featurePath), toSnakeCase(entityName), `${toSnakeCase(entityName)}_relate_data_providers.dart`);
+    }
+
+    protected getContent(model: ServerpodModel): string {
+        const Rel = model.className;    // TaskTagMap
+        const rel = unCap(Rel);         // taskTagMap
+        const relSnake = toSnakeCase(Rel); // task_tag_map
+
+        return `import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 import '../../../../../core/database/local/provider/database_provider.dart';
-import '../../../domain/repositories/${this.intermediateSnake}_repository.dart';
-import '../../datasources/local/interfaces/${this.intermediateSnake}_local_datasource_service.dart';
-import '../../datasources/local/sources/${this.intermediateSnake}_local_data_source.dart';
-import '../../repositories/${this.intermediateSnake}_repository_impl.dart';
+import '../../../../../core/providers/session_manager_provider.dart';
+import '../../../../../core/providers/serverpod_client_provider.dart';
+import '../../../domain/repositories/${relSnake}_repository.dart';
+import '../../datasources/local/dao/${relSnake}/${relSnake}_dao.dart';
+import '../../datasources/local/interfaces/${relSnake}_local_datasource_service.dart';
+import '../../datasources/local/sources/${relSnake}_local_data_source.dart';
+import '../../repositories/${relSnake}_repository_impl.dart';
 
-part '${this.intermediateSnake}_data_providers.g.dart';
+part '${relSnake}_relate_data_providers.g.dart';
 
 @riverpod
-I${this.intermediateUpper}LocalDataSource ${this.intermediateCamel}LocalDataSource(Ref ref) {
+${Rel}Dao ${rel}Dao(Ref ref) {
   final databaseService = ref.read(databaseServiceProvider);
-  return ${this.intermediateUpper}LocalDataSource(databaseService);
+  return ${Rel}Dao(databaseService);
 }
 
 @riverpod
-I${this.intermediateUpper}Repository ${this.intermediateCamel}Repository(Ref ref) {
-  final localDataSource = ref.read(${this.intermediateCamel}LocalDataSourceProvider);
-  return ${this.intermediateUpper}RepositoryImpl(localDataSource);
+I${Rel}LocalDataSource ${rel}LocalDataSource(Ref ref) {
+  final dao = ref.read(${rel}DaoProvider);
+  return ${Rel}LocalDataSource(dao);
+}
+
+/// Family provider for the relation repository, specific to a user.
+@riverpod
+I${Rel}Repository ${rel}Repository(Ref ref, int userId) {
+  // Get dependencies
+  final localDataSource = ref.watch(${rel}LocalDataSourceProvider);
+  final client = ref.watch(serverpodClientProvider);
+
+  // Create the repository with a fixed userId
+  final repository = ${Rel}RepositoryImpl(
+    client,
+    localDataSource,
+    userId,
+  );
+  
+  // No need for sync registry or dispose logic for this simple repository
+
+  return repository;
+}
+
+/// Convenience provider to get the repository for the currently logged-in user.
+@riverpod
+I${Rel}Repository? currentUser${Rel}Repository(Ref ref) {
+  final currentUser = ref.watch(currentUserProvider);
+  
+  if (currentUser?.id == null) {
+    // If the user is not logged in, return null
+    return null;
+  }
+  
+  // Return the repository for the current user
+  return ref.watch(${rel}RepositoryProvider(currentUser!.id!));
 }
 `;
-  }
+    }
 }

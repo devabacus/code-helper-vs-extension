@@ -1,84 +1,99 @@
-import path from "path";
-import { IFileSystem } from "../../../../../core/interfaces/file_system";
+import { DataRoutineGenerator } from "../../../generators/data_routine_generator";
+import * as path from "path";
 import { ProjectStructure } from "../../../../../core/interfaces/project_structure";
-import { DriftClassParser } from "../../data/datasources/local/tables/drift_class_parser";
-import { RelateDataRoutineGenerator } from "../../../generators/relate_data_routine_generator";
-import { toCamelCase } from "../../../../../utils/text_work/text_util";
+import { DefaultProjectStructure } from "../../../../../core/implementations/default_project_structure";
+import { IFileSystem } from "../../../../../core/interfaces/file_system";
+import { cap, unCap, toSnakeCase, pluralConvert } from "../../../../../utils/text_work/text_util";
+import { ServerpodModel } from "../../../serverpod_yaml_parser/formatters/types";
 
-export class PresentStateRelateProviderGenerator extends RelateDataRoutineGenerator {
+/**
+ * Generates Presentation layer (Riverpod Notifier) providers for a many-to-many relation table.
+ */
+export class PresentStateRelateProviderGenerator extends DataRoutineGenerator {
 
-  constructor(fileSystem: IFileSystem, projectStructure?: ProjectStructure) {
-    super(fileSystem, projectStructure);
-  }
+    private structure: ProjectStructure;
 
-  protected getRelatePath(featurePath: string, _entityName: string, _parser: DriftClassParser): string {
-    // _entityName is the intermediate table name, e.g., "TaskTagMap"
-    // this.useCaseSubDirSnake is `${this.sourceSnake}_${this.targetSnake}` (e.g., "task_tag")
-    const fileName = `${this.useCaseSubDirSnake}_state_providers.dart`;
-    return path.join(this.projectStructure.getPresentationProviderPath(featurePath), this.useCaseSubDirSnake, fileName);
-  }
+    constructor(fileSystem: IFileSystem, structure?: ProjectStructure) {
+        super(fileSystem);
+        this.structure = structure || new DefaultProjectStructure();
+    }
 
-  protected getRelateContent(_parser: DriftClassParser): string {
-    // Properties like this.sourceUpper, this.targetUpper, this.targetPlural, etc. are available from the base class.
-    // this.intermediateSnake is also available for imports.
+    protected getPath(featurePath: string, entityName: string): string {
+        // e.g., .../presentation/providers/task_tag_map/task_tag_map_relate_state_providers.dart
+        return path.join(this.structure.getPresentationProviderPath(featurePath), toSnakeCase(entityName), `${toSnakeCase(entityName)}_relate_state_providers.dart`);
+    }
 
-    const class1Name = `${this.sourceUpper}${this.targetPlural}`; // e.g., TaskTags
-    const class2Name = `${this.sourcePlural}With${this.targetUpper}`; // e.g., TasksWithTag
+    protected getContent(model: ServerpodModel): string {
+        const sourceField = model.fields[0];
+        const targetField = model.fields[1];
 
-    // Use case provider names (derived from use case class names)
-    const getTargetsForSourceUseCaseProvider = `${toCamelCase(`Get${this.targetPlural}For${this.sourceUpper}UseCase`)}Provider`;
-    const addTargetToSourceUseCaseProvider = `${toCamelCase(`Add${this.targetUpper}To${this.sourceUpper}UseCase`)}Provider`;
-    const removeTargetFromSourceUseCaseProvider = `${toCamelCase(`Remove${this.targetUpper}From${this.sourceUpper}UseCase`)}Provider`;
-    const removeAllTargetsFromSourceUseCaseProvider = `${toCamelCase(`RemoveAll${this.targetPlural}From${this.sourceUpper}UseCase`)}Provider`;
-    const getSourcesWithTargetUseCaseProvider = `${toCamelCase(`Get${this.sourcePlural}With${this.targetUpper}UseCase`)}Provider`;
+        const D1 = cap(sourceField.name); // Task
+        const D2 = cap(targetField.name); // Tag
+        const d1 = unCap(D1); // task
+        const d2 = unCap(D2); // tag
+        const D2s = pluralConvert(D2); // Tags
+        
+        const Rel = model.className; // TaskTagMap
+        const relSnake = toSnakeCase(Rel); // task_tag_map
+        
+        const Entity2 = `${D2}Entity`;
+        const idType = 'String';
 
-    const fileNameWithoutExtension = `${this.useCaseSubDirSnake}_state_providers`;
+        // Provider-нотификатор для управления списком связанных "целей" (D2) для одного "источника" (D1)
+        const notifierName = `Related${D2s}For${D1}`;
 
-    return `
-import 'package:riverpod_annotation/riverpod_annotation.dart';
-import '../../../domain/entities/${this.targetSnake}/${this.targetSnake}.dart';
-import '../../../domain/entities/${this.sourceSnake}/${this.sourceSnake}.dart';
-import '../../../domain/providers/${this.intermediateSnake}/${this.intermediateSnake}_usecase_providers.dart';
+        return `import 'package:riverpod_annotation/riverpod_annotation.dart';
+import '../../../domain/entities/${d2}/${d2}.dart';
+import '../../../domain/providers/${relSnake}/${relSnake}_relate_usecase_providers.dart';
 
-part '${fileNameWithoutExtension}.g.dart';
-
-@riverpod
-class ${class1Name} extends _$${class1Name} {
-  @override
-  Future<List<${this.targetUpper}Entity>> build({required String ${this.sourceForeignKey}}) {
-    ref.keepAlive();
-    return ref.read(${getTargetsForSourceUseCaseProvider})(${this.sourceForeignKey});
-  }
-
-  Future<void> add${this.targetUpper}To${this.sourceUpper}(String ${this.sourceForeignKey}, String ${this.targetForeignKey}) async {
-    state = await AsyncValue.guard(() async {
-      await ref.read(${addTargetToSourceUseCaseProvider})(${this.sourceForeignKey}, ${this.targetForeignKey});
-      return ref.read(${getTargetsForSourceUseCaseProvider})(${this.sourceForeignKey});
-    });
-  }
-
-  Future<void> remove${this.targetUpper}From${this.sourceUpper}(String ${this.sourceForeignKey}, String ${this.targetForeignKey}) async {
-    state = await AsyncValue.guard(() async {
-      await ref.read(${removeTargetFromSourceUseCaseProvider})(${this.sourceForeignKey}, ${this.targetForeignKey});
-      return ref.read(${getTargetsForSourceUseCaseProvider})(${this.sourceForeignKey});
-    });
-  }
-
-  Future<void> removeAll${this.targetPlural}From${this.sourceUpper}(String ${this.sourceForeignKey}) async {
-    state = await AsyncValue.guard(() async {
-      await ref.read(${removeAllTargetsFromSourceUseCaseProvider})(${this.sourceForeignKey});
-      return ref.read(${getTargetsForSourceUseCaseProvider})(${this.sourceForeignKey});
-    });
-  }
-}
+part '${relSnake}_relate_state_providers.g.dart';
 
 @riverpod
-class ${class2Name} extends _$${class2Name} {
+class ${notifierName} extends _$${notifierName} {
   @override
-  Future<List<${this.sourceUpper}Entity>> build({required String ${this.targetForeignKey}}) {
-    return ref.read(${getSourcesWithTargetUseCaseProvider})(${this.targetForeignKey});
+  Future<List<${Entity2}>> build(${idType} ${d1}Id) {
+    // При первой загрузке получаем список связанных сущностей
+    final useCase = ref.read(get${D2s}For${D1}UseCaseProvider);
+    return useCase!(${d1}Id);
+  }
+
+  Future<void> add${D2}({required ${idType} ${d2}Id}) async {
+    final ${d1}Id = arg; // Получаем ID "источника" из аргументов билда
+    final useCase = ref.read(add${D2}To${D1}UseCaseProvider);
+    
+    // Оборачиваем в guard для обработки состояний загрузки/ошибки
+    state = await AsyncValue.guard(() async {
+      await useCase!(
+        ${d1}Id: ${d1}Id,
+        ${d2}Id: ${d2}Id,
+      );
+      // Перезагружаем данные, чтобы обновить UI
+      return build(${d1}Id);
+    });
+  }
+
+  Future<void> remove${D2}({required ${idType} ${d2}Id}) async {
+    final ${d1}Id = arg;
+    final useCase = ref.read(remove${D2}From${D1}UseCaseProvider);
+
+    state = await AsyncValue.guard(() async {
+      await useCase!(
+        ${d1}Id: ${d1}Id,
+        ${d2}Id: ${d2}Id,
+      );
+      return build(${d1}Id);
+    });
+  }
+
+  Future<void> removeAll() async {
+      final ${d1}Id = arg;
+      final useCase = ref.read(removeAllRelationsFor${D1}UseCaseProvider);
+      state = await AsyncValue.guard(() async {
+          await useCase!(${d1}Id);
+          return build(${d1}Id);
+      });
   }
 }
 `;
-  }
+    }
 }

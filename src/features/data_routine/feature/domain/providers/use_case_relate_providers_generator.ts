@@ -1,81 +1,69 @@
 import path from "path";
+import { DefaultProjectStructure } from "../../../../../core/implementations/default_project_structure";
 import { IFileSystem } from "../../../../../core/interfaces/file_system";
 import { ProjectStructure } from "../../../../../core/interfaces/project_structure";
-import { toCamelCase } from "../../../../../utils/text_work/text_util";
-import { DriftClassParser } from "../../data/datasources/local/tables/drift_class_parser";
-import { RelateDataRoutineGenerator } from "../../../generators/relate_data_routine_generator";
+import { cap, unCap, toSnakeCase, pluralConvert } from "../../../../../utils/text_work/text_util";
+import { DataRoutineGenerator } from "../../../generators/data_routine_generator";
+import { ServerpodModel } from "../../../serverpod_yaml_parser/formatters/types";
 
-export class UseCaseRelateProvidersGenerator extends RelateDataRoutineGenerator {
+/**
+ * Generates Riverpod providers for all Use Cases of a many-to-many relation table.
+ */
+export class UseCaseRelateProvidersGenerator extends DataRoutineGenerator {
 
-  constructor(fileSystem: IFileSystem, projectStructure?: ProjectStructure) {
-    super(fileSystem, projectStructure);
+    private structure: ProjectStructure;
+
+    constructor(fileSystem: IFileSystem, structure?: ProjectStructure) {
+        super(fileSystem);
+        this.structure = structure || new DefaultProjectStructure();
+    }
+
+    protected getPath(featurePath: string, entityName: string): string {
+        return path.join(this.structure.getDomainUseCaseProviderPath(featurePath), toSnakeCase(entityName), `${toSnakeCase(entityName)}_relate_usecase_providers.dart`);
+    }
+
+    protected getContent(model: ServerpodModel): string {
+        const sourceField = model.fields[0];
+        const targetField = model.fields[1];
+
+        const D1 = cap(sourceField.name); // Task
+        const D2 = cap(targetField.name); // Tag
+
+        const Rel = model.className; // TaskTagMap
+        const rel = unCap(Rel);       // taskTagMap
+
+        // Названия Use Cases
+        const useCases = [
+            `Add${D2}To${D1}UseCase`,
+            `Remove${D2}From${D1}UseCase`,
+            `Get${cap(pluralConvert(D2))}For${D1}UseCase`,
+            `Get${cap(pluralConvert(D1))}For${D2}UseCase`,
+            `RemoveAllRelationsFor${D1}UseCase`,
+            `RemoveAllRelationsFor${D2}UseCase`
+        ];
+
+        // Генерируем провайдеры для каждого Use Case
+        const providers = useCases.map(useCaseName => {
+            const providerName = `${unCap(useCaseName)}Provider`;
+            return `
+@riverpod
+${useCaseName}? ${providerName}(Ref ref) {
+  final repository = ref.watch(currentUser${Rel}RepositoryProvider);
+  if (repository == null) {
+    // User is not authorized
+    return null;
   }
+  return ${useCaseName}(repository);
+}`;
+        }).join('\n');
 
-  protected getRelatePath(featurePath: string, _entityName: string, _parser: DriftClassParser): string {
-    // Файл провайдеров именуется по промежуточной таблице (this.intermediateSnake)
-    // _entityName здесь будет именем промежуточной таблицы, например, "TaskTagMap"
-    return path.join(this.projectStructure.getDomainUseCaseProviderPath(featurePath), this.intermediateSnake, `${this.intermediateSnake}_usecase_providers.dart`);
-  }
+        return `import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+import '../../usecases/${toSnakeCase(rel)}/relate_usecases.dart';
+import '../../../data/providers/${toSnakeCase(rel)}/${toSnakeCase(rel)}_relate_data_providers.dart';
 
-  protected getRelateContent(_parser: DriftClassParser): string {
-    // Все необходимые свойства (this.intermediateSnake, this.sourceUpper, this.targetUpper,
-    // this.targetPlural, this.useCaseSubDirSnake, this.sourcePluralSnake и т.д.) доступны из базового класса.
-
-    // Имена классов UseCase
-    const addUseCaseClass = `Add${this.targetUpper}To${this.sourceUpper}UseCase`;
-    const getTargetsUseCaseClass = `Get${this.targetPlural}For${this.sourceUpper}UseCase`;
-    const getSourcesUseCaseClass = `Get${this.sourcePlural}With${this.targetUpper}UseCase`;
-    const removeTargetUseCaseClass = `Remove${this.targetUpper}From${this.sourceUpper}UseCase`;
-    const removeAllTargetsUseCaseClass = `RemoveAll${this.targetPlural}From${this.sourceUpper}UseCase`;
-
-    // Имена файлов UseCase (для импортов)
-    const addUseCaseFile = `add_${this.targetSnake}_to_${this.sourceSnake}.dart`;
-    const getTargetsUseCaseFile = `get_${this.targetPluralSnake}_for_${this.sourceSnake}.dart`;
-    const getSourcesUseCaseFile = `get_${this.sourcePluralSnake}_with_${this.targetSnake}.dart`;
-    const removeTargetUseCaseFile = `remove_${this.targetSnake}_from_${this.sourceSnake}.dart`;
-    const removeAllTargetsUseCaseFile = `remove_all_${this.targetPluralSnake}_from_${this.sourceSnake}.dart`;
-
-    return `import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-
-import '../../../data/providers/${this.intermediateSnake}/${this.intermediateSnake}_data_providers.dart';
-import '../../usecases/${this.useCaseSubDirSnake}/${addUseCaseFile}';
-import '../../usecases/${this.useCaseSubDirSnake}/${getTargetsUseCaseFile}';
-import '../../usecases/${this.useCaseSubDirSnake}/${getSourcesUseCaseFile}';
-import '../../usecases/${this.useCaseSubDirSnake}/${removeAllTargetsUseCaseFile}';
-import '../../usecases/${this.useCaseSubDirSnake}/${removeTargetUseCaseFile}';
-
-part '${this.intermediateSnake}_usecase_providers.g.dart';
-
-@riverpod
-${addUseCaseClass} ${toCamelCase(addUseCaseClass)} (Ref ref) {
-  final repository = ref.read(${this.intermediateCamel}RepositoryProvider);
-  return ${addUseCaseClass}(repository);
-}
-
-@riverpod
-${getTargetsUseCaseClass} ${toCamelCase(getTargetsUseCaseClass)}(Ref ref) {
-  final repository = ref.read(${this.intermediateCamel}RepositoryProvider);
-  return ${getTargetsUseCaseClass}(repository);
-}
-
-@riverpod
-${getSourcesUseCaseClass} ${toCamelCase(getSourcesUseCaseClass)}(Ref ref) {
-  final repository = ref.read(${this.intermediateCamel}RepositoryProvider);
-  return ${getSourcesUseCaseClass}(repository);
-}
-
-@riverpod
-${removeTargetUseCaseClass} ${toCamelCase(removeTargetUseCaseClass)}(Ref ref) {
-  final repository = ref.read(${this.intermediateCamel}RepositoryProvider);
-  return ${removeTargetUseCaseClass}(repository);
-}
-
-@riverpod
-${removeAllTargetsUseCaseClass} ${toCamelCase(removeAllTargetsUseCaseClass)}(Ref ref) {
-  final repository = ref.read(${this.intermediateCamel}RepositoryProvider);
-  return ${removeAllTargetsUseCaseClass}(repository);
-}
+part '${toSnakeCase(rel)}_relate_usecase_providers.g.dart';
+${providers}
 `;
-  }
+    }
 }
