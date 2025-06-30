@@ -44,7 +44,7 @@ export class UseCaseRelateProvidersGenerator extends DataRoutineGenerator {
 
         // Генерируем провайдеры для каждого Use Case
         const providers = useCases.map(useCaseName => {
-            const providerName = `${unCap(useCaseName)}Provider`;
+            const providerName = `${unCap(useCaseName)}`;
             return `
 @riverpod
 ${useCaseName}? ${providerName}(Ref ref) {
