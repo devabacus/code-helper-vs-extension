@@ -29,6 +29,7 @@ import { UseCaseRelateGetTargetsForSourceGenerator } from "../feature/domain/use
 import { UseCaseRelateRemoveAllTargetsFromSourceGenerator } from "../feature/domain/usecases/relate/use_case_relate_remove_all_targets_from_source_generator";
 import { UseCaseRelateRemoveTargetFromSourceGenerator } from "../feature/domain/usecases/relate/use_case_relate_remove_target_from_source_generator";
 import { UseCaseBaseGenerator } from "../feature/domain/usecases/use_case_bundle_generator";
+import { UseCaseRelateGenerator } from "../feature/domain/usecases/use_case_relate_generator";
 import { PresentFilterRelateProviderGenerator } from "../feature/presentation/providers/present_filter_relate_provider_generator";
 import { PresentGetByIdProviderGenerator } from "../feature/presentation/providers/present_get_by_id_prov_generator";
 import { PresentStateProviderGenerator } from "../feature/presentation/providers/present_state_prov_generator";
@@ -136,6 +137,13 @@ export class GeneratorFactory {
     createUseCaseBaseGenerator(): FileGenerator {
         return new UseCaseBaseGenerator(this.fileSystem);
     }
+    createUseCaseRelateGenerator(): FileGenerator {
+        return new UseCaseRelateGenerator(this.fileSystem);
+    }
+
+
+
+
     createUseCaseRelateAddGenerator(): FileGenerator {
         return new UseCaseRelateAddGenerator(this.fileSystem);
     }

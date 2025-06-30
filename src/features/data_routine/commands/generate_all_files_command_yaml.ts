@@ -73,11 +73,9 @@ export class GenerateAllFilesCommandYaml implements Command {
             // // Domain Layer
             await this.generatorFactory.createDomainRelateRepositoryGenerator().generate(this.featurePath, entityName, this.model);
 
+
             // // Domain Layer - Use Cases for relations
-            // await this.generatorFactory.createUseCaseRelateAddTargetToSourceGenerator().generate(this.featurePath, entityName, this.model);
-            // await this.generatorFactory.createUseCaseRelateGetTargetsForSourceGenerator().generate(this.featurePath, entityName, this.model);
-            // await this.generatorFactory.createUseCaseRelateRemoveTargetFromSourceGenerator().generate(this.featurePath, entityName, this.model);
-            // await this.generatorFactory.createUseCaseRelateRemoveAllTargetsFromSourceGenerator().generate(this.featurePath, entityName, this.model);
+            await this.generatorFactory.createUseCaseRelateGenerator().generate(this.featurePath, entityName, this.model);
 
             // // Domain Layer - Providers for Use Cases
             // await this.generatorFactory.createUseCaseRelateProvidersGenerator().generate(this.featurePath, entityName, this.model);
