@@ -10,6 +10,7 @@ export class ServerpodYamlParser {
     return {
       className: parsed.class || '',
       tableName: parsed.table || '',
+      isRelation: parsed.class.includes('Map'),
       fields: this.parseFields(parsed.fields || {}),
       indexes: this.parseIndexes(parsed.indexes)
     };
@@ -31,8 +32,8 @@ export class ServerpodYamlParser {
     const type = nullable ? typePart.slice(0, -1) : typePart;
 
     // Проверяем, является ли поле связью
-    const isRelation = parts.includes('relation');
-
+    const isRelation = parts.toString().includes('relation');
+    
     const field: ServerpodField = {
       name,
       type,

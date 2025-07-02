@@ -6,7 +6,7 @@ import { cap, toSnakeCase, unCap } from "../../../../../../../utils/text_work/te
 import { DataRoutineGenerator } from "../../../../../generators/data_routine_generator";
 import { ServerpodModel } from "../../../../../serverpod_yaml_parser/formatters/types";
 
-export class DriftTableGenerator extends DataRoutineGenerator {
+export class DriftRelateTableGenerator extends DataRoutineGenerator {
 
   private structure: ProjectStructure;
 

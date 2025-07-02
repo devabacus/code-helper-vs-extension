@@ -20,7 +20,8 @@ export interface ServerpodIndex {
 
 export interface ServerpodModel {
   className: string;
-  tableName: string;
+  tableName: string;  
+  isRelation: boolean;
   fields: ServerpodField[];
   indexes?: ServerpodIndex[];
 }

@@ -5,23 +5,19 @@ import { ServerpodModel } from "../serverpod_yaml_parser/formatters/types";
 
 
 export class GenerateAllFilesCommandYaml implements Command {
-    private isRelationTable: boolean;
 
     constructor(
         private generatorFactory: GeneratorFactory,
         private featurePath: string,
         private model: ServerpodModel,
-    ) {
-        this.isRelationTable = this.model.fields.every(field => field.isRelation);
-
-    }
+    ) {}
 
     async execute(): Promise<void> {
         // Имя сущности (в PascalCase) берем напрямую из модели
         const entityName = toCamelCase(this.model.className);
 
         // Передаем во все генераторы объект модели (this.model)
-        if (!this.isRelationTable) {
+        if (!this.model.isRelation) {
             console.log(`Генерация файлов для обычной таблицы: ${entityName}`);
 
             // data layer
@@ -63,7 +59,7 @@ export class GenerateAllFilesCommandYaml implements Command {
         } else {
             console.log(`Обнаружена связующая таблица: ${entityName}.`);
             // Data Layer
-            await this.generatorFactory.createDriftTableGenerator().generate(this.featurePath, entityName, this.model); // Таблица для связей
+            await this.generatorFactory.createDriftRelateTableGenerator().generate(this.featurePath, entityName, this.model); // Таблица для связей
             await this.generatorFactory.createDaoRelateGenerator().generate(this.featurePath, entityName, this.model);
             await this.generatorFactory.createDataLocalRelateServiceGenerator().generate(this.featurePath, entityName, this.model);
             await this.generatorFactory.createDataLocalRelateSourceGenerator().generate(this.featurePath, entityName, this.model);
