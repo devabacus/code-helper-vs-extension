@@ -16,9 +16,17 @@ export class GenerateAllFilesCommandYaml implements Command {
         // Имя сущности (в PascalCase) берем напрямую из модели
         const entityName = toCamelCase(this.model.className);
         
+        // model entity
         await this.generatorFactory.createModelGenerator().generate(this.featurePath, entityName, this.model);
+        await this.generatorFactory.createEntityGenerator().generate(this.featurePath, entityName, this.model);
+
+        // extensions
+        await this.generatorFactory.createDataTableExtensionGenerator().generate(this.featurePath, entityName, this.model);
 
         await this.generatorFactory.createDataModelExtensionGenerator().generate(this.featurePath, entityName, this.model);
+
+        await this.generatorFactory.createDomainEntityExtensionGenerator().generate(this.featurePath, entityName, this.model);
+
 
         // Передаем во все генераторы объект модели (this.model)
         if (!this.model.isRelation) {
@@ -37,13 +45,7 @@ export class GenerateAllFilesCommandYaml implements Command {
             await this.generatorFactory.createRemoteDataProviderGenerator().generate(this.featurePath, entityName, this.model);
             await this.generatorFactory.createDataRepositoryGenerator().generate(this.featurePath, entityName, this.model);
 
-            //extensions
-            await this.generatorFactory.createDataTableExtensionGenerator().generate(this.featurePath, entityName, this.model);
-            
-
             // // domain layer
-            await this.generatorFactory.createEntityGenerator().generate(this.featurePath, entityName, this.model);
-            await this.generatorFactory.createDomainEntityExtensionGenerator().generate(this.featurePath, entityName, this.model);
             await this.generatorFactory.createDomainRepositoryGenerator().generate(this.featurePath, entityName, this.model);
             await this.generatorFactory.createDomainProviderGenerator().generate(this.featurePath, entityName, this.model);
 

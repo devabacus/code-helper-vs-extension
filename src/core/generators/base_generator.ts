@@ -1,4 +1,5 @@
 import { IPathHandle } from "../../features/utils/path_util";
+import { toSnakeCase } from "../../utils/text_work/text_util";
 import { IFileSystem } from "../interfaces/file_system";
 import { IGenerator } from "../interfaces/generator";
 
@@ -12,14 +13,14 @@ export abstract class BaseGenerator<TData = any> implements IGenerator<TData> {
 
     async generate(basePath: string, name?: string, data?: TData): Promise<void> {
         try {
-            const filePath = this.getPath(basePath, name, data);
+            const filePath = this.getPath(basePath, name ? toSnakeCase(name) : undefined, data);
             const content = this.getContent(data, name, basePath);
             await this.fileSystem.createFile(filePath, content);
         } catch (error) {
             this.handleError(basePath, error, name);
         }
     }
-    protected handleError(basePath: string, error: unknown, name?: string, ): never {
+    protected handleError(basePath: string, error: unknown, name?: string,): never {
         throw new Error(`Ошибка генерации ${name} в ${basePath}: ${String(error)}`);
     }
 }

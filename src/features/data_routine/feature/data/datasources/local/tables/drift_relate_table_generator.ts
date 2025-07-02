@@ -16,8 +16,7 @@ export class DriftRelateTableGenerator extends DataRoutineGenerator {
   }
 
   protected getPath(featurePath: string, entityName: string): string {
-    const snakeCaseEntityName = toSnakeCase(entityName);
-    return path.join(this.structure.getTablePath(featurePath), `${snakeCaseEntityName}_table.dart`);
+    return path.join(this.structure.getTablePath(featurePath), `${entityName}_table.dart`);
   }
 
   protected getContent(model: ServerpodModel): string {

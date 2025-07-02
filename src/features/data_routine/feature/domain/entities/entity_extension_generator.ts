@@ -4,7 +4,7 @@ import { BaseGenerator } from "../../../../../core/generators/base_generator";
 import { DefaultProjectStructure } from "../../../../../core/implementations/default_project_structure";
 import { IFileSystem } from "../../../../../core/interfaces/file_system";
 import { ProjectStructure } from "../../../../../core/interfaces/project_structure";
-import { toCamelCase } from "../../../../../utils/text_work/text_util";
+import { toCamelCase, toSnakeCase } from "../../../../../utils/text_work/text_util";
 import { PathData } from "../../../../utils/path_util";
 import { CodeFormatter } from "../../../serverpod_yaml_parser/formatters/code_formatter";
 import { ServerpodModel } from "../../../serverpod_yaml_parser/formatters/types";
@@ -25,14 +25,16 @@ export class DomainExtensionEntityGenerator extends BaseGenerator {
   protected getContent(model: ServerpodModel, _: string, featurePath: string): string {
     const projectName = new PathData(featurePath).projectName;
     const D = model.className;
-    const d = toCamelCase(D);
+    const d = toSnakeCase(D);
 
     const formatter = new CodeFormatter();
     const params = formatter.formatSimpleFields(model.fields);
     let paramsServerpod = params;
-    if (params.includes('Id')) {
+    if (params.includes('Id') && !model.isRelation) {
       paramsServerpod = params.replace(/: (\w+)Id/g, ': $1Id == null ? null : serverpod.UuidValue.fromString($1Id!)');
 
+    } else if (model.isRelation){
+      paramsServerpod = params.replace(/: (\w+)Id/g, ': serverpod.UuidValue.fromString($1Id)')
     }
     return `import '../../entities/${d}/${d}.dart';
 import '../../../data/models/${d}/${d}_model.dart';

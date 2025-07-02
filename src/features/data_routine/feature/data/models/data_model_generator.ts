@@ -19,7 +19,7 @@ export class ModelGenerator extends DataRoutineGenerator {
   }
 
   protected getPath(featurePath: string, entityName: string): string {
-    return path.join(this.structure.getDataModelPath(featurePath), toSnakeCase(entityName), `${toSnakeCase(entityName)}_model.dart`);
+    return path.join(this.structure.getDataModelPath(featurePath), entityName, `${entityName}_model.dart`);
   }
   protected getContent(model: ServerpodModel): string {
     const D = model.className;

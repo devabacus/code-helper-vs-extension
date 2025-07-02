@@ -19,7 +19,7 @@ export class DataExtensionModelGenerator extends BaseGenerator<ServerpodModel> {
   }
 
   protected getPath(featurePath: string, entityName: string): string {
-    return path.join(this.structure.getDataExtensionPath(featurePath), `${toSnakeCase(entityName)}_model_extension.dart`);
+    return path.join(this.structure.getDataExtensionPath(featurePath), `${entityName}_model_extension.dart`);
   }
 
   protected getContent(model: ServerpodModel, _: string, featurePath: string): string {
@@ -31,8 +31,6 @@ export class DataExtensionModelGenerator extends BaseGenerator<ServerpodModel> {
     const params = formatter.formatSimpleFields(model.fields);
     const paramValueWrapped = formatter.formatInsertCompanionParams(model.fields);
     const paramsToString = params.split(',').map(p=>p.replace(/(.*Id)/, '$1.toString()')).join(',');
-
-    // params.replace(/(.*Id), (.*Id)/g, '$1.toString(), $2.toString()');
 
     return `
 import 'package:drift/drift.dart';

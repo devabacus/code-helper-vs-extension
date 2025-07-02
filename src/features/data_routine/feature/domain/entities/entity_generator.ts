@@ -3,7 +3,7 @@ import path from "path";
 import { DefaultProjectStructure } from "../../../../../core/implementations/default_project_structure";
 import { IFileSystem } from "../../../../../core/interfaces/file_system";
 import { ProjectStructure } from "../../../../../core/interfaces/project_structure";
-import { toCamelCase } from "../../../../../utils/text_work/text_util";
+import { toCamelCase, toSnakeCase } from "../../../../../utils/text_work/text_util";
 import { CodeFormatter } from "../../../serverpod_yaml_parser/formatters/code_formatter";
 import { DataRoutineGenerator } from "../../../generators/data_routine_generator";
 import { ServerpodModel } from "../../../serverpod_yaml_parser/formatters/types";
@@ -23,7 +23,7 @@ export class EntityGenerator extends DataRoutineGenerator {
   }
   protected getContent(model: ServerpodModel): string {
     const D = model.className;
-    const d = toCamelCase(D);
+    const d = toSnakeCase(D);
 
     const formatter = new CodeFormatter();
     const params = formatter.formatRequiredTypeFields(model.fields);
