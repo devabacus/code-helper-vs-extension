@@ -1,4 +1,5 @@
-import { Field, FieldValue } from "../../feature/data/datasources/local/tables/drift_class_parser";
+import { FieldValue } from "../../feature/data/datasources/local/tables/drift_class_parser";
+import { Field } from "./code_formatter.interface";
 
 export function prepareFieldsForTest(fields: Field[]): FieldValue[] {
     // const formatted = new Map<FieldValue>();

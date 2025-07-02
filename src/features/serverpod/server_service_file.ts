@@ -1,10 +1,13 @@
 import { ServerDataConfig } from "./server_yaml_parser";
 
-export const serverServiceFile = (data: ServerDataConfig) => {
+export const serverServiceFile = (data: ServerDataConfig, serverPath: string, flutterPath: string) => {
     const projectName = data.project.name;
+    
 
 return `
-dart run build_runner build --delete-conflicting-outputs
+
+cd "${flutterPath}";
+cd "${flutterPath}"; dart run build_runner build --delete-conflicting-outputs
 
 
 REGISTRY_DOMAIN
@@ -17,10 +20,18 @@ SERVICE_SECRET
 KUBE_CONFIG
 
 # serverpod
+cd "${serverPath}";
+
 docker compose up -d
 serverpod create-migration --experimental-features=all
 serverpod generate --experimental-features=all
 dart bin/main.dart --apply-migrations
+
+cd "${serverPath}"; serverpod create-migration --experimental-features=all
+cd "${serverPath}"; serverpod generate --experimental-features=all
+
+
+
 
 docker compose down -v
 

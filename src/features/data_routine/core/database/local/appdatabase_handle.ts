@@ -41,5 +41,5 @@ export async function appDatabaseRoutine(currentFilePath: string, entityName: st
     const contWithImport = imAppDatabase(pathData.featName, entityName) + newContent;
     fs.writeFileSync(appDatabaseP, contWithImport, { encoding: "utf-8" });
 
-    await executeInTerminal(build_runner);
+    // await executeInTerminal(build_runner);
 }

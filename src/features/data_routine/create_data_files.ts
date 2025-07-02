@@ -1,31 +1,22 @@
-import { createFile, createFileOneTime, executeCommand, executeInTerminal, pathExists } from "../../utils";
+import { createFileOneTime } from "../../utils";
 import { getActiveEditorPath } from "../../utils/path_util";
 import { unCap } from "../../utils/text_work/text_util";
 import { getDocText } from "../../utils/ui/ui_util";
-import { build_runner } from "../template_project/flutter_content/terminal_commands";
 // import { addProviderFiles } from "./add_providers";
-import { ServiceLocator } from "../../core/services/service_locator";
-import { GenerateAllFilesCommand } from "./commands/generate_all_files_command";
-import { appDatabaseRoutine } from './core/database/local/appdatabase_handle';
-import { GeneratorFactory } from "./factories/generator_factory";
-import { DriftClassParser } from "./feature/data/datasources/local/tables/drift_class_parser";
-import { DartTestGeneratorFactory } from "./factories/test_generator_factory";
-import { GenerateTestFilesCommand } from "./commands/generate_test_files_commands";
 import path from "path";
-import { DriftTableParser } from "./feature/data/datasources/local/tables/drift_table_parser";
-import { syncMetaDataTableFile } from "./feature/data/datasources/local/tables/sync_metadata_table_file";
+import { ServiceLocator } from "../../core/services/service_locator";
 import { sync_metadata_dao_file } from "./core/database/local/daos/sync_metadata_dao_file";
-import { sync_registry_file } from "./core/sync/sync_registry_file";
-import { sync_controller_provider_file } from "./core/sync/sync_controller_provider_file";
-import { base_sync_repository } from "./core/sync/base_sync_repository_file";
-import { database_types_file } from "./core/database/local/database_types_file";
-import { sync_event_type_spy } from "./generators/sync_event_type_spy";
+import { GeneratorFactory } from "./factories/generator_factory";
+import { DartTestGeneratorFactory } from "./factories/test_generator_factory";
+import { DriftClassParser } from "./feature/data/datasources/local/tables/drift_class_parser";
+import { syncMetaDataTableFile } from "./feature/data/datasources/local/tables/sync_metadata_table_file";
 import { entity_sync_event_spy_file } from "./generators/entity_sync_event_spy_file";
+import { sync_event_type_spy } from "./generators/sync_event_type_spy";
 
 export async function createDataFiles() {
     const driftClassCode = getDocText();
     const classParser = new DriftClassParser(driftClassCode);
-    const tableParser = new DriftTableParser(driftClassCode);
+    // const tableParser = new DriftTableParser(driftClassCode);
     const entityName = unCap(classParser.driftClassNameUpper);
 
     const currentFilePath = getActiveEditorPath()!; // Путь к Drift-файлу в a3_flutter
@@ -38,8 +29,8 @@ export async function createDataFiles() {
 
     // Путь к директории моделей в Serverpod server-модуле
     // (например, G:\Projects\Flutter\serverpod\a3\a3_server\lib\src\models)
-    const serverpodModelDir = path.join(flutterProjectPath, '..', serverProjectName, 'lib', 'src', 'models');
-    const serverProjectEndpointsDir = path.join(serverProjectRoot, 'lib', 'src', 'endpoints'); // Путь к эндпоинтам
+    // const serverpodModelDir = path.join(flutterProjectPath, '..', serverProjectName, 'lib', 'src', 'models');
+    // const serverProjectEndpointsDir = path.join(serverProjectRoot, 'lib', 'src', 'endpoints'); // Путь к эндпоинтам
 
     const featurePath = currentFilePath.split(/\Wdata\W/)[0]; // Для остальных генераторов Flutter
     const featureTestPath = path.join(flutterProjectPath, "test", featurePath.split('lib')[1]);
@@ -61,27 +52,27 @@ export async function createDataFiles() {
     const generatorFactory = new GeneratorFactory(fileSystem);
     const testGeneratorFactory = new DartTestGeneratorFactory(fileSystem);
 
-    const commandData = {
-        classParser: classParser,
-        tableParser: tableParser,
-        isRelationTable: tableParser.isRelationTable(),
-        relations: tableParser.getTableRelations(),
-    };
+    // const commandData = {
+    //     classParser: classParser,
+    //     tableParser: tableParser,
+    //     isRelationTable: tableParser.isRelationTable(),
+    //     relations: tableParser.getTableRelations(),
+    // };
 
-    // Передаем serverpodModelDir в команду генерации
-    const generatorCommands = new GenerateAllFilesCommand(
-        generatorFactory,
-        featurePath,
-        entityName,
-        commandData,
-    );
-    const generateTestFilesCommand = new GenerateTestFilesCommand(testGeneratorFactory, featureTestPath, entityName, commandData);
+    // // Передаем serverpodModelDir в команду генерации
+    // const generatorCommands = new GenerateAllFilesCommand(
+    //     generatorFactory,
+    //     featurePath,
+    //     entityName,
+    //     commandData,
+    // );
+    // const generateTestFilesCommand = new GenerateTestFilesCommand(testGeneratorFactory, featureTestPath, entityName, commandData);
 
-    await generatorCommands.execute(); // await, если execute асинхронный
-    await executeCommand("serverpod generate --experimental-features=all", serverProjectRoot);
+    // await generatorCommands.execute(); // await, если execute асинхронный
+    // await executeCommand("serverpod generate --experimental-features=all", serverProjectRoot);
 
-    await generateTestFilesCommand.execute(); // await, если execute асинхронный
+    // await generateTestFilesCommand.execute(); // await, если execute асинхронный
 
-    await appDatabaseRoutine(currentFilePath, entityName);
-    await executeInTerminal(build_runner);
+    // await appDatabaseRoutine(currentFilePath, entityName);
+    // await executeInTerminal(build_runner);
 }

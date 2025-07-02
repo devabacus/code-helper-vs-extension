@@ -28,7 +28,6 @@ import { pgProxyPodFile } from "./k8s/pg_proxy_pod";
 
 export async function serverpodK8sFileGenerate(projectPath: string): Promise<void> {
     const projectName = path.basename(projectPath);
-
     const serverPath = path.join(projectPath, `${projectName}_server`);
     const flutterPath = path.join(projectPath, `${projectName}_flutter`);
 
@@ -58,7 +57,7 @@ export async function serverpodK8sFileGenerate(projectPath: string): Promise<voi
 
     createFile(testDataSpyPath, testDataSpy);
     createFile(testDataEndPointPath, testDataEndpoint);
-    createFile(serverHandleCmdsPath, serverServiceFile(serverYamlData));
+    createFile(serverHandleCmdsPath, serverServiceFile(serverYamlData, serverPath, flutterPath));
     createFile(clusterIssuerPath, clusterIssuerFile);
     createFile(nginxServicePath, nginxServiceFile);
     createFile(pgProxyPodPath, pgProxyPodFile(serverYamlData));

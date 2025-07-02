@@ -1,10 +1,9 @@
-import { DataRoutineGenerator } from "../../../generators/data_routine_generator";
 import * as path from "path";
-import { DriftClassParser } from "../../data/datasources/local/tables/drift_class_parser";
-import { ProjectStructure } from "../../../../../core/interfaces/project_structure";
 import { DefaultProjectStructure } from "../../../../../core/implementations/default_project_structure";
 import { IFileSystem } from "../../../../../core/interfaces/file_system";
+import { ProjectStructure } from "../../../../../core/interfaces/project_structure";
 import { pluralConvert, unCap } from "../../../../../utils/text_work/text_util";
+import { DataRoutineGenerator } from "../../../generators/data_routine_generator";
 import { ServerpodModel } from "../../../serverpod_yaml_parser/formatters/types";
 
 export class PresentStateProviderGenerator extends DataRoutineGenerator {

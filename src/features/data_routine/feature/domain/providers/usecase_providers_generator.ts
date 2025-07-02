@@ -61,7 +61,7 @@ ${useCaseClassName}? ${useCaseProviderName}(Ref ref) {
 
     return `import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import '../../usecases/${d}/base_usecases.dart';
+import '../../usecases/${d}_base_usecases.dart';
 import '../../../data/providers/${d}/${d}_data_providers.dart';
 
 part '${d}_usecase_providers.g.dart';

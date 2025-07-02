@@ -5,7 +5,7 @@ project:
   name: "${projectName}"
   
 server:
-  ip: ""
+  ip: "176.124.208.46"
   http_port: "80:80"
   https_port: "443:443"
   domain: "my-points.ru"

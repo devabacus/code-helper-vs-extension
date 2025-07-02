@@ -15,7 +15,7 @@ export class UseCaseBaseGenerator extends DataRoutineGenerator {
   }
 
   protected getPath(featurePath: string, entityName: string): string {
-    return path.join(this.structure.getDomainUseCasesPath(featurePath), entityName, "base_usecases.dart");
+    return path.join(this.structure.getDomainUseCasesPath(featurePath),`${entityName}_base_usecases.dart`);
   }
 
   // Основной метод теперь принимает модель и генерирует всё содержимое
@@ -91,8 +91,8 @@ class Watch${Ds}UseCase {
 
     // --- 3. Объединяем все части ---
     // Добавляем импорты в начало
-    const imports = `import '../../repositories/${d}_repository.dart';
-import '../../entities/${d}/${d}.dart';`;
+    const imports = `import '../repositories/${d}_repository.dart';
+import '../entities/${d}/${d}.dart';`;
 
     return `${imports}\n${baseUseCases}\n\n${foreignKeyUseCases.join('\n\n')}`;
   }
@@ -123,7 +123,4 @@ import '../../entities/${d}/${d}.dart';`;
 }`;
     });
   }
-
-  // Метод generate остается прежним, он будет вызывать обновленный getContent
-  // и создавать один файл `base_usecases.dart`
 }

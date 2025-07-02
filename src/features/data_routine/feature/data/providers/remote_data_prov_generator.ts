@@ -37,13 +37,7 @@ part '${d}_remote_data_providers.g.dart';
 I${D}RemoteDataSource ${d}RemoteDataSource(Ref ref) {
   ref.keepAlive();
   final client = ref.watch(serverpodClientProvider);
-  final remoteDataSource = ${D}RemoteDataSource(client);
-  
-  ref.onDispose(() async {
-    remoteDataSource.dispose();
-  });
-  
-  return remoteDataSource;
+  return ${D}RemoteDataSource(client); 
 }
 
 @riverpod

@@ -23,20 +23,14 @@ import { UseCaseRelateProvidersGenerator } from "../feature/domain/providers/use
 import { UseCaseProvidersGenerator } from "../feature/domain/providers/usecase_providers_generator";
 import { DomainRelateRepositoryGenerator } from "../feature/domain/repositories/domain_relate_repository_generator";
 import { DomainRepositoryGenerator } from "../feature/domain/repositories/domain_repository_generator";
-import { UseCaseRelateAddGenerator } from "../feature/domain/usecases/relate/use_case_relate_add_target_to_source_generator";
-import { UseCaseRelateGetSourcesWithTargetGenerator } from "../feature/domain/usecases/relate/use_case_relate_get_sources_with_target_generator";
-import { UseCaseRelateGetTargetsForSourceGenerator } from "../feature/domain/usecases/relate/use_case_relate_get_targets_for_source_generator";
-import { UseCaseRelateRemoveAllTargetsFromSourceGenerator } from "../feature/domain/usecases/relate/use_case_relate_remove_all_targets_from_source_generator";
-import { UseCaseRelateRemoveTargetFromSourceGenerator } from "../feature/domain/usecases/relate/use_case_relate_remove_target_from_source_generator";
+
 import { UseCaseBaseGenerator } from "../feature/domain/usecases/use_case_bundle_generator";
 import { UseCaseRelateGenerator } from "../feature/domain/usecases/use_case_relate_generator";
 import { PresentFilterRelateProviderGenerator } from "../feature/presentation/providers/present_filter_relate_provider_generator";
 import { PresentGetByIdProviderGenerator } from "../feature/presentation/providers/present_get_by_id_prov_generator";
 import { PresentStateProviderGenerator } from "../feature/presentation/providers/present_state_prov_generator";
 import { PresentStateRelateProviderGenerator } from "../feature/presentation/providers/present_state_relate_provider_generator";
-import { ServerpodEndpointGenerator } from "../generators/serverpod_endpoint_generator";
-import { ServerpodRelateEndpointGenerator } from "../generators/serverpod_relate_endpoint_generator";
-import { ServerpodYamlGenerator } from "../generators/serverpod_yaml_generator";
+
 
 
 export class GeneratorFactory {
@@ -133,7 +127,6 @@ export class GeneratorFactory {
 
     // domain layer / usecases
 
-
     createUseCaseBaseGenerator(): FileGenerator {
         return new UseCaseBaseGenerator(this.fileSystem);
     }
@@ -141,28 +134,6 @@ export class GeneratorFactory {
         return new UseCaseRelateGenerator(this.fileSystem);
     }
 
-
-
-
-    createUseCaseRelateAddGenerator(): FileGenerator {
-        return new UseCaseRelateAddGenerator(this.fileSystem);
-    }
-
-    createUseCaseRelateGetTargetsForSourceGenerator(): FileGenerator {
-        return new UseCaseRelateGetTargetsForSourceGenerator(this.fileSystem);
-    }
-
-    createUseCaseRelateGetSourcesWithTargetGenerator(): FileGenerator {
-        return new UseCaseRelateGetSourcesWithTargetGenerator(this.fileSystem);
-    }
-
-    createUseCaseRelateRemoveAllTargetsFromSourceGenerator(): FileGenerator {
-        return new UseCaseRelateRemoveAllTargetsFromSourceGenerator(this.fileSystem);
-    }
-
-    createUseCaseRelateRemoveTargetFromSourceGenerator(): FileGenerator {
-        return new UseCaseRelateRemoveTargetFromSourceGenerator(this.fileSystem);
-    }
 
     // presentation layer
     createPresentStateProviderGenerator(): FileGenerator {
@@ -185,16 +156,4 @@ export class GeneratorFactory {
         return new PresentFilterRelateProviderGenerator(this.fileSystem);
     }
 
-
-    createServerpodYamlGenerator(): FileGenerator {
-        return new ServerpodYamlGenerator(this.fileSystem);
-    }
-
-    // createServerpodEndpointGenerator(): FileGenerator {
-    //     return new ServerpodEndpointGenerator(this.fileSystem);
-    // }
-
-    createServerpodRelateEndpointGenerator(): ServerpodRelateEndpointGenerator { // Измените возвращаемый тип если нужно
-        return new ServerpodRelateEndpointGenerator(this.fileSystem);
-    }
 }

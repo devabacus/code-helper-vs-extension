@@ -1,6 +1,6 @@
 export const pubspec_yaml = (projName: string, description: string = "Flutter Project") => {
-    
-return `
+
+  return `
 name: ${projName}
 description: "${description}"
 
@@ -19,7 +19,7 @@ dependencies:
 #   path: ../Packages/simple_storage  
 # ui_kit:
 #   path: ../Packages/ui_kit
-  serverpod_flutter: 2.9.0
+  serverpod_flutter: 2.9.1
   ${projName}_client:
     path: ../${projName}_client
   
@@ -55,9 +55,9 @@ dependencies:
   uuid: ^4.5.1
   shared_preferences: ^2.5.3
   connectivity_plus: ^6.1.4
-  serverpod_auth_email_flutter: ^2.9.0
-  serverpod_auth_client: ^2.9.0
-  serverpod_auth_shared_flutter: ^2.9.0
+  serverpod_auth_email_flutter: ^2.9.1
+  serverpod_auth_client: ^2.9.1
+  serverpod_auth_shared_flutter: ^2.9.1
 
 dev_dependencies:
   flutter_test:
@@ -80,4 +80,5 @@ flutter:
   assets:
     - .env
 
-`;};
+`;
+};

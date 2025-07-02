@@ -1,6 +1,11 @@
 // src/features/data_routine/formatters/drift_code_formatter.interface.ts
-import { Field } from "../../feature/data/datasources/local/tables/drift_class_parser";
 import { ServerpodField } from "./types";
+
+export interface Field {
+    type: string,
+    name: string,
+    nullable: boolean;
+}
 
 export interface ICodeFormatter {
   // Форматирование полей класса (для Drift классов)

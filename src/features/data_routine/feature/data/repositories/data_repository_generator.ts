@@ -66,7 +66,7 @@ class ${D}RepositoryImpl extends BaseSyncRepository
     implements I${D}Repository {
   final I${D}LocalDataSource _localDataSource;
   final I${D}RemoteDataSource _remoteDataSource;
-  final ISyncMetadataLocalDataSource _syncMetadataDataSource;
+  
 
   @override
   String get entityTypeName => '${D}';
@@ -76,9 +76,9 @@ class ${D}RepositoryImpl extends BaseSyncRepository
   ${D}RepositoryImpl(
     this._localDataSource,
     this._remoteDataSource,
-    this._syncMetadataDataSource,
+    ISyncMetadataLocalDataSource syncMetadataDataSource,
     int userId,
-  ) : super(userId) {
+  ) : super(userId, syncMetadataDataSource: syncMetadataDataSource) {
     print('✅ ${D}RepositoryImpl: Создан экземпляр для userId: $userId');
     initEventBasedSync();
   }
@@ -127,14 +127,6 @@ class ${D}RepositoryImpl extends BaseSyncRepository
       }
     }
   }
-
-  @override
-  Future<DateTime?> getLastSyncTimestamp() =>
-      _syncMetadataDataSource.getLastSyncTimestamp(entityType, userId: userId);
-
-  @override
-  Future<void> updateLastSyncTimestamp() => _syncMetadataDataSource
-      .updateLastSyncTimestamp(entityType, DateTime.now().toUtc(), userId: userId);
 
   @override
   Stream<serverpod.${D}SyncEvent> watchEvents() =>

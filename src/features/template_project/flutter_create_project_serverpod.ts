@@ -81,13 +81,13 @@ export async function flutterCreateNewServerPodProject(addTemplateFolders?: (ful
     const databaseTypesPath = path.join(flutterPath, "lib", "core", "database", "local", "database_types.dart");
     const syncRegistryPath = path.join(flutterPath, "lib", "core", "sync", "sync_registry.dart");
     const syncControllerPath = path.join(flutterPath, "lib", "core", "sync", "sync_controller_provider.dart");
-    const baseSyncRepositoryPath = path.join(flutterPath, "lib", "core", "sync", "base_sync_repository.dart");
-
+    
     // 'core/database/local/daos/sync_metadata_dao.dart': sync_metadata_dao_file,
-
-
+    
+    
     createFileOneTime(syncRegistryPath, sync_registry_file);
     createFileOneTime(syncControllerPath, sync_controller_provider_file);
+    const baseSyncRepositoryPath = path.join(flutterPath, "lib", "core", "sync", "base_sync_repository.dart");
     createFileOneTime(baseSyncRepositoryPath, base_sync_repository);
     createFileOneTime(databaseTypesPath, database_types_file);
 

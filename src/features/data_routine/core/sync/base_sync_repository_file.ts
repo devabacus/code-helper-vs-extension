@@ -1,14 +1,13 @@
-export const base_sync_repository = `
-import 'dart:async';
+export const base_sync_repository = `import 'dart:async';
 import 'dart:math';
 
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-
+import '../database/local/interface/sync_metadata_local_datasource_service.dart';
 import 'sync_registry.dart';
 
 abstract class BaseSyncRepository implements ISyncableRepository {
   final int userId;
   final bool syncEnabled;
+  final ISyncMetadataLocalDataSource syncMetadataDataSource;
 
   StreamSubscription? _eventStreamSubscription;
   bool _isSyncing = false;
@@ -16,7 +15,7 @@ abstract class BaseSyncRepository implements ISyncableRepository {
   int reconnectionAttempt = 0;
   int delaySeconds = 0;
 
-  BaseSyncRepository(this.userId, {this.syncEnabled = true});
+  BaseSyncRepository(this.userId, {required this.syncMetadataDataSource, this.syncEnabled = true});
 
   String get entityType;
   @override
@@ -24,10 +23,14 @@ abstract class BaseSyncRepository implements ISyncableRepository {
   Future<List<dynamic>> getChangesFromServer(DateTime? since);
   Future<List<dynamic>> reconcileChanges(List<dynamic> serverChanges);
   Future<void> pushLocalChanges(List<dynamic> localChangesToPush);
-  Future<DateTime?> getLastSyncTimestamp();
-  Future<void> updateLastSyncTimestamp();
   Stream<dynamic> watchEvents();
   Future<void> handleSyncEvent(dynamic event);
+
+  Future<DateTime?> getLastSyncTimestamp() =>
+      syncMetadataDataSource.getLastSyncTimestamp(entityType, userId: userId);
+
+  Future<void> updateLastSyncTimestamp() => syncMetadataDataSource
+      .updateLastSyncTimestamp(entityType, DateTime.now().toUtc(), userId: userId);
 
   @override
   Future<void> syncWithServer() async {
@@ -122,4 +125,5 @@ abstract class BaseSyncRepository implements ISyncableRepository {
     _eventStreamSubscription?.cancel();
   }
 }
+
 `;

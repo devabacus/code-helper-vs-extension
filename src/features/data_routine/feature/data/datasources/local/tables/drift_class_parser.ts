@@ -2,13 +2,9 @@
 
 import { unCap } from "../../../../../../../utils/text_work/text_util";
 import { CodeFormatter } from "../../../../../serverpod_yaml_parser/formatters/code_formatter";
-import { ICodeFormatter } from "../../../../../serverpod_yaml_parser/formatters/code_formatter.interface";
+import { Field, ICodeFormatter } from "../../../../../serverpod_yaml_parser/formatters/code_formatter.interface";
 
-export interface Field {
-    type: string,
-    name: string,
-    nullable: boolean;
-}
+
 
 export interface FieldValue {
     name: string,
@@ -80,8 +76,6 @@ export class DriftClassParser implements IDriftClassParser {
         return fields;
     }
 
-    // ... остальные геттеры остаются без изменений, так как они используют this.fields
-    // Убедитесь, что DriftCodeFormatter корректно обрабатывает nullable поля при необходимости
 
     get fieldsClass(): string {
         return this.formatter.formatClassFields(this.fields);

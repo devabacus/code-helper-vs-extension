@@ -1,4 +1,4 @@
-import { createFileOneTime } from "../../utils";
+import { createFileOneTime, executeInTerminal } from "../../utils";
 import { getActiveEditorPath } from "../../utils/path_util";
 import { unCap } from "../../utils/text_work/text_util";
 import { getDocText } from "../../utils/ui/ui_util";
@@ -18,6 +18,7 @@ import { sync_event_type_spy } from "./generators/sync_event_type_spy";
 import { sync_metadata_table_file } from "./generators/sync_metadata_table";
 import { ServerpodYamlParser } from "./serverpod_yaml_parser/parser";
 import { EndpointRelateGenerator } from "./generators/endpoint_relate_generator";
+import { build_runner } from "../template_project/flutter_content/terminal_commands";
 
 export async function createDataFilesFromYaml() {
 
@@ -38,9 +39,6 @@ export async function createDataFilesFromYaml() {
 
     const serverpodYamlModel = getDocText();
     const model = ServerpodYamlParser.parse(serverpodYamlModel);
-
-
-
 
     const entityNameCap = model.className;
     const entityName = unCap(model.className);
@@ -86,5 +84,5 @@ export async function createDataFilesFromYaml() {
 
     await generatorCommands.execute();
     await appDatabaseRoutine(featurePath, entityName);
-    // TODO await executeInTerminal(build_runner, flutterDirPath);
+    // await executeInTerminal(build_runner, flutterDirPath);
 }

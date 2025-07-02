@@ -1,4 +1,4 @@
-import { Field } from '../../features/data_routine/feature/data/datasources/local/tables/drift_class_parser';
+import { Field } from "../../features/data_routine/serverpod_yaml_parser/formatters/code_formatter.interface";
 
 export interface _IDriftCodeFormatter {
   getFieldsClass(fields: Field[]): string;

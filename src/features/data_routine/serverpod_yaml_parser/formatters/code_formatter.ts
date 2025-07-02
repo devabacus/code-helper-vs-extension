@@ -2,10 +2,8 @@
 
 
 import { cap } from '../../../../utils/text_work/text_util';
-import { Field, FieldValue } from '../../feature/data/datasources/local/tables/drift_class_parser';
+import { Field, ICodeFormatter } from './code_formatter.interface';
 import { ServerpodField } from './types';
-import { ICodeFormatter } from './code_formatter.interface';
-import { prepareFieldsForTest } from './drift_prepare_fields_for_test';
 
 export class CodeFormatter implements ICodeFormatter {
 
@@ -62,7 +60,7 @@ export class CodeFormatter implements ICodeFormatter {
       if(field.isRelation && field.relationType === 'manyToOne'){
         _name = `${field.name}Id`;
       }
-      return `${_name}: Value(${_name})`});
+      return `${_name}: Value(${_name})`;});
     return wrapped.join(', ');
   }
 
