@@ -44,7 +44,8 @@ export class ServerpodYamlParser {
     // Анализируем тип связи, если это relation
     if (isRelation) {
       field.relationType = RelationAnalyzer.analyzeRelationType(type);
-      field.relatedModel = RelationAnalyzer.extractRelatedModel(type);
+      // field.relatedModel = RelationAnalyzer.extractRelatedModel(type);
+      field.relatedModel = name.replace(/(.*)Id/, '$1');
     }
 
     // Парсим дополнительные параметры

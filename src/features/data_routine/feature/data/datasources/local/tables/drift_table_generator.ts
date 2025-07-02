@@ -2,9 +2,10 @@ import path from "path";
 import { DefaultProjectStructure } from "../../../../../../../core/implementations/default_project_structure";
 import { IFileSystem } from "../../../../../../../core/interfaces/file_system";
 import { ProjectStructure } from "../../../../../../../core/interfaces/project_structure";
-import { cap, toSnakeCase, unCap } from "../../../../../../../utils/text_work/text_util";
+import { cap, toSnakeCase } from "../../../../../../../utils/text_work/text_util";
 import { DataRoutineGenerator } from "../../../../../generators/data_routine_generator";
-import { ServerpodModel } from "../../../../../serverpod_yaml_parser/formatters/types";
+import { CodeFormatter } from "../../../../../serverpod_yaml_parser/formatters/code_formatter";
+import { ServerpodField, ServerpodModel } from "../../../../../serverpod_yaml_parser/formatters/types";
 
 export class DriftTableGenerator extends DataRoutineGenerator {
 
@@ -22,21 +23,18 @@ export class DriftTableGenerator extends DataRoutineGenerator {
 
   protected getContent(model: ServerpodModel): string {
         
-        const d1 = model.fields[1].name.replace('Id', '');
-        const d2 = model.fields[2].name.replace('Id', '');;
+      const formatter = new CodeFormatter();
+      const fieldColumns = formatter.generateDriftTableColumns(model.fields);
+    const relatedTableImports = this.generateRelatedTableImports(model.fields);
+    const D = model.className;
 
-        const D1 = cap(d1);
-        const D2 = cap(d2);
 
-        const tableName = model.className;
-
-        
         return `
 import 'package:drift/drift.dart';
 import 'package:uuid/uuid.dart';
-import '../../../../../../core/database/local/database_types.dart';
+import '../../../../../../core/database/local/database_types.dart';${relatedTableImports}
 
-class TagTable extends Table {
+class ${D}Table extends Table {
 
   // Статичные поля для всех моделей
   TextColumn get id => text().clientDefault(() => Uuid().v7())();
@@ -45,7 +43,7 @@ class TagTable extends Table {
   TextColumn get syncStatus => text().map(const SyncStatusConverter())();
   
   // Поля модели
-  TextColumn get title => text()();
+  ${fieldColumns}
   
   @override
   Set<Column> get primaryKey => {id};
@@ -53,4 +51,26 @@ class TagTable extends Table {
 `;
     } 
 
+
+    private generateRelatedTableImports(fields: ServerpodField[]): string {
+    const relationFields = fields.filter(field =>
+      field.isRelation &&
+      field.relationType === 'manyToOne' && // Только manyToOne связи
+      field.relatedModel
+    );
+
+    if (relationFields.length === 0) {
+      return '';
+    }
+
+    const imports = relationFields.map(field => {
+      const relatedModelName = field.relatedModel!;
+      const tableFileName = `${relatedModelName.toLowerCase()}_table.dart`;
+      return `import '${tableFileName}';`;
+    });
+
+    // Убираем дубликаты и добавляем перенос строки в начале
+    const uniqueImports = [...new Set(imports)];
+    return '\n' + uniqueImports.join('\n');
+  }
 }

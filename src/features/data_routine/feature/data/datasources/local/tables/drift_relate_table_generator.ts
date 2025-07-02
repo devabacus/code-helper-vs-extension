@@ -22,8 +22,9 @@ export class DriftRelateTableGenerator extends DataRoutineGenerator {
 
   protected getContent(model: ServerpodModel): string {
         
-        const d1 = model.fields[1].name.replace('Id', '');
-        const d2 = model.fields[2].name.replace('Id', '');;
+        // const d1 = model.fields[1].name.replace('Id', '');
+        const d1 = model.fields[1].relatedModel!;
+        const d2 = model.fields[2].relatedModel!;
 
         const D1 = cap(d1);
         const D2 = cap(d2);
