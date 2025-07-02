@@ -31,7 +31,8 @@ export class DomainExtensionEntityGenerator extends BaseGenerator {
     const params = formatter.formatSimpleFields(model.fields);
     let paramsServerpod = params;
     if (params.includes('Id')) {
-      paramsServerpod = params.replace(/: (\w+)Id/g, ': serverpod.UuidValue.fromString($1Id??\'\')').replace('.toString()', '');
+      paramsServerpod = params.replace(/: (\w+)Id/g, ': $1Id == null ? null : serverpod.UuidValue.fromString($1Id!)');
+
     }
     return `import '../../entities/${d}/${d}.dart';
 import '../../../data/models/${d}/${d}_model.dart';

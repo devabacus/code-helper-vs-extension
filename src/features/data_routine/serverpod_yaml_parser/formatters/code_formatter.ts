@@ -2,6 +2,7 @@
 
 
 import { cap } from '../../../../utils/text_work/text_util';
+import { TypeMapper } from '../type-mappers';
 import { Field, ICodeFormatter } from './code_formatter.interface';
 import { ServerpodField } from './types';
 
@@ -32,7 +33,8 @@ export class CodeFormatter implements ICodeFormatter {
       }
 
       if (field.nullable) {
-        return `${_type}? ${_name},`;
+        //TODO нужно проверить потом можно просто удалить если nullable на сервер в модели и на flutter имеет всегда одинаковый тип return `${_type}? ${_name},`;
+        return `${_type} ${_name},`;
       } else {
         if (_name === 'id') {
           return `${_type} ${_name},`;
@@ -64,18 +66,18 @@ export class CodeFormatter implements ICodeFormatter {
     return wrapped.join(', ');
   }
 
-  // fieldsFilter(fields: ServerpodField[]): ServerpodField[] {
-  //   const excludeList: any[] = ['isDeleted', 'id', 'userId', 'lastModified', 'syncStatus', /.*Map.*/];
-  //   return fields.filter(field => !excludeList.includes(field.name));
-  // }
 
   fieldsFilter(fields: ServerpodField[]): ServerpodField[] {
   const exactExcludes = ['isDeleted', 'id', 'userId', 'lastModified', 'syncStatus'];
   
   return fields.filter(field => 
     !exactExcludes.includes(field.name) && 
-    !field.name.includes('Map')
-  );
+    !field.name.includes('Map') && field.scope !== 'serverOnly'
+  ) .map(field => {
+      const baseDartType = TypeMapper.mapToDartType(field.type);
+      
+      return { ...field, type: baseDartType };
+    });;
 }
 
 
@@ -147,7 +149,6 @@ export class CodeFormatter implements ICodeFormatter {
         continue;
       }
 
-      // Если это поле связи, генерируем foreign key поле
       if (field.isRelation && field.relationType === 'manyToOne') {
         const foreignKeyColumn = this.generateForeignKeyColumn(field);
         columns.push(`  ${foreignKeyColumn}`);
@@ -161,7 +162,7 @@ export class CodeFormatter implements ICodeFormatter {
   }
 
   private generateColumnDefinition(field: ServerpodField): string {
-    const columnType = this.mapServerpodTypeToDriftColumn(field.type);
+    const columnType = TypeMapper.mapToDriftColumn(field.type);
     let columnClass = cap(columnType);
     if (columnType === 'boolean') { columnClass = 'Bool'; }
     const nullable = field.nullable ? '.nullable()' : '';
@@ -169,23 +170,10 @@ export class CodeFormatter implements ICodeFormatter {
     return `${columnClass}Column get ${field.name} => ${columnType}()${nullable}();`;
   }
 
-  mapServerpodTypeToDriftColumn(serverpodType: string): string {
-    const typeMap: Record<string, string> = {
-      'UuidValue': 'text',
-      'String': 'text',
-      'int': 'integer',
-      'DateTime': 'dateTime',
-      'bool': 'boolean',
-      'double': 'real'
-    };
-
-    return typeMap[serverpodType] || 'text';
-  }
-       
   shouldSkipServerpodField(field: ServerpodField): boolean {
     // Пропускаем служебные поля, которые уже определены статично
     const staticFields = ['id', 'userId', 'lastModified', 'syncStatus', 'isDeleted', 'Map'];
-    if (staticFields.includes(field.name)) {
+    if (staticFields.includes(field.name) || field.scope === 'serverOnly') {
       return true;
     }
 

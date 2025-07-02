@@ -42,6 +42,6 @@ export interface ICodeFormatter {
 
   // Новые методы для работы с ServerpodModel
   generateDriftTableColumns(fields: ServerpodField[]): string;
-  mapServerpodTypeToDriftColumn(serverpodType: string): string;
+  // mapServerpodTypeToDriftColumn(serverpodType: string): string;
   shouldSkipServerpodField(field: ServerpodField): boolean;
 }

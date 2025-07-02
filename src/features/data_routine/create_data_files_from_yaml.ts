@@ -16,7 +16,7 @@ import { entity_sync_event_spy_file } from "./generators/entity_sync_event_spy_f
 import { ServerpodEndpointGenerator } from "./generators/serverpod_endpoint_generator";
 import { sync_event_type_spy } from "./generators/sync_event_type_spy";
 import { sync_metadata_table_file } from "./generators/sync_metadata_table";
-import { ServerpodYamlParser } from "./serverpod_yaml_parser/parser";
+import { ServerpodYamlParser } from "./serverpod_yaml_parser/server_yaml_parser";
 import { EndpointRelateGenerator } from "./generators/endpoint_relate_generator";
 import { build_runner } from "../template_project/flutter_content/terminal_commands";
 

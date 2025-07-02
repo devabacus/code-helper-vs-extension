@@ -9,6 +9,7 @@ export interface ServerpodField {
   isRelation?: boolean;
   relationType?: RelationType;
   relatedModel?: string;
+  scope?: string;
 }
 
 export interface ServerpodIndex {

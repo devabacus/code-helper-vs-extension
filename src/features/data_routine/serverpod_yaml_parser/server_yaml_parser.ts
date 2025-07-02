@@ -57,6 +57,10 @@ export class ServerpodYamlParser {
       if (param.startsWith('defaultPersist=')) {
         field.defaultPersist = param.split('=')[1];
       }
+
+      if (param.startsWith('scope=')) {
+        field.scope = param.split('=')[1];
+      }
     }
 
     return field;

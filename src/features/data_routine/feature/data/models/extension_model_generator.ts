@@ -30,6 +30,7 @@ export class DataExtensionModelGenerator extends BaseGenerator<ServerpodModel> {
 
     const params = formatter.formatSimpleFields(model.fields);
     const paramValueWrapped = formatter.formatInsertCompanionParams(model.fields);
+    const paramsToString = params.replace(/(.*Id)/g, '$1.toString()');
 
     return `
 import 'package:drift/drift.dart';
@@ -70,7 +71,7 @@ extension Serverpod${D}ToModelExtension on serverpod.${D} {
         id: id.toString(),
         lastModified: lastModified ?? DateTime.now().toUtc(),
         userId: userId,
-        ${params}
+        ${paramsToString}
       );
 }
 

@@ -31,7 +31,7 @@ export class TableExtensionGenerator extends BaseGenerator<ServerpodModel> {
 
     const params = formatter.formatSimpleFields(model.fields);
     const paramValueWrapped = formatter.formatInsertCompanionParams(model.fields);
-    // const valueWrappedToString = paramValueWrapped.replace(/Value(.*Id)/g, 'Value($1.toString())');
+    const valueWrappedToString = paramValueWrapped.replace(/Value(.*Id)/g, 'Value$1.toString()');
 
 
 
@@ -59,7 +59,7 @@ extension Serverpod${D}TableExtensions on serverpod.${D} {
         lastModified: Value(lastModified ?? DateTime.now().toUtc()),
         userId: Value(userId),
         syncStatus: Value(status),
-        ${paramValueWrapped}
+        ${valueWrappedToString}
   );
 }
 
