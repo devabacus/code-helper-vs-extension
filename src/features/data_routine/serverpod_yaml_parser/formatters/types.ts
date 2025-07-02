@@ -21,9 +21,9 @@ export interface ServerpodIndex {
 export interface ServerpodModel {
   className: string;
   tableName: string;  
-  isRelation: boolean;
   fields: ServerpodField[];
   indexes?: ServerpodIndex[];
+  isRelation: boolean;
 }
 
 export interface ManyToManyRelation {

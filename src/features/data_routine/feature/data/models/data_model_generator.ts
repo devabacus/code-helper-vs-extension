@@ -3,7 +3,7 @@ import path from "path";
 import { DefaultProjectStructure } from "../../../../../core/implementations/default_project_structure";
 import { IFileSystem } from "../../../../../core/interfaces/file_system";
 import { ProjectStructure } from "../../../../../core/interfaces/project_structure";
-import { toCamelCase } from "../../../../../utils/text_work/text_util";
+import { toCamelCase, toSnakeCase } from "../../../../../utils/text_work/text_util";
 import { DataRoutineGenerator } from "../../../generators/data_routine_generator";
 import { CodeFormatter } from "../../../serverpod_yaml_parser/formatters/code_formatter";
 import { ServerpodModel } from "../../../serverpod_yaml_parser/formatters/types";
@@ -19,17 +19,15 @@ export class ModelGenerator extends DataRoutineGenerator {
   }
 
   protected getPath(featurePath: string, entityName: string): string {
-    return path.join(this.structure.getDataModelPath(featurePath), entityName, `${entityName}_model.dart`);
+    return path.join(this.structure.getDataModelPath(featurePath), toSnakeCase(entityName), `${toSnakeCase(entityName)}_model.dart`);
   }
   protected getContent(model: ServerpodModel): string {
     const D = model.className;
-    const d = toCamelCase(D);
+    const d = toSnakeCase(D);
 
     const formatter = new CodeFormatter();
     const params = formatter.formatRequiredTypeFields(model.fields);
-    return `
-
-import 'package:freezed_annotation/freezed_annotation.dart';
+    return `import 'package:freezed_annotation/freezed_annotation.dart';
 
 part '${d}_model.freezed.dart';
 part '${d}_model.g.dart';

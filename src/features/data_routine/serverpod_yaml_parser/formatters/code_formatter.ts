@@ -28,7 +28,7 @@ export class CodeFormatter implements ICodeFormatter {
 
       if (field.isRelation && field.relationType === 'manyToOne') {
         _type = 'String';
-        _name = `${field.name}Id`;
+        _name = `${field.name}`;
       }
 
       if (field.nullable) {
@@ -42,6 +42,9 @@ export class CodeFormatter implements ICodeFormatter {
     });
     return fieldRows.join('\n    ');
   }
+
+
+
 
   formatConstructorParams(fields: Field[] | ServerpodField[], instanceName?: string): string {
     const prefix = instanceName ? `${instanceName}.` : '';
@@ -74,26 +77,19 @@ export class CodeFormatter implements ICodeFormatter {
   
   return fields.filter(field => 
     !exactExcludes.includes(field.name) && 
-    !field.name.includes('Map')
-  );
+    !field.name.includes('Map') && !field.scope?.includes('serverOnly'));
 }
-
 
   formatSimpleFields(fields: Field[] | ServerpodField[]): string {
 
     const simple = this.fieldsFilter(fields as Field[]).map((field) => {
-      // const _field = field.isRelation ? `${field.name}Id` : `${field.name}`;
-      
-
+      // const _field = field.isRelation ? `${field.name}Id` : `${field.name}`;      
       let _field_name = field.name;
       let _field_value = field.name;
 
       if(field.isRelation && field.relationType === 'manyToOne'){
-          _field_name = `${field.name}Id`;
-          _field_value =`${field.name}Id.toString()`;
+          _field_value =`${field.name}`;
       }
-
-
       return `${_field_name}: ${_field_value}`;
     });
     return simple.join(', ');
@@ -108,7 +104,6 @@ export class CodeFormatter implements ICodeFormatter {
     return row.replace(/.*id,\s?/, '');
   }
 
-  // Методы для тестов (только для Field)
   getFieldsValueForTest(fields: Field[]): string[] {
     // return prepareFieldsForTest(fields);
     return [];
@@ -129,8 +124,7 @@ export class CodeFormatter implements ICodeFormatter {
       let _field_value = field.name;
 
       if(field.isRelation && field.relationType === 'manyToOne'){
-          _field_name = `${field.name}Id`;
-          _field_value =`${field.name}Id.toString()`;
+          _field_value =`${field.name}`;
       }
 
       return `${_field_name}: Value(${_field_value})`;

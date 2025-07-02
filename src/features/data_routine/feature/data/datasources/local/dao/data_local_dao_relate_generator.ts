@@ -22,86 +22,103 @@ export class DataDaoRelateGenerator extends DataRoutineGenerator {
 
     protected getContent(model: ServerpodModel): string {
         
-        const sourceField = model.fields[0];
-        const targetField = model.fields[1];
+        const d1 = model.fields[1].relatedModel!;
+        const d2 = model.fields[2].relatedModel!;       
 
-        const D1 = cap(sourceField.name); // Task
-        const D2 = cap(targetField.name); // Tag
-        const d1 = unCap(D1); // task
-        const d2 = unCap(D2); // tag
-        
-        const RelTable = `${model.className}Table`; // TaskTagMapTable
-        const relTable = `${unCap(model.className)}Table`; // taskTagMapTable
-        const Dao = `${model.className}Dao`; // TaskTagMapDao
-        const TableData = `${RelTable}Data`; // TaskTagMapTableData
-        const TableCompanion = `${RelTable}Companion`; // TaskTagMapTableCompanion
-        
-        const idType = 'String'; 
+        const D1 = cap(d1);
+        const D2 = cap(d2);
+        const ClassName = `${model.className}`; 
+        const className = `${unCap(ClassName)}`;
+        const tableName = `${model.tableName}`;
 
         return `
 import 'package:drift/drift.dart';
 import '../../../../../../../core/database/local/interface/i_database_service.dart';
 import '../../../../../../../core/database/local/database.dart';
-import '../../tables/${toSnakeCase(model.className)}_table.dart';
+import '../../../../../../../core/database/local/database_types.dart';
+import '../../tables/${tableName}_table.dart';
 
-part '${toSnakeCase(model.className)}_dao.g.dart';
+part '${tableName}_dao.g.dart';
 
-@DriftAccessor(tables: [${RelTable}])
-class ${Dao} extends DatabaseAccessor<AppDatabase>
-    with _$${Dao}Mixin {
-  ${Dao}(IDatabaseService databaseService)
+@DriftAccessor(tables: [${ClassName}Table])
+class ${ClassName}Dao extends DatabaseAccessor<AppDatabase>
+    with _$${ClassName}DaoMixin {
+  ${ClassName}Dao(IDatabaseService databaseService)
       : super(databaseService.database);
 
   AppDatabase get db => attachedDatabase;
 
-  /// Creates a connection between a ${D1} and a ${D2}.
-  Future<void> addRelation({
-    required ${idType} ${d1}Id,
-    required ${idType} ${d2}Id,
-  }) async {
-    final existing = await (select(${relTable})
-          ..where((t) => t.${d1}Id.equals(${d1}Id))
-          ..where((t) => t.${d2}Id.equals(${d2}Id)))
-        .getSingleOrNull();
-
-    if (existing == null) {
-      final companion = ${TableCompanion}.insert(
-          ${d1}Id: ${d1}Id,
-          ${d2}Id: ${d2}Id,
-      );
-      await into(${relTable}).insert(companion);
-    }
+  /// Создает новую связь ${D1}-${D2}.
+  /// Вставляет или заменяет запись, если она уже существует.
+  Future<String> create${ClassName}(${ClassName}TableCompanion companion) async {
+    final id = companion.id.value;
+    await into(${className}Table).insert(companion, mode: InsertMode.insertOrReplace);
+    return id;
   }
 
-  /// Removes a connection between a ${D1} and a ${D2}.
-  Future<int> removeRelation({
-    required ${idType} ${d1}Id,
-    required ${idType} ${d2}Id,
-  }) {
-    return (delete(${relTable})
-          ..where((t) => t.${d1}Id.equals(${d1}Id))
-          ..where((t) => t.${d2}Id.equals(${d2}Id)))
+  /// Обновляет существующую связь (например, для изменения syncStatus).
+  Future<bool> update${ClassName}(${ClassName}TableCompanion companion, {required int userId}) async {
+    final idToUpdate = companion.id.value;
+    final updatedRows = await (update(${className}Table)
+          ..where((t) => t.id.equals(idToUpdate) & t.userId.equals(userId)))
+        .write(companion);
+    return updatedRows > 0;
+  }
+
+  /// "Мягко" удаляет связь по ее ID, помечая ее как удаленную.
+  Future<bool> softDelete${ClassName}ById(String id, {required int userId}) async {
+    final companion = ${ClassName}TableCompanion(
+      syncStatus: Value(SyncStatus.deleted),
+      lastModified: Value(DateTime.now().toUtc()),
+    );
+    final updatedRows = await (update(${className}Table)
+          ..where((t) => t.id.equals(id) & t.userId.equals(userId)))
+        .write(companion);
+    return updatedRows > 0;
+  }
+
+    Future<int> softDeleteRelationsBy${D1}Id(String ${d1}Id, {required int userId}) async {
+    final companion = ${ClassName}TableCompanion(
+      syncStatus: Value(SyncStatus.deleted),
+      lastModified: Value(DateTime.now().toUtc()),
+    );
+    // Обновляем все записи, где ${d1}Id и userId совпадают
+    final updatedRows = await (update(${className}Table)
+          ..where((t) => t.${d1}Id.equals(${d1}Id) & t.userId.equals(userId)))
+        .write(companion);
+    
+    print('DAO: Мягко удалено $updatedRows связей для задачи $${d1}Id');
+    return updatedRows;
+  }
+  
+  /// Физически удаляет связь из базы данных. Используется после синхронизации.
+  Future<int> physicallyDelete${ClassName}(String id, {required int userId}) async {
+    return (delete(${className}Table)
+          ..where((t) => t.id.equals(id) & t.userId.equals(userId)))
         .go();
   }
 
-  /// Gets all relations for a specific ${D1}.
-  Future<List<${TableData}>> getRelationsFor${D1}(${idType} ${d1}Id) {
-    return (select(${relTable})..where((t) => t.${d1}Id.equals(${d1}Id))).get();
+  /// Получает одну конкретную связь по ее уникальному ID.
+  Future<${ClassName}TableData?> getRelationById(String id, {required int userId}) {
+    return (select(${className}Table)
+        ..where((t) => t.id.equals(id) & t.userId.equals(userId)))
+        .getSingleOrNull();
   }
 
-  /// Gets all relations for a specific ${D2}.
-  Future<List<${TableData}>> getRelationsFor${D2}(${idType} ${d2}Id) {
-    return (select(${relTable})..where((t) => t.${d2}Id.equals(${d2}Id))).get();
-  }
+/// Получает связь по ${d1}Id и ${d2}Id.
+Future<${ClassName}TableData?> getRelationBy${D1}And${D2}(String ${d1}Id, String ${d2}Id, {required int userId}) {
+  return (select(${className}Table)
+        ..where((t) => t.${d1}Id.equals(${d1}Id) & 
+                       t.${d2}Id.equals(${d2}Id) & 
+                       t.userId.equals(userId)))
+      .getSingleOrNull();
+}
 
-  /// Removes all connections for a specific ${D1}.
-  Future<int> removeAllFor${D1}(${idType} ${d1}Id) {
-    return (delete(${relTable})..where((t) => t.${d1}Id.equals(${d1}Id))).go();
-  }
-
-  /// Removes all connections for a specific ${D2}.
-  Future<int> removeAllFor${D2}(${idType} ${d2}Id) {
-    return (delete(${relTable})..where((t) => t.${d2}Id.equals(${d2}Id))).go();
+  /// Отслеживает все активные (не удаленные) связи для указанного пользователя.
+  Stream<List<${ClassName}TableData>> watchAllRelations({required int userId}) {
+    return (select(${className}Table)
+          ..where((t) => t.userId.equals(userId) & t.syncStatus.equals(SyncStatus.deleted.name).not()))
+        .watch();
   }
 }
 `;

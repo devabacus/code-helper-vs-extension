@@ -15,6 +15,10 @@ export class GenerateAllFilesCommandYaml implements Command {
     async execute(): Promise<void> {
         // Имя сущности (в PascalCase) берем напрямую из модели
         const entityName = toCamelCase(this.model.className);
+        
+        await this.generatorFactory.createModelGenerator().generate(this.featurePath, entityName, this.model);
+
+        await this.generatorFactory.createDataModelExtensionGenerator().generate(this.featurePath, entityName, this.model);
 
         // Передаем во все генераторы объект модели (this.model)
         if (!this.model.isRelation) {
@@ -23,7 +27,6 @@ export class GenerateAllFilesCommandYaml implements Command {
             // data layer
             await this.generatorFactory.createDriftTableGenerator().generate(this.featurePath, entityName, this.model);
             await this.generatorFactory.createDaoGenerator().generate(this.featurePath, entityName, this.model);
-            await this.generatorFactory.createModelGenerator().generate(this.featurePath, entityName, this.model);
             await this.generatorFactory.createLocalDataSourceServiceGenerator().generate(this.featurePath, entityName, this.model);
             // // remote
             await this.generatorFactory.createRemoteDataSourceServiceGenerator().generate(this.featurePath, entityName, this.model);
@@ -36,7 +39,7 @@ export class GenerateAllFilesCommandYaml implements Command {
 
             //extensions
             await this.generatorFactory.createDataTableExtensionGenerator().generate(this.featurePath, entityName, this.model);
-            await this.generatorFactory.createDataModelExtensionGenerator().generate(this.featurePath, entityName, this.model);
+            
 
             // // domain layer
             await this.generatorFactory.createEntityGenerator().generate(this.featurePath, entityName, this.model);

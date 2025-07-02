@@ -12,7 +12,7 @@ export class ServerpodYamlParser {
       tableName: parsed.table || '',
       isRelation: parsed.class.includes('Map'),
       fields: this.parseFields(parsed.fields || {}),
-      indexes: this.parseIndexes(parsed.indexes)
+      indexes: this.parseIndexes(parsed.indexes),
     };
   }
 
