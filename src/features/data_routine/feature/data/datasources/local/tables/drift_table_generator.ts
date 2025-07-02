@@ -35,23 +35,17 @@ export class DriftTableGenerator extends DataRoutineGenerator {
 import 'package:drift/drift.dart';
 import 'package:uuid/uuid.dart';
 import '../../../../../../core/database/local/database_types.dart';
-import '${d1}_table.dart';
-import '${d2}_table.dart';
 
-class ${tableName}Table extends Table {
+class TagTable extends Table {
 
+  // Статичные поля для всех моделей
   TextColumn get id => text().clientDefault(() => Uuid().v7())();
   IntColumn get userId => integer()();
   IntColumn get lastModified => integer().map(const MillisecondEpochConverter())();
   TextColumn get syncStatus => text().map(const SyncStatusConverter())();
-
-  TextColumn get ${d1}Id => text().references(${D1}Table, #id)();
-  TextColumn get ${d2}Id => text().references(${D2}Table, #id)();
   
-  @override
-  List<String> get customConstraints => [
-    'UNIQUE(${d1}_id, ${d2}_id, user_id)',
-  ];
+  // Поля модели
+  TextColumn get title => text()();
   
   @override
   Set<Column> get primaryKey => {id};
