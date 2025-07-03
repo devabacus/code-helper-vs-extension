@@ -6,10 +6,6 @@ import { IFileSystem } from "../../../../../core/interfaces/file_system";
 import { cap, unCap, toSnakeCase, pluralConvert } from "../../../../../utils/text_work/text_util";
 import { ServerpodModel } from "../../../serverpod_yaml_parser/formatters/types";
 
-/**
- * Generates Presentation layer (Riverpod Notifier) providers for a many-to-many relation table.
- * FINAL CORRECTED VERSION: Uses modern Riverpod Generator syntax.
- */
 export class PresentStateRelateProviderGenerator extends DataRoutineGenerator {
 
     private structure: ProjectStructure;
@@ -20,80 +16,64 @@ export class PresentStateRelateProviderGenerator extends DataRoutineGenerator {
     }
 
     protected getPath(featurePath: string, entityName: string): string {
-        const relSnake = toSnakeCase(entityName);
-        return path.join(this.structure.getPresentationProviderPath(featurePath), relSnake, `${relSnake}_relate_state_providers.dart`);
+        return path.join(this.structure.getPresentationProviderPath(featurePath), entityName, `${entityName}_state_providers.dart`);
     }
 
     protected getContent(model: ServerpodModel): string {
-        const sourceField = model.fields[0];
-        const targetField = model.fields[1];
+        const d1 = model.fields[1].relatedModel!;
+    const d2 = model.fields[2].relatedModel!;       
 
-        const D1 = cap(sourceField.name);   // Task
-        const D2 = cap(targetField.name);   // Tag
-        const d1 = unCap(D1);     // task
-        
-        const D2s = pluralConvert(D2); // Tags
-        
-        const Rel = model.className;      // TaskTagMap
-        const relSnake = toSnakeCase(Rel); // task_tag_map
-        
-        const Entity2 = `${D2}Entity`;
-        const idType = 'String';
+    const D1 = cap(d1);
+    const D1s = pluralConvert(D1);
+    const D2 = cap(d2);
+    const D2s = pluralConvert(D2);
+    const ClassName = `${model.className}`; 
+    const ClassNameS = pluralConvert(ClassName); 
+    const tableName = `${model.tableName}`; 
 
-        const notifierName = `Related${D2s}For${D1}`;
-        const argName = `${d1}Id`; // Имя аргумента, e.g., taskId
+            return `import 'package:riverpod_annotation/riverpod_annotation.dart';
+import '../../../domain/entities/${d2}/${d2}.dart';
+import '../../../domain/providers/${tableName}/${tableName}_usecase_providers.dart';
 
-        return `import 'package:riverpod_annotation/riverpod_annotation.dart';
-import '../../../domain/entities/${unCap(D2)}/${unCap(D2)}.dart';
-import '../../../domain/providers/${relSnake}/${relSnake}_relate_usecase_providers.dart';
-
-part '${relSnake}_relate_state_providers.g.dart';
+part '${tableName}_state_providers.g.dart';
 
 @riverpod
-class ${notifierName} extends _$${notifierName} {
+class Related${D2s}For${D1} extends _$Related${D2s}For${D1} {
   @override
-  Future<List<${Entity2}>> build(${idType} ${argName}) {
+  Future<List<${D2}Entity>> build(String ${d1}Id) {
     final useCase = ref.read(get${D2s}For${D1}UseCaseProvider);
     // Проверяем, что use case доступен (пользователь авторизован)
     if (useCase == null) return Future.value([]);
-    return useCase(${argName});
+    return useCase(${d1}Id);
   }
 
-  Future<void> add${D2}({required ${idType} ${unCap(D2)}Id}) async {
+  Future<void> add${D2}({required String ${d2}Id}) async {
     final useCase = ref.read(add${D2}To${D1}UseCaseProvider);
     if (useCase == null) return;
     
+    state = const AsyncValue.loading();
     state = await AsyncValue.guard(() async {
       await useCase(
-        ${d1}Id: this.${argName}, // --- ИСПРАВЛЕНО: используем поле класса ---
-        ${unCap(D2)}Id: ${unCap(D2)}Id,
+        ${d1}Id: ${d1}Id,
+        ${d2}Id: ${d2}Id,
       );
       // Перезагружаем данные, чтобы обновить UI
-      return build(this.${argName});
+      return build(${d1}Id);
     });
   }
 
-  Future<void> remove${D2}({required ${idType} ${unCap(D2)}Id}) async {
+  Future<void> remove${D2}({required String ${d2}Id}) async {
     final useCase = ref.read(remove${D2}From${D1}UseCaseProvider);
     if (useCase == null) return;
 
-    state = await AsyncValue.guard(() async {
+    state = const AsyncValue.loading();
+    state = await AsyncValue.guard(() async {    
       await useCase(
-        ${d1}Id: this.${argName}, // --- ИСПРАВЛЕНО ---
-        ${unCap(D2)}Id: ${unCap(D2)}Id,
+        ${d1}Id: ${d1}Id,
+        ${d2}Id: ${d2}Id,
       );
-      return build(this.${argName});
+      return build(${d1}Id);
     });
-  }
-
-  Future<void> removeAll() async {
-      final useCase = ref.read(removeAllRelationsFor${D1}UseCaseProvider);
-      if (useCase == null) return;
-
-      state = await AsyncValue.guard(() async {
-          await useCase(this.${argName}); // --- ИСПРАВЛЕНО ---
-          return build(this.${argName});
-      });
   }
 }
 `;

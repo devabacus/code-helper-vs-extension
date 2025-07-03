@@ -15,7 +15,7 @@ export class UseCaseBaseGenerator extends DataRoutineGenerator {
   }
 
   protected getPath(featurePath: string, entityName: string): string {
-    return path.join(this.structure.getDomainUseCasesPath(featurePath),`${entityName}_base_usecases.dart`);
+    return path.join(this.structure.getDomainUseCasesPath(featurePath),`${entityName}_usecases.dart`);
   }
 
   // Основной метод теперь принимает модель и генерирует всё содержимое

@@ -6,10 +6,6 @@ import { pluralConvert, cap, unCap, toSnakeCase } from "../../../../../utils/tex
 import { DataRoutineGenerator } from "../../../generators/data_routine_generator";
 import { ServerpodModel } from "../../../serverpod_yaml_parser/formatters/types";
 
-/**
- * Generates a single file containing all Use Cases for a many-to-many relation table,
- * following the user's existing style.
- */
 export class UseCaseRelateGenerator extends DataRoutineGenerator {
     private structure: ProjectStructure;
 
@@ -19,95 +15,69 @@ export class UseCaseRelateGenerator extends DataRoutineGenerator {
     }
 
     protected getPath(featurePath: string, entityName: string): string {
-        return path.join(this.structure.getDomainUseCasesPath(featurePath), toSnakeCase(entityName), "relate_usecases.dart");
+        return path.join(this.structure.getDomainUseCasesPath(featurePath), `${entityName}_usecases.dart`);
     }
 
     protected getContent(model: ServerpodModel): string {
-        const sourceField = model.fields[0];
-        const targetField = model.fields[1];
+        const d1 = model.fields[1].relatedModel!;
+    const d2 = model.fields[2].relatedModel!;       
 
-        const D1 = cap(sourceField.name); // Task
-        const D2 = cap(targetField.name); // Tag
-        const d1 = unCap(D1); // task
-        const d2 = unCap(D2); // tag
-        const D1s = pluralConvert(D1); // Tasks
-        const D2s = pluralConvert(D2); // Tags
+    const D1 = cap(d1);
+    const D1s = pluralConvert(D1);
+    const D2 = cap(d2);
+    const D2s = pluralConvert(D2);
+    const ClassName = `${model.className}`; 
+    const ClassNameS = pluralConvert(ClassName); 
+    const tableName = `${model.tableName}`; 
 
-        const Rel = model.className; // TaskTagMap
-        const IRepository = `I${Rel}Repository`;
-        const repository = `_${unCap(Rel)}Repository`;
-        const idType = 'String';
+            return `import '../repositories/${tableName}_repository.dart';
+import '../entities/${d1}/${d1}.dart';
+import '../entities/${d2}/${d2}.dart';
 
-        const Entity1 = `${D1}Entity`;
-        const Entity2 = `${D2}Entity`;
-
-        // --- Генерируем все классы Use Case ---
-        const useCases = `
-// --- Use Case to Add Relation ---
 class Add${D2}To${D1}UseCase {
-  final ${IRepository} ${repository};
-  Add${D2}To${D1}UseCase(this.${repository});
+  final I${ClassName}Repository _repository;
+  Add${D2}To${D1}UseCase(this._repository);
 
-  Future<void> call({required ${idType} ${d1}Id, required ${idType} ${d2}Id}) {
-    return ${repository}.add${D2}To${D1}(${d1}Id: ${d1}Id, ${d2}Id: ${d2}Id);
+  Future<void> call({required String ${d1}Id, required String ${d2}Id}) {
+    return _repository.add${D2}To${D1}(${d1}Id: ${d1}Id, ${d2}Id: ${d2}Id);
   }
 }
 
-// --- Use Case to Remove Relation ---
 class Remove${D2}From${D1}UseCase {
-  final ${IRepository} ${repository};
-  Remove${D2}From${D1}UseCase(this.${repository});
+  final I${ClassName}Repository _repository;
+  Remove${D2}From${D1}UseCase(this._repository);
 
-  Future<void> call({required ${idType} ${d1}Id, required ${idType} ${d2}Id}) {
-    return ${repository}.remove${D2}From${D1}(${d1}Id: ${d1}Id, ${d2}Id: ${d2}Id);
+  Future<void> call({required String ${d1}Id, required String ${d2}Id}) {
+    return _repository.remove${D2}From${D1}(${d1}Id: ${d1}Id, ${d2}Id: ${d2}Id);
   }
 }
 
-// --- Use Case to Get Targets for a Source ---
+class RemoveAll${D2s}From${D1}UseCase {
+  final I${ClassName}Repository _repository;
+  RemoveAll${D2s}From${D1}UseCase(this._repository);
+
+  Future<void> call(String ${d1}Id) {
+    return _repository.removeAll${D2s}From${D1}(${d1}Id);
+  }
+}
+
 class Get${D2s}For${D1}UseCase {
-  final ${IRepository} ${repository};
-  Get${D2s}For${D1}UseCase(this.${repository});
+  final I${ClassName}Repository _repository;
+  Get${D2s}For${D1}UseCase(this._repository);
 
-  Future<List<${Entity2}>> call(${idType} ${d1}Id) {
-    return ${repository}.get${D2s}For${D1}(${d1}Id);
+  Future<List<${D2}Entity>> call(String ${d1}Id) {
+    return _repository.get${D2s}For${D1}(${d1}Id);
   }
 }
 
-// --- Use Case to Get Sources for a Target ---
 class Get${D1s}For${D2}UseCase {
-  final ${IRepository} ${repository};
-  Get${D1s}For${D2}UseCase(this.${repository});
+  final I${ClassName}Repository _repository;
+  Get${D1s}For${D2}UseCase(this._repository);
 
-  Future<List<${Entity1}>> call(${idType} ${d2}Id) {
-    return ${repository}.get${D1s}For${D2}(${d2}Id);
+  Future<List<${D1}Entity>> call(String ${d2}Id) {
+    return _repository.get${D1s}For${D2}(${d2}Id);
   }
-}
-
-// --- Use Case to Remove All Relations for a Source ---
-class RemoveAllRelationsFor${D1}UseCase {
-    final ${IRepository} ${repository};
-    RemoveAllRelationsFor${D1}UseCase(this.${repository});
-
-    Future<void> call(${idType} ${d1}Id) {
-        return ${repository}.removeAllRelationsFor${D1}(${d1}Id);
-    }
-}
-
-// --- Use Case to Remove All Relations for a Target ---
-class RemoveAllRelationsFor${D2}UseCase {
-    final ${IRepository} ${repository};
-    RemoveAllRelationsFor${D2}UseCase(this.${repository});
-
-    Future<void> call(${idType} ${d2}Id) {
-        return ${repository}.removeAllRelationsFor${D2}(${d2}Id);
-    }
 }
 `;
-        // --- Собираем финальный файл ---
-        const imports = `import '../../repositories/${toSnakeCase(Rel)}_repository.dart';
-import '../../entities/${d1}/${d1}.dart';
-import '../../entities/${d2}/${d2}.dart';`;
-
-        return `${imports}\n${useCases}`;
     }
 }

@@ -71,7 +71,7 @@ class ${D}LocalDataSource implements I${D}LocalDataSource {
     return categories.toModels();
   }
 
-  @override
+  @override     
   Stream<List<${D}Model>> watch${Ds}({int? userId}) {
     return _${d}Dao
         .watch${Ds}(userId: userId)

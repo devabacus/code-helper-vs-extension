@@ -131,8 +131,6 @@ export class GeneratorFactory {
         return new DataExtensionModelGenerator(this.fileSystem);
     }
 
-
-
     createDataLocalRelateServiceGenerator(): FileGenerator {
         return new DataLocalRelateServiceGenerator(this.fileSystem);
     }
@@ -140,8 +138,6 @@ export class GeneratorFactory {
     createDataRepositoryRelateImplGenerator(): FileGenerator {
         return new DataRepositoryRelateImplGenerator(this.fileSystem);
     }
-
-    
 
     // domain layer
     createEntityGenerator(): FileGenerator {
@@ -158,6 +154,11 @@ export class GeneratorFactory {
     createDomainProviderGenerator(): FileGenerator {
         return new UseCaseProvidersGenerator(this.fileSystem);
     }
+
+    createUseCaseRelateProvidersGenerator(): FileGenerator {
+        return new UseCaseRelateProvidersGenerator(this.fileSystem);
+    }
+
     createDomainEntityExtensionGenerator(): FileGenerator {
         return new DomainExtensionEntityGenerator(this.fileSystem);
     }
@@ -179,10 +180,6 @@ export class GeneratorFactory {
 
     createPresentGetByIdProviderGenerator(): FileGenerator {
         return new PresentGetByIdProviderGenerator(this.fileSystem);
-    }
-
-    createUseCaseRelateProvidersGenerator(): FileGenerator {
-        return new UseCaseRelateProvidersGenerator(this.fileSystem);
     }
 
     createPresentStateRelateProviderGenerator(): PresentStateRelateProviderGenerator {

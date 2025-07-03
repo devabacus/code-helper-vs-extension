@@ -6,9 +6,7 @@ import { cap, unCap, toSnakeCase, pluralConvert } from "../../../../../utils/tex
 import { DataRoutineGenerator } from "../../../generators/data_routine_generator";
 import { ServerpodModel } from "../../../serverpod_yaml_parser/formatters/types";
 
-/**
- * Generates Riverpod providers for all Use Cases of a many-to-many relation table.
- */
+
 export class UseCaseRelateProvidersGenerator extends DataRoutineGenerator {
 
     private structure: ProjectStructure;
@@ -19,51 +17,72 @@ export class UseCaseRelateProvidersGenerator extends DataRoutineGenerator {
     }
 
     protected getPath(featurePath: string, entityName: string): string {
-        return path.join(this.structure.getDomainUseCaseProviderPath(featurePath), toSnakeCase(entityName), `${toSnakeCase(entityName)}_relate_usecase_providers.dart`);
+        return path.join(this.structure.getDomainUseCaseProviderPath(featurePath), entityName, `${entityName}_usecase_providers.dart`);
     }
 
     protected getContent(model: ServerpodModel): string {
-        const sourceField = model.fields[0];
-        const targetField = model.fields[1];
+        const d1 = model.fields[1].relatedModel!;
+    const d2 = model.fields[2].relatedModel!;       
 
-        const D1 = cap(sourceField.name); // Task
-        const D2 = cap(targetField.name); // Tag
+    const D1 = cap(d1);
+    const D1s = pluralConvert(D1);
+    const D2 = cap(d2);
+    const D2s = pluralConvert(D2);
+    const ClassName = `${model.className}`; 
+    const ClassNameS = pluralConvert(ClassName); 
+    const tableName = `${model.tableName}`; 
 
-        const Rel = model.className; // TaskTagMap
-        const rel = unCap(Rel);       // taskTagMap
+            return `import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+import '../../usecases/${tableName}_usecases.dart';
+import '../../../data/providers/${tableName}/${tableName}_data_providers.dart';
 
-        // Названия Use Cases
-        const useCases = [
-            `Add${D2}To${D1}UseCase`,
-            `Remove${D2}From${D1}UseCase`,
-            `Get${cap(pluralConvert(D2))}For${D1}UseCase`,
-            `Get${cap(pluralConvert(D1))}For${D2}UseCase`,
-            `RemoveAllRelationsFor${D1}UseCase`,
-            `RemoveAllRelationsFor${D2}UseCase`
-        ];
+part '${tableName}_usecase_providers.g.dart';
 
-        // Генерируем провайдеры для каждого Use Case
-        const providers = useCases.map(useCaseName => {
-            const providerName = `${unCap(useCaseName)}`;
-            return `
 @riverpod
-${useCaseName}? ${providerName}(Ref ref) {
-  final repository = ref.watch(currentUser${Rel}RepositoryProvider);
+Add${D2}To${D1}UseCase? add${D2}To${D1}UseCase(Ref ref) {
+  final repository = ref.watch(currentUser${ClassName}RepositoryProvider);
   if (repository == null) {
-    // User is not authorized
     return null;
   }
-  return ${useCaseName}(repository);
-}`;
-        }).join('\n');
+  return Add${D2}To${D1}UseCase(repository);
+}
 
-        return `import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
-import '../../usecases/${toSnakeCase(rel)}/relate_usecases.dart';
-import '../../../data/providers/${toSnakeCase(rel)}/${toSnakeCase(rel)}_relate_data_providers.dart';
+@riverpod
+Remove${D2}From${D1}UseCase? remove${D2}From${D1}UseCase(Ref ref) {
+  final repository = ref.watch(currentUser${ClassName}RepositoryProvider);
+  if (repository == null) {
+    return null;
+  }
+  return Remove${D2}From${D1}UseCase(repository);
+}
 
-part '${toSnakeCase(rel)}_relate_usecase_providers.g.dart';
-${providers}
+@riverpod
+RemoveAll${D2s}From${D1}UseCase? removeAll${D2s}From${D1}UseCase(Ref ref) {
+  final repository = ref.watch(currentUser${ClassName}RepositoryProvider);
+  if (repository == null) {
+    return null;
+  }
+  return RemoveAll${D2s}From${D1}UseCase(repository);
+}
+
+@riverpod
+Get${D2s}For${D1}UseCase? get${D2s}For${D1}UseCase(Ref ref) {
+  final repository = ref.watch(currentUser${ClassName}RepositoryProvider);
+  if (repository == null) {
+    return null;
+  }
+  return Get${D2s}For${D1}UseCase(repository);
+}
+
+@riverpod
+Get${D1s}For${D2}UseCase? get${D1s}For${D2}UseCase(Ref ref) {
+  final repository = ref.watch(currentUser${ClassName}RepositoryProvider);
+  if (repository == null) {
+    return null;
+  }
+  return Get${D1s}For${D2}UseCase(repository);
+}
 `;
     }
 }
