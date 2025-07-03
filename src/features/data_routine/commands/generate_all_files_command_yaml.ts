@@ -32,6 +32,12 @@ export class GenerateAllFilesCommandYaml implements Command {
         if (!this.model.isRelation) {
             console.log(`Генерация файлов для обычной таблицы: ${entityName}`);
 
+
+            // server
+            await this.generatorFactory.createServerpodEndpointGenerator().generate(this.featurePath, entityName, this.model);
+            
+            
+
             // data layer
             await this.generatorFactory.createDriftTableGenerator().generate(this.featurePath, entityName, this.model);
             await this.generatorFactory.createDaoGenerator().generate(this.featurePath, entityName, this.model);
@@ -65,13 +71,16 @@ export class GenerateAllFilesCommandYaml implements Command {
 
         } else {
             console.log(`Обнаружена связующая таблица: ${entityName}.`);
+            // server
+            await this.generatorFactory.createServerpodRelateEndpointGenerator().generate(this.featurePath, entityName, this.model);
+
             // Data Layer
             await this.generatorFactory.createDriftRelateTableGenerator().generate(this.featurePath, entityName, this.model); // Таблица для связей
             await this.generatorFactory.createDaoRelateGenerator().generate(this.featurePath, entityName, this.model);
             await this.generatorFactory.createDataLocalRelateServiceGenerator().generate(this.featurePath, entityName, this.model);
             await this.generatorFactory.createLocalRelateSourceGenerator().generate(this.featurePath, entityName, this.model);
             await this.generatorFactory.createRemoteRelateSourceServiceGenerator().generate(this.featurePath, entityName, this.model);
-            // await this.generatorFactory.createRemoteRelateSourcesGenerator().generate(this.featurePath, entityName, this.model);
+            await this.generatorFactory.createRemoteRelateSourcesGenerator().generate(this.featurePath, entityName, this.model);
 
 
 

@@ -31,12 +31,14 @@ export class RemoteRelateSourceServiceGenerator extends BaseGenerator<ServerpodM
     const D2 = cap(d2);
     const D2s = pluralConvert(D2);
     const ClassName = `${model.className}`; 
+    const ClassNameS = pluralConvert(ClassName); 
+    const tableName = `${model.className}`; 
 
     return `
 import 'package:${projectName}_client/${projectName}_client.dart';
 
 abstract class I${ClassName}RemoteDataSource {
-  Future<List<${ClassName}>> get${ClassName}sSince(DateTime? since);
+  Future<List<${ClassName}>> get${ClassNameS}Since(DateTime? since);
   Stream<${ClassName}SyncEvent> watchEvents();
   Future<bool> checkConnection();
   Future<${ClassName}> create${ClassName}({

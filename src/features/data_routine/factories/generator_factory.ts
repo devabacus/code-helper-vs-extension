@@ -12,6 +12,7 @@ import { TableExtensionGenerator } from "../feature/data/datasources/local/table
 import { RemoteRelateSourceServiceGenerator } from "../feature/data/datasources/remote/interfaces/i_remote_datasource_relate_service";
 import { RemoteDataSourceServiceGenerator as RemoteSourceServiceGenerator } from "../feature/data/datasources/remote/interfaces/i_remote_datasource_service";
 import { DataRemoteSourcesGenerator } from "../feature/data/datasources/remote/sources/remote_datasource_generator";
+import { DataRemoteRelateSourcesGenerator } from "../feature/data/datasources/remote/sources/remote_relate_datasource_generator";
 import { ModelGenerator } from "../feature/data/models/data_model_generator";
 import { DataExtensionModelGenerator } from "../feature/data/models/extension_model_generator";
 import { DataProviderGenerator } from "../feature/data/providers/data_prov_generator";
@@ -32,11 +33,22 @@ import { PresentFilterRelateProviderGenerator } from "../feature/presentation/pr
 import { PresentGetByIdProviderGenerator } from "../feature/presentation/providers/present_get_by_id_prov_generator";
 import { PresentStateProviderGenerator } from "../feature/presentation/providers/present_state_prov_generator";
 import { PresentStateRelateProviderGenerator } from "../feature/presentation/providers/present_state_relate_provider_generator";
+import { ServerpodEndpointGenerator } from "../generators/serverpod_endpoint_generator";
+import { ServerpodRelateEndpointGenerator } from "../generators/serverpod_relate_endpoint_generator";
 
 
 
 export class GeneratorFactory {
     constructor(private fileSystem: IFileSystem) { }
+
+    // serverpod
+    createServerpodEndpointGenerator(): FileGenerator {
+        return new ServerpodEndpointGenerator(this.fileSystem);
+    }
+
+    createServerpodRelateEndpointGenerator(): FileGenerator {
+        return new ServerpodRelateEndpointGenerator(this.fileSystem);
+    }
 
     // data layer
     createDriftTableGenerator(): FileGenerator {
@@ -82,18 +94,25 @@ export class GeneratorFactory {
         return new RemoteRelateSourceServiceGenerator(this.fileSystem);
     }
 
-
-
-
-
-
-
-
-
-
     createRemoteSourcesGenerator(): FileGenerator {
         return new DataRemoteSourcesGenerator(this.fileSystem);
     }
+
+    createRemoteRelateSourcesGenerator(): FileGenerator {
+        return new DataRemoteRelateSourcesGenerator(this.fileSystem);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     createDataProviderGenerator(): FileGenerator {
