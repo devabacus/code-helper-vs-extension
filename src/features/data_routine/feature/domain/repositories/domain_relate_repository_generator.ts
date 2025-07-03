@@ -5,66 +5,56 @@ import { ProjectStructure } from "../../../../../core/interfaces/project_structu
 import { cap, unCap, toSnakeCase, pluralConvert } from "../../../../../utils/text_work/text_util";
 import { DataRoutineGenerator } from "../../../generators/data_routine_generator";
 import { ServerpodModel } from "../../../serverpod_yaml_parser/formatters/types";
+import { BaseGenerator } from "../../../../../core/generators/base_generator";
 
-export class DomainRelateRepositoryGenerator extends DataRoutineGenerator {
+export class DomainRelateRepositoryGenerator extends BaseGenerator<ServerpodModel> {
 
-    private structure: ProjectStructure;
+  private structure: ProjectStructure;
 
-    constructor(fileSystem: IFileSystem, structure?: ProjectStructure) {
-        super(fileSystem);
-        this.structure = structure || new DefaultProjectStructure();
-    }
+  constructor(fileSystem: IFileSystem, structure?: ProjectStructure) {
+    super(fileSystem);
+    this.structure = structure || new DefaultProjectStructure();
+  }
 
-    protected getPath(featurePath: string, entityName: string): string {
-        return path.join(this.structure.getDomainRepositoryPath(featurePath), `${toSnakeCase(entityName)}_repository.dart`);
-    }
+  protected getPath(featurePath: string, entityName: string): string {
+    return path.join(this.structure.getDomainRepositoryPath(featurePath), `${(entityName)}_repository.dart`);
+  }
 
-    protected getContent(model: ServerpodModel): string {
-        const sourceField = model.fields[0];
-        const targetField = model.fields[1];
+  protected getContent(model: ServerpodModel): string {
+    const d1 = model.fields[1].relatedModel!;
+    const d2 = model.fields[2].relatedModel!;
 
-        const D1 = cap(sourceField.name); // Task
-        const D2 = cap(targetField.name); // Tag
-        const d1 = unCap(D1); // task
-        const d2 = unCap(D2); // tag
-        const D1s = pluralConvert(D1); // Tasks
-        const D2s = pluralConvert(D2); // Tags
+    const D1 = cap(d1);
+    const D1s = pluralConvert(D1);
+    const D2 = cap(d2);
+    const D2s = pluralConvert(D2);
+    const ClassName = `${model.className}`;
+    const ClassNameS = pluralConvert(ClassName);
+    const className = unCap(ClassName);
+    const tableName = `${model.tableName}`;
 
-        const Rel = model.className; // TaskTagMap
-        const IRepository = `I${Rel}Repository`; // ITaskTagMapRepository
-
-        // В доменном слое мы работаем с Entity
-        const Entity1 = `${D1}Entity`;
-        const Entity2 = `${D2}Entity`;
-
-        return `import '../entities/${d1}/${d1}.dart';
+    return `import '../../../../core/sync/sync_registry.dart';
 import '../entities/${d2}/${d2}.dart';
+import '../entities/${d1}/${d1}.dart';
+import '../entities/${tableName}/${tableName}.dart';
 
-abstract class ${IRepository} {
-  /// Connects a ${D2} to a ${D1}.
-  Future<void> add${D2}To${D1}({
-    required String ${d1}Id,
-    required String ${d2}Id,
-  });
-
-  /// Disconnects a ${D2} from a ${D1}.
+abstract class I${ClassName}Repository implements ISyncableRepository {
+  
+  Stream<List<${ClassName}Entity>> watch${ClassNameS}();
+  Future<String> create${ClassName}(${ClassName}Entity ${className});
+  Future<bool> update${ClassName}(${ClassName}Entity ${className});
+  Future<bool> delete${ClassName}(String id);
+  Future<${ClassName}Entity?> get${ClassName}ById(String id);
+  Future<void> add${D2}To${D1}({required String ${d1}Id, required String ${d2}Id});
   Future<void> remove${D2}From${D1}({
     required String ${d1}Id,
     required String ${d2}Id,
   });
-
-  /// Gets all ${D2s} associated with a specific ${D1}.
-  Future<List<${Entity2}>> get${D2s}For${D1}(String ${d1}Id);
-  
-  /// Gets all ${D1s} associated with a specific ${D2}.
-  Future<List<${Entity1}>> get${D1s}For${D2}(String ${d2}Id);
-
-  /// Removes all connections for a specific ${D1}.
-  Future<void> removeAllRelationsFor${D1}(String ${d1}Id);
-
-  /// Removes all connections for a specific ${D2}.
-  Future<void> removeAllRelationsFor${D2}(String ${d2}Id);
+  Future<void> removeAll${D2s}From${D1}(String ${d1}Id);
+  Future<List<${D2}Entity>> get${D2s}For${D1}(String ${d1}Id);
+  Future<List<${D1}Entity>> get${D1s}For${D2}(String ${d2}Id);
 }
+
 `;
-    }
+  }
 }
