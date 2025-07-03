@@ -1,11 +1,10 @@
 import path from "path";
+import { BaseGenerator } from "../../../../../core/generators/base_generator";
 import { DefaultProjectStructure } from "../../../../../core/implementations/default_project_structure";
 import { IFileSystem } from "../../../../../core/interfaces/file_system";
 import { ProjectStructure } from "../../../../../core/interfaces/project_structure";
-import { cap, unCap, toSnakeCase, pluralConvert } from "../../../../../utils/text_work/text_util";
-import { DataRoutineGenerator } from "../../../generators/data_routine_generator";
+import { cap, pluralConvert, unCap } from "../../../../../utils/text_work/text_util";
 import { ServerpodModel } from "../../../serverpod_yaml_parser/formatters/types";
-import { BaseGenerator } from "../../../../../core/generators/base_generator";
 
 export class DomainRelateRepositoryGenerator extends BaseGenerator<ServerpodModel> {
 
@@ -54,7 +53,6 @@ abstract class I${ClassName}Repository implements ISyncableRepository {
   Future<List<${D2}Entity>> get${D2s}For${D1}(String ${d1}Id);
   Future<List<${D1}Entity>> get${D1s}For${D2}(String ${d2}Id);
 }
-
 `;
   }
 }
