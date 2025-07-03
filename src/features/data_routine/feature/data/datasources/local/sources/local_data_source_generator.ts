@@ -25,6 +25,7 @@ export class DataLocalSourcesGenerator extends BaseGenerator {
     const projectName = new PathData(featurePath).projectName;
     const D = model.className;
     const d = unCap(model.className);
+    const ds = pluralConvert(d);
     const Ds = pluralConvert(D);
 
 
@@ -86,6 +87,12 @@ class ${D}LocalDataSource implements I${D}LocalDataSource {
     } catch (e) {
       return null;
     }
+  }
+
+  @override
+  Future<List<${D}Model>> get${Ds}ByIds(List<String> ids, {required int userId}) async {
+    final ${ds}Data = await _${d}Dao.get${Ds}ByIds(ids, userId: userId);
+    return ${ds}Data.toModels();
   }
 
   @override

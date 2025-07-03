@@ -82,12 +82,6 @@ export class GenerateAllFilesCommandYaml implements Command {
             await this.generatorFactory.createRemoteRelateSourceServiceGenerator().generate(this.featurePath, entityName, this.model);
             await this.generatorFactory.createRemoteRelateSourcesGenerator().generate(this.featurePath, entityName, this.model);
             await this.generatorFactory.createDataProviderRelateGenerator().generate(this.featurePath, entityName, this.model);
-
-
-
-
-
-
             await this.generatorFactory.createDataRepositoryRelateImplGenerator().generate(this.featurePath, entityName, this.model);
 
             // // Domain Layer

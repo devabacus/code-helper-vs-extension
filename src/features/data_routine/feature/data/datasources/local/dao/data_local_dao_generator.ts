@@ -1,9 +1,9 @@
 import path from "path";
-import { DefaultProjectStructure } from "../../../../../../../core/implementations/default_project_structure"; //
-import { IFileSystem } from "../../../../../../../core/interfaces/file_system"; //
-import { ProjectStructure } from "../../../../../../../core/interfaces/project_structure"; //
-import { pluralConvert, unCap, cap, toSnakeCase } from "../../../../../../../utils/text_work/text_util"; //
-import { DataRoutineGenerator } from "../../../../../generators/data_routine_generator"; //
+import { DefaultProjectStructure } from "../../../../../../../core/implementations/default_project_structure";
+import { IFileSystem } from "../../../../../../../core/interfaces/file_system";
+import { ProjectStructure } from "../../../../../../../core/interfaces/project_structure";
+import { pluralConvert, unCap, cap, toSnakeCase } from "../../../../../../../utils/text_work/text_util";
+import { DataRoutineGenerator } from "../../../../../generators/data_routine_generator";
 import { ServerpodModel } from "../../../../../serverpod_yaml_parser/formatters/types";
 
 export class DataDaoGenerator extends DataRoutineGenerator {
@@ -12,7 +12,7 @@ export class DataDaoGenerator extends DataRoutineGenerator {
 
   constructor(fileSystem: IFileSystem, structure?: ProjectStructure) {
     super(fileSystem);
-    this.structure = structure || new DefaultProjectStructure(); //
+    this.structure = structure || new DefaultProjectStructure();
   }
 
   protected getPath(featurePath: string, entityName: string): string {
@@ -78,6 +78,15 @@ class ${D}Dao extends DatabaseAccessor<AppDatabase>
       (select(${d}Table)
         ..where((t) => t.id.equals(id) & t.userId.equals(userId)))
       .getSingle();
+
+  Future<List<${D}TableData>> get${Ds}ByIds(List<String> ids, {required int userId}) {
+    if (ids.isEmpty) {
+      return Future.value([]); // Возвращаем пустой список, если нет ID
+    }
+    return (select(${d}Table)
+          ..where((t) => t.id.isIn(ids) & t.userId.equals(userId) & t.syncStatus.equals(SyncStatus.deleted.name).not()))
+        .get();
+  }
 
   Future<String> create${D}(${D}TableCompanion companion) async {
     final id = companion.id.value;

@@ -184,6 +184,12 @@ class ${D}RepositoryImpl extends BaseSyncRepository
     return model?.toEntity();
   }
 
+  @override
+  Future<List<${D}Entity>> get${Ds}ByIds(List<String> ids) async {;
+    final models = await _localDataSource.get${Ds}ByIds(ids, userId: userId);
+    return models.toEntities();
+  }
+
   Future<void> _syncCreateToServer(${D}Entity ${d}) async {
     try {
       final server${D} = ${d}.toServerpod${D}();

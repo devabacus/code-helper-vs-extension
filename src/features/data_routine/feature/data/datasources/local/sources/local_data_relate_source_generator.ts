@@ -7,7 +7,10 @@ import { BaseGenerator } from "../../../../../../../core/generators/base_generat
 import { ServerpodModel } from "../../../../../serverpod_yaml_parser/formatters/types";
 import { PathData } from "../../../../../../utils/path_util";
 
-
+/**
+ * Generates a Local Data Source for a many-to-many relation table.
+ * It's a simple wrapper around the corresponding DAO.
+ */
 export class DataLocalRelateSourceGenerator extends BaseGenerator {
 
     private structure: ProjectStructure;

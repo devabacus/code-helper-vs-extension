@@ -7,108 +7,286 @@ import { cap, pluralConvert, unCap, toSnakeCase } from "../../../../../utils/tex
 import { PathData } from "../../../../utils/path_util";
 import { ServerpodModel } from "../../../serverpod_yaml_parser/formatters/types";
 
-/**
- * Generates the implementation of the Domain Repository for a many-to-many relation table.
- */
 export class DataRepositoryRelateImplGenerator extends BaseGenerator {
 
-    private structure: ProjectStructure;
+  private structure: ProjectStructure;
 
-    constructor(fileSystem: IFileSystem, structure?: ProjectStructure) {
-        super(fileSystem);
-        this.structure = structure || new DefaultProjectStructure();
-    }
+  constructor(fileSystem: IFileSystem, structure?: ProjectStructure) {
+    super(fileSystem);
+    this.structure = structure || new DefaultProjectStructure();
+  }
 
-    protected getPath(featurePath: string, entityName: string): string {
-        return path.join(this.structure.getDataRepositoryPath(featurePath), `${toSnakeCase(entityName)}_repository_impl.dart`);
-    }
+  protected getPath(featurePath: string, entityName: string): string {
+    return path.join(this.structure.getDataRepositoryPath(featurePath), `${entityName}_repository_impl.dart`);
+  }
 
-    protected getContent(model: ServerpodModel, _: string, featurePath: string): string {
-        const projectName = new PathData(featurePath).projectName;
+  protected getContent(model: ServerpodModel, _: string, featurePath: string): string {
+    const projectName = new PathData(featurePath).projectName;
+    const d1 = model.fields[1].relatedModel!;
+    const d2 = model.fields[2].relatedModel!;
 
-        // Определяем имена
-        const sourceField = model.fields[0];
-        const targetField = model.fields[1];
+    const D1 = cap(d1);
+    const D1s = pluralConvert(D1);
+    const D2 = cap(d2);
+    const D2s = pluralConvert(D2);
+    const ClassName = `${model.className}`;
+    const ClassNameS = pluralConvert(ClassName);
+    const className = unCap(ClassName);
+    const tableName = `${model.tableName}`;
 
-        const D1 = cap(sourceField.name); // Task
-        const D2 = cap(targetField.name); // Tag
-        const d1 = unCap(D1); // task
-        const d2 = unCap(D2); // tag
-        const D1s = pluralConvert(D1);
-        const D2s = pluralConvert(D2);
+    return `
+    import 'package:${projectName}/features/home/data/datasources/local/tables/extensions/${tableName}_table_extension.dart';
+import 'package:${projectName}/features/home/domain/entities/extensions/${tableName}_entity_extension.dart';
+import 'package:${projectName}_client/${projectName}_client.dart' as serverpod;
+import 'package:uuid/uuid.dart';
 
-        const Rel = model.className; // TaskTagMap
-        const IRepository = `I${Rel}Repository`;
-        const RepositoryImpl = `${Rel}RepositoryImpl`;
-        const ILocalDataSource = `I${Rel}LocalDataSource`;
-        const localDataSource = `_${unCap(Rel)}LocalDataSource`;
+import '../../../../core/database/local/database.dart';
+import '../../../../core/database/local/database_types.dart';
+import '../../../../core/database/local/interface/sync_metadata_local_datasource_service.dart';
+import '../../../../core/sync/base_sync_repository.dart';
+import '../../domain/entities/${d2}/${d2}.dart';
+import '../../domain/entities/${d1}/${d1}.dart';
+import '../../domain/entities/${tableName}/${tableName}.dart';
+import '../../domain/repositories/${d2}_repository.dart';
+import '../../domain/repositories/${tableName}_repository.dart';
+import '../datasources/local/interfaces/${tableName}_local_datasource_service.dart';
+import '../datasources/remote/interfaces/${tableName}_remote_datasource_service.dart';
+import '../models/extensions/${d1}_model_extension.dart';
+import '../models/extensions/${tableName}_model_extension.dart';
 
-        const Entity1 = `${D1}Entity`;
-        const Entity2 = `${D2}Entity`;
+class ${ClassName}RepositoryImpl extends BaseSyncRepository
+    implements I${ClassName}Repository {
+  final I${ClassName}LocalDataSource _localDataSource;
+  final I${ClassName}RemoteDataSource _remoteDataSource;
+  final I${D2}Repository _${d2}Repository;
 
-        const idType = 'String';
+  @override
+  String get entityTypeName => '${ClassName}';
+  @override
+  String get entityType => '${tableName}s_user_$userId';
 
-        return `import 'package:${projectName}_client/${projectName}_client.dart';
-import 'package:${projectName}/features/home/data/models/extensions/${d1}_model_extension.dart';
-import 'package:${projectName}/features/home/data/models/extensions/${d2}_model_extension.dart';
-import 'package:${projectName}/features/home/domain/entities/${d1}/${d1}.dart';
-import 'package:${projectName}/features/home/domain/entities/${d2}/${d2}.dart';
-import 'package:${projectName}/features/home/data/datasources/local/interfaces/${toSnakeCase(Rel)}_local_datasource_service.dart';
-import 'package:${projectName}/features/home/domain/repositories/${toSnakeCase(Rel)}_repository.dart';
+  ${ClassName}RepositoryImpl(
+    this._localDataSource,
+    this._remoteDataSource,
+    ISyncMetadataLocalDataSource syncMetadataDataSource,
+    int userId,
+    this._${d2}Repository,
+  ) : super(userId, syncMetadataDataSource: syncMetadataDataSource) {
+    print('✅ ${ClassName}RepositoryImpl: Создан экземпляр для userId: $userId');
+    initEventBasedSync();
+  }
 
-class ${RepositoryImpl} implements ${IRepository} {
-  final Client _client;
-  final ${ILocalDataSource} ${localDataSource};
-  final int userId;
+  @override
+  Stream<List<${ClassName}Entity>> watch${ClassNameS}() {
+    return _localDataSource
+        .watchAllRelations(userId: userId)
+        .map((models) => models.toEntities());
+  }
 
-  ${RepositoryImpl}(this._client, this.${localDataSource}, this.userId);
+  @override
+  Future<String> create${ClassName}(${ClassName}Entity ${className}) async {
+    final id = await _localDataSource.create${ClassName}(${className}.toModel());
+    syncWithServer().catchError(
+      (e) =>
+          print('⚠️ Фоновая синхронизация после создания связи не удалась: $e'),
+    );
+    return id;
+  }
+
+  @override
+  Future<bool> delete${ClassName}(String id) async {
+    final result = await _localDataSource.softDelete${ClassName}ById(
+      id,
+      userId: userId,
+    );
+    syncWithServer().catchError(
+      (e) =>
+          print('⚠️ Фоновая синхронизация после удаления связи не удалась: $e'),
+    );
+    return result;
+  }
 
   @override
   Future<void> add${D2}To${D1}({
-    required ${idType} ${d1}Id,
-    required ${idType} ${d2}Id,
+    required String ${d1}Id,
+    required String ${d2}Id,
   }) async {
-    await _client.${unCap(Rel)}.add${Rel}(
-      ${d1}Id: UuidValue.fromString(${d1}Id),
-      ${d2}Id: UuidValue.fromString(${d2}Id),
+    final newRelation = ${ClassName}Entity(
+      id: const Uuid().v7(),
+      userId: userId,
+      lastModified: DateTime.now().toUtc(),
+      ${d1}Id: ${d1}Id,
+      ${d2}Id: ${d2}Id,
     );
-    await ${localDataSource}.addRelation(${d1}Id: ${d1}Id, ${d2}Id: ${d2}Id);
+    await create${ClassName}(newRelation);
   }
 
   @override
   Future<void> remove${D2}From${D1}({
-    required ${idType} ${d1}Id,
-    required ${idType} ${d2}Id,
+    required String ${d1}Id,
+    required String ${d2}Id,
   }) async {
-    await _client.${unCap(Rel)}.remove${Rel}(
-      ${d1}Id: UuidValue.fromString(${d1}Id),
-      ${d2}Id: UuidValue.fromString(${d2}Id),
+    try {
+      // Находим связь по ${d1}Id и ${d2}Id
+      final relation = await _localDataSource.getRelationBy${D1}And${D2}(
+        ${d1}Id,
+        ${d2}Id,
+        userId: userId,
+      );
+
+      if (relation != null) {
+        // Удаляем связь по найденному ID
+        await delete${ClassName}(relation.id);
+        print('✅ Связь найдена и удалена: ${D1}($${d1}Id) ↔ ${D2}($${d2}Id)');
+      } else {
+        print('⚠️ Связь не найдена: ${D1}($${d1}Id) ↔ ${D2}($${d2}Id)');
+      }
+    } catch (e) {
+      print('❌ Ошибка удаления связи ${D1}($${d1}Id) ↔ ${D2}($${d2}Id): $e');
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> removeAll${D2s}From${D1}(String ${d1}Id) async {
+    try {
+      await _localDataSource.softDeleteRelationsBy${D1}Id(
+        ${d1}Id,
+        userId: userId,
+      );
+      print('✅ Все связи для источника $${d1}Id помечены для удаления локально.');
+      // Запускаем фоновую синхронизацию, чтобы сервер узнал об удалениях
+      syncWithServer().catchError(
+        (e) => print(
+          '⚠️ Фоновая синхронизация после очистки тегов не удалась: $e',
+        ),
+      );
+    } catch (e) {
+      print('❌ Ошибка при удалении всех записей $${d1}Id: $e');
+      rethrow;
+    }
+  }
+
+  @override
+  Future<List<${D2}Entity>> get${D2s}For${D1}(String ${d1}Id) async {
+    final allRelations =
+        await _localDataSource.watchAllRelations(userId: userId).first;
+
+    final ${d2}IdsFor${D1} =
+        allRelations
+            .where((relation) => relation.${d1}Id == ${d1}Id)
+            .map((relation) => relation.${d2}Id)
+            .toList();
+
+    if (${d2}IdsFor${D1}.isEmpty) {
+      return [];
+    }
+    return _${d2}Repository.get${D2s}ByIds(${d2}IdsFor${D1});
+  }
+
+  @override
+  Future<List<${D1}Entity>> get${D1s}For${D2}(String ${d2}Id) async {
+    final server${D1s} = await _remoteDataSource.get${D1s}For${D2}(
+      serverpod.UuidValue.fromString(${d2}Id),
     );
-    await ${localDataSource}.removeRelation(${d1}Id: ${d1}Id, ${d2}Id: ${d2}Id);
-  }
-
-  @override
-  Future<List<${Entity2}>> get${D2s}For${D1}(${idType} ${d1}Id) async {
-    final server${D2s} = await _client.${unCap(Rel)}.get${D2s}For${D1}(UuidValue.fromString(${d1}Id));
-    return server${D2s}.toModels().toEntities();
-  }
-
-  @override
-  Future<List<${Entity1}>> get${D1s}For${D2}(${idType} ${d2}Id) async {
-    final server${D1s} = await _client.${unCap(Rel)}.get${D1s}For${D2}(UuidValue.fromString(${d2}Id));
     return server${D1s}.toModels().toEntities();
   }
 
   @override
-  Future<void> removeAllRelationsFor${D1}(${idType} ${d1}Id) async {
-    await ${localDataSource}.removeAllFor${D1}(${d1}Id);
+  Future<List<dynamic>> getChangesFromServer(DateTime? since) {
+    return _remoteDataSource.get${ClassNameS}Since(since);
   }
 
   @override
-  Future<void> removeAllRelationsFor${D2}(${idType} ${d2}Id) async {
-    await ${localDataSource}.removeAllFor${D2}(${d2}Id);
+  Future<List<dynamic>> reconcileChanges(List<dynamic> serverChanges) {
+    return _localDataSource.reconcileServerChanges(serverChanges, userId);
+  }
+
+  @override
+  Future<void> pushLocalChanges(List<dynamic> localChangesToPush) async {
+    for (final localChange in localChangesToPush as List<${ClassName}TableData>) {
+      if (localChange.syncStatus == SyncStatus.deleted) {
+        try {
+          // Вместо удаления по локальному ID, удаляем по бизнес-ключу
+          await _syncDeleteBy${D1}And${D2}(localChange.${d1}Id, localChange.${d2}Id);
+          await _localDataSource.physicallyDelete${ClassName}(
+            localChange.id,
+            userId: userId,
+          );
+          print(
+            '    -> ✅ Удаление связи для ${D1} \${localChange.${d1}Id.substring(0, 8)}... синхронизировано с сервером.',
+          );
+        } catch (e) {
+          print(
+            '    -> ⚠️ Не удалось синхронизировать удаление связи для ${D1}: \${localChange.${d1}Id}. Повторим позже. Ошибка: $e',
+          );
+        }
+      } else if (localChange.syncStatus == SyncStatus.local) {
+        try {
+          final syncedEntity = await _syncCreateToServer(
+            localChange.toModel().toEntity(),
+          );
+          await _localDataSource.insertOrUpdateFromServer(
+            syncedEntity,
+            SyncStatus.synced,
+          );
+          print(
+            '    -> ✅ Создание/обновление связи ID \${localChange.id.substring(0, 8)}... синхронизировано с сервером.',
+          );
+        } catch (e) {
+          print(
+            '    -> ⚠️ Не удалось синхронизировать создание/обновление связи ID: \${localChange.id}. Повторим позже. Ошибка: $e',
+          );
+        }
+      }
+    }
+  }
+
+  // Новый вспомогательный метод для вызова удаления по ${D1} и ${D2} ID
+  Future<void> _syncDeleteBy${D1}And${D2}(String ${d1}Id, String ${d2}Id) async {
+    await _remoteDataSource.delete${ClassName}By${D1}And${D2}(
+      serverpod.UuidValue.fromString(${d1}Id),
+      serverpod.UuidValue.fromString(${d2}Id),
+    );
+  }
+
+  Future<serverpod.${ClassName}> _syncCreateToServer(
+    ${ClassName}Entity entity,
+  ) async {
+    return await _remoteDataSource.create${ClassName}(
+      ${d1}Id: serverpod.UuidValue.fromString(entity.${d1}Id),
+      ${d2}Id: serverpod.UuidValue.fromString(entity.${d2}Id),
+    );
+  }
+
+  @override
+  Stream<dynamic> watchEvents() => _remoteDataSource.watchEvents();
+
+  @override
+  Future<void> handleSyncEvent(dynamic event) async {
+    await _localDataSource.handleSyncEvent(event, userId);
+  }
+
+  @override
+  Future<${ClassName}Entity?> get${ClassName}ById(String id) async {
+    final model = await _localDataSource.getRelationById(id, userId: userId);
+    return model?.toEntity();
+  }
+
+  @override
+  Future<bool> update${ClassName}(${ClassName}Entity ${className}) async {
+    final result = await _localDataSource.update${ClassName}(
+      ${className}.toModel(),
+    );
+    syncWithServer().catchError(
+      (e) => print(
+        '⚠️ Фоновая синхронизация после обновления связи не удалась: $e',
+      ),
+    );
+    return result;
   }
 }
-`;
-    }
+
+    `;
+  }
 }
