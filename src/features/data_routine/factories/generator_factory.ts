@@ -102,22 +102,19 @@ export class GeneratorFactory {
         return new DataRemoteRelateSourcesGenerator(this.fileSystem);
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
     createDataProviderGenerator(): FileGenerator {
         return new DataProviderGenerator(this.fileSystem);
     }
+
+    createDataProviderRelateGenerator(): FileGenerator {
+        return new DataProviderRelateGenerator(this.fileSystem);
+    }
+
+
+
+
+
+    
     createRemoteDataProviderGenerator(): FileGenerator {
         return new RemoteDataProviderGenerator(this.fileSystem);
     }
@@ -144,9 +141,7 @@ export class GeneratorFactory {
         return new DataRepositoryRelateImplGenerator(this.fileSystem);
     }
 
-    createDataProviderRelateGenerator(): FileGenerator {
-        return new DataProviderRelateGenerator(this.fileSystem);
-    }
+    
 
     // domain layer
     createEntityGenerator(): FileGenerator {
