@@ -28,7 +28,6 @@ export class DataLocalRelateServiceGenerator extends BaseGenerator {
         const D1 = cap(d1);
         const D2 = cap(d2);
         const ClassName = `${model.className}`; 
-        const className = `${unCap(ClassName)}`;
         const tableName = `${model.tableName}`;
 
 

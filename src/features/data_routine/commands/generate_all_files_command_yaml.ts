@@ -10,12 +10,12 @@ export class GenerateAllFilesCommandYaml implements Command {
         private generatorFactory: GeneratorFactory,
         private featurePath: string,
         private model: ServerpodModel,
-    ) {}
+    ) { }
 
     async execute(): Promise<void> {
         // Имя сущности (в PascalCase) берем напрямую из модели
         const entityName = toCamelCase(this.model.className);
-        
+
         // model entity
         await this.generatorFactory.createModelGenerator().generate(this.featurePath, entityName, this.model);
         await this.generatorFactory.createEntityGenerator().generate(this.featurePath, entityName, this.model);
@@ -35,11 +35,13 @@ export class GenerateAllFilesCommandYaml implements Command {
             // data layer
             await this.generatorFactory.createDriftTableGenerator().generate(this.featurePath, entityName, this.model);
             await this.generatorFactory.createDaoGenerator().generate(this.featurePath, entityName, this.model);
-            await this.generatorFactory.createLocalDataSourceServiceGenerator().generate(this.featurePath, entityName, this.model);
-            // // remote
-            await this.generatorFactory.createRemoteDataSourceServiceGenerator().generate(this.featurePath, entityName, this.model);
-
+            await this.generatorFactory.createLocalSourceServiceGenerator().generate(this.featurePath, entityName, this.model);
             await this.generatorFactory.createLocalSourcesGenerator().generate(this.featurePath, entityName, this.model);
+
+            // // remote
+            await this.generatorFactory.createRemoteSourceServiceGenerator().generate(this.featurePath, entityName, this.model);
+
+
             await this.generatorFactory.createRemoteSourcesGenerator().generate(this.featurePath, entityName, this.model);
             await this.generatorFactory.createDataProviderGenerator().generate(this.featurePath, entityName, this.model);
             await this.generatorFactory.createRemoteDataProviderGenerator().generate(this.featurePath, entityName, this.model);
@@ -67,7 +69,15 @@ export class GenerateAllFilesCommandYaml implements Command {
             await this.generatorFactory.createDriftRelateTableGenerator().generate(this.featurePath, entityName, this.model); // Таблица для связей
             await this.generatorFactory.createDaoRelateGenerator().generate(this.featurePath, entityName, this.model);
             await this.generatorFactory.createDataLocalRelateServiceGenerator().generate(this.featurePath, entityName, this.model);
-            await this.generatorFactory.createDataLocalRelateSourceGenerator().generate(this.featurePath, entityName, this.model);
+            await this.generatorFactory.createLocalRelateSourceGenerator().generate(this.featurePath, entityName, this.model);
+            await this.generatorFactory.createRemoteRelateSourceServiceGenerator().generate(this.featurePath, entityName, this.model);
+            // await this.generatorFactory.createRemoteRelateSourcesGenerator().generate(this.featurePath, entityName, this.model);
+
+
+
+
+
+
             await this.generatorFactory.createDataRepositoryRelateImplGenerator().generate(this.featurePath, entityName, this.model);
             await this.generatorFactory.createDataProviderRelateGenerator().generate(this.featurePath, entityName, this.model);
 

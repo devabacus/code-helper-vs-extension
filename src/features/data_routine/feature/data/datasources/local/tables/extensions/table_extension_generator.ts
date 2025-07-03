@@ -2,7 +2,7 @@ import path from "path";
 import { DefaultProjectStructure } from "../../../../../../../../core/implementations/default_project_structure";
 import { IFileSystem } from "../../../../../../../../core/interfaces/file_system";
 import { ProjectStructure } from "../../../../../../../../core/interfaces/project_structure";
-import { toCamelCase, unCap } from "../../../../../../../../utils/text_work/text_util";
+import { toCamelCase, toSnakeCase, unCap } from "../../../../../../../../utils/text_work/text_util";
 import { DataRoutineGenerator } from "../../../../../../generators/data_routine_generator";
 import { ServerpodModel } from "../../../../../../serverpod_yaml_parser/formatters/types";
 import { CodeFormatter } from "../../../../../../serverpod_yaml_parser/formatters/code_formatter";
@@ -26,14 +26,13 @@ export class TableExtensionGenerator extends BaseGenerator<ServerpodModel> {
   protected getContent(model: ServerpodModel, _: string, featurePath: string): string {
     const projectName = new PathData(featurePath).projectName;
     const D = model.className;
-    const d = unCap(model.className);
+    const d = toSnakeCase(model.className);
     const formatter = new CodeFormatter();
 
     const params = formatter.formatSimpleFields(model.fields);
     const paramValueWrapped = formatter.formatInsertCompanionParams(model.fields);
-    const valueWrappedToString = paramValueWrapped.replace(/Value(.*Id)/g, 'Value$1.toString()');
-
-
+    // const valueWrappedToString = paramValueWrapped.replace(/Value(.*Id)/g, ': Value$1.toString()');
+    const valueWrappedToString = paramValueWrapped.split(',').map(p => p.replace(/(.*Id)/, '$1.toString()')).join(',');
 
     return `
 

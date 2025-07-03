@@ -16,8 +16,7 @@ export class DataDaoRelateGenerator extends DataRoutineGenerator {
     }
 
     protected getPath(featurePath: string, entityName: string): string {
-        const snakeCaseEntityName = toSnakeCase(entityName);
-        return path.join(this.structure.getDaoPath(featurePath), snakeCaseEntityName, `${snakeCaseEntityName}_dao.dart`);
+        return path.join(this.structure.getDaoPath(featurePath), entityName, `${entityName}_dao.dart`);
     }
 
     protected getContent(model: ServerpodModel): string {

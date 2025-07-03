@@ -9,7 +9,8 @@ import { DataLocalSourcesGenerator } from "../feature/data/datasources/local/sou
 import { DriftRelateTableGenerator } from "../feature/data/datasources/local/tables/drift_relate_table_generator";
 import { DriftTableGenerator } from "../feature/data/datasources/local/tables/drift_table_generator";
 import { TableExtensionGenerator } from "../feature/data/datasources/local/tables/extensions/table_extension_generator";
-import { RemoteDataSourceServiceGenerator } from "../feature/data/datasources/remote/interfaces/i_remote_datasource_service";
+import { RemoteRelateSourceServiceGenerator } from "../feature/data/datasources/remote/interfaces/i_remote_datasource_relate_service";
+import { RemoteDataSourceServiceGenerator as RemoteSourceServiceGenerator } from "../feature/data/datasources/remote/interfaces/i_remote_datasource_service";
 import { DataRemoteSourcesGenerator } from "../feature/data/datasources/remote/sources/remote_datasource_generator";
 import { ModelGenerator } from "../feature/data/models/data_model_generator";
 import { DataExtensionModelGenerator } from "../feature/data/models/extension_model_generator";
@@ -58,19 +59,36 @@ export class GeneratorFactory {
         return new DataDaoRelateGenerator(this.fileSystem);
     }
 
-    createLocalDataSourceServiceGenerator(): FileGenerator {
+    // local source 
+    createLocalSourceServiceGenerator(): FileGenerator {
         return new LocalDataSourceServiceGenerator(this.fileSystem);
     }
-    createRemoteDataSourceServiceGenerator(): FileGenerator {
-        return new RemoteDataSourceServiceGenerator(this.fileSystem);
+    createLocalRelateSourceGenerator(): FileGenerator {
+        return new DataLocalRelateSourceGenerator(this.fileSystem);
     }
     createLocalSourcesGenerator(): FileGenerator {
         return new DataLocalSourcesGenerator(this.fileSystem);
     }
-
-    createDataLocalRelateSourceGenerator(): FileGenerator {
-        return new DataLocalRelateSourceGenerator(this.fileSystem);
+    createDataRelateSourceGenerator(): FileGenerator {
+        return new RemoteRelateSourceServiceGenerator(this.fileSystem);
     }
+
+    // remote source
+    createRemoteSourceServiceGenerator(): FileGenerator {
+        return new RemoteSourceServiceGenerator(this.fileSystem);
+    }
+
+    createRemoteRelateSourceServiceGenerator(): FileGenerator {
+        return new RemoteRelateSourceServiceGenerator(this.fileSystem);
+    }
+
+
+
+
+
+
+
+
 
 
     createRemoteSourcesGenerator(): FileGenerator {
