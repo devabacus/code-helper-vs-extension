@@ -24,7 +24,7 @@ export class ServerpodRelateEndpointGenerator extends BaseGenerator<ServerpodMod
   protected getContent(model: ServerpodModel, _: string, featurePath: string): string {
     const projectName = new PathData(featurePath).projectName;
 
-    const d1 = model.fields[1].relatedModel!;
+    const d1 = model.fields[1].relatedModel!; //TODO need to fix очень хрупко
     const d2 = model.fields[2].relatedModel!;
 
     const D1 = cap(d1);
@@ -33,34 +33,44 @@ export class ServerpodRelateEndpointGenerator extends BaseGenerator<ServerpodMod
     const D2s = pluralConvert(D2);
     const ClassName = `${model.className}`;
     const ClassNameS = pluralConvert(ClassName);
-    const tableName = `${model.className}`;
+    const tableName = `${model.tableName}`;
     const className = unCap(ClassName);
     const classNameS = pluralConvert(className);
 
     return `import 'package:serverpod/serverpod.dart';
 import 'package:${projectName}_server/src/generated/protocol.dart';
 
-// Базовое имя канала для real-time событий. Для каждого пользователя будет свой канал.
+import 'user_manager_endpoint.dart';
+
 const _${className}ChannelBase = '${projectName}_${tableName}_events_for_user_';
 
 class ${ClassName}Endpoint extends Endpoint {
-  Future<int> _getAuthenticatedUserId(Session session) async {
+  Future<AuthenticatedUserContext> _getAuthenticatedUserContext(Session session) async {
     final authInfo = await session.authenticated;
     final userId = authInfo?.userId;
 
     if (userId == null) {
       throw Exception('Пользователь не авторизован.');
     }
-    return userId;
+
+    final customerUser = await CustomerUser.db.findFirstRow(
+      session,
+      where: (cu) => cu.userId.equals(userId),
+    );
+
+    if (customerUser == null) {
+      throw Exception('Пользователь $userId не привязан к клиенту (Customer).');
+    }
+    return (userId: userId, customerId: customerUser.customerId);
   }
 
-  Future<void> _notifyChange(Session session, ${ClassName}SyncEvent event, int userId) async {
-    final channel = '$_${className}ChannelBase$userId';
+  Future<void> _notifyChange(Session session, ${ClassName}SyncEvent event, AuthenticatedUserContext authContext) async {
+    final channel = '$_${className}ChannelBase\${authContext.userId}-\${authContext.customerId.uuid}';
     await session.messages.postMessage(channel, event);
     session.log('🔔 Событие ${ClassName} \${event.type.name} отправлено в канал "$channel"');
   }
 
-   Future<void> _validate${D1}And${D2}(Session session, ${ClassName} model) async {
+  Future<void> _validate${D1}And${D2}(Session session, ${ClassName} model) async {
     // Проверяем, что ${D1} существует и принадлежит пользователю
     final ${d1} = await ${D1}.db.findFirstRow(
       session,
@@ -81,6 +91,7 @@ class ${ClassName}Endpoint extends Endpoint {
       where: (t) =>
           t.id.equals(model.${d2}Id) &
           t.userId.equals(model.userId) &
+          t.customerId.equals(model.customerId) &
           t.isDeleted.equals(false),
     );
     if (${d2} == null) {
@@ -91,7 +102,9 @@ class ${ClassName}Endpoint extends Endpoint {
 
   Future<${ClassName}> create${ClassName}(
       Session session, ${ClassName} ${className}) async {
-    final userId = await _getAuthenticatedUserId(session);
+    final authContext = await _getAuthenticatedUserContext(session);
+    final userId = authContext.userId;
+    final customerId = authContext.customerId;
 
     final ${d1}Id = ${className}.${d1}Id;
     final ${d2}Id = ${className}.${d2}Id;
@@ -106,7 +119,7 @@ class ${ClassName}Endpoint extends Endpoint {
         where: (r) =>
             r.${d1}Id.equals(${d1}Id) &
             r.${d2}Id.equals(${d2}Id) &
-            r.userId.equals(userId),
+            r.userId.equals(userId) & r.customerId.equals(customerId)            ,
         transaction: transaction,
       );
 
@@ -135,7 +148,7 @@ class ${ClassName}Endpoint extends Endpoint {
               type: SyncEventType.update,
               ${className}: result,
             ),
-            userId);
+            authContext);
       } else {
         // Создаем новую связь
         result = await ${ClassName}.db.insertRow(
@@ -158,7 +171,7 @@ class ${ClassName}Endpoint extends Endpoint {
               type: SyncEventType.create,
               ${className}: result,
             ),
-            userId);
+            authContext);
       }
 
       session.log(
@@ -168,12 +181,14 @@ class ${ClassName}Endpoint extends Endpoint {
   }
   
   Future<bool> delete${ClassName}ById(Session session, UuidValue id) async {
-    final userId = await _getAuthenticatedUserId(session);
+    final authContext = await _getAuthenticatedUserContext(session);
+    final userId = authContext.userId;
+    final customerId = authContext.customerId;
 
     return await session.db.transaction((transaction) async {
         final relation = await ${ClassName}.db.findFirstRow(
             session,
-            where: (r) => r.id.equals(id) & r.userId.equals(userId) & r.isDeleted.equals(false),
+            where: (r) => r.id.equals(id) & r.userId.equals(userId) & r.customerId.equals(customerId) & r.isDeleted.equals(false),
             transaction: transaction,
         );
 
@@ -194,7 +209,7 @@ class ${ClassName}Endpoint extends Endpoint {
             type: SyncEventType.delete,
             ${className}: result,
             id: id,
-        ), userId);
+        ), authContext);
 
         session.log('✅ Удалена связь ${ClassName} с ID: $id для пользователя $userId');
         return true;
@@ -202,12 +217,15 @@ class ${ClassName}Endpoint extends Endpoint {
   }
 
   Future<List<${D2}>> get${D2s}For${D1}(Session session, UuidValue ${d1}Id) async {
-    final userId = await _getAuthenticatedUserId(session);
+    final authContext = await _getAuthenticatedUserContext(session);
+    final userId = authContext.userId;
+    final customerId = authContext.customerId;
+
 
     // Сначала проверяем, что задача существует и принадлежит пользователю
     final ${d1} = await ${D1}.db.findFirstRow(
       session,
-      where: (t) => t.id.equals(${d1}Id) & t.userId.equals(userId) & t.isDeleted.equals(false),
+      where: (t) => t.id.equals(${d1}Id) & t.userId.equals(userId) & t.customerId.equals(customerId) & t.isDeleted.equals(false),
     );
     
     if (${d1} == null) {
@@ -215,36 +233,40 @@ class ${ClassName}Endpoint extends Endpoint {
     }
 
     // Получаем ID тегов через связующую таблицу
-    final ${ClassNameS} = await ${ClassName}.db.find(
+    final ${classNameS} = await ${ClassName}.db.find(
       session,
       where: (ttm) => ttm.${d1}Id.equals(${d1}Id) & 
                       ttm.userId.equals(userId) & 
+                      ttm.customerId.equals(customerId) & 
                       ttm.isDeleted.equals(false),
     );
 
-    if (${ClassNameS}.isEmpty) {
+    if (${classNameS}.isEmpty) {
       return [];
     }
 
-    final ${d2}Ids = ${ClassNameS}.map((ttm) => ttm.${d2}Id).toSet();
+    final ${d2}Ids = ${classNameS}.map((ttm) => ttm.${d2}Id).toSet();
 
     // Получаем сами теги
     return await ${D2}.db.find(
       session,
       where: (t) => t.id.inSet(${d2}Ids) & 
                     t.userId.equals(userId) & 
+                    t.customerId.equals(customerId) & 
                     t.isDeleted.equals(false),
       orderBy: (t) => t.title,
     );
   }
 
   Future<List<${D1}>> get${D1s}For${D2}(Session session, UuidValue ${d2}Id) async {
-    final userId = await _getAuthenticatedUserId(session);
+    final authContext = await _getAuthenticatedUserContext(session);
+    final userId = authContext.userId;
+    final customerId = authContext.customerId;
 
     // Сначала проверяем, что тег существует и принадлежит пользователю
     final ${d2} = await ${D2}.db.findFirstRow(
       session,
-      where: (t) => t.id.equals(${d2}Id) & t.userId.equals(userId) & t.isDeleted.equals(false),
+      where: (t) => t.id.equals(${d2}Id) & t.userId.equals(userId) & t.customerId.equals(customerId) & t.isDeleted.equals(false),
     );
     
     if (${d2} == null) {
@@ -252,44 +274,51 @@ class ${ClassName}Endpoint extends Endpoint {
     }
 
     // Получаем ID задач через связующую таблицу
-    final ${ClassNameS} = await ${ClassName}.db.find(
+    final ${classNameS} = await ${ClassName}.db.find(
       session,
       where: (ttm) => ttm.${d2}Id.equals(${d2}Id) & 
                       ttm.userId.equals(userId) & 
+                      ttm.customerId.equals(customerId) & 
                       ttm.isDeleted.equals(false),
     );
 
-    if (${ClassNameS}.isEmpty) {
+    if (${classNameS}.isEmpty) {
       return [];
     }
 
-    final ${d1}Ids = ${ClassNameS}.map((ttm) => ttm.${d1}Id).toSet();
+    final ${d1}Ids = ${classNameS}.map((ttm) => ttm.${d1}Id).toSet();
 
     // Получаем сами задачи
     return await ${D1}.db.find(
       session,
       where: (t) => t.id.inSet(${d1}Ids) & 
                     t.userId.equals(userId) & 
+                    t.customerId.equals(customerId) & 
                     t.isDeleted.equals(false),
       orderBy: (t) => t.title,
     );
   }
 
   Future<List<${ClassName}>> get${ClassNameS}Since(Session session, DateTime? since) async {
-    final userId = await _getAuthenticatedUserId(session);
+    final authContext = await _getAuthenticatedUserContext(session);
+    final userId = authContext.userId;
+    final customerId = authContext.customerId;
     
     return await ${ClassName}.db.find(
       session,
       // Возвращаем все записи (включая удаленные), которые изменились после 'since'
-      where: (r) => r.userId.equals(userId) & 
-                    (since == null ? Constant.bool(true) : r.lastModified >= since),
+      where: (r) => r.userId.equals(userId) & r.customerId.equals(customerId) & (since == null ? Constant.bool(true) : r.lastModified >= since),
       orderBy: (r) => r.lastModified,
     );
   }
 
   Stream<${ClassName}SyncEvent> watchEvents(Session session) async* {
-    final userId = await _getAuthenticatedUserId(session);
-    final channel = '$_${className}ChannelBase$userId';
+    final authContext = await _getAuthenticatedUserContext(session);
+  final userId = authContext.userId;
+  final customerId = authContext.customerId;
+    
+    // final channel = '$_${className}ChannelBase$userId';
+      final channel = '$_${className}ChannelBase$userId-\${customerId.uuid}';
     session.log('🟢 Клиент (user: $userId) подписался на события ${ClassName} в канале "$channel"');
 
     try {
@@ -303,13 +332,15 @@ class ${ClassName}Endpoint extends Endpoint {
   }
 
 Future<bool> delete${ClassName}By${D1}And${D2}(Session session, UuidValue ${d1}Id, UuidValue ${d2}Id) async {
-    final userId = await _getAuthenticatedUserId(session);
+    final authContext = await _getAuthenticatedUserContext(session);
+    final userId = authContext.userId;
+    final customerId = authContext.customerId;
 
     return await session.db.transaction((transaction) async {
         // Находим активную связь по бизнес-ключу
         final relation = await ${ClassName}.db.findFirstRow(
             session,
-            where: (r) => r.${d1}Id.equals(${d1}Id) & r.${d2}Id.equals(${d2}Id) & r.userId.equals(userId) & r.isDeleted.equals(false),
+            where: (r) => r.${d1}Id.equals(${d1}Id) & r.${d2}Id.equals(${d2}Id) & r.userId.equals(userId) & r.customerId.equals(customerId) & r.isDeleted.equals(false),
             transaction: transaction,
         );
 
@@ -331,7 +362,7 @@ Future<bool> delete${ClassName}By${D1}And${D2}(Session session, UuidValue ${d1}I
             type: SyncEventType.delete,
             id: result.id, // Отправляем ID удаленной записи
             ${className}: result,
-        ), userId);
+        ), authContext);
 
         session.log('✅ Удалена связь ${D1}($${d1}Id) <-> ${D2}($${d2}Id) для пользователя $userId');
         return true;
