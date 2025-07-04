@@ -46,6 +46,7 @@ extension ${D}ModelExtension on ${D}Model {
         id: id,
         lastModified: lastModified,
         userId: userId,
+        customerId: customerId,
          ${params}
       );
 
@@ -53,6 +54,7 @@ extension ${D}ModelExtension on ${D}Model {
         id: Value(id),
         lastModified: Value(lastModified), 
         userId: Value(userId),
+        customerId: Value(customerId),
         syncStatus: Value(SyncStatus.local), // По умолчанию новые записи требуют синхронизации
         ${paramValueWrapped}
 

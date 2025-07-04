@@ -31,8 +31,8 @@ export class RemoteRelateSourceServiceGenerator extends BaseGenerator<ServerpodM
     const D2 = cap(d2);
     const D2s = pluralConvert(D2);
     const ClassName = `${model.className}`; 
+    const className = unCap(ClassName); 
     const ClassNameS = pluralConvert(ClassName); 
-    const tableName = `${model.className}`; 
 
     return `
 import 'package:${projectName}_client/${projectName}_client.dart';
@@ -41,10 +41,7 @@ abstract class I${ClassName}RemoteDataSource {
   Future<List<${ClassName}>> get${ClassNameS}Since(DateTime? since);
   Stream<${ClassName}SyncEvent> watchEvents();
   Future<bool> checkConnection();
-  Future<${ClassName}> create${ClassName}({
-    required UuidValue ${d1}Id,
-    required UuidValue ${d2}Id,
-  });
+  Future<${ClassName}> create${ClassName}(${className});
   Future<bool> delete${ClassName}ById(UuidValue id);
   Future<bool> delete${ClassName}By${D1}And${D2}(UuidValue ${d1}Id, UuidValue ${d2}Id);
   Future<List<${D2}>> get${D2s}For${D1}(UuidValue ${d1}Id);

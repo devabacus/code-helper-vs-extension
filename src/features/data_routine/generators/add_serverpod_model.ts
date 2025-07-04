@@ -21,14 +21,15 @@ function serverpodModelSnippet(): string {
 table: \${1/(.*)/\${1:/downcase}/}
 fields:
   id: UuidValue?, defaultPersist=random_v7
-  isDeleted: bool, default=false
-  lastModified: DateTime?
   userId: int
+  customerId: UuidValue, relation(parent=customer, onDelete=Cascade)
+  createdAt: DateTime
+  lastModified: DateTime
+  isDeleted: bool, default=false
   \${2:title}: \${3:String}
 `
 ;
 }
-
 
 
 function serverpodMapModelSnippet(): string {
@@ -40,8 +41,14 @@ function serverpodMapModelSnippet(): string {
     return `class: \${1:Entity1}\${2:Entity2}Map
 table: ${tableName}
 fields:
-  task: \${1:Entity1}?, relation
-  tag: \${2:Entity2}?, relation
+  id: UuidValue?, defaultPersist=random_v7
+  userId: int
+  customerId: UuidValue, relation(parent=customer, onDelete=Cascade)
+  createdAt: DateTime
+  lastModified: DateTime
+  isDeleted: bool, default=false
+  ${d1}: \${1:Entity1}?, relation
+  ${d2}: \${2:Entity2}?, relation
 indexes:
   idx_${tableName}_${d1}Id_${d2}Id:
     fields: ${d1}Id, ${d2}Id

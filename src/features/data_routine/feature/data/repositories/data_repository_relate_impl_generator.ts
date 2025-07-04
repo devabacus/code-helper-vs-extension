@@ -253,9 +253,11 @@ class ${ClassName}RepositoryImpl extends BaseSyncRepository
   Future<serverpod.${ClassName}> _syncCreateToServer(
     ${ClassName}Entity entity,
   ) async {
-    return await _remoteDataSource.create${ClassName}(
-      ${d1}Id: serverpod.UuidValue.fromString(entity.${d1}Id),
-      ${d2}Id: serverpod.UuidValue.fromString(entity.${d2}Id),
+    return await _remoteDataSource.create${ClassName}(entity.toServerpod${ClassName}());
+  }
+
+  @override
+  Future<void> syncWithServer() async {
     );
   }
 

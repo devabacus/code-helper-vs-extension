@@ -24,6 +24,7 @@ export class CodeFormatter implements ICodeFormatter {
     const fieldRows = fields.map(field => {
       const typeString = `${field.type}${field.nullable ? '?' : ''}`;
       let _type = typeString;
+      // let _type = field.type;
       let _name = field.name;
 
       if (field.isRelation && field.relationType === 'manyToOne') {
@@ -73,7 +74,7 @@ export class CodeFormatter implements ICodeFormatter {
   // }
 
   fieldsFilter(fields: ServerpodField[]): ServerpodField[] {
-  const exactExcludes = ['isDeleted', 'id', 'userId', 'lastModified', 'syncStatus'];
+  const exactExcludes = ['isDeleted', 'id', 'userId', 'lastModified', 'syncStatus', 'createdAt'];
   
   return fields.filter(field => 
     !exactExcludes.includes(field.name) && 
@@ -178,7 +179,7 @@ export class CodeFormatter implements ICodeFormatter {
        
   shouldSkipServerpodField(field: ServerpodField): boolean {
     // Пропускаем служебные поля, которые уже определены статично
-    const staticFields = ['id', 'userId', 'lastModified', 'syncStatus', 'isDeleted', 'Map'];
+    const staticFields = ['id', 'userId', 'lastModified', 'syncStatus', 'isDeleted', 'Map', 'customerId', 'createdAt'];
     if (staticFields.includes(field.name)) {
       return true;
     }

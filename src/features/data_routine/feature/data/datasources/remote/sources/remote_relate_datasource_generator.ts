@@ -77,13 +77,10 @@ class ${ClassName}RemoteDataSource implements I${ClassName}RemoteDataSource {
   }
 
   @override
-  Future<${ClassName}> create${ClassName}({
-    required UuidValue ${d1}Id,
-    required UuidValue ${d2}Id,
-  }) async {
+  Future<${ClassName}> create${ClassName}(${className}) async {
     try {
       print('🚀 Remote: Отправляем на сервер создание связи ${D1}-${D2}');
-      final result = await _client.${className}.create${ClassName}(${d1}Id, ${d2}Id);
+      final result = await _client.${className}.create${ClassName}(${className});
       print('✅ Remote: Связь ${D1}-${D2} успешно создана на сервере');
       return result;
     } catch (e) {

@@ -16,6 +16,7 @@ import { entity_sync_event_spy_file } from "./generators/entity_sync_event_spy_f
 import { sync_event_type_spy } from "./generators/sync_event_type_spy";
 import { sync_metadata_table_file } from "./generators/sync_metadata_table";
 import { ServerpodYamlParser } from "./serverpod_yaml_parser/server_yaml_parser";
+import { pickPath } from "../../utils/ui/ui_ask_folder";
 
 export async function createDataFilesFromYaml() {
 
@@ -24,15 +25,15 @@ export async function createDataFilesFromYaml() {
     const projectName = path.basename(rootProjectPath);
     const flutterDirPath = path.join(rootProjectPath, `${projectName}_flutter`,);
     const featureSPath = path.join(flutterDirPath, "lib", "features");
-    const featurePath = path.join(flutterDirPath, "lib", "features", "home"); //TODO  временно для отладки
+    // const featurePath = path.join(flutterDirPath, "lib", "features", "home"); //TODO  временно для отладки
 
     const serverProjectRoot = currentFilePath.split(/\Wlib\W/)[0];
 
     // TODO нужно будет раскомментировать после отладки
-    // const featurePath = await pickPath("Выберите feature", featureSPath);
-    //     if (!featurePath) {
-    //         return;
-    //     }    
+    const featurePath = await pickPath("Выберите feature", featureSPath);
+        if (!featurePath) {
+            return;
+        }    
 
     const serverpodYamlModel = getDocText();
     const model = ServerpodYamlParser.parse(serverpodYamlModel);

@@ -114,7 +114,6 @@ class ${D}Endpoint extends Endpoint {
     return await ${D}.db.find(
       session,
       where: (c) => c.userId.equals(userId) & c.isDeleted.equals(false),
-      orderBy: (c) => c.title,         
       limit: limit
     );
   }     
