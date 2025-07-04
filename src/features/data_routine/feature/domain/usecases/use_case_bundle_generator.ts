@@ -71,8 +71,8 @@ class Get${D}ByIdUseCase {
 
   Get${D}ByIdUseCase(this._repository);
 
-  Future<${D}Entity?> call(String id) {
-    return _repository.get${D}ById(id);
+  Future<${D}Entity?> call(String id, String customerId) {
+    return _repository.get${D}ById(id, customerId);
   }
 }
 

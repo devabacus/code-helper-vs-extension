@@ -28,40 +28,57 @@ export class PresentGetByIdProviderGenerator extends DataRoutineGenerator {
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../domain/entities/${d}/${d}_entity.dart';
 import '../../../domain/providers/${d}/${d}_usecase_providers.dart';
-import '${d}_state_providers.dart';
+import '../${d}/${d}_state_providers.dart';
+import '../../../../../core/providers/session_manager_provider.dart';
 
 part '${d}_get_by_id_provider.g.dart';
 
 @riverpod
 Future<${D}Entity?> get${D}ById(Ref ref, String id) async {
+  // Получаем userId и customerId из текущей сессии
+  final currentUser = ref.watch(currentUserProvider);
+  final currentCustomerId = ref.watch(currentCustomerIdProvider);
+
+  // Если пользователь не авторизован или customerId не доступен, возвращаем null
+  if (currentUser?.id == null || currentCustomerId == null) {
+    return null;
+  }
+
+  // Приводим userId и customerId к строковому виду, если они UuidValue
+  final String userId = currentUser!.id!.toString();
+  final String customerId = currentCustomerId.toString();
+
   final ${ds}AsyncValue = ref.watch(${ds}StreamProvider);
 
   if (${ds}AsyncValue.hasValue) {
     final ${d} = ${ds}AsyncValue.value?.firstWhere(
-      (cat) => cat.id == id,
+      (t) => t.id == id,
+      // Временный объект для orElse должен соответствовать новой структуре ${D}Entity
       orElse: () => ${D}Entity(
-        id: 'NOT_FOUND', 
-        title: '', 
-        lastModified: DateTime.now(), 
-        userId: 0
-      ), // Временный объект, если не найдено
+        id: 'NOT_FOUND',
+        title: '',
+        lastModified: DateTime.now().toUtc(), // lastModified теперь не nullable
+        userId: currentUser.id!, // Используем фактический userId
+        customerId: customerId, // Используем фактический customerId
+        createdAt: DateTime.now().toUtc(), // createdAt теперь не nullable
+        isDeleted: false, // isDeleted тоже не nullable
+      ),
     );
     // Если нашли реальный объект, возвращаем его
     if (${d} != null && ${d}.id != 'NOT_FOUND') {
       return ${d};
     }
   }
-  
-  // Если в кеше нет или кеш еще не загружен, делаем прямой запрос к базе
+
+  // Если в кеше нет или кеш еще не загружен, делаем прямой запрос к базе через UseCase
   final get${D}ByIdUseCase = ref.read(get${D}ByIdUseCaseProvider);
-  
-  // Проверяем, что use case доступен (пользователь авторизован)
+
+  // Проверяем, что use case доступен
   if (get${D}ByIdUseCase == null) {
-    // Пользователь не авторизован
     return null;
   }
-  
-  final ${d}FromDb = await get${D}ByIdUseCase(id);
+
+  final ${d}FromDb = await get${D}ByIdUseCase(id, customerId);
   return ${d}FromDb;
 }
   `;

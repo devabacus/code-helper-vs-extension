@@ -45,7 +45,7 @@ export class DomainRepositoryGenerator extends DataRoutineGenerator {
 abstract class I${D}Repository {
   Future<List<${D}Entity>> get${Ds}();
   Stream<List<${D}Entity>> watch${Ds}();
-  Future<${D}Entity?> get${D}ById(String id);
+  Future<${D}Entity?> get${D}ById(String id, String customerId);
   Future<List<${D}Entity>> get${Ds}ByIds(List<String> ids);
   Future<String> create${D}(${D}Entity ${d});
   Future<bool> update${D}(${D}Entity ${d});

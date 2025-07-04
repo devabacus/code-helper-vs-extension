@@ -53,7 +53,7 @@ import '../../../../../../core/database/local/database_types.dart';
 abstract class I${D}LocalDataSource {
   Future<List<${D}Model>> get${Ds}({int? userId});
   Stream<List<${D}Model>> watch${Ds}({int? userId});
-  Future<${D}Model?> get${D}ById(String id, {required int userId});
+  Future<${D}Model?> get${D}ById(String id, {required int userId, required String customerId});
   Future<List<${D}Model>> get${Ds}ByIds(List<String> ids, {required int userId});
   Future<String> create${D}(${D}Model ${d});
   Future<bool> update${D}(${D}Model ${d});

@@ -3,6 +3,9 @@ return `
 import 'package:serverpod/serverpod.dart';
 import 'package:${projectName}_server/src/generated/protocol.dart';
 
+typedef AuthenticatedUserContext = ({int userId, UuidValue customerId /*, List<String> activePermissions */});
+
+
 class UserManagementEndpoint extends Endpoint {
   /// Возвращает данные о клиенте (customer) и правах доступа
   /// для текущего аутентифицированного пользователя.

@@ -54,102 +54,127 @@ Future<List<${D}>> ${endpointMethodName}(Session session, UuidValue ${parameterN
 
     return `import 'package:serverpod/serverpod.dart';
 import 'package:${projectName}_server/src/generated/protocol.dart';
+import 'user_manager_endpoint.dart';
 
 const _${d}ChannelBase = '${projectName}_${d}_events_for_user_';
 
 class ${D}Endpoint extends Endpoint {
   
-  Future<int> _getAuthenticatedUserId(Session session) async {
+  Future<AuthenticatedUserContext> _getAuthenticatedUserContext(Session session) async {
     final authInfo = await session.authenticated;
     final userId = authInfo?.userId;
 
     if (userId == null) {
       throw Exception('Пользователь не авторизован.');
     }
-    return userId;
+
+    final customerUser = await CustomerUser.db.findFirstRow(
+      session,
+      where: (cu) => cu.userId.equals(userId),
+    );
+
+    if (customerUser == null) {
+      throw Exception('Пользователь $userId не привязан к клиенту (Customer).');
+    }
+    return (userId: userId, customerId: customerUser.customerId);
   }
 
-  Future<void> _notifyChange(Session session, ${D}SyncEvent event, int userId) async {
-    final channel = '$_${d}ChannelBase$userId';
+  Future<void> _notifyChange(Session session, ${D}SyncEvent event, AuthenticatedUserContext authContext) async { 
+    final channel = '$_${d}ChannelBase\${authContext.userId}-\${authContext.customerId.uuid}'; 
     await session.messages.postMessage(channel, event);
     session.log('🔔 Событие \${event.type.name} отправлено в канал "$channel"');
   }
 
   Future<${D}> create${D}(Session session, ${D} ${d}) async {
-  final userId = await _getAuthenticatedUserId(session);
+    final authContext = await _getAuthenticatedUserContext(session);
+    final userId = authContext.userId;
+    final customerId = authContext.customerId;
 
-  final existing${D} = await ${D}.db.findFirstRow(
-    session,
-    where: (c) => c.id.equals(${d}.id) & c.userId.equals(userId),
-  );
+    final existing${D} = await ${D}.db.findFirstRow(
+      session,
+      where: (c) => c.id.equals(${d}.id) & c.userId.equals(userId) & c.customerId.equals(customerId),
+    );
 
-  final server${D} = ${d}.copyWith(
-      userId: userId,
-      lastModified: DateTime.now().toUtc(),
-      isDeleted: false,
-  );
+    final server${D} = ${d}.copyWith(
+        userId: userId,
+        customerId: customerId,
+        lastModified: DateTime.now().toUtc(),
+        isDeleted: false,
+    );
 
-  if (existing${D} != null) {
-    session.log('ℹ️ "create${D}" вызван для существующего ID. Выполняется обновление (воскрешение).');
-    final updated${D} = await ${D}.db.updateRow(session, server${D});
+    if (existing${D} != null) {
+      session.log('ℹ️ "create${D}" вызван для существующего ID. Выполняется обновление (воскрешение).');
+      final updated${D} = await ${D}.db.updateRow(session, server${D});
 
-    await _notifyChange(session, ${D}SyncEvent(
-        type: SyncEventType.update, 
-        ${d}: updated${D},
-    ), userId);
-    return updated${D};
+      await _notifyChange(session, ${D}SyncEvent(
+          type: SyncEventType.update, 
+          ${d}: updated${D},
+      ), authContext); 
+      return updated${D};
 
-  } else {
-    final created${D} = await ${D}.db.insertRow(session, server${D});
-    await _notifyChange(session, ${D}SyncEvent(
-        type: SyncEventType.create,
-        ${d}: created${D},
-    ), userId);
-    return created${D};
+    } else {
+      final created${D} = await ${D}.db.insertRow(session, server${D});
+      await _notifyChange(session, ${D}SyncEvent(
+          type: SyncEventType.create,
+          ${d}: created${D},
+      ), authContext); 
+      return created${D};
+    }
   }
-}
 
   Future<List<${D}>> get${Ds}(Session session, {int? limit}) async {
-    final userId = await _getAuthenticatedUserId(session);
+    final authContext = await _getAuthenticatedUserContext(session);
+    final userId = authContext.userId;
+    final customerId = authContext.customerId;
+
     return await ${D}.db.find(
       session,
-      where: (c) => c.userId.equals(userId) & c.isDeleted.equals(false),
+      where: (c) => c.userId.equals(userId) & c.customerId.equals(customerId) & c.isDeleted.equals(false),
       limit: limit
     );
   }     
 
-   Future<${D}?> get${D}ById(Session session, UuidValue id) async {
-    final userId = await _getAuthenticatedUserId(session);
+  Future<${D}?> get${D}ById(Session session, UuidValue id) async {
+    final authContext = await _getAuthenticatedUserContext(session);
+    final userId = authContext.userId;
+    final customerId = authContext.customerId;
     
     return await ${D}.db.findFirstRow(
       session,
-      where: (c) => c.id.equals(id) & c.userId.equals(userId) & c.isDeleted.equals(false),
+      where: (c) => c.id.equals(id) & c.userId.equals(userId) & c.customerId.equals(customerId) & c.isDeleted.equals(false),
     );
   }
 
   Future<List<${D}>> get${Ds}Since(Session session, DateTime? since) async {
-    final userId = await _getAuthenticatedUserId(session);
+    final authContext = await _getAuthenticatedUserContext(session);
+    final userId = authContext.userId;
+    final customerId = authContext.customerId;
+
     if (since == null) {
       return get${Ds}(session);
     }
     return await ${D}.db.find(
       session,
-      where: (c) => c.userId.equals(userId) & (c.lastModified >= since),
+      where: (c) => c.userId.equals(userId) & c.customerId.equals(customerId) & (c.lastModified >= since),
       orderBy: (c) => c.lastModified,
     );
   }
 
   Future<bool> update${D}(Session session, ${D} ${d}) async {
-    final userId = await _getAuthenticatedUserId(session);
+    final authContext = await _getAuthenticatedUserContext(session);
+    final userId = authContext.userId;
+    final customerId = authContext.customerId;
+
     final original${D} = await ${D}.db.findFirstRow(
       session,
-      where: (c) => c.id.equals(${d}.id) & c.userId.equals(userId) & c.isDeleted.equals(false),
+      where: (c) => c.id.equals(${d}.id) & c.userId.equals(userId) & c.customerId.equals(customerId) & c.isDeleted.equals(false),
     );
     if (original${D} == null) {
       return false; 
     }
     final server${D} = ${d}.copyWith(
       userId: userId,
+      customerId: customerId,
       lastModified: DateTime.now().toUtc(),
     );
     try {
@@ -157,7 +182,7 @@ class ${D}Endpoint extends Endpoint {
       await _notifyChange(session, ${D}SyncEvent(
         type: SyncEventType.update,
         ${d}: server${D},
-      ), userId);
+      ), authContext);
       return true;
     } catch (e) {
       return false;
@@ -165,10 +190,13 @@ class ${D}Endpoint extends Endpoint {
   }
 
   Future<bool> delete${D}(Session session, UuidValue id) async {
-    final userId = await _getAuthenticatedUserId(session);
+    final authContext = await _getAuthenticatedUserContext(session);
+    final userId = authContext.userId;
+    final customerId = authContext.customerId;
+
     final original${D} = await ${D}.db.findFirstRow(
       session,
-      where: (c) => c.id.equals(id) & c.userId.equals(userId),
+      where: (c) => c.id.equals(id) & c.userId.equals(userId) & c.customerId.equals(customerId),
     );
 
     if (original${D} == null) return false;
@@ -183,24 +211,28 @@ class ${D}Endpoint extends Endpoint {
       type: SyncEventType.delete,
       ${d}: result, 
       id: id,
-    ), userId);
+    ), authContext);
 
     return true;
   }
 
   Stream<${D}SyncEvent> watchEvents(Session session) async* {
-    final userId = await _getAuthenticatedUserId(session);
-    final channel = '$_${d}ChannelBase$userId';
-    session.log('🟢 Клиент (user: $userId) подписался на события в канале "$channel"');
+    final authContext = await _getAuthenticatedUserContext(session);
+    final userId = authContext.userId;
+    final customerId = authContext.customerId;
+
+    final channel = '$_${d}ChannelBase$userId-\${customerId.uuid}'; 
+    session.log('🟢 Клиент (user: $userId, customer: \${customerId.uuid}) подписался на события в канале "$channel"');
     try {
       await for (var event in session.messages.createStream<${D}SyncEvent>(channel)) {
-        session.log('🔄 Пересылаем событие \${event.type.name} клиенту (user: $userId)');
+        session.log('🔄 Пересылаем событие \${event.type.name} клиенту (user: $userId, customer: \${customerId.uuid})');
         yield event;
       }
     } finally {
-      session.log('🔴 Клиент (user: $userId) отписался от канала "$channel"');
+      session.log('🔴 Клиент (user: $userId, customer: \${customerId.uuid}) отписался от канала "$channel"');
     }
   }
+
     ${foreignKeyEndpointMethods}
 }          `;
   }

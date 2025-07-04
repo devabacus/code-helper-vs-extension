@@ -74,10 +74,10 @@ class ${D}Dao extends DatabaseAccessor<AppDatabase>
       ..where((t) => userId != null ? t.userId.equals(userId) : const Constant(true)))
     .watch();
 
-  Future<${D}TableData> get${D}ById(String id, {required int userId}) =>
-      (select(${d}Table)
-        ..where((t) => t.id.equals(id) & t.userId.equals(userId)))
-      .getSingle();
+  Future<${D}TableData?> get${D}ById(String id, {required int userId, required String customerId}) =>
+      (select(tagTable)
+        ..where((t) => t.id.equals(id) & t.userId.equals(userId) & t.customerId.equals(customerId)))
+      .getSingleOrNull();
 
   Future<List<${D}TableData>> get${Ds}ByIds(List<String> ids, {required int userId}) {
     if (ids.isEmpty) {

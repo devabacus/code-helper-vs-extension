@@ -80,9 +80,9 @@ class ${D}LocalDataSource implements I${D}LocalDataSource {
 
   @override
   Future<${D}Model?> get${D}ById(String id,
-      {required int userId}) async {
+      {required int userId, required String customerId}) async {
     try {
-      final ${d} = await _${d}Dao.get${D}ById(id, userId: userId);
+      final ${d} = await _${d}Dao.get${D}ById(id, userId: userId, customerId: customerId);
       return ${d}.toModel();
     } catch (e) {
       return null;
