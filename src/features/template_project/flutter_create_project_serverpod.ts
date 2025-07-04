@@ -16,7 +16,7 @@ import { mainFile } from "./flutter_content/files_content/main_file";
 import { serverCheckUi } from "./flutter_content/files_content/server_check_ui";
 import { appFile } from "./flutter_content/files_content";
 import { authWrapperFile } from "./flutter_content/files_content/auth_wrapper";
-import { serverpodClientProviderFile } from "../serverpod/generators/serverpod_client_provider";
+import { serverpodClientProviderFile } from "../data_routine/core/providers/serverpod_client_provider";
 import { serverFile } from "../serverpod/generators/server_dart_file";
 import { serverpodK8sFileGenerate } from "../serverpod/create_k8s_serverpod_files";
 import { server_pubspec_yaml_file } from "../serverpod/generators/server_pubspec_yaml";

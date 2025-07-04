@@ -27,7 +27,7 @@ export class PresentStateProviderGenerator extends DataRoutineGenerator {
 
     return `import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import '../../../domain/entities/${d}/${d}.dart';
+import '../../../domain/entities/${d}/${d}_entity.dart';
 import '../../../domain/providers/${d}/${d}_usecase_providers.dart';
 
 part '${d}_state_providers.g.dart';

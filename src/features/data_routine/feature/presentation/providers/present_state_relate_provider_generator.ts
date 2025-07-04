@@ -32,7 +32,7 @@ export class PresentStateRelateProviderGenerator extends DataRoutineGenerator {
     const tableName = `${model.tableName}`; 
 
             return `import 'package:riverpod_annotation/riverpod_annotation.dart';
-import '../../../domain/entities/${d2}/${d2}.dart';
+import '../../../domain/entities/${d2}/${d2}_entity.dart';
 import '../../../domain/providers/${tableName}/${tableName}_usecase_providers.dart';
 
 part '${tableName}_state_providers.g.dart';

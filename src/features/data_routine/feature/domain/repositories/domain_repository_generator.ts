@@ -40,7 +40,7 @@ export class DomainRepositoryGenerator extends DataRoutineGenerator {
       }).join('');
     }
 
-    return `import '../entities/${d}/${d}.dart';
+    return `import '../entities/${d}/${d}_entity.dart';
 
 abstract class I${D}Repository {
   Future<List<${D}Entity>> get${Ds}();

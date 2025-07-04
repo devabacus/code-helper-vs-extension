@@ -92,7 +92,7 @@ class Watch${Ds}UseCase {
     // --- 3. Объединяем все части ---
     // Добавляем импорты в начало
     const imports = `import '../repositories/${d}_repository.dart';
-import '../entities/${d}/${d}.dart';`;
+import '../entities/${d}/${d}_entity.dart';`;
 
     return `${imports}\n${baseUseCases}\n\n${foreignKeyUseCases.join('\n\n')}`;
   }

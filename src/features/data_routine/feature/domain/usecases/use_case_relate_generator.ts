@@ -31,8 +31,8 @@ export class UseCaseRelateGenerator extends DataRoutineGenerator {
     const tableName = `${model.tableName}`; 
 
             return `import '../repositories/${tableName}_repository.dart';
-import '../entities/${d1}/${d1}.dart';
-import '../entities/${d2}/${d2}.dart';
+import '../entities/${d1}/${d1}_entity.dart';
+import '../entities/${d2}/${d2}_entity.dart';
 
 class Add${D2}To${D1}UseCase {
   final I${ClassName}Repository _repository;

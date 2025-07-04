@@ -33,8 +33,8 @@ import { PresentFilterRelateProviderGenerator } from "../feature/presentation/pr
 import { PresentGetByIdProviderGenerator } from "../feature/presentation/providers/present_get_by_id_prov_generator";
 import { PresentStateProviderGenerator } from "../feature/presentation/providers/present_state_prov_generator";
 import { PresentStateRelateProviderGenerator } from "../feature/presentation/providers/present_state_relate_provider_generator";
-import { ServerpodEndpointGenerator } from "../generators/serverpod_endpoint_generator";
-import { ServerpodRelateEndpointGenerator } from "../generators/serverpod_relate_endpoint_generator";
+import { ServerpodEndpointGenerator } from "../serverpod/endpoints/serverpod_endpoint_generator";
+import { ServerpodRelateEndpointGenerator } from "../serverpod/endpoints/serverpod_relate_endpoint_generator";
 
 
 
@@ -114,7 +114,7 @@ export class GeneratorFactory {
 
 
 
-    
+
     createRemoteDataProviderGenerator(): FileGenerator {
         return new RemoteDataProviderGenerator(this.fileSystem);
     }

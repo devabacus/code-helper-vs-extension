@@ -1,28 +1,28 @@
 import * as path from 'path';
-import { IFileSystem } from '../../../core/interfaces/file_system';
-import { ServerpodModel } from '../serverpod_yaml_parser/formatters/types';
-import { cap, unCap, toSnakeCase, pluralConvert } from '../../../utils/text_work/text_util';
-import { BaseGenerator } from '../../../core/generators/base_generator';
-import { addServerpodModel } from './add_serverpod_model';
-import { ProjectStructure } from '../../../core/interfaces/project_structure';
-import { DefaultProjectStructure } from '../../../core/implementations/default_project_structure';
-import { PathData } from '../../utils/path_util';
+import { IFileSystem } from '../../../../core/interfaces/file_system';
+import { ServerpodModel } from '../../serverpod_yaml_parser/formatters/types';
+import { cap, unCap, toSnakeCase, pluralConvert } from '../../../../utils/text_work/text_util';
+import { BaseGenerator } from '../../../../core/generators/base_generator';
+import { addServerpodModel } from '../../generators/add_serverpod_model';
+import { ProjectStructure } from '../../../../core/interfaces/project_structure';
+import { DefaultProjectStructure } from '../../../../core/implementations/default_project_structure';
+import { PathData } from '../../../utils/path_util';
 
-export class ServerpodEndpointGenerator extends BaseGenerator<ServerpodModel>{
+export class ServerpodEndpointGenerator extends BaseGenerator<ServerpodModel> {
 
-    private structure: ProjectStructure;
-  
-    constructor(fileSystem: IFileSystem, structure?: ProjectStructure) {
-      super(fileSystem);
-      this.structure = structure || new DefaultProjectStructure(); //
-    }
+  private structure: ProjectStructure;
 
- protected getPath(featurePath: string, entityName: string): string {
-    const serverPath = featurePath.split('lib')[0].replace('flutter', 'server');    
+  constructor(fileSystem: IFileSystem, structure?: ProjectStructure) {
+    super(fileSystem);
+    this.structure = structure || new DefaultProjectStructure(); //
+  }
+
+  protected getPath(featurePath: string, entityName: string): string {
+    const serverPath = featurePath.split('lib')[0].replace('flutter', 'server');
     return path.join(serverPath, 'lib', 'src', 'endpoints', `${entityName}_endpoint.dart`);
   }
 
-protected getContent(model: ServerpodModel, _: string, featurePath: string): string {
+  protected getContent(model: ServerpodModel, _: string, featurePath: string): string {
     const projectName = new PathData(featurePath).projectName;
 
     const D = model.className;

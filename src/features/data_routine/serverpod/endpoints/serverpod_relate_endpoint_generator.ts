@@ -1,41 +1,41 @@
 import * as path from 'path';
-import { BaseGenerator } from '../../../core/generators/base_generator';
-import { DefaultProjectStructure } from '../../../core/implementations/default_project_structure';
-import { IFileSystem } from '../../../core/interfaces/file_system';
-import { ProjectStructure } from '../../../core/interfaces/project_structure';
-import { cap, pluralConvert, unCap } from '../../../utils/text_work/text_util';
-import { PathData } from '../../utils/path_util';
-import { ServerpodModel } from '../serverpod_yaml_parser/formatters/types';
+import { BaseGenerator } from '../../../../core/generators/base_generator';
+import { DefaultProjectStructure } from '../../../../core/implementations/default_project_structure';
+import { IFileSystem } from '../../../../core/interfaces/file_system';
+import { ProjectStructure } from '../../../../core/interfaces/project_structure';
+import { cap, pluralConvert, unCap } from '../../../../utils/text_work/text_util';
+import { PathData } from '../../../utils/path_util';
+import { ServerpodModel } from '../../serverpod_yaml_parser/formatters/types';
 
-export class ServerpodRelateEndpointGenerator extends BaseGenerator<ServerpodModel>{
+export class ServerpodRelateEndpointGenerator extends BaseGenerator<ServerpodModel> {
 
-    private structure: ProjectStructure;
-  
-    constructor(fileSystem: IFileSystem, structure?: ProjectStructure) {
-      super(fileSystem);
-      this.structure = structure || new DefaultProjectStructure(); //
-    }
+  private structure: ProjectStructure;
 
- protected getPath(featurePath: string, entityName: string): string {
-    const serverPath = featurePath.split('lib')[0].replace('flutter', 'server');    
+  constructor(fileSystem: IFileSystem, structure?: ProjectStructure) {
+    super(fileSystem);
+    this.structure = structure || new DefaultProjectStructure(); //
+  }
+
+  protected getPath(featurePath: string, entityName: string): string {
+    const serverPath = featurePath.split('lib')[0].replace('flutter', 'server');
     return path.join(serverPath, 'lib', 'src', 'endpoints', `${entityName}_endpoint.dart`);
   }
 
-protected getContent(model: ServerpodModel, _: string, featurePath: string): string {
+  protected getContent(model: ServerpodModel, _: string, featurePath: string): string {
     const projectName = new PathData(featurePath).projectName;
 
     const d1 = model.fields[1].relatedModel!;
-    const d2 = model.fields[2].relatedModel!;       
+    const d2 = model.fields[2].relatedModel!;
 
     const D1 = cap(d1);
     const D1s = pluralConvert(D1);
     const D2 = cap(d2);
     const D2s = pluralConvert(D2);
-    const ClassName = `${model.className}`; 
-    const ClassNameS = pluralConvert(ClassName); 
-    const tableName = `${model.className}`; 
-    const className = unCap(ClassName); 
-    const classNameS = pluralConvert(className); 
+    const ClassName = `${model.className}`;
+    const ClassNameS = pluralConvert(ClassName);
+    const tableName = `${model.className}`;
+    const className = unCap(ClassName);
+    const classNameS = pluralConvert(className);
 
     return `import 'package:serverpod/serverpod.dart';
 import 'package:${projectName}_server/src/generated/protocol.dart';

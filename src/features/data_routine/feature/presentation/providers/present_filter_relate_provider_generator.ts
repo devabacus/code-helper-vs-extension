@@ -33,7 +33,7 @@ export class PresentFilterRelateProviderGenerator extends DataRoutineGenerator {
 
             return `import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import '../../../domain/entities/${d2}/${d2}.dart';
+import '../../../domain/entities/${d2}/${d2}_entity.dart';
 import '../${d2}/${d2}_state_providers.dart';
 import './${tableName}_state_providers.dart';
 

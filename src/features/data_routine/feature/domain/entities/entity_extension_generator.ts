@@ -36,15 +36,18 @@ export class DomainExtensionEntityGenerator extends BaseGenerator {
     } else if (model.isRelation){
       paramsServerpod = params.replace(/: (\w+)Id/g, ': serverpod.UuidValue.fromString($1Id)')
     }
-    return `import '../../entities/${d}/${d}.dart';
+    return `import '../../entities/${d}/${d}_entity.dart';
 import '../../../data/models/${d}/${d}_model.dart';
 import 'package:${projectName}_client/${projectName}_client.dart' as serverpod;
 
 extension ${D}EntityExtension on ${D}Entity {
   ${D}Model toModel() => ${D}Model(
         id: id,
-        lastModified: lastModified,
         userId: userId,
+        customerId: customerId,
+        createdAt: createdAt,
+        lastModified: lastModified,
+        isDeleted: isDeleted,
         ${params}
       );
 }
@@ -56,9 +59,11 @@ extension ${D}EntityListExtension on List<${D}Entity> {
 extension Serverpod${D}EntityExtensions on ${D}Entity {
   serverpod.${D} toServerpod${D}() => serverpod.${D}(
     id: serverpod.UuidValue.fromString(id),
-    lastModified: lastModified,
     userId: userId,
-    isDeleted: false,
+    customerId: serverpod.UuidValue.fromString(customerId),
+    createdAt: createdAt,
+    lastModified: lastModified,
+    isDeleted: isDeleted,
     ${paramsServerpod}
   );
   }

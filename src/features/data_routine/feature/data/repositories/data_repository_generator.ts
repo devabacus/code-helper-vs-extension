@@ -48,13 +48,13 @@ export class DataRepositoryGenerator extends BaseGenerator {
       }).join('\\n');
     }
 
-    return `import 'package:${projectName}/features/home/data/datasources/local/tables/extensions/${d}_table_extension.dart';
-import 'package:${projectName}/features/home/domain/entities/extensions/${d}_entity_extension.dart';
+    return `import 'package:${projectName}/features/home/domain/entities/extensions/${d}_entity_extension.dart';
+    import 'package:${projectName}/features/home/data/datasources/local/tables/extensions/category_table_extension.dart';
 import 'package:${projectName}_client/${projectName}_client.dart' as serverpod;
 
 import '../../../../core/database/local/database.dart';
 import '../../../../core/sync/base_sync_repository.dart';
-import '../../domain/entities/${d}/${d}.dart';
+import '../../domain/entities/${d}/${d}_entity.dart';
 import '../../domain/repositories/${d}_repository.dart';
 import '../../../../core/database/local/database_types.dart';
 import '../datasources/local/interfaces/${d}_local_datasource_service.dart';

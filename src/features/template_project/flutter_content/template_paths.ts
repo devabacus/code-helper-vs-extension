@@ -22,7 +22,7 @@ import { settingsJson } from "../service_files/settings_json";
 import { logger_service_file } from "../../logger/files/logger_service_file";
 import { logger_provider_file } from "../../logger/files/logger_provider_file";
 import { logger_extension_file } from "../../logger/files/logger_extension_file";
-import { session_manager_provider_file } from "../../serverpod/generators/session_manager_provider_file";
+import { session_manager_provider_file } from "../../data_routine/core/providers/session_manager_provider_file";
 import { sync_metadata_dao_file } from "../../data_routine/core/database/local/daos/sync_metadata_dao_file";
 import { home_page_file } from "./files_content/home_page";
 
@@ -52,9 +52,9 @@ export const templatefiles: Record<string, string> = {
     'core/services/logger/logger_service.dart': logger_service_file,
     'core/services/logger/ref_logger_extensions.dart': logger_extension_file,
     'core/providers/logger_provider.dart': logger_provider_file,
-    'core/providers/session_manager_provider.dart': session_manager_provider_file,
-    
-    
+    // 'core/providers/session_manager_provider.dart': session_manager_provider_file,
+
+
     // 'core/services/interceptors/bearer_token_interceptor.dart':bearer_token_interceptor,
     // 'core/services/interceptors/cache_interceptor.dart':cache_interceptor,
     // 'core/services/interceptors/retry_interceptor.dart':retry_interceptor,

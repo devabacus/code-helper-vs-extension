@@ -17,6 +17,8 @@ import { sync_event_type_spy } from "./generators/sync_event_type_spy";
 import { sync_metadata_table_file } from "./generators/sync_metadata_table";
 import { ServerpodYamlParser } from "./serverpod_yaml_parser/server_yaml_parser";
 import { pickPath } from "../../utils/ui/ui_ask_folder";
+import { session_manager_provider_file } from "./core/providers/session_manager_provider_file";
+import { user_manager_endpoint_file } from "./serverpod/endpoints/user_manager_endpoint";
 
 export async function createDataFilesFromYaml() {
 
@@ -47,6 +49,9 @@ export async function createDataFilesFromYaml() {
     const syncMetaDataDaoPath = path.join(flutterDirPath, "lib", "core", "database", "local", "daos", "sync_metadata_dao.dart");
     const syncMetaDataInterfacePath = path.join(flutterDirPath, "lib", "core", "database", "local", "interface", "sync_metadata_local_datasource_service.dart");
     const syncMetaDataSourcePath = path.join(flutterDirPath, "lib", "core", "database", "local", "sources", "sync_metadata_local_data_source.dart");
+    const sessionManagerProviderPath = path.join(flutterDirPath, "lib", "core", "providers", "session_manager_provider.dart");
+    const userManagerEndpointPath = path.join(serverProjectRoot, "lib", "src", "endpoints", "user_manager_endpoint.dart");
+    // core/providers/session_manager_provider.dart
 
 
     createFileOneTime(syncEventTypePath, sync_event_type_spy);
@@ -55,6 +60,8 @@ export async function createDataFilesFromYaml() {
     createFileOneTime(syncMetaDataDaoPath, sync_metadata_dao_file);
     createFileOneTime(syncMetaDataInterfacePath, sync_metadata_local_datasource_service_file);
     createFileOneTime(syncMetaDataSourcePath, sync_metadata_local_datasource_file);
+    createFileOneTime(sessionManagerProviderPath, session_manager_provider_file(projectName));
+    createFileOneTime(userManagerEndpointPath, user_manager_endpoint_file(projectName));
 
     const serviceLocator = ServiceLocator.getInstance();
     const fileSystem = serviceLocator.getFileSystem();
