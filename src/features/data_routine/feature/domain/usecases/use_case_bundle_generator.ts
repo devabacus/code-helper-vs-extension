@@ -5,6 +5,7 @@ import { ProjectStructure } from "../../../../../core/interfaces/project_structu
 import { pluralConvert, cap, unCap } from "../../../../../utils/text_work/text_util";
 import { DataRoutineGenerator } from "../../../generators/data_routine_generator";
 import { ServerpodModel, ServerpodField } from "../../../serverpod_yaml_parser/formatters/types";
+import { RelationAnalyzer } from "../../../serverpod_yaml_parser/relation-analyzer";
 
 export class UseCaseBaseGenerator extends DataRoutineGenerator {
   private structure: ProjectStructure;
@@ -99,9 +100,7 @@ import '../entities/${d}/${d}_entity.dart';`;
 
   // Приватный метод для генерации связанных use case'ов
   private _generateGetByFkUseCases(model: ServerpodModel, D: string, Ds: string): string[] {
-    const fkFields = model.fields.filter(
-      (field) => field.isRelation && field.relationType === "manyToOne"
-    );
+    const fkFields = RelationAnalyzer.manyToOneFields(model.fields);
 
     return fkFields.map(fkField => {
         const fkFieldName = fkField.name.endsWith("Id")

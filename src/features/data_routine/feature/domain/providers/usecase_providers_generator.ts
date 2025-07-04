@@ -5,6 +5,7 @@ import { ProjectStructure } from "../../../../../core/interfaces/project_structu
 import { cap, pluralConvert, unCap } from "../../../../../utils/text_work/text_util"; //
 import { DataRoutineGenerator } from "../../../generators/data_routine_generator";
 import { ServerpodModel } from "../../../serverpod_yaml_parser/formatters/types";
+import { RelationAnalyzer } from "../../../serverpod_yaml_parser/relation-analyzer";
 
 export class UseCaseProvidersGenerator extends DataRoutineGenerator {
 
@@ -24,7 +25,7 @@ export class UseCaseProvidersGenerator extends DataRoutineGenerator {
     const d = unCap(model.className);
     const Ds = pluralConvert(D);
     let foreignKeyProviders = '';
-    const relationFields = model.fields.filter(field => field.isRelation && field.relationType === 'manyToOne');
+    const relationFields = RelationAnalyzer.manyToOneFields(model.fields);
 
     if (relationFields.length > 0) {
       const providersData = relationFields.map(field => {

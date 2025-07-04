@@ -11,6 +11,12 @@ export class RelationAnalyzer {
     }
   }
 
+  static manyToOneFields(fields: ServerpodModel['fields']): ServerpodModel['fields'] {
+    return fields.filter(field => field.isRelation && field.relationType === 'manyToOne' && field.name !== 'customerId');
+  }
+
+
+
   // Извлечение связанной модели из типа
   static extractRelatedModel(type: string): string | undefined {
     if (type.startsWith('List<') && type.endsWith('>')) {

@@ -6,6 +6,7 @@ import { ProjectStructure } from "../../../../../core/interfaces/project_structu
 import { cap, pluralConvert, unCap } from "../../../../../utils/text_work/text_util"; //
 import { PathData } from "../../../../utils/path_util";
 import { ServerpodModel } from "../../../serverpod_yaml_parser/formatters/types";
+import { RelationAnalyzer } from "../../../serverpod_yaml_parser/relation-analyzer";
 
 export class DataRepositoryGenerator extends BaseGenerator {
 
@@ -29,7 +30,7 @@ export class DataRepositoryGenerator extends BaseGenerator {
 
 
     let foreignKeyMethods = '';
-    const relationFields = model.fields.filter(field => field.isRelation && field.relationType === 'manyToOne');
+    const relationFields = RelationAnalyzer.manyToOneFields(model.fields);
 
     if (relationFields.length > 0) {
       foreignKeyMethods = relationFields.map(field => {
@@ -49,7 +50,7 @@ export class DataRepositoryGenerator extends BaseGenerator {
     }
 
     return `import 'package:${projectName}/features/home/domain/entities/extensions/${d}_entity_extension.dart';
-    import 'package:${projectName}/features/home/data/datasources/local/tables/extensions/category_table_extension.dart';
+    import 'package:${projectName}/features/home/data/datasources/local/tables/extensions/${d}_table_extension.dart';
 import 'package:${projectName}_client/${projectName}_client.dart' as serverpod;
 
 import '../../../../core/database/local/database.dart';

@@ -7,6 +7,7 @@ import { addServerpodModel } from '../../generators/add_serverpod_model';
 import { ProjectStructure } from '../../../../core/interfaces/project_structure';
 import { DefaultProjectStructure } from '../../../../core/implementations/default_project_structure';
 import { PathData } from '../../../utils/path_util';
+import { RelationAnalyzer } from '../../serverpod_yaml_parser/relation-analyzer';
 
 export class ServerpodEndpointGenerator extends BaseGenerator<ServerpodModel> {
 
@@ -31,7 +32,7 @@ export class ServerpodEndpointGenerator extends BaseGenerator<ServerpodModel> {
 
     // Получаем поля связей для генерации методов foreign key
     let foreignKeyEndpointMethods = '';
-    const relationFields = model.fields.filter(field => field.isRelation && field.relationType === 'manyToOne');
+    const relationFields = RelationAnalyzer.manyToOneFields(model.fields);
 
     if (relationFields.length > 0) {
       foreignKeyEndpointMethods = relationFields.map(field => {

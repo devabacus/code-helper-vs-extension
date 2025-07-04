@@ -5,6 +5,7 @@ import { ProjectStructure } from "../../../../../../../core/interfaces/project_s
 import { pluralConvert, unCap, cap, toSnakeCase } from "../../../../../../../utils/text_work/text_util";
 import { DataRoutineGenerator } from "../../../../../generators/data_routine_generator";
 import { ServerpodModel } from "../../../../../serverpod_yaml_parser/formatters/types";
+import { RelationAnalyzer } from "../../../../../serverpod_yaml_parser/relation-analyzer";
 
 export class DataDaoGenerator extends DataRoutineGenerator {
 
@@ -27,7 +28,7 @@ export class DataDaoGenerator extends DataRoutineGenerator {
 
     // Генерация методов для получения по внешнему ключу
     let foreignKeyMethods = '';
-    const relationFields = model.fields.filter(field => field.isRelation && field.relationType === 'manyToOne');
+    const relationFields = RelationAnalyzer.manyToOneFields(model.fields);
 
     if (relationFields.length > 0) {
       foreignKeyMethods = relationFields.map(field => {
@@ -75,7 +76,7 @@ class ${D}Dao extends DatabaseAccessor<AppDatabase>
     .watch();
 
   Future<${D}TableData?> get${D}ById(String id, {required int userId, required String customerId}) =>
-      (select(tagTable)
+      (select(${d}Table)
         ..where((t) => t.id.equals(id) & t.userId.equals(userId) & t.customerId.equals(customerId)))
       .getSingleOrNull();
 

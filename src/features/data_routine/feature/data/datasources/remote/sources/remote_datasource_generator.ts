@@ -6,6 +6,7 @@ import { ProjectStructure } from "../../../../../../../core/interfaces/project_s
 import { cap, pluralConvert, unCap } from "../../../../../../../utils/text_work/text_util";
 import { PathData } from "../../../../../../utils/path_util";
 import { ServerpodModel } from "../../../../../serverpod_yaml_parser/formatters/types";
+import { RelationAnalyzer } from "../../../../../serverpod_yaml_parser/relation-analyzer";
 
 export class DataRemoteSourcesGenerator extends BaseGenerator<ServerpodModel> {
 
@@ -30,7 +31,8 @@ export class DataRemoteSourcesGenerator extends BaseGenerator<ServerpodModel> {
 
     // Генерация методов для получения по внешнему ключу
     let foreignKeyMethods = '';
-    const manyToOneFields = model.fields.filter(field => field.isRelation && field.relationType === 'manyToOne' && field.name !== 'customerId'); //TODO вынести фильтрацию в парсер
+    const manyToOneFields = RelationAnalyzer.manyToOneFields(model.fields);
+
 
     if (manyToOneFields.length > 0) {
       foreignKeyMethods = manyToOneFields.map(field => {

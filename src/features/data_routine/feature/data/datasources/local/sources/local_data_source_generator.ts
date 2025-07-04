@@ -7,6 +7,7 @@ import { DataRoutineGenerator } from "../../../../../generators/data_routine_gen
 import { ServerpodModel } from "../../../../../serverpod_yaml_parser/formatters/types";
 import { BaseGenerator } from "../../../../../../../core/generators/base_generator";
 import { PathData } from "../../../../../../utils/path_util";
+import { RelationAnalyzer } from "../../../../../serverpod_yaml_parser/relation-analyzer";
 
 export class DataLocalSourcesGenerator extends BaseGenerator {
 
@@ -30,7 +31,7 @@ export class DataLocalSourcesGenerator extends BaseGenerator {
 
 
     let foreignKeyMethods = '';
-    const relationFields = model.fields.filter(field => field.isRelation && field.relationType === 'manyToOne');
+    const relationFields = RelationAnalyzer.manyToOneFields(model.fields);
 
     if (relationFields.length > 0) {
       foreignKeyMethods = relationFields.map(field => {
@@ -83,7 +84,7 @@ class ${D}LocalDataSource implements I${D}LocalDataSource {
       {required int userId, required String customerId}) async {
     try {
       final ${d} = await _${d}Dao.get${D}ById(id, userId: userId, customerId: customerId);
-      return ${d}.toModel();
+      return ${d}?.toModel();
     } catch (e) {
       return null;
     }

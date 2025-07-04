@@ -5,6 +5,7 @@ import { ProjectStructure } from "../../../../../core/interfaces/project_structu
 import { cap, pluralConvert, unCap } from "../../../../../utils/text_work/text_util"; //
 import { DataRoutineGenerator } from "../../../generators/data_routine_generator"; //
 import { ServerpodModel } from "../../../serverpod_yaml_parser/formatters/types";
+import { RelationAnalyzer } from "../../../serverpod_yaml_parser/relation-analyzer";
 
 export class DomainRepositoryGenerator extends DataRoutineGenerator {
 
@@ -25,7 +26,7 @@ export class DomainRepositoryGenerator extends DataRoutineGenerator {
     const d = unCap(D);
 
     let foreignKeyMethods = '';
-    const relationFields = model.fields.filter(field => field.isRelation && field.relationType === 'manyToOne');
+    const relationFields = RelationAnalyzer.manyToOneFields(model.fields);
 
     if (relationFields.length > 0) {
       foreignKeyMethods = relationFields.map(field => {
