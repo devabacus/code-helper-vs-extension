@@ -42,13 +42,13 @@ function serverpodMapModelSnippet(): string {
 table: ${tableName}
 fields:
   id: UuidValue?, defaultPersist=random_v7
+  ${d1}: \${1:Entity1}?, relation
+  ${d2}: \${2:Entity2}?, relation
   userId: int
   customerId: UuidValue, relation(parent=customer, onDelete=Cascade)
   createdAt: DateTime
   lastModified: DateTime
   isDeleted: bool, default=false
-  ${d1}: \${1:Entity1}?, relation
-  ${d2}: \${2:Entity2}?, relation
 indexes:
   idx_${tableName}_${d1}Id_${d2}Id:
     fields: ${d1}Id, ${d2}Id
