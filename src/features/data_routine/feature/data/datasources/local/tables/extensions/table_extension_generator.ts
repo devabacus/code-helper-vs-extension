@@ -34,9 +34,7 @@ export class TableExtensionGenerator extends BaseGenerator<ServerpodModel> {
     // const valueWrappedToString = paramValueWrapped.replace(/Value(.*Id)/g, ': Value$1.toString()');
     const valueWrappedToString = paramValueWrapped.split(',').map(p => p.replace(/(.*Id)/, '$1.toString()')).join(',');
 
-    return `
-
-import 'package:drift/drift.dart';
+    return `import 'package:drift/drift.dart';
 import 'package:${projectName}_client/${projectName}_client.dart' as serverpod;
 
 import '../../../../../../../core/database/local/database.dart';
@@ -44,7 +42,7 @@ import '../../../../models/${d}/${d}_model.dart';
 import '../../../../../../../core/database/local/database_types.dart';
 
 extension ${D}TableDataExtensions on ${D}TableData {
-  ${D}Model toModel() => ${D}Model(id: id, lastModified: lastModified, userId: userId, ${params});
+  ${D}Model toModel() => ${D}Model(id: id, userId: userId, customerId: customerId, createdAt: createdAt, lastModified: lastModified, isDeleted: isDeleted, ${params});
 }
 
 extension ${D}TableDataListExtensions on List<${D}TableData> {
@@ -55,8 +53,11 @@ extension Serverpod${D}TableExtensions on serverpod.${D} {
   ${D}TableCompanion toCompanion(SyncStatus status) =>
       ${D}TableCompanion(
         id: Value(id.toString()),
-        lastModified: Value(lastModified),
         userId: Value(userId),
+        customerId: Value(customerId.toString()),
+        createdAt: Value(createdAt),
+        lastModified: Value(lastModified),
+        isDeleted: Value(isDeleted),
         syncStatus: Value(status),
         ${valueWrappedToString}
   );

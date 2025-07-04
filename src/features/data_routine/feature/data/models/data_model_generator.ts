@@ -36,8 +36,11 @@ part '${d}_model.g.dart';
 abstract class ${D}Model with _$${D}Model {
   const factory ${D}Model({
     required String id,
-    required DateTime lastModified,
     required int userId,
+    required String customerId,
+    required DateTime createdAt,
+    required DateTime lastModified,
+    @Default(false) bool isDeleted,
     ${params}
   }) = _${D}Model;
 

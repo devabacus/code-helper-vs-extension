@@ -74,7 +74,7 @@ export class CodeFormatter implements ICodeFormatter {
   // }
 
   fieldsFilter(fields: ServerpodField[]): ServerpodField[] {
-  const exactExcludes = ['isDeleted', 'id', 'userId', 'lastModified', 'syncStatus', 'createdAt'];
+  const exactExcludes = ['isDeleted', 'id', 'userId', 'lastModified', 'syncStatus', 'createdAt', 'customerId'];
   
   return fields.filter(field => 
     !exactExcludes.includes(field.name) && 

@@ -44,8 +44,7 @@ class ${D}Table extends Table {
   IntColumn get lastModified => integer().map(const MillisecondEpochConverter())();
   TextColumn get syncStatus => text().map(const SyncStatusConverter())();
   BoolColumn get isDeleted => boolean().withDefault(const Constant(false))();
-  
-  
+    
   @override
   Set<Column> get primaryKey => {id};
 }
@@ -57,7 +56,7 @@ class ${D}Table extends Table {
     const relationFields = fields.filter(field =>
       field.isRelation &&
       field.relationType === 'manyToOne' && // Только manyToOne связи
-      field.relatedModel
+      field.relatedModel && field.name!== 'customerId'//TODO по хорошему нужно найти где это фильтронуть
     );
 
     if (relationFields.length === 0) {

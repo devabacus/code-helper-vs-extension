@@ -30,7 +30,7 @@ export class DataRemoteSourcesGenerator extends BaseGenerator<ServerpodModel> {
 
     // Генерация методов для получения по внешнему ключу
     let foreignKeyMethods = '';
-    const manyToOneFields = model.fields.filter(field => field.isRelation && field.relationType === 'manyToOne');
+    const manyToOneFields = model.fields.filter(field => field.isRelation && field.relationType === 'manyToOne' && field.name !== 'customerId'); //TODO вынести фильтрацию в парсер
 
     if (manyToOneFields.length > 0) {
       foreignKeyMethods = manyToOneFields.map(field => {

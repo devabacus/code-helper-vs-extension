@@ -29,8 +29,7 @@ export class DriftRelateTableGenerator extends DataRoutineGenerator {
         const D2 = cap(d2);
 
         const tableName = model.className;
-
-        
+                
         return `
 import 'package:drift/drift.dart';
 import 'package:uuid/uuid.dart';
@@ -42,8 +41,11 @@ class ${tableName}Table extends Table {
 
   TextColumn get id => text().clientDefault(() => Uuid().v7())();
   IntColumn get userId => integer()();
+  TextColumn get customerId => text()();
+  DateTimeColumn get createdAt => dateTime().clientDefault(() => DateTime.now().toUtc())();
   IntColumn get lastModified => integer().map(const MillisecondEpochConverter())();
   TextColumn get syncStatus => text().map(const SyncStatusConverter())();
+  BoolColumn get isDeleted => boolean().withDefault(const Constant(false))();
 
   TextColumn get ${d1}Id => text().references(${D1}Table, #id)();
   TextColumn get ${d2}Id => text().references(${D2}Table, #id)();

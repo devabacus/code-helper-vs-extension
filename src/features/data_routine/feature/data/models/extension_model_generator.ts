@@ -37,25 +37,29 @@ import 'package:drift/drift.dart';
 
 import '../../../../../../../core/database/local/database.dart';
 import 'package:${projectName}_client/${projectName}_client.dart' as serverpod;
-import '../../../domain/entities/${d}/${d}.dart';
+import '../../../domain/entities/${d}/${d}_entity.dart';
 import '../../../../../core/database/local/database_types.dart';
 import '../${d}/${d}_model.dart';
 
 extension ${D}ModelExtension on ${D}Model {
   ${D}Entity toEntity() => ${D}Entity(
         id: id,
-        lastModified: lastModified,
         userId: userId,
         customerId: customerId,
+        createdAt: createdAt,
+        lastModified: lastModified,
+        isDeleted: isDeleted,
          ${params}
       );
 
   ${D}TableCompanion toCompanion() => ${D}TableCompanion(
         id: Value(id),
-        lastModified: Value(lastModified), 
         userId: Value(userId),
         customerId: Value(customerId),
-        syncStatus: Value(SyncStatus.local), // По умолчанию новые записи требуют синхронизации
+        createdAt: Value(createdAt),
+        lastModified: Value(lastModified),
+        isDeleted: Value(isDeleted),
+        syncStatus: Value(SyncStatus.local),
         ${paramValueWrapped}
 
       );
@@ -71,12 +75,14 @@ extension ${D}ModelListExtension on List<${D}Model> {
 extension Serverpod${D}ToModelExtension on serverpod.${D} {
   ${D}Model toModel() => ${D}Model(
         id: id.toString(),
-        lastModified: lastModified ?? DateTime.now().toUtc(),
         userId: userId,
+        customerId: customerId.toString(),
+        createdAt: createdAt,
+        lastModified: lastModified,
+        isDeleted: isDeleted,
         ${paramsToString}
       );
 }
-
 
 extension Serverpod${D}ListToModelListExtension on List<serverpod.${D}> {
   List<${D}Model> toModels() =>

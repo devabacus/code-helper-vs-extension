@@ -60,37 +60,53 @@ class ${ClassName}Endpoint extends Endpoint {
     session.log('🔔 Событие ${ClassName} \${event.type.name} отправлено в канал "$channel"');
   }
 
-  Future<void> _validate${D1}And${D2}(Session session, UuidValue ${d1}Id, UuidValue ${d2}Id, int userId) async {
+   Future<void> _validate${D1}And${D2}(Session session, ${ClassName} model) async {
     // Проверяем, что ${D1} существует и принадлежит пользователю
     final ${d1} = await ${D1}.db.findFirstRow(
       session,
-      where: (t) => t.id.equals(${d1}Id) & t.userId.equals(userId) & t.isDeleted.equals(false),
+      where: (t) =>
+          t.id.equals(model.${d1}Id) &
+          t.userId.equals(model.userId) &
+          t.customerId.equals(model.customerId) &
+          t.isDeleted.equals(false),
     );
     if (${d1} == null) {
-      throw Exception('${D1} с ID $${d1}Id не найден или не принадлежит пользователю');
+      throw Exception(
+          '${D1} с ID \${model.${d1}Id} не найден или не принадлежит пользователю');
     }
 
     // Проверяем, что ${D2} существует и принадлежит пользователю
     final ${d2} = await ${D2}.db.findFirstRow(
       session,
-      where: (t) => t.id.equals(${d2}Id) & t.userId.equals(userId) & t.isDeleted.equals(false),
+      where: (t) =>
+          t.id.equals(model.${d2}Id) &
+          t.userId.equals(model.userId) &
+          t.isDeleted.equals(false),
     );
     if (${d2} == null) {
-      throw Exception('${D2} с ID $${d2}Id не найден или не принадлежит пользователю');
+      throw Exception(
+          '${D2} с ID \${model.${d2}Id} не найден или не принадлежит пользователю');
     }
   }
 
-  Future<${ClassName}> create${ClassName}(Session session, UuidValue ${d1}Id, UuidValue ${d2}Id) async {
+  Future<${ClassName}> create${ClassName}(
+      Session session, ${ClassName} ${className}) async {
     final userId = await _getAuthenticatedUserId(session);
 
+    final ${d1}Id = ${className}.${d1}Id;
+    final ${d2}Id = ${className}.${d2}Id;
+
     // Валидация входных данных
-    await _validate${D1}And${D2}(session, ${d1}Id, ${d2}Id, userId);
+    await _validate${D1}And${D2}(session, ${className});
 
     return await session.db.transaction((transaction) async {
       // Ищем существующую связь (включая удаленные) внутри транзакции
       final existingRelation = await ${ClassName}.db.findFirstRow(
         session,
-        where: (r) => r.${d1}Id.equals(${d1}Id) & r.${d2}Id.equals(${d2}Id) & r.userId.equals(userId),
+        where: (r) =>
+            r.${d1}Id.equals(${d1}Id) &
+            r.${d2}Id.equals(${d2}Id) &
+            r.userId.equals(userId),
         transaction: transaction,
       );
 
@@ -105,17 +121,21 @@ class ${ClassName}Endpoint extends Endpoint {
         }
 
         // "Воскрешаем" удаленную связь
-        session.log('ℹ️ Воскрешаем удаленную связь ${D1}($${d1}Id) ↔ ${D2}($${d2}Id)');
+        session
+            .log('ℹ️ Воскрешаем удаленную связь ${D1}($${d1}Id) ↔ ${D2}($${d2}Id)');
         result = await ${ClassName}.db.updateRow(
           session,
           existingRelation.copyWith(isDeleted: false, lastModified: now),
           transaction: transaction,
         );
 
-        await _notifyChange(session, ${ClassName}SyncEvent(
-          type: SyncEventType.update,
-          ${className}: result,
-        ), userId);
+        await _notifyChange(
+            session,
+            ${ClassName}SyncEvent(
+              type: SyncEventType.update,
+              ${className}: result,
+            ),
+            userId);
       } else {
         // Создаем новую связь
         result = await ${ClassName}.db.insertRow(
@@ -124,23 +144,28 @@ class ${ClassName}Endpoint extends Endpoint {
             ${d1}Id: ${d1}Id,
             ${d2}Id: ${d2}Id,
             userId: userId,
-            lastModified: now,
+            customerId: ${className}.customerId,
+            createdAt: ${className}.createdAt,
+            lastModified: DateTime.now().toUtc(),
             isDeleted: false,
           ),
           transaction: transaction,
         );
 
-        await _notifyChange(session, ${ClassName}SyncEvent(
-          type: SyncEventType.create,
-          ${className}: result,
-        ), userId);
+        await _notifyChange(
+            session,
+            ${ClassName}SyncEvent(
+              type: SyncEventType.create,
+              ${className}: result,
+            ),
+            userId);
       }
 
-      session.log('✅ Создана связь ${D1}($${d1}Id) ↔ ${D2}($${d2}Id) для пользователя $userId');
+      session.log(
+          '✅ Создана связь ${D1}($${d1}Id) ↔ ${D2}($${d2}Id) для пользователя $userId');
       return result;
     });
   }
-
   
   Future<bool> delete${ClassName}ById(Session session, UuidValue id) async {
     final userId = await _getAuthenticatedUserId(session);

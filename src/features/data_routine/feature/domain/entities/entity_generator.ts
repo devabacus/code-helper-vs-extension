@@ -19,7 +19,7 @@ export class EntityGenerator extends DataRoutineGenerator {
   }
 
   protected getPath(featurePath: string, entityName: string): string {
-    return path.join(this.structure.getEntityPath(featurePath), entityName, `${entityName}.dart`);
+    return path.join(this.structure.getEntityPath(featurePath), entityName, `${entityName}_entity.dart`);
   }
   protected getContent(model: ServerpodModel): string {
     const D = model.className;
@@ -29,15 +29,18 @@ export class EntityGenerator extends DataRoutineGenerator {
     const params = formatter.formatRequiredTypeFields(model.fields);
     return `import 'package:freezed_annotation/freezed_annotation.dart';
 
-part '${d}.freezed.dart';
-part '${d}.g.dart';
+part '${d}_entity.freezed.dart';
+part '${d}_entity.g.dart';
 
 @freezed
 abstract class ${D}Entity with _$${D}Entity {
   const factory ${D}Entity({
     required String id,
-    required DateTime lastModified,
     required int userId,
+    required String customerId,
+    required DateTime createdAt,
+    required DateTime lastModified,
+    @Default(false) bool isDeleted,
     ${params}
   }) = _${D}Entity;
 
