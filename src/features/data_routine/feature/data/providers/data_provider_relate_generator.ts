@@ -35,8 +35,7 @@ export class DataProviderRelateGenerator extends BaseGenerator<ServerpodModel> {
         const className = unCap(ClassName); 
         const tableName = `${model.tableName}`; 
     
-        return `
-    import 'package:flutter_riverpod/flutter_riverpod.dart';
+        return `import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../datasources/remote/interfaces/task_tag_map_remote_datasource_service.dart';
 import '../../datasources/remote/sources/task_tag_map_remote_data_source.dart';
@@ -88,14 +87,14 @@ SyncMetadataDao syncMetadataDao(Ref ref) {
 
 /// Семейный провайдер репозитория для конкретного пользователя
 @riverpod
-I${ClassName}Repository ${className}Repository(Ref ref, int userId) {
+I${ClassName}Repository ${className}Repository(Ref ref, {required int userId, required String customerId}) {
   // Получаем все зависимости
   final localDataSource = ref.watch(${className}LocalDataSourceProvider);
   final remoteDataSource = ref.watch(${className}RemoteDataSourceProvider);
   final syncMetadataLocalDataSource = ref.watch(
     syncMetadataLocalDataSourceProvider,
   );
-  final ${d2}Repository = ref.watch(${d2}RepositoryProvider(userId));
+  final ${d2}Repository = ref.watch(${d2}RepositoryProvider(userId: userId, customerId: customerId));
 
   // Создаем репозиторий с фиксированным userId
   final repository = ${ClassName}RepositoryImpl(
@@ -103,12 +102,13 @@ I${ClassName}Repository ${className}Repository(Ref ref, int userId) {
     remoteDataSource,
     syncMetadataLocalDataSource,
     userId,
+    customerId,
     ${d2}Repository, //нужно для удаления ${tableName} при удалении ${d1}
   );
 
   // Регистрируем в реестре для автоматической синхронизации
   final registry = ref.read(syncRegistryProvider);
-  final repoKey = '${tableName}s_$userId';
+  final repoKey = '${tableName}s__\${userId}_$customerId';
   registry.registerRepository(repoKey, repository);
 
   // При уничтожении провайдера удаляем репозиторий из реестра
@@ -123,12 +123,13 @@ I${ClassName}Repository ${className}Repository(Ref ref, int userId) {
 @riverpod
 I${ClassName}Repository? currentUser${ClassName}Repository(Ref ref) {
   final currentUser = ref.watch(currentUserProvider);
+  final currentCustomerId = ref.watch(currentCustomerIdProvider);
 
   if (currentUser?.id == null) {
     return null;
   }
 
-  return ref.watch(${className}RepositoryProvider(currentUser!.id!));
+  return ref.watch(${className}RepositoryProvider(userId: currentUser!.id!, customerId: currentCustomerId.toString()));
 }
 `;
       }

@@ -78,7 +78,7 @@ Future<${D}Entity?> get${D}ById(Ref ref, String id) async {
     return null;
   }
 
-  final ${d}FromDb = await get${D}ByIdUseCase(id, customerId);
+  final ${d}FromDb = await get${D}ByIdUseCase(id);
   return ${d}FromDb;
 }
   `;

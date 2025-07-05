@@ -1,7 +1,7 @@
 export const database_types_file = `
 import 'package:drift/drift.dart';
 
-enum SyncStatus { local, synced, conflict, deleted }
+enum SyncStatus { local, synced, conflict }
 
 class SyncStatusConverter extends TypeConverter<SyncStatus, String> {
   const SyncStatusConverter();

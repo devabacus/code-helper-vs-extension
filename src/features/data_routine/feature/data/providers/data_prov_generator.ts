@@ -69,7 +69,7 @@ ISyncMetadataLocalDataSource syncMetadataLocalDataSource(Ref ref) {
 /// Семейный провайдер репозитория для конкретного пользователя
 /// Каждый userId получает свой изолированный экземпляр репозитория
 @riverpod
-I${D}Repository ${d}Repository(Ref ref, int userId) {
+I${D}Repository ${d}Repository(Ref ref, {required int userId, required String customerId}) {
   // ref.keepAlive();
   
   // Получаем все зависимости
@@ -82,15 +82,16 @@ I${D}Repository ${d}Repository(Ref ref, int userId) {
     localDataSource, 
     remoteDataSource, 
     syncMetadataLocalDataSource,
-    userId, // Передаем userId в конструктор
+    userId,
+    customerId,
   );
 
   // Автоматически регистрируем в реестре
   final registry = ref.read(syncRegistryProvider);
-  registry.registerRepository('${ds}_$userId', repository);
+  registry.registerRepository('${ds}_\${userId}_$customerId', repository);
   
   ref.onDispose(() {
-    registry.unregisterRepository('${ds}_$userId');
+    registry.unregisterRepository('${ds}_\${userId}_$customerId');
     repository.dispose();
   });
   
@@ -102,14 +103,15 @@ I${D}Repository ${d}Repository(Ref ref, int userId) {
 @riverpod
 I${D}Repository? currentUser${D}Repository(Ref ref) {
   final currentUser = ref.watch(currentUserProvider);
+  final currentCustomerId = ref.watch(currentCustomerIdProvider);
   
-  if (currentUser?.id == null) {
+  if (currentUser?.id == null || currentCustomerId == null) {
     // Если пользователь не авторизован, возвращаем null
     return null;
   }
   
   // Возвращаем репозиторий для текущего пользователя
-  return ref.watch(${d}RepositoryProvider(currentUser!.id!));
+  return ref.watch(${d}RepositoryProvider(userId: currentUser!.id!, customerId: currentCustomerId.toString()));
 }
 `;
   }

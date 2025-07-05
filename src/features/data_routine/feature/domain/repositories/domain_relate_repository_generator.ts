@@ -43,7 +43,7 @@ abstract class I${ClassName}Repository implements ISyncableRepository {
   Future<String> create${ClassName}(${ClassName}Entity ${className});
   Future<bool> update${ClassName}(${ClassName}Entity ${className});
   Future<bool> delete${ClassName}(String id);
-  Future<${ClassName}Entity?> get${ClassName}ById(String id, String customerId);
+  Future<${ClassName}Entity?> get${ClassName}ById(String id);
   Future<void> add${D2}To${D1}({required String ${d1}Id, required String ${d2}Id});
   Future<void> remove${D2}From${D1}({
     required String ${d1}Id,

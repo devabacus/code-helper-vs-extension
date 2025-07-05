@@ -34,8 +34,7 @@ export class DataRepositoryRelateImplGenerator extends BaseGenerator {
     const className = unCap(ClassName);
     const tableName = `${model.tableName}`;
 
-    return `
-    import 'package:${projectName}/features/home/data/datasources/local/tables/extensions/${tableName}_table_extension.dart';
+    return `import 'package:${projectName}/features/home/data/datasources/local/tables/extensions/${tableName}_table_extension.dart';
 import 'package:${projectName}/features/home/domain/entities/extensions/${tableName}_entity_extension.dart';
 import 'package:${projectName}_client/${projectName}_client.dart' as serverpod;
 import 'package:uuid/uuid.dart';
@@ -70,8 +69,9 @@ class ${ClassName}RepositoryImpl extends BaseSyncRepository
     this._remoteDataSource,
     ISyncMetadataLocalDataSource syncMetadataDataSource,
     int userId,
+    String customerId,
     this._${d2}Repository,
-  ) : super(userId, syncMetadataDataSource: syncMetadataDataSource) {
+  ) : super(userId, customerId, syncMetadataDataSource: syncMetadataDataSource) {
     print('✅ ${ClassName}RepositoryImpl: Создан экземпляр для userId: $userId');
     initEventBasedSync();
   }
@@ -79,7 +79,7 @@ class ${ClassName}RepositoryImpl extends BaseSyncRepository
   @override
   Stream<List<${ClassName}Entity>> watch${ClassNameS}() {
     return _localDataSource
-        .watchAllRelations(userId: userId)
+        .watchAllRelations(userId: userId, customerId: customerId)
         .map((models) => models.toEntities());
   }
 
@@ -98,6 +98,7 @@ class ${ClassName}RepositoryImpl extends BaseSyncRepository
     final result = await _localDataSource.softDelete${ClassName}ById(
       id,
       userId: userId,
+      customerId: customerId,
     );
     syncWithServer().catchError(
       (e) =>
@@ -134,6 +135,7 @@ class ${ClassName}RepositoryImpl extends BaseSyncRepository
         ${d1}Id,
         ${d2}Id,
         userId: userId,
+        customerId: customerId,
       );
 
       if (relation != null) {
@@ -155,6 +157,7 @@ class ${ClassName}RepositoryImpl extends BaseSyncRepository
       await _localDataSource.softDeleteRelationsBy${D1}Id(
         ${d1}Id,
         userId: userId,
+        customerId: customerId,
       );
       print('✅ Все связи для источника $${d1}Id помечены для удаления локально.');
       // Запускаем фоновую синхронизацию, чтобы сервер узнал об удалениях
@@ -172,7 +175,7 @@ class ${ClassName}RepositoryImpl extends BaseSyncRepository
   @override
   Future<List<${D2}Entity>> get${D2s}For${D1}(String ${d1}Id) async {
     final allRelations =
-        await _localDataSource.watchAllRelations(userId: userId).first;
+        await _localDataSource.watchAllRelations(userId: userId, customerId: customerId).first;
 
     final ${d2}IdsFor${D1} =
         allRelations
@@ -201,19 +204,20 @@ class ${ClassName}RepositoryImpl extends BaseSyncRepository
 
   @override
   Future<List<dynamic>> reconcileChanges(List<dynamic> serverChanges) {
-    return _localDataSource.reconcileServerChanges(serverChanges, userId);
+    return _localDataSource.reconcileServerChanges(serverChanges, userId: userId, customerId: customerId);
   }
 
   @override
   Future<void> pushLocalChanges(List<dynamic> localChangesToPush) async {
     for (final localChange in localChangesToPush as List<${ClassName}TableData>) {
-      if (localChange.syncStatus == SyncStatus.deleted) {
+      if (localChange.isDeleted) {
         try {
           // Вместо удаления по локальному ID, удаляем по бизнес-ключу
           await _syncDeleteBy${D1}And${D2}(localChange.${d1}Id, localChange.${d2}Id);
           await _localDataSource.physicallyDelete${ClassName}(
             localChange.id,
             userId: userId,
+            customerId: customerId,
           );
           print(
             '    -> ✅ Удаление связи для ${D1} \${localChange.${d1}Id.substring(0, 8)}... синхронизировано с сервером.',
@@ -263,7 +267,7 @@ class ${ClassName}RepositoryImpl extends BaseSyncRepository
 
   @override
   Future<void> handleSyncEvent(dynamic event) async {
-    await _localDataSource.handleSyncEvent(event, userId);
+    await _localDataSource.handleSyncEvent(event, userId: userId, customerId: customerId);
   }
 
   @override
