@@ -58,48 +58,49 @@ class ${ClassName}LocalDataSource implements I${ClassName}LocalDataSource {
 
   @override
   Future<bool> update${ClassName}(${ClassName}Model model) {
-    return _dao.update${ClassName}(model.toCompanionWithId().copyWith(syncStatus: const Value(SyncStatus.local)), userId: model.userId);
+    return _dao.update${ClassName}(model.toCompanionWithId().copyWith(syncStatus: const Value(SyncStatus.local)), userId: model.userId, customerId: model.customerId);
   }
 
   @override
-  Future<bool> softDelete${ClassName}ById(String id, {required int userId}) {
-    return _dao.softDelete${ClassName}ById(id, userId: userId);
+  Future<bool> softDelete${ClassName}ById(String id, {required int userId, required String customerId}) {
+    return _dao.softDelete${ClassName}ById(id, userId: userId, customerId: customerId);
   }
 
   @override
-  Future<int> softDeleteRelationsBy${D1}Id(String ${d1}Id, {required int userId}) {
-    return _dao.softDeleteRelationsBy${D1}Id(${d1}Id, userId: userId);
+  Future<int> softDeleteRelationsBy${D1}Id(String ${d1}Id, {required int userId, required String customerId}) {
+    return _dao.softDeleteRelationsBy${D1}Id(${d1}Id, userId: userId, customerId: customerId);
   }
 
   @override
-  Future<${ClassName}Model?> getRelationById(String id, {required int userId}) async {
-    final result = await _dao.getRelationById(id, userId: userId);
+  Future<${ClassName}Model?> getRelationById(String id, {required int userId, required String customerId}) async {
+    final result = await _dao.getRelationById(id, userId: userId, customerId: customerId);
     return result?.toModel();
   }
   
 @override
-Future<${ClassName}Model?> getRelationBy${D1}And${D2}(String ${d1}Id, String ${d2}Id, {required int userId}) async {
+Future<${ClassName}Model?> getRelationBy${D1}And${D2}(String ${d1}Id, String ${d2}Id, {required int userId, required String customerId}) async {
   final result = await _dao.getRelationBy${D1}And${D2}(${d1}Id, ${d2}Id, userId: userId, customerId: customerId);
   return result?.toModel();
 }
 
   @override
-  Stream<List<${ClassName}Model>> watchAllRelations({required int userId}) {
-    return _dao.watchAllRelations(userId: userId).map((list) => list.toModels());
+  Stream<List<${ClassName}Model>> watchAllRelations({required int userId, required String customerId}) {
+    return _dao.watchAllRelations(userId: userId, customerId: customerId).map((list) => list.toModels());
   }
   
   @override
-  Future<List<${ClassName}TableData>> getAllLocalChanges(int userId) {
+  Future<List<${ClassName}TableData>> getAllLocalChanges({required int userId, required String customerId}) {
     return (_dao.select(_dao.${d1}${D2}MapTable)
           ..where((t) =>
               (t.syncStatus.equals(SyncStatus.synced.name)).not() &
-              t.userId.equals(userId)))
+              t.userId.equals(userId) &
+              t.customerId.equals(customerId)))
         .get();
   }
 
   @override
-  Future<int> physicallyDelete${ClassName}(String id, {required int userId}) {
-    return _dao.physicallyDelete${ClassName}(id, userId: userId);
+  Future<int> physicallyDelete${ClassName}(String id, {required int userId, required String customerId}) {
+    return _dao.physicallyDelete${ClassName}(id, userId: userId, customerId: customerId);
   }
  @override
   Future<void> insertOrUpdateFromServer(dynamic serverChange, SyncStatus status) async {
@@ -113,13 +114,14 @@ Future<${ClassName}Model?> getRelationBy${D1}And${D2}(String ${d1}Id, String ${d
             ..where((t) =>
                 t.${d1}Id.equals(server${ClassName}.${d1}Id.toString()) &
                 t.${d2}Id.equals(server${ClassName}.${d2}Id.toString()) &
-                t.userId.equals(server${ClassName}.userId)))
+                t.userId.equals(server${ClassName}.userId) & 
+                t.customerId.equals(server${ClassName}.customerId.toString())))
           .getSingleOrNull();
 
       // 2. Если такая запись существует, мы должны ее физически удалить,
       //    чтобы избежать конфликта уникальности и освободить место для авторитетной записи с сервера.
       if (existingRecord != null) {
-        await _dao.physicallyDelete${ClassName}(existingRecord.id, userId: existingRecord.userId);
+        await _dao.physicallyDelete${ClassName}(existingRecord.id, userId: existingRecord.userId, customerId: existingRecord.customerId);
         print('    -> Удалена устаревшая локальная связь: \${existingRecord.id}');
       }
 
@@ -132,19 +134,19 @@ Future<${ClassName}Model?> getRelationBy${D1}And${D2}(String ${d1}Id, String ${d
   }
 
   @override
-  Future<void> handleSyncEvent(dynamic event, int userId) async {
+  Future<void> handleSyncEvent(dynamic event, {required int userId, required String customerId}) async {
     if (event is! serverpod.${ClassName}SyncEvent) return;
 
     switch (event.type) {
       case serverpod.SyncEventType.create:
       case serverpod.SyncEventType.update:
         final ${d1}${D2}Map = event.${d1}${D2}Map;
-        if (${d1}${D2}Map != null && ${d1}${D2}Map.userId == userId) {
+        if (${d1}${D2}Map != null && ${d1}${D2}Map.userId == userId && ${d1}${D2}Map.customerId.toString() == customerId) {
           // Сервер сообщает нам об удалении, присылая запись с флагом isDeleted = true.
           // Мы обрабатываем это как "мягкое" удаление.
           if (${d1}${D2}Map.isDeleted) {
             print('  -> (Real-time) Получено событие мягкого удаления для ID: \${${d1}${D2}Map.id}');
-            await softDelete${ClassName}ById(${d1}${D2}Map.id.toString(), userId: userId);
+            await softDelete${ClassName}ById(${d1}${D2}Map.id.toString(), userId: userId, customerId: customerId);
           } else {
             // В противном случае это обычное создание/обновление.
             print('  -> (Real-time) Получено событие создания/обновления для ID: \${${d1}${D2}Map.id}');
@@ -158,26 +160,26 @@ Future<${ClassName}Model?> getRelationBy${D1}And${D2}(String ${d1}Id, String ${d
       case serverpod.SyncEventType.delete:
         if (event.id != null) {
           print('  -> (Real-time) Получено событие жесткого удаления для ID: \${event.id}');
-          await softDelete${ClassName}ById(event.id.toString(), userId: userId);
+          await softDelete${ClassName}ById(event.id.toString(), userId: userId, customerId: customerId);
         }
         break;
     }
   }
 
   @override
-  Future<List<${ClassName}TableData>> reconcileServerChanges(List<dynamic> serverChanges, int userId) async {
-    final localChanges = await getAllLocalChanges(userId);
+  Future<List<${ClassName}TableData>> reconcileServerChanges(List<dynamic> serverChanges, {required int userId, required String customerId}) async {
+    final localChanges = await getAllLocalChanges(userId: userId, customerId: customerId);
     final localChangesMap = {for (var c in localChanges) c.id: c};
 
     await _dao.db.transaction(() async {
       for (final serverChange in serverChanges as List<serverpod.${ClassName}>) {
-        if (serverChange.userId != userId) continue;
+        if (serverChange.userId != userId && serverChange.customerId.toString() != customerId) continue;
         
         final localRecord = await (_dao.select(_dao.${d1}${D2}MapTable)
               ..where((t) => t.id.equals(serverChange.id.toString())))
             .getSingleOrNull();
 
-        final serverTime = serverChange.lastModified ?? DateTime.fromMicrosecondsSinceEpoch(0);
+        final serverTime = serverChange.lastModified;
 
         if (localRecord == null) {
           if (!serverChange.isDeleted) {
@@ -194,11 +196,11 @@ Future<${ClassName}Model?> getRelationBy${D1}And${D2}(String ${d1}Id, String ${d
               print('    -> КОНФЛИКТ: Локальная версия связи ID \${localRecord.id} новее серверного "надгробия". Локальное изменение побеждает.');
            } else {
               print('    -> ✅ Серверное "надгробие" новее или нет локального конфликта. Удаляем локальную запись: ID=\${localRecord.id}.');
-              await physicallyDelete${ClassName}(localRecord.id, userId: userId);
+              await physicallyDelete${ClassName}(localRecord.id, userId: userId, customerId: customerId);
               localChangesMap.remove(localRecord.id);
            }
         } else {
-          if (localRecord.syncStatus == SyncStatus.local || localRecord.syncStatus == SyncStatus.deleted) {
+          if (localRecord.syncStatus == SyncStatus.local || localRecord.isDeleted) {
             if (serverTime.isAfter(localTime)) {
               print('    -> КОНФЛИКТ: Сервер новее для связи ID \${serverChange.id}. Применяем серверные изменения.');
               await insertOrUpdateFromServer(serverChange, SyncStatus.synced);

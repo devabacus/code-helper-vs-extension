@@ -203,8 +203,9 @@ class ${D}LocalDataSource implements I${D}LocalDataSource {
     await _${d}Dao.db.transaction(() async {
       for (final serverChange in serverChanges as List<serverpod.${D}>) {
         if (serverChange.userId != userId ||
-            serverChange.customerId.toString() != customerId)
+            serverChange.customerId.toString() != customerId){
           continue;
+        }
 
         final localRecord =
             await (_${d}Dao.select(_${d}Dao.${d}Table)..where(
@@ -243,8 +244,7 @@ class ${D}LocalDataSource implements I${D}LocalDataSource {
             localChangesMap.remove(localRecord.id);
           }
         } else {
-          if (localRecord.syncStatus == SyncStatus.local ||
-              localRecord.syncStatus == SyncStatus.deleted) {
+          if (localRecord.syncStatus == SyncStatus.local || localRecord.isDeleted) {
             if (serverTime.isAfter(localTime)) {
               print(
                 '    -> КОНФЛИКТ: Сервер новее для "\${serverChange.title}". Применяем серверные изменения.',

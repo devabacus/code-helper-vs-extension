@@ -39,18 +39,16 @@ export class DataDaoGenerator extends DataRoutineGenerator {
         const parameterType = 'String';
 
         return `
-  Future<List<${D}TableData>> ${daoMethodName}(${parameterType} ${parameterName}, {required int userId}) =>
+  Future<List<${D}TableData>> ${daoMethodName}(${parameterType} ${parameterName}, {required int userId, required String customerId}) =>
     (select(${d}Table)
-      ..where((t) => t.${parameterName}.equals(${parameterName}) & t.userId.equals(userId) & t.syncStatus.equals(SyncStatus.deleted.name).not()))
+      ..where((t) => t.${parameterName}.equals(${parameterName}) & t.userId.equals(userId) & t.customerId.equals(customerId) & t.isDeleted.equals(false)))
     .get();`;
       }).join('\n');
     }
 
-    return `
-import 'package:drift/drift.dart';
-import '../../../../../../../core/database/local/interface/i_database_service.dart';
+    return `import 'package:drift/drift.dart';
 import '../../../../../../../core/database/local/database.dart';
-import '../../../../../../../core/database/local/database_types.dart';
+import '../../../../../../../core/database/local/interface/i_database_service.dart';
 import '../../tables/${d}_table.dart';
 
 part '${d}_dao.g.dart';
@@ -63,16 +61,16 @@ class ${D}Dao extends DatabaseAccessor<AppDatabase>
 
   AppDatabase get db => attachedDatabase;
 
-  Future<List<${D}TableData>> get${Ds}({int? userId}) =>
+  Future<List<${D}TableData>> get${Ds}({required int userId, required String customerId}) =>
     (select(${d}Table)
-      ..where((t) => t.syncStatus.equals(SyncStatus.deleted.name).not())
-      ..where((t) => userId != null ? t.userId.equals(userId) : const Constant(true)))
+      ..where((t) => t.isDeleted.equals(false))
+      ..where((t) => t.userId.equals(userId) & t.customerId.equals(customerId)))
     .get();     
 
-  Stream<List<${D}TableData>> watch${Ds}({int? userId}) =>
+  Stream<List<${D}TableData>> watch${Ds}({required int userId, required String customerId}) =>
     (select(${d}Table)
-      ..where((t) => t.syncStatus.equals(SyncStatus.deleted.name).not())
-      ..where((t) => userId != null ? t.userId.equals(userId) : const Constant(true)))
+      ..where((t) => t.isDeleted.equals(false))
+      ..where((t) => t.userId.equals(userId) & t.customerId.equals(customerId)))
     .watch();
 
   Future<${D}TableData?> get${D}ById(String id, {required int userId, required String customerId}) =>
@@ -80,12 +78,12 @@ class ${D}Dao extends DatabaseAccessor<AppDatabase>
         ..where((t) => t.id.equals(id) & t.userId.equals(userId) & t.customerId.equals(customerId)))
       .getSingleOrNull();
 
-  Future<List<${D}TableData>> get${Ds}ByIds(List<String> ids, {required int userId}) {
+  Future<List<${D}TableData>> get${Ds}ByIds(List<String> ids, {required int userId, required String customerId}) {
     if (ids.isEmpty) {
-      return Future.value([]); // Возвращаем пустой список, если нет ID
+      return Future.value([]); 
     }
     return (select(${d}Table)
-          ..where((t) => t.id.isIn(ids) & t.userId.equals(userId) & t.syncStatus.equals(SyncStatus.deleted.name).not()))
+          ..where((t) => t.id.isIn(ids) & t.userId.equals(userId) & t.customerId.equals(customerId) & t.isDeleted.equals(false)))
         .get();
   }
 
@@ -94,7 +92,7 @@ class ${D}Dao extends DatabaseAccessor<AppDatabase>
     try {
       final existing${D} =
           await (select(${d}Table)
-            ..where((t) => t.id.equals(id))).getSingleOrNull();
+            ..where((t) => t.id.equals(id) & t.userId.equals(companion.userId.value) & t.customerId.equals(companion.customerId.value))).getSingleOrNull();
 
       if (existing${D} != null) {
         throw StateError('${d} with ID $id exists');
@@ -108,48 +106,48 @@ class ${D}Dao extends DatabaseAccessor<AppDatabase>
     }
   }
 
-Future<bool> update${D}(${D}TableCompanion companion, {required int userId}) async {    
+Future<bool> update${D}(${D}TableCompanion companion, {required int userId, required String customerId}) async {    
     final idToUpdate = companion.id.value;
     final updatedRows = await (update(${d}Table)
-      ..where((t) => t.id.equals(idToUpdate) & t.userId.equals(userId))) 
+      ..where((t) => t.id.equals(idToUpdate) & t.userId.equals(userId) & t.customerId.equals(customerId))) 
       .write(companion); 
     return updatedRows > 0;
 }
 
-  Future<bool> softDelete${D}(String id, {required int userId}) async {
+  Future<bool> softDelete${D}(String id, {required int userId, required String customerId}) async {
     
     final companion = ${D}TableCompanion(
-      syncStatus: Value(SyncStatus.deleted),
+      isDeleted: Value(true),
       lastModified: Value(DateTime.now()), 
     );
     
     final updatedRows = await (update(${d}Table)
-      ..where((t) => t.id.equals(id) & t.userId.equals(userId)))
+      ..where((t) => t.id.equals(id) & t.userId.equals(userId) & t.customerId.equals(customerId)))
       .write(companion);
     
     return updatedRows > 0;
   }
 
-  Future<int> physicallyDelete${D}(String id, {required int userId}) async {
+  Future<int> physicallyDelete${D}(String id, {required int userId, required String customerId}) async {
     return (delete(${d}Table)
-      ..where((t) => t.id.equals(id) & t.userId.equals(userId)))
+      ..where((t) => t.id.equals(id) & t.userId.equals(userId) & t.customerId.equals(customerId)))
       .go();
   }
 
-  Future<bool> ${d}Exists(String id) async {
+  Future<bool> ${d}Exists(String id, {required int userId, required String customerId}) async {
     if (id.isEmpty) return false;
 
     final ${d} =
         await (select(${d}Table)
-          ..where((t) => t.id.equals(id))).getSingleOrNull();
+          ..where((t) => t.id.equals(id) & t.userId.equals(userId) & t.customerId.equals(customerId))).getSingleOrNull();
 
     return ${d} != null;
   }
 
-  Future<int> get${Ds}Count({int? userId}) async {
+  Future<int> get${Ds}Count({required int userId, required String customerId}) async {
     final countQuery = selectOnly(${d}Table)
       ..addColumns([${d}Table.id.count()])
-      ..where(userId != null ? ${d}Table.userId.equals(userId) : const Constant(true));
+      ..where(${d}Table.userId.equals(userId) & ${d}Table.customerId.equals(customerId));
 
     final result = await countQuery.getSingle();
     return result.read(${d}Table.id.count()) ?? 0;
@@ -161,13 +159,9 @@ Future<bool> update${D}(${D}TableCompanion companion, {required int userId}) asy
     });
   }
 
-  Future<int> deleteAll${Ds}({int? userId}) {
-    if (userId != null) {
-      return (delete(${d}Table)..where((t) => t.userId.equals(userId))).go();
-    } else {
-      return delete(${d}Table).go();
+  Future<int> deleteAll${Ds}({required int userId, required String customerId}) {
+    return (delete(${d}Table)..where((t) => t.userId.equals(userId) & t.customerId.equals(customerId))).go();
     }
-  }
   ${foreignKeyMethods}
 }
 `;

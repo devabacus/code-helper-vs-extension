@@ -46,9 +46,9 @@ abstract class I${ClassName}LocalDataSource {
 
   Future<${ClassName}Model?> getRelationById(String id, {required int userId, required String customerId});
   Future<${ClassName}Model?> getRelationBy${D1}And${D2}(String ${d1}Id, String ${d2}Id, {required int userId, required String customerId});
-  Stream<List<${ClassName}Model>> watchAllRelations(int userId, String customerId);
+  Stream<List<${ClassName}Model>> watchAllRelations({required int userId, required String customerId});
 
-  Future<List<${ClassName}TableData>> getAllLocalChanges(int userId, String customerId);
+  Future<List<${ClassName}TableData>> getAllLocalChanges({required int userId, required String customerId});
   Future<List<${ClassName}TableData>> reconcileServerChanges(List<dynamic> serverChanges, {required int userId, required String customerId});
   Future<int> physicallyDelete${ClassName}(String id, {required int userId, required String customerId});
   Future<void> insertOrUpdateFromServer(dynamic serverChange, SyncStatus status);
