@@ -42,7 +42,7 @@ export class LocalDataSourceServiceGenerator extends BaseGenerator<ServerpodMode
         const parameterType = 'String';
 
         return `
-  Future<List<${D}Model>> ${dsMethodName}(${parameterType} ${parameterName}, {required int userId}); `;
+  Future<List<${D}Model>> ${dsMethodName}(${parameterType} ${parameterName}, {required int userId, required String customerId}); `;
       }).join('');
     }
     return `
@@ -52,24 +52,18 @@ import '../../../models/${d}/${d}_model.dart';
 import '../../../../../../core/database/local/database_types.dart';
 
 abstract class I${D}LocalDataSource {
-  Future<List<${D}Model>> get${Ds}({int? userId});
-  Stream<List<${D}Model>> watch${Ds}({int? userId});
+  Future<List<${D}Model>> get${Ds}(int userId, String customerId);
+  Stream<List<${D}Model>> watch${Ds}(int userId, String customerId);
   Future<${D}Model?> get${D}ById(String id, {required int userId, required String customerId});
-  Future<List<${D}Model>> get${Ds}ByIds(List<String> ids, {required int userId});
+  Future<List<${D}Model>> get${Ds}ByIds(List<String> ids, {required int userId, required String customerId});
   Future<String> create${D}(${D}Model ${d});
   Future<bool> update${D}(${D}Model ${d});
-  Future<bool> delete${D}(String id, {required int userId});
-  Future<List<${D}TableData>> getAllLocalChanges(int userId);
-  Future<List<${D}TableData>> reconcileServerChanges(
-    List<dynamic> serverChanges,
-    int userId,
-  );
-  Future<void> physicallyDelete${D}(String id, {required int userId});
-  Future<void> insertOrUpdateFromServer(
-    dynamic serverChange,
-    SyncStatus status,
-  );
-  Future<void> handleSyncEvent(dynamic event, int userId);
+  Future<bool> delete${D}(String id, {required int userId, required String customerId});
+  Future<List<${D}TableData>> getAllLocalChanges(int userId, String customerId);
+  Future<List<${D}TableData>> reconcileServerChanges(List<dynamic> serverChanges, {required int userId, required String customerId});
+  Future<void> physicallyDelete${D}(String id, {required int userId, required String customerId});
+  Future<void> insertOrUpdateFromServer(dynamic serverChange, SyncStatus status);
+  Future<void> handleSyncEvent(dynamic event, {required int userId, required String customerId});
 ${foreignKeyMethods}
 }
 

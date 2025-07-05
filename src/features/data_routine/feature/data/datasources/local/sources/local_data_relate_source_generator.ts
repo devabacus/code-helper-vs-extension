@@ -79,7 +79,7 @@ class ${ClassName}LocalDataSource implements I${ClassName}LocalDataSource {
   
 @override
 Future<${ClassName}Model?> getRelationBy${D1}And${D2}(String ${d1}Id, String ${d2}Id, {required int userId}) async {
-  final result = await _dao.getRelationBy${D1}And${D2}(${d1}Id, ${d2}Id, userId: userId);
+  final result = await _dao.getRelationBy${D1}And${D2}(${d1}Id, ${d2}Id, userId: userId, customerId: customerId);
   return result?.toModel();
 }
 

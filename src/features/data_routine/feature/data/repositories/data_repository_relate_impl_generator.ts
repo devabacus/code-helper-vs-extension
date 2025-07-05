@@ -284,8 +284,6 @@ class ${ClassName}RepositoryImpl extends BaseSyncRepository
     );
     return result;
   }
-}
-
-    `;
+}`;
   }
 }

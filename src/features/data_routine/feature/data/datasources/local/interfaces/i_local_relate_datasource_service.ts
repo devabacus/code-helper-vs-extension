@@ -41,18 +41,18 @@ abstract class I${ClassName}LocalDataSource {
   // === Основные CRUD-операции ===
   Future<String> create${ClassName}(${ClassName}Model model);
   Future<bool> update${ClassName}(${ClassName}Model model);
-  Future<bool> softDelete${ClassName}ById(String id, {required int userId});
-  Future<int> softDeleteRelationsBy${D1}Id(String ${d1}Id, {required int userId});
+  Future<bool> softDelete${ClassName}ById(String id, {required int userId, required String customerId});
+  Future<int> softDeleteRelationsBy${D1}Id(String ${d1}Id, {required int userId, required String customerId});
 
-  Future<${ClassName}Model?> getRelationById(String id, {required int userId});
-  Future<${ClassName}Model?> getRelationBy${D1}And${D2}(String ${d1}Id, String ${d2}Id, {required int userId});
-  Stream<List<${ClassName}Model>> watchAllRelations({required int userId});
+  Future<${ClassName}Model?> getRelationById(String id, {required int userId, required String customerId});
+  Future<${ClassName}Model?> getRelationBy${D1}And${D2}(String ${d1}Id, String ${d2}Id, {required int userId, required String customerId});
+  Stream<List<${ClassName}Model>> watchAllRelations(int userId, String customerId);
 
-  Future<List<${ClassName}TableData>> getAllLocalChanges(int userId);
-  Future<List<${ClassName}TableData>> reconcileServerChanges(List<dynamic> serverChanges, int userId);
-  Future<int> physicallyDelete${ClassName}(String id, {required int userId});
+  Future<List<${ClassName}TableData>> getAllLocalChanges(int userId, String customerId);
+  Future<List<${ClassName}TableData>> reconcileServerChanges(List<dynamic> serverChanges, {required int userId, required String customerId});
+  Future<int> physicallyDelete${ClassName}(String id, {required int userId, required String customerId});
   Future<void> insertOrUpdateFromServer(dynamic serverChange, SyncStatus status);
-  Future<void> handleSyncEvent(dynamic event, int userId);
+  Future<void> handleSyncEvent(dynamic event, {required int userId, required String customerId});
 }
 `;
   }
