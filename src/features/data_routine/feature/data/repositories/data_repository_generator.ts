@@ -180,7 +180,7 @@ class ${D}RepositoryImpl extends BaseSyncRepository
           .then((models) => models.toEntities());
 
   @override
-  Future<${D}Entity?> get${D}ById(String id, String customerId) async {
+  Future<${D}Entity?> get${D}ById(String id) async {
     final model = await _localDataSource.get${D}ById(id, userId: userId, customerId: customerId);
     return model?.toEntity();
   }

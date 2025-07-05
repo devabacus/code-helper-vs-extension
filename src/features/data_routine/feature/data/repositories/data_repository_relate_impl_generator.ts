@@ -46,7 +46,7 @@ import '../../../../core/database/local/interface/sync_metadata_local_datasource
 import '../../../../core/sync/base_sync_repository.dart';
 import '../../domain/entities/${d2}/${d2}_entity.dart';
 import '../../domain/entities/${d1}/${d1}_entity.dart';
-import '../../domain/entities/${tableName}/${tableName}.dart';
+import '../../domain/entities/${tableName}/${tableName}_entity.dart';
 import '../../domain/repositories/${d2}_repository.dart';
 import '../../domain/repositories/${tableName}_repository.dart';
 import '../datasources/local/interfaces/${tableName}_local_datasource_service.dart';
@@ -114,6 +114,8 @@ class ${ClassName}RepositoryImpl extends BaseSyncRepository
     final newRelation = ${ClassName}Entity(
       id: const Uuid().v7(),
       userId: userId,
+      customerId: customerId,
+      createdAt: DateTime.now().toUtc(),
       lastModified: DateTime.now().toUtc(),
       ${d1}Id: ${d1}Id,
       ${d2}Id: ${d2}Id,
@@ -254,12 +256,7 @@ class ${ClassName}RepositoryImpl extends BaseSyncRepository
     ${ClassName}Entity entity,
   ) async {
     return await _remoteDataSource.create${ClassName}(entity.toServerpod${ClassName}());
-  }
-
-  @override
-  Future<void> syncWithServer() async {
-    );
-  }
+  }  
 
   @override
   Stream<dynamic> watchEvents() => _remoteDataSource.watchEvents();
@@ -271,7 +268,7 @@ class ${ClassName}RepositoryImpl extends BaseSyncRepository
 
   @override
   Future<${ClassName}Entity?> get${ClassName}ById(String id) async {
-    final model = await _localDataSource.getRelationById(id, userId: userId);
+    final model = await _localDataSource.getRelationById(id, userId: userId, customerId: customerId);
     return model?.toEntity();
   }
 

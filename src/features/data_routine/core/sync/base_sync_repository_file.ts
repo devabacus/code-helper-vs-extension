@@ -6,6 +6,7 @@ import 'sync_registry.dart';
 
 abstract class BaseSyncRepository implements ISyncableRepository {
   final int userId;
+  final String customerId;
   final bool syncEnabled;
   final ISyncMetadataLocalDataSource syncMetadataDataSource;
 
@@ -15,7 +16,7 @@ abstract class BaseSyncRepository implements ISyncableRepository {
   int reconnectionAttempt = 0;
   int delaySeconds = 0;
 
-  BaseSyncRepository(this.userId, {required this.syncMetadataDataSource, this.syncEnabled = true});
+  BaseSyncRepository(this.userId, this.customerId, {required this.syncMetadataDataSource, this.syncEnabled = true});
 
   String get entityType;
   @override

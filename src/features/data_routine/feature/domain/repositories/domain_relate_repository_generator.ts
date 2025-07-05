@@ -35,7 +35,7 @@ export class DomainRelateRepositoryGenerator extends BaseGenerator<ServerpodMode
     return `import '../../../../core/sync/sync_registry.dart';
 import '../entities/${d2}/${d2}_entity.dart';
 import '../entities/${d1}/${d1}_entity.dart';
-import '../entities/${tableName}/${tableName}.dart';
+import '../entities/${tableName}/${tableName}_entity.dart';
 
 abstract class I${ClassName}Repository implements ISyncableRepository {
   
