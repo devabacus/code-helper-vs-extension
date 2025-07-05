@@ -43,14 +43,14 @@ export class DataRepositoryGenerator extends BaseGenerator {
         return `
   @override
   Future<List<${D}Entity>> ${dsMethodName}(${parameterType} ${parameterName}) async {
-    final ${d}s = await _localDataSource.${dsMethodName}(${parameterName}, userId: userId);
+    final ${d}s = await _localDataSource.${dsMethodName}(${parameterName}, userId: userId, customerId: customerId);
     return ${d}s.map((e) => e.toEntity()).toList();
   }`;
       }).join('\\n');
     }
 
     return `import 'package:${projectName}/features/home/domain/entities/extensions/${d}_entity_extension.dart';
-    import 'package:${projectName}/features/home/data/datasources/local/tables/extensions/${d}_table_extension.dart';
+import 'package:${projectName}/features/home/data/datasources/local/tables/extensions/${d}_table_extension.dart';
 import 'package:${projectName}_client/${projectName}_client.dart' as serverpod;
 
 import '../../../../core/database/local/database.dart';
@@ -63,11 +63,9 @@ import '../../../../core/database/local/interface/sync_metadata_local_datasource
 import '../datasources/remote/interfaces/${d}_remote_datasource_service.dart';
 import '../models/extensions/${d}_model_extension.dart';
 
-class ${D}RepositoryImpl extends BaseSyncRepository
-    implements I${D}Repository {
+class ${D}RepositoryImpl extends BaseSyncRepository implements I${D}Repository {
   final I${D}LocalDataSource _localDataSource;
   final I${D}RemoteDataSource _remoteDataSource;
-  
 
   @override
   String get entityTypeName => '${D}';
@@ -79,7 +77,12 @@ class ${D}RepositoryImpl extends BaseSyncRepository
     this._remoteDataSource,
     ISyncMetadataLocalDataSource syncMetadataDataSource,
     int userId,
-  ) : super(userId, syncMetadataDataSource: syncMetadataDataSource) {
+    String customerId,
+  ) : super(
+        userId,
+        customerId,
+        syncMetadataDataSource: syncMetadataDataSource,
+      ) {
     print('✅ ${D}RepositoryImpl: Создан экземпляр для userId: $userId');
     initEventBasedSync();
   }
@@ -90,40 +93,51 @@ class ${D}RepositoryImpl extends BaseSyncRepository
   }
 
   @override
-  Future<List<dynamic>> reconcileChanges(
-      List<dynamic> serverChanges) async {
-    return _localDataSource.reconcileServerChanges(serverChanges, userId);
+  Future<List<dynamic>> reconcileChanges(List<dynamic> serverChanges) async {
+    return _localDataSource.reconcileServerChanges(
+      serverChanges,
+      userId: userId,
+      customerId: customerId,
+    );
   }
 
   @override
   Future<void> pushLocalChanges(List<dynamic> localChangesToPush) async {
     for (final localChange in localChangesToPush as List<${D}TableData>) {
-      if (localChange.syncStatus == SyncStatus.deleted) {
+      if (localChange.isDeleted) {
         try {
           await _syncDeleteToServer(localChange.id);
-          await _localDataSource.physicallyDelete${D}(localChange.id,
-              userId: userId);
+          await _localDataSource.physicallyDelete${D}(
+            localChange.id,
+            userId: userId,
+            customerId: customerId,
+          );
           print(
-              '    -> ✅ Удаление "\${localChange.id}" синхронизировано с сервером.');
+            '    -> ✅ Удаление "\${localChange.id}" синхронизировано с сервером.',
+          );
         } catch (e) {
           print(
-              '    -> ⚠️ Не удалось синхронизировать удаление ID: \${localChange.id}. Повторим позже.');
+            '    -> ⚠️ Не удалось синхронизировать удаление ID: \${localChange.id}. Повторим позже.',
+          );
         }
       } else if (localChange.syncStatus == SyncStatus.local) {
         try {
           final entity = localChange.toModel().toEntity();
-          final serverRecord = await _remoteDataSource
-              .get${D}ById(serverpod.UuidValue.fromString(entity.id));
+          final serverRecord = await _remoteDataSource.get${D}ById(
+            serverpod.UuidValue.fromString(entity.id),
+          );
           if (serverRecord != null && !serverRecord.isDeleted) {
             await _syncUpdateToServer(entity);
           } else {
             await _syncCreateToServer(entity);
           }
           print(
-              '    -> ✅ Изменение "\${localChange.title}" синхронизировано с сервером.');
+            '    -> ✅ Изменение "\${localChange.title}" синхронизировано с сервером.',
+          );
         } catch (e) {
           print(
-              '    -> ⚠️ Не удалось синхронизировать изменение ID: \${localChange.id}. Повторим позже.');
+            '    -> ⚠️ Не удалось синхронизировать изменение ID: \${localChange.id}. Повторим позже.',
+          );
         }
       }
     }
@@ -135,69 +149,95 @@ class ${D}RepositoryImpl extends BaseSyncRepository
 
   @override
   Future<void> handleSyncEvent(dynamic event) async {
-    await _localDataSource.handleSyncEvent(event, userId);
+    await _localDataSource.handleSyncEvent(
+      event,
+      userId: userId,
+      customerId: customerId,
+    );
   }
 
   @override
   Stream<List<${D}Entity>> watch${Ds}() {
     return _localDataSource
-        .watch${Ds}(userId: userId)
+        .watch${Ds}(userId: userId, customerId: customerId)
         .map((models) => models.toEntities());
   }
 
   @override
   Future<String> create${D}(${D}Entity ${d}) async {
-    final ${d}WithUser = ${d}.copyWith(userId: userId);
+    final ${d}WithUser = ${d}.copyWith(
+      userId: userId,
+      customerId: customerId,
+      lastModified: DateTime.now().toUtc(),
+    );
     final id = await _localDataSource.create${D}(${d}WithUser.toModel());
     syncWithServer().catchError(
-        (e) => print('⚠️ Фоновая синхронизация после создания не удалась: $e'));
+      (e) => print('⚠️ Фоновая синхронизация после создания не удалась: $e'),
+    );
     return id;
   }
 
   @override
   Future<bool> update${D}(${D}Entity ${d}) async {
-    final ${d}WithUser =
-        ${d}.copyWith(userId: userId, lastModified: DateTime.now().toUtc());
-    final result =
-        await _localDataSource.update${D}(${d}WithUser.toModel());
+    final ${d}WithUser = ${d}.copyWith(
+      userId: userId,
+      customerId: customerId,
+      lastModified: DateTime.now().toUtc(),
+    );
+    final result = await _localDataSource.update${D}(${d}WithUser.toModel());
     syncWithServer().catchError(
-        (e) => print('⚠️ Фоновая синхронизация после обновления не удалась: $e'));
+      (e) => print('⚠️ Фоновая синхронизация после обновления не удалась: $e'),
+    );
     return result;
   }
 
   @override
   Future<bool> delete${D}(String id) async {
-    final result = await _localDataSource.delete${D}(id, userId: userId);
+    final result = await _localDataSource.delete${D}(
+      id,
+      userId: userId,
+      customerId: customerId,
+    );
     syncWithServer().catchError(
-        (e) => print('⚠️ Фоновая синхронизация после удаления не удалась: $e'));
+      (e) => print('⚠️ Фоновая синхронизация после удаления не удалась: $e'),
+    );
     return result;
   }
 
   @override
-  Future<List<${D}Entity>> get${Ds}() async =>
-      _localDataSource
-          .get${Ds}(userId: userId)
-          .then((models) => models.toEntities());
+  Future<List<${D}Entity>> get${Ds}() async => _localDataSource
+      .get${Ds}(userId: userId, customerId: customerId)
+      .then((models) => models.toEntities());
 
   @override
   Future<${D}Entity?> get${D}ById(String id) async {
-    final model = await _localDataSource.get${D}ById(id, userId: userId, customerId: customerId);
+    final model = await _localDataSource.get${D}ById(
+      id,
+      userId: userId,
+      customerId: customerId,
+    );
     return model?.toEntity();
   }
 
   @override
-  Future<List<${D}Entity>> get${Ds}ByIds(List<String> ids) async {;
-    final models = await _localDataSource.get${Ds}ByIds(ids, userId: userId);
+  Future<List<${D}Entity>> get${Ds}ByIds(List<String> ids) async {
+    ;
+    final models = await _localDataSource.get${Ds}ByIds(
+      ids,
+      userId: userId,
+      customerId: customerId,
+    );
     return models.toEntities();
   }
 
   Future<void> _syncCreateToServer(${D}Entity ${d}) async {
     try {
       final server${D} = ${d}.toServerpod${D}();
-      final synced${D} =
-          await _remoteDataSource.create${D}(server${D});
+      final synced${D} = await _remoteDataSource.create${D}(server${D});
       await _localDataSource.insertOrUpdateFromServer(
-          synced${D}, SyncStatus.synced);
+        synced${D},
+        SyncStatus.synced,
+      );
     } catch (e) {
       rethrow;
     }
@@ -208,7 +248,9 @@ class ${D}RepositoryImpl extends BaseSyncRepository
       final server${D} = ${d}.toServerpod${D}();
       await _remoteDataSource.update${D}(server${D});
       await _localDataSource.insertOrUpdateFromServer(
-          server${D}, SyncStatus.synced);
+        server${D},
+        SyncStatus.synced,
+      );
     } catch (e) {
       rethrow;
     }
