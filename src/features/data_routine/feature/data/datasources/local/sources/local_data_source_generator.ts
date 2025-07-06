@@ -113,12 +113,12 @@ class ${D}LocalDataSource implements I${D}LocalDataSource {
     required int userId,
     required String customerId,
   }) async {
-    final ${ds}Data = await _${d}Dao.get${Ds}ByIds(
+    final categoriesData = await _${d}Dao.get${Ds}ByIds(
       ids,
       userId: userId,
       customerId: customerId,
     );
-    return ${ds}Data.toModels();
+    return categoriesData.toModels();
   }
 
   @override
@@ -134,7 +134,8 @@ class ${D}LocalDataSource implements I${D}LocalDataSource {
     final companion = ${d}.toCompanionWithId().copyWith(
       syncStatus: const Value(SyncStatus.local),
     );
-    return _${d}Dao.update${D}(
+    return _${d}Dao.update${D}ById(
+      ${d}.id,
       companion,
       userId: ${d}.userId,
       customerId: ${d}.customerId,
@@ -147,7 +148,18 @@ class ${D}LocalDataSource implements I${D}LocalDataSource {
     required int userId,
     required String customerId,
   }) async {
-    return _${d}Dao.softDelete${D}(id, userId: userId, customerId: customerId);
+    final companion = ${D}TableCompanion(
+      isDeleted: Value(true),
+      lastModified: Value(DateTime.now()),
+      syncStatus: Value(SyncStatus.local),
+    );
+    final result = await _${d}Dao.update${D}ById(
+      id,
+      companion,
+      userId: userId,
+      customerId: customerId,
+    );
+    return result;
   }
 
   @override
@@ -203,7 +215,7 @@ class ${D}LocalDataSource implements I${D}LocalDataSource {
     await _${d}Dao.db.transaction(() async {
       for (final serverChange in serverChanges as List<serverpod.${D}>) {
         if (serverChange.userId != userId ||
-            serverChange.customerId.toString() != customerId){
+            serverChange.customerId.toString() != customerId) {
           continue;
         }
 
@@ -244,7 +256,8 @@ class ${D}LocalDataSource implements I${D}LocalDataSource {
             localChangesMap.remove(localRecord.id);
           }
         } else {
-          if (localRecord.syncStatus == SyncStatus.local || localRecord.isDeleted) {
+          if (localRecord.syncStatus == SyncStatus.local ||
+              localRecord.isDeleted) {
             if (serverTime.isAfter(localTime)) {
               print(
                 '    -> КОНФЛИКТ: Сервер новее для "\${serverChange.title}". Применяем серверные изменения.',
@@ -281,26 +294,11 @@ class ${D}LocalDataSource implements I${D}LocalDataSource {
             event.${d}!.userId == userId &&
             event.${d}!.customerId == UuidValue.fromString(customerId)) {
           await insertOrUpdateFromServer(event.${d}!, SyncStatus.synced);
-          print('  -> (Real-time) СОЗДАНА/ОБНОВЛЕНА: "\${event.${d}!.title}"');
+          print(
+            '  -> (Real-time) СОЗДАНА/ОБНОВЛЕНА: "\${event.${d}!.title}"',
+          );
         }
-        break;
-      case serverpod.SyncEventType.delete:
-        if (event.id != null) {
-          final localRecord =
-              await (_${d}Dao.select(_${d}Dao.${d}Table)..where(
-                (t) => t.id.equals(event.id!.toString()),
-              )).getSingleOrNull();
-          if (localRecord?.userId == userId &&
-              localRecord?.customerId == customerId) {
-            await physicallyDelete${D}(
-              event.id!.toString(),
-              userId: userId,
-              customerId: customerId,
-            );
-            print('  -> (Real-time) УДАЛЕНА ID: "\${event.id}"');
-          }
-        }
-        break;
+        break;      
     }
   }
   ${foreignKeyMethods}

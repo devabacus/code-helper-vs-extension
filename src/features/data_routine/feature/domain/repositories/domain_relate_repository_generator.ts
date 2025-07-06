@@ -42,7 +42,7 @@ abstract class I${ClassName}Repository implements ISyncableRepository {
   Stream<List<${ClassName}Entity>> watch${ClassNameS}();
   Future<String> create${ClassName}(${ClassName}Entity ${className});
   Future<bool> update${ClassName}(${ClassName}Entity ${className});
-  Future<bool> delete${ClassName}(String id);
+  Future<bool> delete${ClassName}(${ClassName}Entity ${className});
   Future<${ClassName}Entity?> get${ClassName}ById(String id);
   Future<void> add${D2}To${D1}({required String ${d1}Id, required String ${d2}Id});
   Future<void> remove${D2}From${D1}({

@@ -133,7 +133,6 @@ export class CodeFormatter implements ICodeFormatter {
     return params.join(', ');
   }
 
-  // Новые методы для работы с ServerpodModel
   generateDriftTableColumns(fields: ServerpodField[]): string {
     const columns: string[] = [];
 
@@ -180,7 +179,7 @@ export class CodeFormatter implements ICodeFormatter {
   shouldSkipServerpodField(field: ServerpodField): boolean {
     // Пропускаем служебные поля, которые уже определены статично
     const staticFields = ['id', 'userId', 'lastModified', 'syncStatus', 'isDeleted', 'Map', 'customerId', 'createdAt'];
-    if (staticFields.includes(field.name)) {
+    if (staticFields.includes(field.name) || field.scope?.includes('serverOnly')) {
       return true;
     }
 

@@ -36,18 +36,20 @@ export class ServerpodEndpointGenerator extends BaseGenerator<ServerpodModel> {
 
     if (relationFields.length > 0) {
       foreignKeyEndpointMethods = relationFields.map(field => {
-        // field.name может быть "categoryId" или "category", поэтому нужно правильно обработать
+        // field.name может быть "${d}Id" или "${d}", поэтому нужно правильно обработать
         const fieldName = field.name.endsWith('Id') ? field.name : `${field.name}Id`;
-        const methodNamePart = cap(field.name.replace(/Id$/, '')); // category -> Category
-        const endpointMethodName = `get${Ds}By${methodNamePart}Id`; // getTasksByCategoryId
-        const parameterName = fieldName; // categoryId
+        const methodNamePart = cap(field.name.replace(/Id$/, '')); // ${d} -> ${D}
+        const endpointMethodName = `get${Ds}By${methodNamePart}Id`; // getTasksBy${D}Id
+        const parameterName = fieldName; // ${d}Id
 
         return `
 Future<List<${D}>> ${endpointMethodName}(Session session, UuidValue ${parameterName}) async {
+    final authContext = await getAuthenticatedUserContext(session);
+    final userId = authContext.userId;
+    final customerId = authContext.customerId;
     return await ${D}.db.find(
       session,
-      where: (t) => t.${parameterName}.equals(${parameterName}),
-      orderBy: (t) => t.title,
+      where: (t) => t.${parameterName}.equals(${parameterName}) & t.userId.equals(userId) & t.customerId.equals(customerId),
     );
   }`;
       }).join('\n');
@@ -55,31 +57,13 @@ Future<List<${D}>> ${endpointMethodName}(Session session, UuidValue ${parameterN
 
     return `import 'package:serverpod/serverpod.dart';
 import 'package:${projectName}_server/src/generated/protocol.dart';
+import 'shared/auth_context_mixin.dart';
 import 'user_manager_endpoint.dart';
 
 const _${d}ChannelBase = '${projectName}_${d}_events_for_user_';
 
-class ${D}Endpoint extends Endpoint {
+class ${D}Endpoint extends Endpoint with AuthContextMixin {
   
-  Future<AuthenticatedUserContext> _getAuthenticatedUserContext(Session session) async {
-    final authInfo = await session.authenticated;
-    final userId = authInfo?.userId;
-
-    if (userId == null) {
-      throw Exception('Пользователь не авторизован.');
-    }
-
-    final customerUser = await CustomerUser.db.findFirstRow(
-      session,
-      where: (cu) => cu.userId.equals(userId),
-    );
-
-    if (customerUser == null) {
-      throw Exception('Пользователь $userId не привязан к клиенту (Customer).');
-    }
-    return (userId: userId, customerId: customerUser.customerId);
-  }
-
   Future<void> _notifyChange(Session session, ${D}SyncEvent event, AuthenticatedUserContext authContext) async { 
     final channel = '$_${d}ChannelBase\${authContext.userId}-\${authContext.customerId.uuid}'; 
     await session.messages.postMessage(channel, event);
@@ -87,7 +71,7 @@ class ${D}Endpoint extends Endpoint {
   }
 
   Future<${D}> create${D}(Session session, ${D} ${d}) async {
-    final authContext = await _getAuthenticatedUserContext(session);
+    final authContext = await getAuthenticatedUserContext(session);
     final userId = authContext.userId;
     final customerId = authContext.customerId;
 
@@ -124,7 +108,7 @@ class ${D}Endpoint extends Endpoint {
   }
 
   Future<List<${D}>> get${Ds}(Session session, {int? limit}) async {
-    final authContext = await _getAuthenticatedUserContext(session);
+    final authContext = await getAuthenticatedUserContext(session);
     final userId = authContext.userId;
     final customerId = authContext.customerId;
 
@@ -136,7 +120,7 @@ class ${D}Endpoint extends Endpoint {
   }     
 
   Future<${D}?> get${D}ById(Session session, UuidValue id) async {
-    final authContext = await _getAuthenticatedUserContext(session);
+    final authContext = await getAuthenticatedUserContext(session);
     final userId = authContext.userId;
     final customerId = authContext.customerId;
     
@@ -147,7 +131,7 @@ class ${D}Endpoint extends Endpoint {
   }
 
   Future<List<${D}>> get${Ds}Since(Session session, DateTime? since) async {
-    final authContext = await _getAuthenticatedUserContext(session);
+    final authContext = await getAuthenticatedUserContext(session);
     final userId = authContext.userId;
     final customerId = authContext.customerId;
 
@@ -162,7 +146,7 @@ class ${D}Endpoint extends Endpoint {
   }
 
   Future<bool> update${D}(Session session, ${D} ${d}) async {
-    final authContext = await _getAuthenticatedUserContext(session);
+    final authContext = await getAuthenticatedUserContext(session);
     final userId = authContext.userId;
     final customerId = authContext.customerId;
 
@@ -189,36 +173,9 @@ class ${D}Endpoint extends Endpoint {
       return false;
     }
   }
-
-  Future<bool> delete${D}(Session session, UuidValue id) async {
-    final authContext = await _getAuthenticatedUserContext(session);
-    final userId = authContext.userId;
-    final customerId = authContext.customerId;
-
-    final original${D} = await ${D}.db.findFirstRow(
-      session,
-      where: (c) => c.id.equals(id) & c.userId.equals(userId) & c.customerId.equals(customerId),
-    );
-
-    if (original${D} == null) return false;
-    final tombstone = original${D}.copyWith(
-      isDeleted: true,
-      lastModified: DateTime.now().toUtc(),
-    );
-
-    final result = await ${D}.db.updateRow(session, tombstone);
-
-    await _notifyChange(session, ${D}SyncEvent(
-      type: SyncEventType.delete,
-      ${d}: result, 
-      id: id,
-    ), authContext);
-
-    return true;
-  }
-
+  
   Stream<${D}SyncEvent> watchEvents(Session session) async* {
-    final authContext = await _getAuthenticatedUserContext(session);
+    final authContext = await getAuthenticatedUserContext(session);
     final userId = authContext.userId;
     final customerId = authContext.customerId;
 
@@ -232,8 +189,7 @@ class ${D}Endpoint extends Endpoint {
     } finally {
       session.log('🔴 Клиент (user: $userId, customer: \${customerId.uuid}) отписался от канала "$channel"');
     }
-  }
-
+  }   
     ${foreignKeyEndpointMethods}
 }          `;
   }

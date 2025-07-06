@@ -122,17 +122,6 @@ class ${D}RemoteDataSource implements I${D}RemoteDataSource {
   }
 
   @override
-  Future<bool> delete${D}(UuidValue id) async {
-    try {
-      final result = await _client.${d}.delete${D}(id);
-      return result;
-    } catch (e) {
-      print('Ошибка удаления $id: $e');
-      rethrow;
-    }
-  }
-
-  @override
   Stream<${D}SyncEvent> watchEvents() {
     try {
       return _client.${d}.watchEvents();

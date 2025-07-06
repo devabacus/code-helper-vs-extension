@@ -106,7 +106,7 @@ class ${D}RepositoryImpl extends BaseSyncRepository implements I${D}Repository {
     for (final localChange in localChangesToPush as List<${D}TableData>) {
       if (localChange.isDeleted) {
         try {
-          await _syncDeleteToServer(localChange.id);
+          await _syncUpdateToServer(localChange.toModel().toEntity());
           await _localDataSource.physicallyDelete${D}(
             localChange.id,
             userId: userId,
@@ -255,14 +255,7 @@ class ${D}RepositoryImpl extends BaseSyncRepository implements I${D}Repository {
       rethrow;
     }
   }
-
-  Future<void> _syncDeleteToServer(String id) async {
-    try {
-      await _remoteDataSource.delete${D}(serverpod.UuidValue.fromString(id));
-    } catch (e) {
-      rethrow;
-    }
-  }
+  
     ${foreignKeyMethods}
 }
 

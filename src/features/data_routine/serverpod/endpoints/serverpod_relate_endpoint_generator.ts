@@ -39,31 +39,13 @@ export class ServerpodRelateEndpointGenerator extends BaseGenerator<ServerpodMod
 
     return `import 'package:serverpod/serverpod.dart';
 import 'package:${projectName}_server/src/generated/protocol.dart';
-
+import 'shared/auth_context_mixin.dart';
 import 'user_manager_endpoint.dart';
 
 const _${className}ChannelBase = '${projectName}_${tableName}_events_for_user_';
 
-class ${ClassName}Endpoint extends Endpoint {
-  Future<AuthenticatedUserContext> _getAuthenticatedUserContext(Session session) async {
-    final authInfo = await session.authenticated;
-    final userId = authInfo?.userId;
-
-    if (userId == null) {
-      throw Exception('Пользователь не авторизован.');
-    }
-
-    final customerUser = await CustomerUser.db.findFirstRow(
-      session,
-      where: (cu) => cu.userId.equals(userId),
-    );
-
-    if (customerUser == null) {
-      throw Exception('Пользователь $userId не привязан к клиенту (Customer).');
-    }
-    return (userId: userId, customerId: customerUser.customerId);
-  }
-
+class ${ClassName}Endpoint extends Endpoint with AuthContextMixin {
+  
   Future<void> _notifyChange(Session session, ${ClassName}SyncEvent event, AuthenticatedUserContext authContext) async {
     final channel = '$_${className}ChannelBase\${authContext.userId}-\${authContext.customerId.uuid}';
     await session.messages.postMessage(channel, event);
@@ -102,7 +84,7 @@ class ${ClassName}Endpoint extends Endpoint {
 
   Future<${ClassName}> create${ClassName}(
       Session session, ${ClassName} ${className}) async {
-    final authContext = await _getAuthenticatedUserContext(session);
+    final authContext = await getAuthenticatedUserContext(session);
     final userId = authContext.userId;
     final customerId = authContext.customerId;
 
@@ -179,45 +161,9 @@ class ${ClassName}Endpoint extends Endpoint {
       return result;
     });
   }
-  
-  Future<bool> delete${ClassName}ById(Session session, UuidValue id) async {
-    final authContext = await _getAuthenticatedUserContext(session);
-    final userId = authContext.userId;
-    final customerId = authContext.customerId;
-
-    return await session.db.transaction((transaction) async {
-        final relation = await ${ClassName}.db.findFirstRow(
-            session,
-            where: (r) => r.id.equals(id) & r.userId.equals(userId) & r.customerId.equals(customerId) & r.isDeleted.equals(false),
-            transaction: transaction,
-        );
-
-        if (relation == null) {
-            session.log('⚠️ Попытка удалить несуществующую или уже удаленную связь ${ClassName} с ID: $id');
-            return false;
-        }
-
-        // "Мягкое" удаление найденной связи
-        final tombstone = relation.copyWith(
-            isDeleted: true,
-            lastModified: DateTime.now().toUtc(),
-        );
-
-        final result = await ${ClassName}.db.updateRow(session, tombstone, transaction: transaction);
-
-        await _notifyChange(session, ${ClassName}SyncEvent(
-            type: SyncEventType.delete,
-            ${className}: result,
-            id: id,
-        ), authContext);
-
-        session.log('✅ Удалена связь ${ClassName} с ID: $id для пользователя $userId');
-        return true;
-    });
-  }
-
+    
   Future<List<${D2}>> get${D2s}For${D1}(Session session, UuidValue ${d1}Id) async {
-    final authContext = await _getAuthenticatedUserContext(session);
+    final authContext = await getAuthenticatedUserContext(session);
     final userId = authContext.userId;
     final customerId = authContext.customerId;
 
@@ -259,7 +205,7 @@ class ${ClassName}Endpoint extends Endpoint {
   }
 
   Future<List<${D1}>> get${D1s}For${D2}(Session session, UuidValue ${d2}Id) async {
-    final authContext = await _getAuthenticatedUserContext(session);
+    final authContext = await getAuthenticatedUserContext(session);
     final userId = authContext.userId;
     final customerId = authContext.customerId;
 
@@ -300,7 +246,7 @@ class ${ClassName}Endpoint extends Endpoint {
   }
 
   Future<List<${ClassName}>> get${ClassNameS}Since(Session session, DateTime? since) async {
-    final authContext = await _getAuthenticatedUserContext(session);
+    final authContext = await getAuthenticatedUserContext(session);
     final userId = authContext.userId;
     final customerId = authContext.customerId;
     
@@ -313,7 +259,7 @@ class ${ClassName}Endpoint extends Endpoint {
   }
 
   Stream<${ClassName}SyncEvent> watchEvents(Session session) async* {
-    final authContext = await _getAuthenticatedUserContext(session);
+    final authContext = await getAuthenticatedUserContext(session);
   final userId = authContext.userId;
   final customerId = authContext.customerId;
     
@@ -332,7 +278,7 @@ class ${ClassName}Endpoint extends Endpoint {
   }
 
 Future<bool> delete${ClassName}By${D1}And${D2}(Session session, UuidValue ${d1}Id, UuidValue ${d2}Id) async {
-    final authContext = await _getAuthenticatedUserContext(session);
+    final authContext = await getAuthenticatedUserContext(session);
     final userId = authContext.userId;
     final customerId = authContext.customerId;
 
@@ -359,7 +305,7 @@ Future<bool> delete${ClassName}By${D1}And${D2}(Session session, UuidValue ${d1}I
 
         // Уведомляем клиентов об удалении, используя серверный ID, который они знают (или получат)
         await _notifyChange(session, ${ClassName}SyncEvent(
-            type: SyncEventType.delete,
+            type: SyncEventType.update,
             id: result.id, // Отправляем ID удаленной записи
             ${className}: result,
         ), authContext);

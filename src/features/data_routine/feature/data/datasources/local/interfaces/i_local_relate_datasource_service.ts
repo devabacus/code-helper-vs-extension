@@ -41,13 +41,10 @@ abstract class I${ClassName}LocalDataSource {
   // === Основные CRUD-операции ===
   Future<String> create${ClassName}(${ClassName}Model model);
   Future<bool> update${ClassName}(${ClassName}Model model);
-  Future<bool> softDelete${ClassName}ById(String id, {required int userId, required String customerId});
-  Future<int> softDeleteRelationsBy${D1}Id(String ${d1}Id, {required int userId, required String customerId});
-
+  Future<int> updateRelationsBy${D1}Id(String ${d1}Id, ${ClassName}TableCompanion companion, {required int userId, required String customerId});
   Future<${ClassName}Model?> getRelationById(String id, {required int userId, required String customerId});
   Future<${ClassName}Model?> getRelationBy${D1}And${D2}(String ${d1}Id, String ${d2}Id, {required int userId, required String customerId});
   Stream<List<${ClassName}Model>> watchAllRelations({required int userId, required String customerId});
-
   Future<List<${ClassName}TableData>> getAllLocalChanges({required int userId, required String customerId});
   Future<List<${ClassName}TableData>> reconcileServerChanges(List<dynamic> serverChanges, {required int userId, required String customerId});
   Future<int> physicallyDelete${ClassName}(String id, {required int userId, required String customerId});

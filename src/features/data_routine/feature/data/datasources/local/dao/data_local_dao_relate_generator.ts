@@ -36,7 +36,7 @@ import '../../../../../../../core/database/local/database.dart';
 import '../../../../../../../core/database/local/interface/i_database_service.dart';
 import '../../tables/${tableName}_table.dart';
 
-part '${d1}_${d2}_map_dao.g.dart';
+part '${tableName}_dao.g.dart';
 
 @DriftAccessor(tables: [${ClassName}Table])
 class ${ClassName}Dao extends DatabaseAccessor<AppDatabase>
@@ -72,35 +72,12 @@ class ${ClassName}Dao extends DatabaseAccessor<AppDatabase>
     return updatedRows > 0;
   }
 
-  /// "Мягко" удаляет связь по ее ID, помечая ее как удаленную.
-  Future<bool> softDelete${ClassName}ById(
-    String id, {
+  Future<int> updateRelationsBy${D1}Id(
+    String ${d1}Id,
+    ${ClassName}TableCompanion companion, {
     required int userId,
     required String customerId,
   }) async {
-    final companion = ${ClassName}TableCompanion(
-      isDeleted: Value(true),
-      lastModified: Value(DateTime.now().toUtc()),
-    );
-    final updatedRows = await (update(${className}Table)..where(
-      (t) =>
-          t.id.equals(id) &
-          t.userId.equals(userId) &
-          t.customerId.equals(customerId),
-    )).write(companion);
-    return updatedRows > 0;
-  }
-
-  Future<int> softDeleteRelationsBy${D1}Id(
-    String ${d1}Id, {
-    required int userId,
-    required String customerId,
-  }) async {
-    final companion = ${ClassName}TableCompanion(
-      isDeleted: Value(true),
-      lastModified: Value(DateTime.now().toUtc()),
-    );
-    // Обновляем все записи, где ${d1}Id и userId совпадают
     final updatedRows = await (update(${className}Table)..where(
       (t) =>
           t.${d1}Id.equals(${d1}Id) &
@@ -108,7 +85,7 @@ class ${ClassName}Dao extends DatabaseAccessor<AppDatabase>
           t.customerId.equals(customerId),
     )).write(companion);
 
-    print('DAO: Мягко удалено $updatedRows связей для задачи $${d1}Id');
+    print('DAO: Массово обновлено $updatedRows связей для задачи $${d1}Id');
     return updatedRows;
   }
 
@@ -169,7 +146,6 @@ class ${ClassName}Dao extends DatabaseAccessor<AppDatabase>
     )).watch();
   }
 }
-
 `;
     }
 }

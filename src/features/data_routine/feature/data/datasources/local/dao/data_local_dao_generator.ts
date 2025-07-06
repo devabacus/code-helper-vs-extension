@@ -61,38 +61,67 @@ class ${D}Dao extends DatabaseAccessor<AppDatabase>
 
   AppDatabase get db => attachedDatabase;
 
-  Future<List<${D}TableData>> get${Ds}({required int userId, required String customerId}) =>
-    (select(${d}Table)
-      ..where((t) => t.isDeleted.equals(false))
-      ..where((t) => t.userId.equals(userId) & t.customerId.equals(customerId)))
-    .get();     
-
-  Stream<List<${D}TableData>> watch${Ds}({required int userId, required String customerId}) =>
-    (select(${d}Table)
-      ..where((t) => t.isDeleted.equals(false))
-      ..where((t) => t.userId.equals(userId) & t.customerId.equals(customerId)))
-    .watch();
-
-  Future<${D}TableData?> get${D}ById(String id, {required int userId, required String customerId}) =>
+  Future<List<${D}TableData>> get${Ds}({
+    required int userId,
+    required String customerId,
+  }) =>
       (select(${d}Table)
-        ..where((t) => t.id.equals(id) & t.userId.equals(userId) & t.customerId.equals(customerId)))
-      .getSingleOrNull();
+            ..where((t) => t.isDeleted.equals(false))
+            ..where(
+              (t) => t.userId.equals(userId) & t.customerId.equals(customerId),
+            ))
+          .get();
 
-  Future<List<${D}TableData>> get${Ds}ByIds(List<String> ids, {required int userId, required String customerId}) {
+  Stream<List<${D}TableData>> watch${Ds}({
+    required int userId,
+    required String customerId,
+  }) =>
+      (select(${d}Table)
+            ..where((t) => t.isDeleted.equals(false))
+            ..where(
+              (t) => t.userId.equals(userId) & t.customerId.equals(customerId),
+            ))
+          .watch();
+
+  Future<${D}TableData?> get${D}ById(
+    String id, {
+    required int userId,
+    required String customerId,
+  }) =>
+      (select(${d}Table)..where(
+        (t) =>
+            t.id.equals(id) &
+            t.userId.equals(userId) &
+            t.customerId.equals(customerId),
+      )).getSingleOrNull();
+
+  Future<List<${D}TableData>> get${Ds}ByIds(
+    List<String> ids, {
+    required int userId,
+    required String customerId,
+  }) {
     if (ids.isEmpty) {
-      return Future.value([]); 
+      return Future.value([]);
     }
-    return (select(${d}Table)
-          ..where((t) => t.id.isIn(ids) & t.userId.equals(userId) & t.customerId.equals(customerId) & t.isDeleted.equals(false)))
-        .get();
+    return (select(${d}Table)..where(
+      (t) =>
+          t.id.isIn(ids) &
+          t.userId.equals(userId) &
+          t.customerId.equals(customerId) &
+          t.isDeleted.equals(false),
+    )).get();
   }
 
   Future<String> create${D}(${D}TableCompanion companion) async {
     final id = companion.id.value;
     try {
       final existing${D} =
-          await (select(${d}Table)
-            ..where((t) => t.id.equals(id) & t.userId.equals(companion.userId.value) & t.customerId.equals(companion.customerId.value))).getSingleOrNull();
+          await (select(${d}Table)..where(
+            (t) =>
+                t.id.equals(id) &
+                t.userId.equals(companion.userId.value) &
+                t.customerId.equals(companion.customerId.value),
+          )).getSingleOrNull();
 
       if (existing${D} != null) {
         throw StateError('${d} with ID $id exists');
@@ -106,48 +135,64 @@ class ${D}Dao extends DatabaseAccessor<AppDatabase>
     }
   }
 
-Future<bool> update${D}(${D}TableCompanion companion, {required int userId, required String customerId}) async {    
-    final idToUpdate = companion.id.value;
-    final updatedRows = await (update(${d}Table)
-      ..where((t) => t.id.equals(idToUpdate) & t.userId.equals(userId) & t.customerId.equals(customerId))) 
-      .write(companion); 
-    return updatedRows > 0;
-}
-
-  Future<bool> softDelete${D}(String id, {required int userId, required String customerId}) async {
-    
-    final companion = ${D}TableCompanion(
-      isDeleted: Value(true),
-      lastModified: Value(DateTime.now()), 
-    );
-    
-    final updatedRows = await (update(${d}Table)
-      ..where((t) => t.id.equals(id) & t.userId.equals(userId) & t.customerId.equals(customerId)))
-      .write(companion);
-    
+  Future<bool> update${D}ById(
+    String id,
+    ${D}TableCompanion companion, {
+    required int userId,
+    required String customerId,
+  }) async {
+    // final idToUpdate = companion.id.value;
+    final updatedRows = await (update(${d}Table)..where(
+      (t) =>
+          t.id.equals(id) &
+          t.userId.equals(userId) &
+          t.customerId.equals(customerId),
+    )).write(companion);
     return updatedRows > 0;
   }
 
-  Future<int> physicallyDelete${D}(String id, {required int userId, required String customerId}) async {
-    return (delete(${d}Table)
-      ..where((t) => t.id.equals(id) & t.userId.equals(userId) & t.customerId.equals(customerId)))
-      .go();
+  Future<int> physicallyDelete${D}(
+    String id, {
+    required int userId,
+    required String customerId,
+  }) async {
+    return (delete(${d}Table)..where(
+      (t) =>
+          t.id.equals(id) &
+          t.userId.equals(userId) &
+          t.customerId.equals(customerId),
+    )).go();
   }
 
-  Future<bool> ${d}Exists(String id, {required int userId, required String customerId}) async {
+  Future<bool> ${d}Exists(
+    String id, {
+    required int userId,
+    required String customerId,
+  }) async {
     if (id.isEmpty) return false;
 
     final ${d} =
-        await (select(${d}Table)
-          ..where((t) => t.id.equals(id) & t.userId.equals(userId) & t.customerId.equals(customerId))).getSingleOrNull();
+        await (select(${d}Table)..where(
+          (t) =>
+              t.id.equals(id) &
+              t.userId.equals(userId) &
+              t.customerId.equals(customerId),
+        )).getSingleOrNull();
 
     return ${d} != null;
   }
 
-  Future<int> get${Ds}Count({required int userId, required String customerId}) async {
-    final countQuery = selectOnly(${d}Table)
-      ..addColumns([${d}Table.id.count()])
-      ..where(${d}Table.userId.equals(userId) & ${d}Table.customerId.equals(customerId));
+  Future<int> get${Ds}Count({
+    required int userId,
+    required String customerId,
+  }) async {
+    final countQuery =
+        selectOnly(${d}Table)
+          ..addColumns([${d}Table.id.count()])
+          ..where(
+            ${d}Table.userId.equals(userId) &
+                ${d}Table.customerId.equals(customerId),
+          );
 
     final result = await countQuery.getSingle();
     return result.read(${d}Table.id.count()) ?? 0;
@@ -159,9 +204,14 @@ Future<bool> update${D}(${D}TableCompanion companion, {required int userId, requ
     });
   }
 
-  Future<int> deleteAll${Ds}({required int userId, required String customerId}) {
-    return (delete(${d}Table)..where((t) => t.userId.equals(userId) & t.customerId.equals(customerId))).go();
-    }
+  Future<int> deleteAll${Ds}({
+    required int userId,
+    required String customerId,
+  }) {
+    return (delete(${d}Table)..where(
+      (t) => t.userId.equals(userId) & t.customerId.equals(customerId),
+    )).go();
+  }
   ${foreignKeyMethods}
 }
 `;

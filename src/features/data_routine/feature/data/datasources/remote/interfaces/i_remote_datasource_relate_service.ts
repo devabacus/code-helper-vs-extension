@@ -42,7 +42,6 @@ abstract class I${ClassName}RemoteDataSource {
   Stream<${ClassName}SyncEvent> watchEvents();
   Future<bool> checkConnection();
   Future<${ClassName}> create${ClassName}(${className});
-  Future<bool> delete${ClassName}ById(UuidValue id);
   Future<bool> delete${ClassName}By${D1}And${D2}(UuidValue ${d1}Id, UuidValue ${d2}Id);
   Future<List<${D2}>> get${D2s}For${D1}(UuidValue ${d1}Id);
   Future<List<${D1}>> get${D1s}For${D2}(UuidValue ${d2}Id);

@@ -34,7 +34,8 @@ export class DataRepositoryRelateImplGenerator extends BaseGenerator {
     const className = unCap(ClassName);
     const tableName = `${model.tableName}`;
 
-    return `import 'package:${projectName}/features/home/data/datasources/local/tables/extensions/${tableName}_table_extension.dart';
+    return `import 'package:drift/drift.dart';
+import 'package:${projectName}/features/home/data/datasources/local/tables/extensions/${tableName}_table_extension.dart';
 import 'package:${projectName}/features/home/domain/entities/extensions/${tableName}_entity_extension.dart';
 import 'package:${projectName}_client/${projectName}_client.dart' as serverpod;
 import 'package:uuid/uuid.dart';
@@ -94,12 +95,8 @@ class ${ClassName}RepositoryImpl extends BaseSyncRepository
   }
 
   @override
-  Future<bool> delete${ClassName}(String id) async {
-    final result = await _localDataSource.softDelete${ClassName}ById(
-      id,
-      userId: userId,
-      customerId: customerId,
-    );
+  Future<bool> delete${ClassName}(${ClassName}Entity ${className}) async {
+   final result = await _localDataSource.updateTaskTagMap(taskTagMap.toModel());
     syncWithServer().catchError(
       (e) =>
           print('⚠️ Фоновая синхронизация после удаления связи не удалась: $e'),
@@ -140,7 +137,7 @@ class ${ClassName}RepositoryImpl extends BaseSyncRepository
 
       if (relation != null) {
         // Удаляем связь по найденному ID
-        await delete${ClassName}(relation.id);
+        await delete${ClassName}(relation.copyWith(isDeleted: true).toEntity());
         print('✅ Связь найдена и удалена: ${D1}($${d1}Id) ↔ ${D2}($${d2}Id)');
       } else {
         print('⚠️ Связь не найдена: ${D1}($${d1}Id) ↔ ${D2}($${d2}Id)');
@@ -154,8 +151,15 @@ class ${ClassName}RepositoryImpl extends BaseSyncRepository
   @override
   Future<void> removeAll${D2s}From${D1}(String ${d1}Id) async {
     try {
-      await _localDataSource.softDeleteRelationsBy${D1}Id(
+      final companion = TaskTagMapTableCompanion(
+      isDeleted: const Value(true),
+      lastModified: Value(DateTime.now().toUtc()),
+      syncStatus: const Value(SyncStatus.local),
+  );
+
+      await _localDataSource.updateRelationsBy${D1}Id(
         ${d1}Id,
+        companion,
         userId: userId,
         customerId: customerId,
       );

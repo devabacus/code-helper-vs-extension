@@ -111,8 +111,8 @@ UserSessionData? currentUserSessionData(Ref ref) {
 
 // Провайдер для получения customerId из UserSessionData
 @riverpod
-UuidValue? currentCustomerId(Ref ref) {
-  return ref.watch(currentUserSessionDataProvider)?.customerId;
+String? currentCustomerId(Ref ref) {
+  return ref.watch(currentUserSessionDataProvider)?.customerId.toString();
 }
 
 // Провайдер для получения roleId из UserSessionData

@@ -54,7 +54,6 @@ abstract class I${D}RemoteDataSource {
   Future<${D}?> get${D}ById(UuidValue id);
   Future<${D}> create${D}(${D} ${d});
   Future<bool> update${D}(${D} ${d});
-  Future<bool> delete${D}(UuidValue id);
   Future<bool> checkConnection();
 ${foreignKeyMethods}
 }

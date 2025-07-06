@@ -97,5 +97,39 @@ kubectl delete deployment ${projectName}-server-deployment
 #restart deployment
 kubectl rollout restart deployment ${projectName}-server-deployment
 
+-- 1. Создаем КЛИЕНТА (Customer)
+-- ID: 1a8c7b80-0a13-4c9a-8a5e-9e7c1f8d2a6b
+INSERT INTO "public"."customer" ("id", "userId", "createdAt", "lastModified", "isDeleted", "name", "email", "info", "subscriptionStatus")
+VALUES
+('1a8c7b80-0a13-4c9a-8a5e-9e7c1f8d2a6b', 1, NOW(), NOW(), false, 'Моя первая компания', 'contact@mycompany.com', 'Основной клиент', 'active')
+ON CONFLICT (id) DO NOTHING;
 
+-- 2. Создаем РОЛЬ (Role), привязанную к этому клиенту
+-- ID: 2b9d8c91-1b24-5d0b-9b6f-0f8d2e9e3b7c
+INSERT INTO "public"."role" ("id", "customerId", "name", "description", "createdAt", "updatedAt")
+VALUES
+('2b9d8c91-1b24-5d0b-9b6f-0f8d2e9e3b7c', '1a8c7b80-0a13-4c9a-8a5e-9e7c1f8d2a6b', 'Администратор', 'Полные права доступа', NOW(), NOW())
+ON CONFLICT (id) DO NOTHING;
+
+-- 3. Создаем РАЗРЕШЕНИЯ (Permissions)
+-- ID 1: 3cae9da2-2c35-6e1c-ac7a-1a9e3f0f4c8d
+-- ID 2: 4dbfaeb3-3d46-7f2d-bd8b-2b0f4a1a5d9e
+INSERT INTO "public"."permission" ("id", "key", "description", "createdAt", "updatedAt")
+VALUES
+('3cae9da2-2c35-6e1c-ac7a-1a9e3f0f4c8d', 'manage_tasks', 'Управление задачами', NOW(), NOW()),
+('4dbfaeb3-3d46-7f2d-bd8b-2b0f4a1a5d9e', 'manage_users', 'Управление пользователями', NOW(), NOW())
+ON CONFLICT (id) DO NOTHING;
+
+-- 4. Связываем РОЛЬ и РАЗРЕШЕНИЯ (RolePermission)
+INSERT INTO "public"."role_permission" ("id", "roleId", "permissionId")
+VALUES
+(gen_random_uuid(), '2b9d8c91-1b24-5d0b-9b6f-0f8d2e9e3b7c', '3cae9da2-2c35-6e1c-ac7a-1a9e3f0f4c8d'),
+(gen_random_uuid(), '2b9d8c91-1b24-5d0b-9b6f-0f8d2e9e3b7c', '4dbfaeb3-3d46-7f2d-bd8b-2b0f4a1a5d9e')
+ON CONFLICT (id) DO NOTHING;
+
+-- 5. Связываем ПОЛЬЗОВАТЕЛЯ (userId=1) с КЛИЕНТОМ и РОЛЬЮ (CustomerUser)
+INSERT INTO "public"."customer_user" ("id", "customerId", "userId", "roleId")
+VALUES
+(gen_random_uuid(), '1a8c7b80-0a13-4c9a-8a5e-9e7c1f8d2a6b', 1, '2b9d8c91-1b24-5d0b-9b6f-0f8d2e9e3b7c')
+ON CONFLICT (id) DO NOTHING;
 `;};

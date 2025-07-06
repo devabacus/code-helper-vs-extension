@@ -30,7 +30,8 @@ export class DataExtensionModelGenerator extends BaseGenerator<ServerpodModel> {
 
     const params = formatter.formatSimpleFields(model.fields);
     const paramValueWrapped = formatter.formatInsertCompanionParams(model.fields);
-    const paramsToString = params.split(',').map(p=>p.replace(/(.*Id)/, '$1.toString()')).join(',');
+    const nullable = model.isRelation?'':'?';
+    const paramsToString = params.split(',').map(p=>p.replace(/(.*Id)/, `$1${nullable}.toString()`)).join(','); //преобразуем поля с Id из UUidValue в String
 
     return `
 import 'package:drift/drift.dart';

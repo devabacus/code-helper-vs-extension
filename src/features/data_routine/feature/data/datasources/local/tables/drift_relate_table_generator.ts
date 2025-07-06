@@ -52,7 +52,7 @@ class ${tableName}Table extends Table {
   
   @override
   List<String> get customConstraints => [
-    'UNIQUE(${d1}_id, ${d2}_id, user_id)',
+    'UNIQUE(${d1}_id, ${d2}_id, user_id, customer_id)',
   ];
   
   @override

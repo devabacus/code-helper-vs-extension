@@ -88,17 +88,7 @@ class ${ClassName}RemoteDataSource implements I${ClassName}RemoteDataSource {
       rethrow;
     }
   }
-  
-  @override
-  Future<bool> delete${ClassName}ById(UuidValue id) async {
-    try {
-      return await _client.${className}.delete${ClassName}ById(id);
-    } catch (e) {
-      print('❌ Remote: Ошибка удаления связи ${D1}-${D2} по ID $id: $e');
-      rethrow;
-    }
-  }
-
+    
   @override
   Future<List<${D2}>> get${D2s}For${D1}(UuidValue ${d1}Id) async {
     try {
