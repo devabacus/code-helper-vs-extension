@@ -13,7 +13,7 @@
 		"node_modules": true,
 		"media": true,
 		// ".vscode": true,
-		"package.json": true,
+		// "package.json": true,
 	
 	},
 	"search.exclude": {
