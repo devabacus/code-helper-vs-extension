@@ -1,29 +1,15 @@
+// src/utils/go_to_definition/go_to_definition_provider.ts
 import * as vscode from 'vscode';
 import * as fs from 'fs';
 
-
-export async function goToDefinition() {
-    console.log('go to defintion work');
-    vscode.window.showInformationMessage('go to defintion work');
-    const editor = vscode.window.activeTextEditor;
-    if (!editor) {
-        return; // Нет активного редактора
-    }
-    
-    const document = editor.document;
-    const position = editor.selection.active;
-    
-    const wordRange = document.getWordRangeAtPosition(position);
-    if (!wordRange) {return;}
-    
-    const word = document.getText(wordRange);
-    if (!word.endsWith('Provider')) {
-        await vscode.commands.executeCommand('editor.action.revealDefinition');
-        return;
-    }
-    
+export async function customGoToDefinition(
+    document: vscode.TextDocument, 
+    position: vscode.Position, 
+    word: string
+): Promise<void> {
     try {
         await new Promise(resolve => setTimeout(resolve, 100));
+        
         // Узнаем, куда ведет стандартное определение
         const defaultDefinitions = await vscode.commands.executeCommand<vscode.LocationLink[]>(
             'vscode.executeDefinitionProvider',
@@ -31,14 +17,14 @@ export async function goToDefinition() {
             position
         );
 
-        if (!defaultDefinitions || defaultDefinitions.length === 0) {return;}
+        if (!defaultDefinitions || defaultDefinitions.length === 0) return;
 
         const definitionPath = defaultDefinitions[0].targetUri.fsPath;
-        if (!definitionPath.endsWith('.g.dart')) {return;}
+        if (!definitionPath.endsWith('.g.dart')) return;
 
         // Формируем путь к исходному файлу
         const targetFilePath = definitionPath.replace('.g.dart', '.dart');
-        if (!fs.existsSync(targetFilePath)) {return;}
+        if (!fs.existsSync(targetFilePath)) return;
 
         const targetSymbolName = word.substring(0, word.length - 'Provider'.length);
         const targetFileContent = fs.readFileSync(targetFilePath, 'utf8');

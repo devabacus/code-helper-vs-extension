@@ -55,8 +55,22 @@ export async function executeDefaultGoToDefinition(context: DefinitionContext): 
 
 export async function executeDefaultPeekDefinition(context: DefinitionContext): Promise<void> {
     try {
-        // Используем стандартную команду peek
-        await vscode.commands.executeCommand('editor.action.peekDeclaration');
+        // Получаем стандартные определения
+        const definitions = await vscode.commands.executeCommand<vscode.LocationLink[]>(
+            'vscode.executeDefinitionProvider',
+            context.document.uri,
+            context.position
+        );
+        
+        if (definitions && definitions.length > 0) {
+            // Используем showReferences для показа peek окна с найденными определениями
+            await vscode.commands.executeCommand(
+                'editor.action.showReferences',
+                context.document.uri,
+                context.position,
+                definitions.map(def => new vscode.Location(def.targetUri, def.targetSelectionRange || def.targetRange))
+            );
+        }
     } catch (error) {
         console.error('Ошибка при выполнении стандартного peek definition:', error);
     }

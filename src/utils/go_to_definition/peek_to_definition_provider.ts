@@ -1,19 +1,12 @@
-// src/utils/go_to_definition/peek_definition.ts
+// src/utils/go_to_definition/peek_to_definition_provider.ts
 import * as vscode from 'vscode';
 import * as fs from 'fs';
 
-export async function peekDefinition() {
-    const editor = vscode.window.activeTextEditor;
-    if (!editor) return;
-    
-    const document = editor.document;
-    const position = editor.selection.active;
-    
-    const wordRange = document.getWordRangeAtPosition(position);
-    if (!wordRange) return;
-    
-    const word = document.getText(wordRange);
-    
+export async function customPeekDefinition(
+    document: vscode.TextDocument, 
+    position: vscode.Position, 
+    word: string
+): Promise<void> {
     try {
         const defaultDefinitions = await vscode.commands.executeCommand<vscode.LocationLink[]>(
             'vscode.executeDefinitionProvider',

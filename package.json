@@ -31,13 +31,7 @@
       {
         "command": "code-helper.snippet_generate",
         "title": "snippet_generate"
-      },
-
-      {
-        "command": "code-helper.goToDefinition",
-        "title": "goToDefinition"
-      },
-      
+      },      
       {
         "command": "code-helper.pre_snippet_generate",
         "title": "pre_snippet_generate"
@@ -67,12 +61,7 @@
       {
         "command": "code-helper.snippet_generate",
         "key": "alt+ctrl+shift+p"
-      },
-
-       {
-        "command": "code-helper.goToDefinition",
-        "key": "ctrl+b"
-      },
+      },       
       {
         "command": "code-helper.pre_snippet_generate",
         "key": "alt+ctrl+shift+i"
