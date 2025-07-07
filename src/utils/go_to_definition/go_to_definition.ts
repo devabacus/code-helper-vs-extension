@@ -25,7 +25,7 @@ export async function goToDefinition() {
     try {
         await new Promise(resolve => setTimeout(resolve, 100));
         // Узнаем, куда ведет стандартное определение
-        const defaultDefinitions = await vscode.commands.executeCommand<vscode.Location[]>(
+        const defaultDefinitions = await vscode.commands.executeCommand<vscode.LocationLink[]>(
             'vscode.executeDefinitionProvider',
             document.uri,
             position
