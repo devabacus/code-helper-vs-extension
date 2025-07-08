@@ -42,16 +42,46 @@ export async function executeDefaultGoToDefinition(context: DefinitionContext): 
         
         if (definitions && definitions.length > 0) {
             const location = definitions[0];
-            const doc = await vscode.workspace.openTextDocument(location.targetUri);
-            const editor = await vscode.window.showTextDocument(doc);
-            const range = location.targetSelectionRange || location.targetRange;
-            editor.selection = new vscode.Selection(range.start, range.end);
-            editor.revealRange(range, vscode.TextEditorRevealType.InCenter);
+            const targetRange = location.targetSelectionRange || location.targetRange;
+            
+            // Используем goToLocations для корректной навигации
+            try {
+                await vscode.commands.executeCommand(
+                    'editor.action.goToLocations',
+                    context.document.uri,
+                    context.position,
+                    [new vscode.Location(location.targetUri, targetRange)],
+                    'goto',
+                    'Default Definition Navigation'
+                );
+                return;
+            } catch (e) {
+                console.log('goToLocations failed, trying alternative approach');
+            }
+
+            // Альтернативный подход если goToLocations не работает
+            const targetUri = location.targetUri;
+            await vscode.commands.executeCommand(
+                'vscode.open',
+                targetUri,
+                {
+                    selection: targetRange,
+                    viewColumn: vscode.ViewColumn.Active
+                }
+            );
+
+            // Дополнительно устанавливаем позицию и выделение
+            const targetEditor = vscode.window.activeTextEditor;
+            if (targetEditor) {
+                targetEditor.selection = new vscode.Selection(targetRange.start, targetRange.end);
+                targetEditor.revealRange(targetRange, vscode.TextEditorRevealType.InCenter);
+            }
         }
     } catch (error) {
         console.error('Ошибка при выполнении стандартного go to definition:', error);
     }
 }
+
 
 export async function executeDefaultPeekDefinition(context: DefinitionContext): Promise<void> {
     try {

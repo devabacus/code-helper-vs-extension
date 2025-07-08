@@ -31,16 +31,31 @@ export async function customGoToDefinition(
         const symbolIndex = targetFileContent.indexOf(targetSymbolName);
 
         if (symbolIndex !== -1) {
-            // Нашли! Открываем файл и перемещаем курсор
+            // РЕШЕНИЕ 1: Использовать executeCommand для корректной навигации
             const targetUri = vscode.Uri.file(targetFilePath);
             const targetDocument = await vscode.workspace.openTextDocument(targetUri);
-            const targetEditor = await vscode.window.showTextDocument(targetDocument);
-
             const startPosition = targetDocument.positionAt(symbolIndex);
             const endPosition = startPosition.translate(0, targetSymbolName.length);
-            
-            targetEditor.selection = new vscode.Selection(startPosition, endPosition);
-            targetEditor.revealRange(new vscode.Range(startPosition, endPosition), vscode.TextEditorRevealType.InCenter);
+            const targetRange = new vscode.Range(startPosition, endPosition);
+
+            // Создаем LocationLink для корректной навигации
+            const locationLink: vscode.LocationLink = {
+                targetUri: targetUri,
+                targetRange: targetRange,
+                targetSelectionRange: targetRange,
+                // Указываем исходный диапазон для корректной навигации
+                originSelectionRange: document.getWordRangeAtPosition(position)
+            };
+
+            // Используем стандартную команду VS Code для навигации
+            await vscode.commands.executeCommand(
+                'editor.action.goToLocations',
+                document.uri,
+                position,
+                [new vscode.Location(targetUri, targetRange)],
+                'goto',
+                'Navigation from custom provider'
+            );
         }
     } catch (error) {
         console.error(`Ошибка при переходе к определению Riverpod: ${error}`);
