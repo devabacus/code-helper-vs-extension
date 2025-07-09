@@ -1,30 +1,18 @@
 import path from "path";
-import { navServProv, navServProvGen, routerGen, routesCont } from '../../add_feature/files';
+import { navServProv, routesCont } from '../../add_feature/files';
 
+import { navServ } from "../../add_feature/files/nav_service";
+import { logger_extension_file } from "../../logger/files/logger_extension_file";
+import { logger_provider_file } from "../../logger/files/logger_provider_file";
+import { logger_service_file } from "../../logger/files/logger_service_file";
 import { flutter_handle_ps1 } from "../service_files/flutter_handle_ps1";
 import { git_handle_ps1 } from "../service_files/git_handle_ps1";
-import { appFile } from "./files_content/app_file";
-import { mainFile } from "./files_content/main_file";
-import { navServ } from "../../add_feature/files/nav_service";
-import { config_dart } from "./files_content/config/config_dart";
-import { api_client } from "./add_chopper/files/services/api/api_client";
-import { bearer_token_interceptor } from "./add_chopper/files/interceptors/bearer_token_interceptor";
-import { cache_interceptor } from "./add_chopper/files/interceptors/cache_interceptor";
-import { retry_interceptor } from "./add_chopper/files/interceptors/retry_interceptor";
-import { x_api_key_interceptor } from "./add_chopper/files/interceptors/x_api_key_interceptor";
-import { api_exception } from "./add_chopper/files/interceptors/error_interceptors/api_exception";
-import { error_interceptor } from "./add_chopper/files/interceptors/error_interceptors/error_interceptor";
-import { api_provider } from "./add_chopper/files/providers/api_providers";
-import { api_provider_g } from "./add_chopper/files/providers/api_provider.g";
 import { menv } from "../service_files/m_env";
-import { def_headers_interceptor } from "./add_chopper/files/interceptors/headers_Interceptor";
 import { settingsJson } from "../service_files/settings_json";
-import { logger_service_file } from "../../logger/files/logger_service_file";
-import { logger_provider_file } from "../../logger/files/logger_provider_file";
-import { logger_extension_file } from "../../logger/files/logger_extension_file";
-import { session_manager_provider_file } from "../../data_routine/core/providers/session_manager_provider_file";
-import { sync_metadata_dao_file } from "../../data_routine/core/database/local/daos/sync_metadata_dao_file";
-import { home_page_file } from "./files_content/home_page";
+import { api_provider } from "./add_chopper/files/providers/api_providers";
+import { api_client } from "./add_chopper/files/services/api/api_client";
+import { appFile } from "./files_content/app_file";
+import { config_dart } from "./files_content/config/config_dart";
 
 export const baseTemplateFolders = [
     'core/routing',

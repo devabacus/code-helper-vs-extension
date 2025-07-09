@@ -29,9 +29,6 @@ export class DefaultProjectStructure implements ProjectStructure {
 
     interfaces: string = "interfaces";
 
-
-
-
     // data 
 
     getDaoPath(featurePath: string): string {
