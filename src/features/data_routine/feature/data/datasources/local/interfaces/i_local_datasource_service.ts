@@ -6,7 +6,6 @@ import { ProjectStructure } from "../../../../../../../core/interfaces/project_s
 import { ServerpodModel } from "../../../../../serverpod_yaml_parser/formatters/types";
 
 import { generatorConfig } from "../../../../../core/config/config";
-import { createReplacementDictionary, entityReplacement } from "../../../../../utils/replacement_util";
 
 export class LocalDataSourceServiceGenerator extends BaseGenerator<ServerpodModel> {
 
@@ -29,46 +28,8 @@ export class LocalDataSourceServiceGenerator extends BaseGenerator<ServerpodMode
 
     const sourceFilePath = path.join(this.structure.getDataLocalInterfacesPath(generatorConfig.sourceFeaturePath), `${templEntity}_local_datasource_service.dart`);
 
-    return entityReplacement(sourceFilePath, entity);
+    // return entityReplacement(sourceFilePath, entity);
+    return '';  
 
-    // Генерация методов для получения по внешнему ключу
-    // let foreignKeyMethods = '';
-    // const relationFields = RelationAnalyzer.manyToOneFields(model.fields);
-
-    //   if (relationFields.length > 0) {
-    //     foreignKeyMethods = relationFields.map(field => {
-    //       const fkFieldName = field.name.endsWith('Id') ? field.name : `${field.name}Id`;
-    //       const methodNamePart = cap(field.name.replace(/Id$/, ''));
-    //       const dsMethodName = `get${Ds}By${methodNamePart}Id`;
-    //       const parameterName = fkFieldName;
-    //       const parameterType = 'String';
-
-    //       return `
-    // Future<List<${D}Model>> ${dsMethodName}(${parameterType} ${parameterName}, {required int userId, required String customerId}); `;
-    //     }).join('');
-    //   }
-    //     return `
-    // import 'package:${projectName}/core/database/local/database.dart';
-
-    // import '../../../models/${d}/${d}_model.dart';
-    // import '../../../../../../core/database/local/database_types.dart';
-
-    // abstract class I${D}LocalDataSource {
-    //   Future<List<${D}Model>> get${Ds}({required int userId, required String customerId});
-    //   Stream<List<${D}Model>> watch${Ds}({required int userId, required String customerId});
-    //   Future<${D}Model?> get${D}ById(String id, {required int userId, required String customerId});
-    //   Future<List<${D}Model>> get${Ds}ByIds(List<String> ids, {required int userId, required String customerId});
-    //   Future<String> create${D}(${D}Model ${d});
-    //   Future<bool> update${D}(${D}Model ${d});
-    //   Future<bool> delete${D}(String id, {required int userId, required String customerId});
-    //   Future<List<${D}TableData>> getAllLocalChanges({required int userId, required String customerId});
-    //   Future<List<${D}TableData>> reconcileServerChanges(List<dynamic> serverChanges, {required int userId, required String customerId});
-    //   Future<void> physicallyDelete${D}(String id, {required int userId, required String customerId});
-    //   Future<void> insertOrUpdateFromServer(dynamic serverChange, SyncStatus status);
-    //   Future<void> handleSyncEvent(dynamic event, {required int userId, required String customerId});
-    // ${foreignKeyMethods}
-    // }
-
-    // `;
   }
 }

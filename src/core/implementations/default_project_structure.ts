@@ -1,9 +1,8 @@
-import path from "path";
+   import path from "path";
 import { ProjectStructure } from "../interfaces/project_structure";
 
 
 export class DefaultProjectStructure implements ProjectStructure {
-
 
     data: string = "data";
     dao: string = "dao";
