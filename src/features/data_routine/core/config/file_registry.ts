@@ -54,7 +54,7 @@ export const ALL_FILES = [...SIMPLE_FILES, ...PATTERN_FILES];
 
 // Пути к файлам
 export const FILE_REGISTRY: Record<string, string> = {
-  'category_local_datasource_service.dart': 'data/datasources/local/interfaces/category_local_datasource_service.dart',
+  local_source: 'data/datasources/local/interfaces/category_local_datasource_service.dart',
 //   'category_table.dart': 'data/datasources/local/tables/category_table.dart',
 //   'category_model.dart': 'data/models/category/category_model.dart',
   // ... все остальные пути
