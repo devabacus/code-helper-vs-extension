@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import { promises as fsPromises } from 'fs';
 
 
 export async function createFolders(folderPaths: string[], errorHandler?: (error: string) => void): Promise<void> {
@@ -30,7 +31,18 @@ export async function createFileOneTime(path: string, content: string) {
    }         
 }
 
-
+export async function copyFile(pathSource: string, pathDest: string): Promise<void> {
+  try {
+    const destDir = path.dirname(pathDest);
+    await fsPromises.mkdir(destDir, { recursive: true });
+    await fsPromises.copyFile(pathSource, pathDest);
+    
+  } catch (error) {
+    console.error(`Ошибка при копировании файла из ${pathSource} в ${pathDest}`, error);
+    // Пробрасываем ошибку, чтобы вызывающий код мог ее обработать
+    throw error;
+  }
+}
 
 
 export async function createFile(mpath: string, content: string) {

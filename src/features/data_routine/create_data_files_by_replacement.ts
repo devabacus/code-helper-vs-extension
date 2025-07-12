@@ -21,22 +21,28 @@ import { session_manager_provider_file } from "./core/providers/session_manager_
 import { user_manager_endpoint_file } from "./serverpod/endpoints/user_manager_endpoint";
 import { UniversalFileGenerator } from "../universal_generator/universal_file_generator";
 import { CodeFormatter } from "./serverpod_yaml_parser/formatters/code_formatter";
-import { GeneratorConfig } from "./core/config/file_registry";
+import { GeneratorConfig } from "../universal_generator/file_registry";
+import { StaticFileGenerator } from "../universal_generator/static_files_generator";
 
 export async function createDataFilesByReplacement() {
-    
+
     const fileSystem = ServiceLocator.getInstance().getFileSystem();
+
+
     const codeFormatter = new CodeFormatter();
     const model = ServerpodYamlParser.parse(getDocText());
 
     const config = new GeneratorConfig({
         projectName: 't3',
-        featureName: 'home',        
+        featureName: 'home',
     });
+
+    const staticGenerator = new StaticFileGenerator(fileSystem, config);
+    staticGenerator.generate();
+
 
     const generator = new UniversalFileGenerator(fileSystem, codeFormatter, config);
     await generator.generateAll(model);
-
 
     // const currentFilePath = getActiveEditorPath()!;
     // const rootProjectPath = currentFilePath.split(/\w*_server/)[0];

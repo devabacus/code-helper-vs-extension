@@ -2,8 +2,15 @@ import path from "path";
 import { IFileSystem } from "../../core/interfaces/file_system";
 import { CodeFormatter } from "../data_routine/serverpod_yaml_parser/formatters/code_formatter";
 import { ServerpodModel } from "../data_routine/serverpod_yaml_parser/formatters/types";
-import { ALL_FILES, FILE_REGISTRY, GeneratorConfig, SIMPLE_FILES } from "../data_routine/core/config/file_registry";
+import { GeneratorConfig } from "./file_registry";
 import { ContentProcessor, PatternBasedProcessor, SimpleReplacementProcessor } from "./content_processor";
+import { PATTERN_FILES } from "./pattern_files";
+import { SIMPLE_FILES } from "./simple_files";
+import { STATIC_FILES } from "./static_files";
+
+// Все файлы для генерации
+const ALL_FILES = [...SIMPLE_FILES, ...PATTERN_FILES];
+
 
 export class UniversalFileGenerator {
   constructor(
@@ -17,16 +24,15 @@ export class UniversalFileGenerator {
   ): Promise<void> {
     const filesToGenerate = this.getFilesForModel(model);
 
-    for (const fileName of filesToGenerate) {
-      await this.generateFile(fileName, this.genConf.sourceFeaturePath, this.genConf.getFeaturePath, model);
+    for (const filePath of filesToGenerate) {
+      await this.generateFile(filePath, this.genConf.sourceFeaturePath, this.genConf.getFeaturePath, model);
     }
   }
 
   private getFilesForModel(model: ServerpodModel): string[] {
-    // Для обычных таблиц генерируем все файлы
     if (!model.isRelation) {
       // return ALL_FILES;
-      return SIMPLE_FILES;      
+      return SIMPLE_FILES;
     }
 
     // Для связующих таблиц - только нужные файлы
@@ -38,41 +44,40 @@ export class UniversalFileGenerator {
   }
 
   private async generateFile(
-    fileName: string,
+    filePath: string,
     sourceProjectPath: string,
     targetProjectPath: string,
     model: ServerpodModel
   ): Promise<void> {
-    const relativePath = FILE_REGISTRY[fileName];
 
     // Читаем шаблон
-    const sourcePath = path.join(sourceProjectPath, relativePath);
+    const sourcePath = path.join(sourceProjectPath, filePath);
     const sourceContent = await this.fileSystem.readFile(sourcePath);
     const targetProjectName = this.getTargetProjectName(targetProjectPath);
 
-
     // Обрабатываем контент
-    const processor = this.getProcessor(fileName);
+    const processor = this.getProcessor(filePath);
     const newContent = processor.process(sourceContent, model, targetProjectName);
 
     // Создаем новый файл
-    const newRelativePath = this.replacePathEntity(relativePath, model.className);
+    const newRelativePath = this.replacePathEntity(filePath, model.className);
     const targetPath = path.join(targetProjectPath, newRelativePath);
     await this.fileSystem.createFile(targetPath, newContent);
   }
 
-  private getProcessor(fileName: string): ContentProcessor {
-    if (SIMPLE_FILES.includes(fileName)) {
+  private getProcessor(filePath: string): ContentProcessor {
+
+    if (SIMPLE_FILES.includes(filePath)) {
       return new SimpleReplacementProcessor();
     } else {
       return new PatternBasedProcessor(this.codeFormatter);
     }
   }
 
-private getTargetProjectName(targetPath: string): string{
-  const serverPath = targetPath.split(/\w*_server/)[0];
-  return path.basename(serverPath);
-}
+  private getTargetProjectName(targetPath: string): string {
+    const serverPath = targetPath.split(/\w*_server/)[0];
+    return path.basename(serverPath);
+  }
 
   private replacePathEntity(path: string, newEntity: string): string {
     return path.replace(/category/g, newEntity.toLowerCase());

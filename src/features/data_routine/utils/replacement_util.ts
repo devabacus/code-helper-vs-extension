@@ -1,6 +1,4 @@
 import { cap, pluralConvert, unCap } from "../../../utils/text_work/text_util";
-import { readFileSync } from "fs";
-import { generatorConfig } from "../core/config/config";
 
 export function createReplacementDictionary(baseName: string, newName: string, projectName: string) {
 
@@ -23,13 +21,3 @@ export function createReplacementDictionary(baseName: string, newName: string, p
         { from: baseForms.d, to: newForms.d },
     ];
 }
-
-// export function entityReplacement(sourceFilePath: string, newEntity: string) {
-//     const dictionary = createReplacementDictionary(generatorConfig.entityName, newEntity);
-//     let newContent = readFileSync(sourceFilePath, 'utf-8');
-//     for (const rule of dictionary) {
-//         // new RegExp(rule.from, 'g') создает регулярное выражение для глобальной замены
-//         newContent = newContent.replace(new RegExp(rule.from, 'g'), rule.to);
-//     }
-//     return newContent;
-// }
