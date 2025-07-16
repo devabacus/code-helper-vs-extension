@@ -16,7 +16,7 @@ import { executeCommand } from "../utils";
 import { getActiveEditorPath, getLibPath, getRootWorkspaceFolders } from "../utils/path_util";
 import { createDataFilesFromYaml } from "../features/data_routine/create_data_files_from_yaml";
 import { addServerpodMapModel, addServerpodModel } from "../features/data_routine/generators/add_serverpod_model";
-import { createDataFilesByReplacement } from "../features/data_routine/create_data_files_by_replacement";
+import { createDataFilesByReplacement } from "../features/universal_generator/create_data_files_by_replacement";
 
 
 export async function flutterHandler() {

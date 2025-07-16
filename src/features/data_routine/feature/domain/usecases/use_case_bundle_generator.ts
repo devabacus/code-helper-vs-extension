@@ -1,22 +1,22 @@
 import path from "path";
-import { DefaultProjectStructure } from "../../../../../core/implementations/default_project_structure";
+import { DefaultProjectStructureLegacy } from "../../../../../core/implementations/default_project_structure";
 import { IFileSystem } from "../../../../../core/interfaces/file_system";
-import { ProjectStructure } from "../../../../../core/interfaces/project_structure";
+import { IProjectStructureLegacy } from "../../../../../core/interfaces/project_structure";
 import { pluralConvert, cap, unCap } from "../../../../../utils/text_work/text_util";
 import { DataRoutineGenerator } from "../../../generators/data_routine_generator";
 import { ServerpodModel, ServerpodField } from "../../../serverpod_yaml_parser/formatters/types";
 import { RelationAnalyzer } from "../../../serverpod_yaml_parser/relation-analyzer";
 
 export class UseCaseBaseGenerator extends DataRoutineGenerator {
-  private structure: ProjectStructure;
+  private structure: IProjectStructureLegacy;
 
-  constructor(fileSystem: IFileSystem, structure?: ProjectStructure) {
+  constructor(fileSystem: IFileSystem, structure?: IProjectStructureLegacy) {
     super(fileSystem);
-    this.structure = structure || new DefaultProjectStructure();
+    this.structure = structure || new DefaultProjectStructureLegacy();
   }
 
   protected getPath(featurePath: string, entityName: string): string {
-    return path.join(this.structure.getDomainUseCasesPath(featurePath),`${entityName}_usecases.dart`);
+    return path.join(this.structure.getDomainUseCasesPath(featurePath), `${entityName}_usecases.dart`);
   }
 
   // Основной метод теперь принимает модель и генерирует всё содержимое
@@ -103,15 +103,15 @@ import '../entities/${d}/${d}_entity.dart';`;
     const fkFields = RelationAnalyzer.manyToOneFields(model.fields);
 
     return fkFields.map(fkField => {
-        const fkFieldName = fkField.name.endsWith("Id")
-            ? fkField.name
-            : `${fkField.name}Id`;
-        const methodNamePart = cap(fkField.name.replace(/Id$/, ""));
-        const fkFieldType = "String"; // В Serverpod ID обычно это String (UuidValue)
-        
-        const useCaseClassName = `Get${Ds}By${methodNamePart}IdUseCase`;
+      const fkFieldName = fkField.name.endsWith("Id")
+        ? fkField.name
+        : `${fkField.name}Id`;
+      const methodNamePart = cap(fkField.name.replace(/Id$/, ""));
+      const fkFieldType = "String"; // В Serverpod ID обычно это String (UuidValue)
 
-        return `class ${useCaseClassName} {
+      const useCaseClassName = `Get${Ds}By${methodNamePart}IdUseCase`;
+
+      return `class ${useCaseClassName} {
   final I${D}Repository _repository;
 
   ${useCaseClassName}(this._repository);

@@ -64,6 +64,18 @@ export async function readFile(filePath: string): Promise<string> {
     }
 }
 
+export async function readDirectory(directoryPath: string): Promise<string[]> {
+    try {
+        const files = await fsPromises.readdir(directoryPath);
+        return files;
+    } catch (error) {
+        console.error(`Ошибка при чтении директории ${directoryPath}:`, error);
+        throw error;
+    }
+}
+
+
+
 export async function fileExists(filePath: string): Promise<boolean> {
     try {
         await fs.promises.access(filePath, fs.constants.F_OK);
@@ -72,3 +84,5 @@ export async function fileExists(filePath: string): Promise<boolean> {
         return false;
     }
 }
+
+

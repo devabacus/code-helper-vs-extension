@@ -1,7 +1,7 @@
 import path from "path";
-import { DefaultProjectStructure } from "../../../../../../../core/implementations/default_project_structure";
+import { DefaultProjectStructureLegacy } from "../../../../../../../core/implementations/default_project_structure";
 import { IFileSystem } from "../../../../../../../core/interfaces/file_system";
-import { ProjectStructure } from "../../../../../../../core/interfaces/project_structure";
+import { IProjectStructureLegacy } from "../../../../../../../core/interfaces/project_structure";
 import { cap, unCap, toSnakeCase } from "../../../../../../../utils/text_work/text_util";
 import { BaseGenerator } from "../../../../../../../core/generators/base_generator";
 import { ServerpodModel } from "../../../../../serverpod_yaml_parser/formatters/types";
@@ -13,29 +13,29 @@ import { PathData } from "../../../../../../utils/path_util";
  */
 export class DataLocalRelateSourceGenerator extends BaseGenerator {
 
-    private structure: ProjectStructure;
+  private structure: IProjectStructureLegacy;
 
-    constructor(fileSystem: IFileSystem, structure?: ProjectStructure) {
-        super(fileSystem);
-        this.structure = structure || new DefaultProjectStructure();
-    }
+  constructor(fileSystem: IFileSystem, structure?: IProjectStructureLegacy) {
+    super(fileSystem);
+    this.structure = structure || new DefaultProjectStructureLegacy();
+  }
 
-    protected getPath(featurePath: string, entityName: string): string {
-        return path.join(this.structure.getLocalDataSourcePath(featurePath), `${toSnakeCase(entityName)}_local_data_source.dart`);
-    }
+  protected getPath(featurePath: string, entityName: string): string {
+    return path.join(this.structure.getLocalDataSourcePath(featurePath), `${toSnakeCase(entityName)}_local_data_source.dart`);
+  }
 
-    protected getContent(model: ServerpodModel, _: string, featurePath: string): string {
-        const projectName = new PathData(featurePath).projectName;
-        const d1 = model.fields[1].relatedModel!;
-        const d2 = model.fields[2].relatedModel!;       
+  protected getContent(model: ServerpodModel, _: string, featurePath: string): string {
+    const projectName = new PathData(featurePath).projectName;
+    const d1 = model.fields[1].relatedModel!;
+    const d2 = model.fields[2].relatedModel!;
 
-        const D1 = cap(d1);
-        const D2 = cap(d2);
-        const ClassName = `${model.className}`; 
-        const className = unCap(ClassName);
-        const tableName = `${model.tableName}`;
+    const D1 = cap(d1);
+    const D2 = cap(d2);
+    const ClassName = `${model.className}`;
+    const className = unCap(ClassName);
+    const tableName = `${model.tableName}`;
 
-        return `import 'package:drift/drift.dart';
+    return `import 'package:drift/drift.dart';
 import 'package:t2_client/t2_client.dart' as serverpod;
 
 import '../../../../../../core/database/local/database.dart';
@@ -299,5 +299,5 @@ class ${ClassName}LocalDataSource implements I${ClassName}LocalDataSource {
 }
 
 `;
-    }
+  }
 }

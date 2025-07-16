@@ -1,13 +1,15 @@
 
-export interface ProjectStructure {
-
+export interface IProjectStructureLegacy {
     dao: string;
     data: string;
     dataSources: string;
     sources: string;
     local: string;
-    tables: string;    
+    tables: string;
     models: string;
+
+
+
     interfaces: string;
 
     domain: string;

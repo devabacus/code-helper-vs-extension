@@ -1,8 +1,12 @@
-import { copyFile as utilCopyFile, fileExists, readFile, createFile as utilCreateFile, createFolder as utilCreateFolder } from "../../utils";
+import { copyFile as utilCopyFile, fileExists, readFile, createFile as utilCreateFile, createFolder as utilCreateFolder, readDirectory } from "../../utils";
 import { IFileSystem } from "../interfaces/file_system";
 
 export class DefaultFileSystem implements IFileSystem {
   
+  readDirectory(path: string): Promise<string[]> {
+    return readDirectory(path);
+  }
+
   async copyFile(pathSource: string, pathDest: string): Promise<void> {
     utilCopyFile(pathSource, pathDest);
   }

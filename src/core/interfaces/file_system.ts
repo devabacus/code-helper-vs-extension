@@ -5,5 +5,7 @@ export interface IFileSystem {
     readFile(path: string): Promise<string>; 
     fileExists(path: string): Promise<boolean>;
     copyFile(pathSource: string, pathDest: string): Promise<void>;
+    readDirectory(path: string): Promise<string[]>;
+
 }
 

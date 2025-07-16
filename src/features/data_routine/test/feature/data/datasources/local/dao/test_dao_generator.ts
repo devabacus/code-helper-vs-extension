@@ -1,36 +1,36 @@
 import path from "path";
 import { BaseGenerator } from "../../../../../../../../core/generators/base_generator";
-import { DefaultProjectStructure } from "../../../../../../../../core/implementations/default_project_structure";
+import { DefaultProjectStructureLegacy } from "../../../../../../../../core/implementations/default_project_structure";
 import { IFileSystem } from "../../../../../../../../core/interfaces/file_system";
-import { ProjectStructure } from "../../../../../../../../core/interfaces/project_structure";
+import { IProjectStructureLegacy } from "../../../../../../../../core/interfaces/project_structure";
 import { pluralConvert } from "../../../../../../../../utils/text_work/text_util";
 import { DriftClassParser } from "../../../../../../feature/data/datasources/local/tables/drift_class_parser";
 
 export class TestDaoGenerator extends BaseGenerator {
-       
-    private structure: ProjectStructure;
-    
-      constructor(fileSystem: IFileSystem, structure?: ProjectStructure) {
-        super(fileSystem);
-        this.structure = structure || new DefaultProjectStructure();
-      }
 
-    protected getPath(featureTestPath: string, entityName: string): string {
-        return path.join(this.structure.getDaoPath(featureTestPath), `${entityName}_dao_test.dart`);
-    }
-    
-    protected getContent(parser: DriftClassParser, name: '', basePath: string): string {
-        const d = parser.driftClassNameLower;
-        const D = parser.driftClassNameUpper;
-        const ds = pluralConvert(d);
-        const Ds = pluralConvert(D);
-        const projectPath = basePath.split('test');
-        const projectName = path.basename(projectPath[0]).replace(`_flutter`, '');
-        const fields = parser.fieldsForTest;
-        const wrappedFields = fields[2];
-        const fieldsExpected = parser.fieldsExpectedForTest;
-        
-        const featureName = (projectPath[1]).split(path.sep)[2];
+  private structure: IProjectStructureLegacy;
+
+  constructor(fileSystem: IFileSystem, structure?: IProjectStructureLegacy) {
+    super(fileSystem);
+    this.structure = structure || new DefaultProjectStructureLegacy();
+  }
+
+  protected getPath(featureTestPath: string, entityName: string): string {
+    return path.join(this.structure.getDaoPath(featureTestPath), `${entityName}_dao_test.dart`);
+  }
+
+  protected getContent(parser: DriftClassParser, name: '', basePath: string): string {
+    const d = parser.driftClassNameLower;
+    const D = parser.driftClassNameUpper;
+    const ds = pluralConvert(d);
+    const Ds = pluralConvert(D);
+    const projectPath = basePath.split('test');
+    const projectName = path.basename(projectPath[0]).replace(`_flutter`, '');
+    const fields = parser.fieldsForTest;
+    const wrappedFields = fields[2];
+    const fieldsExpected = parser.fieldsExpectedForTest;
+
+    const featureName = (projectPath[1]).split(path.sep)[2];
     return `
     import 'package:${projectName}/core/database/local/database.dart';
 import 'package:${projectName}/features/${featureName}/data/datasources/local/dao/${d}/${d}_dao.dart';
@@ -148,6 +148,6 @@ void main() {
 
   
 `;
-    }
+  }
 }
 

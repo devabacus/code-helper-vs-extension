@@ -1,16 +1,15 @@
 import path from "path";
-import { IFileSystem } from "../../core/interfaces/file_system";
-import { CodeFormatter } from "../data_routine/serverpod_yaml_parser/formatters/code_formatter";
-import { ServerpodModel } from "../data_routine/serverpod_yaml_parser/formatters/types";
-import { GeneratorConfig } from "./file_registry";
-import { ContentProcessor, PatternBasedProcessor, SimpleReplacementProcessor } from "./content_processor";
-import { PATTERN_FILES } from "./pattern_files";
-import { SIMPLE_FILES } from "./simple_files";
-import { STATIC_FILES } from "./static_files";
+import { IFileSystem } from "../../../core/interfaces/file_system";
+import { CodeFormatter } from "../../data_routine/serverpod_yaml_parser/formatters/code_formatter";
+import { ServerpodModel } from "../../data_routine/serverpod_yaml_parser/formatters/types";
+import { GeneratorConfig } from "../generator_config";
+import { ContentProcessor, SimpleReplacementProcessor } from "../content_processor";
+import { PATTERN_FILES } from "../files/pattern_files";
+import { SIMPLE_FILES } from "../files/simple_files";
+import { STATIC_FILES } from "../files/static_files";
 
 // Все файлы для генерации
 const ALL_FILES = [...SIMPLE_FILES, ...PATTERN_FILES];
-
 
 export class UniversalFileGenerator {
   constructor(
@@ -49,7 +48,6 @@ export class UniversalFileGenerator {
     targetProjectPath: string,
     model: ServerpodModel
   ): Promise<void> {
-
     // Читаем шаблон
     const sourcePath = path.join(sourceProjectPath, filePath);
     const sourceContent = await this.fileSystem.readFile(sourcePath);
@@ -70,7 +68,9 @@ export class UniversalFileGenerator {
     if (SIMPLE_FILES.includes(filePath)) {
       return new SimpleReplacementProcessor();
     } else {
-      return new PatternBasedProcessor(this.codeFormatter);
+      return new SimpleReplacementProcessor();
+      //заглушка
+      // return new PatternBasedProcessor(this.codeFormatter);
     }
   }
 

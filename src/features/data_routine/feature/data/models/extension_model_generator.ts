@@ -1,9 +1,9 @@
 // src/features/data_routine/feature/data/models/extension_model_generator.ts
 import path from "path";
 import { BaseGenerator } from "../../../../../core/generators/base_generator";
-import { DefaultProjectStructure } from "../../../../../core/implementations/default_project_structure";
+import { DefaultProjectStructureLegacy } from "../../../../../core/implementations/default_project_structure";
 import { IFileSystem } from "../../../../../core/interfaces/file_system";
-import { ProjectStructure } from "../../../../../core/interfaces/project_structure";
+import { IProjectStructureLegacy } from "../../../../../core/interfaces/project_structure";
 import { toCamelCase, toSnakeCase } from "../../../../../utils/text_work/text_util";
 import { CodeFormatter } from "../../../serverpod_yaml_parser/formatters/code_formatter";
 import { ServerpodModel } from "../../../serverpod_yaml_parser/formatters/types";
@@ -11,11 +11,11 @@ import { PathData } from "../../../../utils/path_util";
 
 export class DataExtensionModelGenerator extends BaseGenerator<ServerpodModel> {
 
-  private structure: ProjectStructure;
+  private structure: IProjectStructureLegacy;
 
-  constructor(fileSystem: IFileSystem, structure?: ProjectStructure) {
+  constructor(fileSystem: IFileSystem, structure?: IProjectStructureLegacy) {
     super(fileSystem);
-    this.structure = structure || new DefaultProjectStructure();
+    this.structure = structure || new DefaultProjectStructureLegacy();
   }
 
   protected getPath(featurePath: string, entityName: string): string {
@@ -30,8 +30,8 @@ export class DataExtensionModelGenerator extends BaseGenerator<ServerpodModel> {
 
     const params = formatter.formatSimpleFields(model.fields);
     const paramValueWrapped = formatter.formatInsertCompanionParams(model.fields);
-    const nullable = model.isRelation?'':'?';
-    const paramsToString = params.split(',').map(p=>p.replace(/(.*Id)/, `$1${nullable}.toString()`)).join(','); //преобразуем поля с Id из UUidValue в String
+    const nullable = model.isRelation ? '' : '?';
+    const paramsToString = params.split(',').map(p => p.replace(/(.*Id)/, `$1${nullable}.toString()`)).join(','); //преобразуем поля с Id из UUidValue в String
 
     return `
 import 'package:drift/drift.dart';

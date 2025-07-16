@@ -1,5 +1,4 @@
 
-
 // Файлы с динамическим контентом
 export const PATTERN_FILES = [
   'category_table.dart',

@@ -1,7 +1,7 @@
 import path from "path";
-import { DefaultProjectStructure } from "../../../../../../../core/implementations/default_project_structure";
+import { DefaultProjectStructureLegacy } from "../../../../../../../core/implementations/default_project_structure";
 import { IFileSystem } from "../../../../../../../core/interfaces/file_system";
-import { ProjectStructure } from "../../../../../../../core/interfaces/project_structure";
+import { IProjectStructureLegacy } from "../../../../../../../core/interfaces/project_structure";
 import { cap, toSnakeCase } from "../../../../../../../utils/text_work/text_util";
 import { DataRoutineGenerator } from "../../../../../generators/data_routine_generator";
 import { CodeFormatter } from "../../../../../serverpod_yaml_parser/formatters/code_formatter";
@@ -9,11 +9,11 @@ import { ServerpodField, ServerpodModel } from "../../../../../serverpod_yaml_pa
 
 export class DriftTableGenerator extends DataRoutineGenerator {
 
-  private structure: ProjectStructure;
+  private structure: IProjectStructureLegacy;
 
-  constructor(fileSystem: IFileSystem, structure?: ProjectStructure) {
+  constructor(fileSystem: IFileSystem, structure?: IProjectStructureLegacy) {
     super(fileSystem);
-    this.structure = structure || new DefaultProjectStructure();
+    this.structure = structure || new DefaultProjectStructureLegacy();
   }
 
   protected getPath(featurePath: string, entityName: string): string {
@@ -21,14 +21,14 @@ export class DriftTableGenerator extends DataRoutineGenerator {
   }
 
   protected getContent(model: ServerpodModel): string {
-        
-      const formatter = new CodeFormatter();
-      const fieldColumns = formatter.generateDriftTableColumns(model.fields);
+
+    const formatter = new CodeFormatter();
+    const fieldColumns = formatter.generateDriftTableColumns(model.fields);
     const relatedTableImports = this.generateRelatedTableImports(model.fields);
     const D = model.className;
 
 
-        return `
+    return `
 import 'package:drift/drift.dart';
 import 'package:uuid/uuid.dart';
 import '../../../../../../core/database/local/database_types.dart';${relatedTableImports}
@@ -49,14 +49,14 @@ class ${D}Table extends Table {
   Set<Column> get primaryKey => {id};
 }
 `;
-    } 
+  }
 
 
-    private generateRelatedTableImports(fields: ServerpodField[]): string {
+  private generateRelatedTableImports(fields: ServerpodField[]): string {
     const relationFields = fields.filter(field =>
       field.isRelation &&
       field.relationType === 'manyToOne' && // Только manyToOne связи
-      field.relatedModel && field.name!== 'customerId'//TODO по хорошему нужно найти где это фильтронуть
+      field.relatedModel && field.name !== 'customerId'//TODO по хорошему нужно найти где это фильтронуть
     );
 
     if (relationFields.length === 0) {

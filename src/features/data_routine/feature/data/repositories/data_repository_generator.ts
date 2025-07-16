@@ -1,8 +1,8 @@
 import path from "path";
 import { BaseGenerator } from "../../../../../core/generators/base_generator";
-import { DefaultProjectStructure } from "../../../../../core/implementations/default_project_structure"; //
+import { DefaultProjectStructureLegacy } from "../../../../../core/implementations/default_project_structure"; //
 import { IFileSystem } from "../../../../../core/interfaces/file_system"; //
-import { ProjectStructure } from "../../../../../core/interfaces/project_structure"; //
+import { IProjectStructureLegacy } from "../../../../../core/interfaces/project_structure"; //
 import { cap, pluralConvert, unCap } from "../../../../../utils/text_work/text_util"; //
 import { PathData } from "../../../../utils/path_util";
 import { ServerpodModel } from "../../../serverpod_yaml_parser/formatters/types";
@@ -10,11 +10,11 @@ import { RelationAnalyzer } from "../../../serverpod_yaml_parser/relation-analyz
 
 export class DataRepositoryGenerator extends BaseGenerator {
 
-  private structure: ProjectStructure;
+  private structure: IProjectStructureLegacy;
 
-  constructor(fileSystem: IFileSystem, structure?: ProjectStructure) {
+  constructor(fileSystem: IFileSystem, structure?: IProjectStructureLegacy) {
     super(fileSystem);
-    this.structure = structure || new DefaultProjectStructure(); //
+    this.structure = structure || new DefaultProjectStructureLegacy(); //
   }
 
   protected getPath(featurePath: string, entityName: string): string {

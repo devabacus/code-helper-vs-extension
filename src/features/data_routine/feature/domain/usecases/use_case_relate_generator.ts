@@ -1,36 +1,36 @@
 import path from "path";
-import { DefaultProjectStructure } from "../../../../../core/implementations/default_project_structure";
+import { DefaultProjectStructureLegacy } from "../../../../../core/implementations/default_project_structure";
 import { IFileSystem } from "../../../../../core/interfaces/file_system";
-import { ProjectStructure } from "../../../../../core/interfaces/project_structure";
+import { IProjectStructureLegacy } from "../../../../../core/interfaces/project_structure";
 import { pluralConvert, cap, unCap, toSnakeCase } from "../../../../../utils/text_work/text_util";
 import { DataRoutineGenerator } from "../../../generators/data_routine_generator";
 import { ServerpodModel } from "../../../serverpod_yaml_parser/formatters/types";
 
 export class UseCaseRelateGenerator extends DataRoutineGenerator {
-    private structure: ProjectStructure;
+  private structure: IProjectStructureLegacy;
 
-    constructor(fileSystem: IFileSystem, structure?: ProjectStructure) {
-        super(fileSystem);
-        this.structure = structure || new DefaultProjectStructure();
-    }
+  constructor(fileSystem: IFileSystem, structure?: IProjectStructureLegacy) {
+    super(fileSystem);
+    this.structure = structure || new DefaultProjectStructureLegacy();
+  }
 
-    protected getPath(featurePath: string, entityName: string): string {
-        return path.join(this.structure.getDomainUseCasesPath(featurePath), `${entityName}_usecases.dart`);
-    }
+  protected getPath(featurePath: string, entityName: string): string {
+    return path.join(this.structure.getDomainUseCasesPath(featurePath), `${entityName}_usecases.dart`);
+  }
 
-    protected getContent(model: ServerpodModel): string {
-        const d1 = model.fields[1].relatedModel!;
-    const d2 = model.fields[2].relatedModel!;       
+  protected getContent(model: ServerpodModel): string {
+    const d1 = model.fields[1].relatedModel!;
+    const d2 = model.fields[2].relatedModel!;
 
     const D1 = cap(d1);
     const D1s = pluralConvert(D1);
     const D2 = cap(d2);
     const D2s = pluralConvert(D2);
-    const ClassName = `${model.className}`; 
-    const ClassNameS = pluralConvert(ClassName); 
-    const tableName = `${model.tableName}`; 
+    const ClassName = `${model.className}`;
+    const ClassNameS = pluralConvert(ClassName);
+    const tableName = `${model.tableName}`;
 
-            return `import '../repositories/${tableName}_repository.dart';
+    return `import '../repositories/${tableName}_repository.dart';
 import '../entities/${d1}/${d1}_entity.dart';
 import '../entities/${d2}/${d2}_entity.dart';
 
@@ -79,5 +79,5 @@ class Get${D1s}For${D2}UseCase {
   }
 }
 `;
-    }
+  }
 }

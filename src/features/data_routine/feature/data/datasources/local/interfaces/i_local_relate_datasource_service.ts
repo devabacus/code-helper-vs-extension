@@ -1,18 +1,18 @@
 import path from "path";
 import { BaseGenerator } from "../../../../../../../core/generators/base_generator";
-import { DefaultProjectStructure } from "../../../../../../../core/implementations/default_project_structure";
+import { DefaultProjectStructureLegacy } from "../../../../../../../core/implementations/default_project_structure";
 import { IFileSystem } from "../../../../../../../core/interfaces/file_system";
-import { ProjectStructure } from "../../../../../../../core/interfaces/project_structure";
+import { IProjectStructureLegacy } from "../../../../../../../core/interfaces/project_structure";
 import { cap, toSnakeCase, unCap } from "../../../../../../../utils/text_work/text_util";
 import { ServerpodModel } from "../../../../../serverpod_yaml_parser/formatters/types";
 
 export class DataLocalRelateServiceGenerator extends BaseGenerator {
 
-  private structure: ProjectStructure;
+  private structure: IProjectStructureLegacy;
 
-  constructor(fileSystem: IFileSystem, structure?: ProjectStructure) {
+  constructor(fileSystem: IFileSystem, structure?: IProjectStructureLegacy) {
     super(fileSystem);
-    this.structure = structure || new DefaultProjectStructure();
+    this.structure = structure || new DefaultProjectStructureLegacy();
   }
 
   protected getPath(featurePath: string, entityName: string): string {
@@ -22,13 +22,13 @@ export class DataLocalRelateServiceGenerator extends BaseGenerator {
 
   protected getContent(model: ServerpodModel): string {
 
-  const d1 = model.fields[1].relatedModel!;
-        const d2 = model.fields[2].relatedModel!;       
+    const d1 = model.fields[1].relatedModel!;
+    const d2 = model.fields[2].relatedModel!;
 
-        const D1 = cap(d1);
-        const D2 = cap(d2);
-        const ClassName = `${model.className}`; 
-        const tableName = `${model.tableName}`;
+    const D1 = cap(d1);
+    const D2 = cap(d2);
+    const ClassName = `${model.className}`;
+    const tableName = `${model.tableName}`;
 
 
     const idType = 'String';

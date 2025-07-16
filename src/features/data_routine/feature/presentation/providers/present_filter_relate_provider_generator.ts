@@ -1,18 +1,18 @@
 import * as path from "path";
-import { DefaultProjectStructure } from "../../../../../core/implementations/default_project_structure";
+import { DefaultProjectStructureLegacy } from "../../../../../core/implementations/default_project_structure";
 import { IFileSystem } from "../../../../../core/interfaces/file_system";
-import { ProjectStructure } from "../../../../../core/interfaces/project_structure";
+import { IProjectStructureLegacy } from "../../../../../core/interfaces/project_structure";
 import { cap, pluralConvert } from "../../../../../utils/text_work/text_util";
 import { DataRoutineGenerator } from "../../../generators/data_routine_generator";
 import { ServerpodModel } from "../../../serverpod_yaml_parser/formatters/types";
 
 export class PresentFilterRelateProviderGenerator extends DataRoutineGenerator {
 
-    private structure: ProjectStructure;
+    private structure: IProjectStructureLegacy;
 
-    constructor(fileSystem: IFileSystem, structure?: ProjectStructure) {
+    constructor(fileSystem: IFileSystem, structure?: IProjectStructureLegacy) {
         super(fileSystem);
-        this.structure = structure || new DefaultProjectStructure();
+        this.structure = structure || new DefaultProjectStructureLegacy();
     }
 
     protected getPath(featurePath: string, entityName: string): string {
@@ -21,17 +21,17 @@ export class PresentFilterRelateProviderGenerator extends DataRoutineGenerator {
 
     protected getContent(model: ServerpodModel): string {
         const d1 = model.fields[1].relatedModel!;
-    const d2 = model.fields[2].relatedModel!;       
+        const d2 = model.fields[2].relatedModel!;
 
-    const D1 = cap(d1);
-    const D1s = pluralConvert(D1);
-    const D2 = cap(d2);
-    const D2s = pluralConvert(D2);
-    const ClassName = `${model.className}`; 
-    const ClassNameS = pluralConvert(ClassName); 
-    const tableName = `${model.tableName}`; 
+        const D1 = cap(d1);
+        const D1s = pluralConvert(D1);
+        const D2 = cap(d2);
+        const D2s = pluralConvert(D2);
+        const ClassName = `${model.className}`;
+        const ClassNameS = pluralConvert(ClassName);
+        const tableName = `${model.tableName}`;
 
-            return `import 'package:flutter_riverpod/flutter_riverpod.dart';
+        return `import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import '../../../domain/entities/${d2}/${d2}_entity.dart';
 import '../${d2}/${d2}_state_providers.dart';
