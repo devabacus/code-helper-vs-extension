@@ -4,14 +4,13 @@ import path from "path";
 export interface IGeneratorConfig {
   targetProject: string;
   templProject: string;
-  featureName: string;
+  featureName?: string;
   projectsPath?: string;
   templEntityName?: string;
   sourceFeaturePath?: string;
 }
 
 export class GeneratorConfig {
-
   public templProject: string;
   public targetProject: string;
   public projectsPath: string;
@@ -22,7 +21,7 @@ export class GeneratorConfig {
   constructor(config: IGeneratorConfig) {
     this.templProject = config.templProject || 't2';
     this.targetProject = config.targetProject;
-    this.featureName = config.featureName;
+    this.featureName = config.featureName || 'home';
     this.projectsPath = config.projectsPath || 'G:/Projects/Flutter/serverpod';
     this.templEntity = config.templEntityName || 'category';
     this.sourceFeaturePath = config.sourceFeaturePath || `G:/Projects/Flutter/serverpod/${this.templProject}/${this.templProject}_flutter/lib/features/home`;
@@ -35,6 +34,7 @@ export class GeneratorConfig {
 
   get targetFlutterProjectPath() : string { return this.getFlutterPath(this.targetProject);};
   get templFlutterProjectPath(): string { return this.getFlutterPath(this.templProject);};
+
   get targetFlutterRootPath(): string {return this.flutterRootPath(this.targetProject);};
   get templFlutterRootPath(): string {return this.flutterRootPath(this.templProject);}
   
@@ -42,6 +42,14 @@ export class GeneratorConfig {
   get targetServerProjectPath(): string{
     return path.join(this.projectsPath, `${this.targetProject}`, `${this.targetProject}_server`);
   }
+
+  get templServerProjectPath(): string{
+    return path.join(this.projectsPath, `${this.templProject}`, `${this.templProject}_server`);
+  }
+
+
+
+  
   
   get targetFeaturePath(): string {
     return path.join(this.targetFlutterProjectPath, 'lib', 'features', `${this.featureName}`);

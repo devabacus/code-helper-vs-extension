@@ -1,4 +1,4 @@
-import { IProjectStructure } from "./i_project_structure";
+import { IProjectStructure } from "../impl/default_project_structure";
 
 
 export interface IWorkspaceStructure {

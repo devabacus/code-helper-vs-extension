@@ -27,6 +27,11 @@ import { database_types_file } from "../data_routine/core/database/local/databas
 import { SERVERPOD_GENERATE } from "../serverpod/commands";
 import { testDataSpy } from "../serverpod/server_test/test_data_spy";
 import { testDataEndpoint } from "../serverpod/server_test/test_data_endpoint";
+import { GeneratorConfig } from "./generator_config";
+import { FileListAggregator } from "./files/file_list_agreggator";
+import { FlutterStaticFileGenerator } from "./generators/flutter_static_files_generator";
+import { DefaultFileSystem } from "../../core/implementations/default_file_system";
+import { ServerpodStaticGenerator } from "./generators/serverpod_static_files_generator";
 
 export async function createNewProject(addTemplateFolders?: (fullProjectPath: string) => void): Promise<void> {
 
@@ -35,32 +40,34 @@ export async function createNewProject(addTemplateFolders?: (fullProjectPath: st
     if (!projectsPath) {
         return;
     }
-    const projectName = await getUserInput('введите название проекта');
-    if (!projectName) {
+    const targetProject = await getUserInput('введите название проекта');
+    if (!targetProject) {
         return;
     }
-    
-    await executeCommand(`serverpod create ${projectName}`, projectsPath);
 
-    const monoRepoPath = path.join(projectsPath, projectName);
+    await executeCommand(`serverpod create ${targetProject}`, projectsPath);
 
-    // нужно получить все пути
-    
+    const monoRepoPath = path.join(projectsPath, targetProject);
 
-    // const fullFlutterProjectPath = path.join(monoRepoPath, `${projectName}_flutter`);
+    const genConfig = new GeneratorConfig({
+        templProject: 't2',
+        projectsPath: projectsPath,
+        targetProject: targetProject,
+    });
 
-    // const serverPath = path.join(monoRepoPath, `${projectName}_server`);
-    // const flutterPath = path.join(monoRepoPath, `${projectName}_flutter`);
 
-    // await executeCommand(`serverpod generate --experimental-features`, serverPath);
+    const staticFlutterGenerator = new FlutterStaticFileGenerator(genConfig);
+    await staticFlutterGenerator.generate();
 
-    // const serverDataYamlPath = path.join(serverPath, "server_data.yaml");
-    // const serverPubSpecYamlPath = path.join(serverPath, "pubspec.yaml");
+    const staticServerGenerator = new ServerpodStaticGenerator(genConfig);
+    await staticServerGenerator.generate();
 
     // const mainPath = path.join(flutterPath, "lib", "main.dart");
     // const serverCheckUilPath = path.join(flutterPath, "lib", "check", "server_check_ui.dart");
     // const authWrapperFilePath = path.join(flutterPath, "lib", "auth_wrapper.dart");
     // const appFilePath = path.join(flutterPath, "lib", "app.dart");
+
+
     // const serverpodClientProviderFilePath = path.join(flutterPath, "lib", "core", "providers", "serverpod_client_provider.dart");
     // const testDataSpyPath = path.join(serverPath, "lib", "src", "models", "test_data.spy.yaml");
     // const testDataEndPointPath = path.join(serverPath, "lib", "src", "endpoints", "test_data_endpoint.dart");
@@ -83,10 +90,10 @@ export async function createNewProject(addTemplateFolders?: (fullProjectPath: st
     // const databaseTypesPath = path.join(flutterPath, "lib", "core", "database", "local", "database_types.dart");
     // const syncRegistryPath = path.join(flutterPath, "lib", "core", "sync", "sync_registry.dart");
     // const syncControllerPath = path.join(flutterPath, "lib", "core", "sync", "sync_controller_provider.dart");
-    
+
     // 'core/database/local/daos/sync_metadata_dao.dart': sync_metadata_dao_file,
-    
-    
+
+
     // createFileOneTime(syncRegistryPath, sync_registry_file);
     // createFileOneTime(syncControllerPath, sync_controller_provider_file);
     // const baseSyncRepositoryPath = path.join(flutterPath, "lib", "core", "sync", "base_sync_repository.dart");
@@ -96,10 +103,10 @@ export async function createNewProject(addTemplateFolders?: (fullProjectPath: st
     // createFile(serverCheckUilPath, serverCheckUi(projectName));
 
 
-    // if (addTemplateFolders) {
-    //     addTemplateFolders(fullFlutterProjectPath);
-    // }
-    // startAppFix(fullFlutterProjectPath);
+    if (addTemplateFolders) {
+        addTemplateFolders(genConfig.targetFlutterProjectPath);
+    }
+    startAppFix(genConfig.targetFlutterProjectPath);
 
     // insertAtFileEnd(path.join(fullFlutterProjectPath, '.gitignore'), gitignoreCont);
 
@@ -114,17 +121,17 @@ export async function createNewProject(addTemplateFolders?: (fullProjectPath: st
 
     // createFile(path.join(fullFlutterProjectPath, "pubspec.yaml"), pubspec_yaml(projectName));
 
-    // gitInit(monoRepoPath);
+    gitInit(monoRepoPath);
 
-    // const homePagePath = path.join(fullFlutterProjectPath, 'lib', 'features', 'home', 'presentation', 'pages', 'home_page.dart');
-    // const openCommand = `code -g "${homePagePath}" "${monoRepoPath}"`;
+    const homePagePath = path.join(genConfig.targetFlutterProjectPath, 'lib', 'features', 'home', 'presentation', 'pages', 'home_page.dart');
+    const openCommand = `code -g "${homePagePath}" "${monoRepoPath}"`;
 
-    // await executeCommand(pubGet, fullFlutterProjectPath);
-    // await executeCommand(pubGet, serverPath);
-    // await executeCommand(build_runner, fullFlutterProjectPath);
-    // await executeCommand(SERVERPOD_GENERATE, serverPath);
-    // gitInit(monoRepoPath);
-    // await executeCommand(openCommand, projectsPath);
-    // // serverpodK8sFileGenerate(projectsPath);
+    await executeCommand(pubGet, genConfig.targetFlutterProjectPath);
+    await executeCommand(pubGet, genConfig.targetServerProjectPath);
+    await executeCommand(build_runner, genConfig.targetFlutterProjectPath);
+    await executeCommand(SERVERPOD_GENERATE, genConfig.targetServerProjectPath);
+    gitInit(monoRepoPath);
+    await executeCommand(openCommand, projectsPath);
+    // serverpodK8sFileGenerate(projectsPath);
 
 }

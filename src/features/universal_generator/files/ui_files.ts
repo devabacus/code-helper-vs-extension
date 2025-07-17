@@ -1,8 +1,10 @@
-export class AuthFiles {
+export class UiFiles {
 
   public static readonly staticFiles: string[] = [
-    'core/providers/serverpod_client_provider.dart',
-    'core/providers/session_manager_provider.dart',
+    'main.dart',
+    'app.dart',
+    'auth_wrapper.dart',
+    'check/server_check_ui.dart'
   ];
 
   public static readonly simpleReplaceFiles: string[] = [];

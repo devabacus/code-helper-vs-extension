@@ -1,6 +1,6 @@
 import { CodeFormatter } from "../data_routine/serverpod_yaml_parser/formatters/code_formatter";
 import { ServerpodModel } from "../data_routine/serverpod_yaml_parser/formatters/types";
-import { createReplacementDictionary } from "../data_routine/utils/replacement_util";
+import { createReplacementDictionary } from "./replacement_util";
 
 export interface ContentProcessor {
   process(content: string, model: ServerpodModel, projectName: string): string;
@@ -37,7 +37,7 @@ export class SimpleReplacementProcessor implements ContentProcessor {
 //   }
 
 //   private replaceSections(content: string, model: ServerpodModel): string {
-    
+
 //     const sections = [
 //       {
 //         start: '// === GENERATED_COLUMNS_START ===',
@@ -110,7 +110,7 @@ export class UniversalPatternProcessor {
     if (context.model) {
       newContent = new SimpleReplacementProcessor().process(newContent, context.model, context.projectName);
     }
-    
+
     // 2. Замена секций
     newContent = this.replaceSections(newContent, context, sections);
 
@@ -125,7 +125,7 @@ export class UniversalPatternProcessor {
     for (const section of sections) {
       // Вызываем генератор секции и ПЕРЕДАЕМ ему ВЕСЬ контекст
       const generatedSectionContent = section.generator(context);
-      
+
       content = this.replaceSection(
         content,
         section.start,
@@ -136,7 +136,7 @@ export class UniversalPatternProcessor {
     return content;
   }
 
-   private replaceSection(
+  private replaceSection(
     content: string,
     startMarker: string,
     endMarker: string,

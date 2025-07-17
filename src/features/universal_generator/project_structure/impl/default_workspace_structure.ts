@@ -1,7 +1,6 @@
 import path from 'path';
-import { IProjectStructure } from '../interfaces/i_project_structure';
 import { IWorkspaceStructure } from '../interfaces/i_workspace_structure';
-import { DefaultProjectStructure } from './default_project_structure';
+import { DefaultProjectStructure, IProjectStructure } from './default_project_structure';
 
 export class DefaultWorkspaceStructure implements IWorkspaceStructure {
     public readonly core: IProjectStructure;

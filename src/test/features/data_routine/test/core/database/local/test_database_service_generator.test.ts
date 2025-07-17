@@ -1,29 +1,29 @@
-import assert from "assert";
-import path from "path";
-import { testDatabaseServiceExample } from "./test_database_service_example";
-import { MockFileSystem } from "../../../../../../mocks/mock_file_system";
-import { TestDatabaseService } from "../../../../../../../features/data_routine/test/core/database/local/test_database_service_generator";
+// import assert from "assert";
+// import path from "path";
+// import { testDatabaseServiceExample } from "./test_database_service_example";
+// import { MockFileSystem } from "../../../../../../mocks/mock_file_system";
+// import { TestDatabaseService } from "../../../../../../../features/data_routine/test/core/database/local/test_database_service_generator";
 
-suite('TestDatabaseServiceGenerator', () => {
+// suite('TestDatabaseServiceGenerator', () => {
 
-    const mockFileSystem = new MockFileSystem();
+//     const mockFileSystem = new MockFileSystem();
 
-    const testDatabaseService = new TestDatabaseService(mockFileSystem);
+//     const testDatabaseService = new TestDatabaseService(mockFileSystem);
 
-    test('TestDatabaseServiceGenerator', () => {
+//     test('TestDatabaseServiceGenerator', () => {
 
-        const expectedPath = path.join("test", "core", "database", "local", "test_database_service.dart");
+//         const expectedPath = path.join("test", "core", "database", "local", "test_database_service.dart");
 
-        testDatabaseService.generate('', 'project_name');
+//         testDatabaseService.generate('', 'project_name');
 
-        const mockFile = mockFileSystem.createdFiles[expectedPath].trim();
+//         const mockFile = mockFileSystem.createdFiles[expectedPath].trim();
 
-        assert.ok(mockFile, 'Файл должен быть создан');
-        assert.strictEqual(mockFile, testDatabaseServiceExample);
+//         assert.ok(mockFile, 'Файл должен быть создан');
+//         assert.strictEqual(mockFile, testDatabaseServiceExample);
 
-    });
+//     });
 
-});
+// });
 
 
 

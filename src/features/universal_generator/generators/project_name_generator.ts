@@ -1,11 +1,10 @@
 import path from "path";
 import { IFileSystem } from "../../../core/interfaces/file_system";
 import { GeneratorConfig } from "../generator_config";
-import { STATIC_FILES } from "../files/static_files";
 import { PROJECT_CONFIG_FILES } from "../files/project_config_files";
 
 
-export class ProjectConfGenerator {
+export class ProjectNameGenerator {
     constructor(
         private fileSystem: IFileSystem,
         private genConf: GeneratorConfig

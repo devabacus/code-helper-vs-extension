@@ -1,11 +1,10 @@
-export class AuthFiles {
 
+export class ServerpodFiles {
   public static readonly staticFiles: string[] = [
-    'core/providers/serverpod_client_provider.dart',
-    'core/providers/session_manager_provider.dart',
+    'server_data.yaml',
+    'pubspec.yaml',
   ];
 
   public static readonly simpleReplaceFiles: string[] = [];
-
   public static readonly patternReplaceFiles: string[] = [];
 }

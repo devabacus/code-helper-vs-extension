@@ -1,4 +1,4 @@
-import { cap, pluralConvert, unCap } from "../../../utils/text_work/text_util";
+import { cap, pluralConvert, unCap } from "../../utils/text_work/text_util";
 
 export function createReplacementDictionary(baseName: string, newName: string, projectName: string) {
 
@@ -15,7 +15,7 @@ export function createReplacementDictionary(baseName: string, newName: string, p
     };
 
     return [
-        { from: 't2', to: 't3'},
+        { from: 't2', to: 't3' },
         { from: baseForms.Ds, to: newForms.Ds },
         { from: baseForms.D, to: newForms.D },
         { from: baseForms.d, to: newForms.d },

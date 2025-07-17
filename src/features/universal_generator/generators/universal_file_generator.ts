@@ -6,7 +6,6 @@ import { GeneratorConfig } from "../generator_config";
 import { ContentProcessor, SimpleReplacementProcessor } from "../content_processor";
 import { PATTERN_FILES } from "../files/pattern_files";
 import { SIMPLE_FILES } from "../files/simple_files";
-import { STATIC_FILES } from "../files/static_files";
 
 // Все файлы для генерации
 const ALL_FILES = [...SIMPLE_FILES, ...PATTERN_FILES];
