@@ -27,7 +27,7 @@ type DictionaryKey = 'common' | 'entity';
 // --- Конфигурация для генератора ---
 
 export interface GeneratorConfig {
-  sourceProjectPath: string;
+  sourceProjectPath: string;1
   targetProjectPath: string;
   projectName: string;
   entityName?: string; // Сущность может быть опциональной
