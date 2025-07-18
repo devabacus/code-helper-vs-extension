@@ -1,0 +1,26 @@
+# manifests/auth.yml
+# Манифест для файлов, связанных с авторизацией
+
+# Правило 1: Статические файлы, которые не меняются.
+# Это провайдеры, базовые модели и т.д.
+- processor: "static"
+  group: "auth-core"
+  paths:
+    - "core/providers/serverpod_client_provider.dart"
+    - "core/providers/session_manager_provider.dart"
+         
+# Правило 2: Файлы, где нужно заменить только общие параметры (имя проекта).
+# Например, файл, который импортирует главный конфигурационный файл проекта.
+# - processor: "replace"
+#   group: "auth-config"
+#   dictionaries: ["common"]
+#   paths:
+#     - "lib/core/auth/services/auth_service.dart"
+
+# # Правило 3: Файлы, где нужна полная замена, включая сущность "user" или "customer".
+# # Например, модель пользователя, которую вы можете захотеть переименовать.
+# - processor: "replace"
+#   group: "auth-entity"
+#   dictionaries: ["common", "entity"]
+#   paths:
+#     - "lib/core/auth/models/user_model.dart"
