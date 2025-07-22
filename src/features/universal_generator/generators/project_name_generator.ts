@@ -1,13 +1,13 @@
 import path from "path";
 import { IFileSystem } from "../../../core/interfaces/file_system";
-import { ProjectConfig } from "../project_config";
+import { GenerationConfig } from "../project_config";
 import { PROJECT_CONFIG_FILES } from "../files/project_config_files";
 
 
 export class ProjectNameGenerator {
     constructor(
         private fileSystem: IFileSystem,
-        private genConf: ProjectConfig
+        private genConf: GenerationConfig
     ) {
 
     }

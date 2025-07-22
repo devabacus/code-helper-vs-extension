@@ -1,9 +1,11 @@
 import path from "path";
+import { FeatureName } from "./manifests";
 
 // Простые файлы - только замена entity
-export interface IProjectConfig {
+export interface IGenerationConfig {
   targetProject: string;
   templProject: string;
+  features?: FeatureName[];
   featureName?: string;
   projectsPath?: string;
   templEntity?: string;
@@ -11,7 +13,7 @@ export interface IProjectConfig {
   sourceFeaturePath?: string;
 }
 
-export class ProjectConfig {
+export class GenerationConfig {
   public templProject: string;
   public targetProject: string;
   public projectsPath: string;
@@ -19,10 +21,12 @@ export class ProjectConfig {
   public targetEntity: string;
   public sourceFeaturePath: string;
   public featureName: string;
+  public features: FeatureName[];
 
-  constructor(config: IProjectConfig) {
+  constructor(config: IGenerationConfig) {
     this.templProject = config.templProject || 't2';
     this.targetProject = config.targetProject;
+    this.features = config.features || [];
     this.featureName = config.featureName || 'home';
     this.projectsPath = config.projectsPath || 'G:/Projects/Flutter/serverpod';
     this.templEntity = config.templEntity || 'category';

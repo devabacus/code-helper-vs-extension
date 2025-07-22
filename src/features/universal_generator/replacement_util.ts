@@ -1,44 +1,56 @@
 import { cap, pluralConvert, toPascalCase, unCap } from "../../utils/text_work/text_util";
-import { GenerationServiceConfig } from "./generators/generation_service";
 import { ReplacementRule } from "./generators/replacing_file_processor";
-import { ProjectConfig } from "./project_config";
+import { GenerationConfig } from "./project_config";
 
-export interface dictionaries {
-    
-}
+export const Dictionaries = {
+  COMMON: 'common',
+  ENTITY: 'entity',
+} as const;
 
+export type DictionaryName = typeof Dictionaries[keyof typeof Dictionaries];
 
+type RuleGenerator = (config: GenerationConfig) => ReplacementRule[];
 
- export function getDictionaryRules(dictionaries: readonly string[], config: ProjectConfig): ReplacementRule[] {
-    const rules: ReplacementRule[] = [];
-
-    for (const dict of dictionaries) {
-      if (dict === 'common') {
-        // замена project name
-        rules.push({ from: config.templProject, to: config.targetProject });
-      }
-      if (dict === 'entity' && config.targetEntity.length !== 0) {
-        
+const dictionaryRegistry: Record<DictionaryName, RuleGenerator> = {
+  [Dictionaries.COMMON]: (config) => [
+    { from: config.templProject, to: config.targetProject },
+    // Сюда можно добавлять другие общие правила для проекта
+  ],
+  [Dictionaries.ENTITY]: (config) => {
+    if (!config.targetEntity) {
+      return [];
+    }
     const baseForms = {
-        Ds: pluralConvert(cap(config.templEntity)),
-        D: cap(config.templEntity),         
-        d: unCap(config.templEntity),       
+      Ds: pluralConvert(cap(config.templEntity)),
+      D: cap(config.templEntity),
+      d: unCap(config.templEntity),
     };
 
     const newForms = {
-        Ds: pluralConvert(cap(config.targetEntity)), 
-        D: cap(config.targetEntity),  
-        d: unCap(config.targetEntity),
+      Ds: pluralConvert(cap(config.targetEntity)),
+      D: cap(config.targetEntity),
+      d: unCap(config.targetEntity),
     };
-        
-        rules.push(
-            {from: config.templProject, to: config.targetProject}, //project replace
-            { from: baseForms.Ds, to: newForms.Ds },
-            { from: baseForms.D, to: newForms.D },
-            { from: baseForms.d, to: newForms.d },
-        );
-      }
-    }
+    
+    return [
+      { from: baseForms.Ds, to: newForms.Ds },
+      { from: baseForms.D, to: newForms.D },
+      { from: baseForms.d, to: newForms.d },
+    ];
+  },
+};
 
-    return rules;
+
+export function getDictionaryRules(dictionaries: readonly DictionaryName[], config: GenerationConfig): ReplacementRule[] {
+  const allRules: ReplacementRule[] = [];
+  
+  for (const dictName of dictionaries) {
+    const ruleGenerator = dictionaryRegistry[dictName];
+    if (ruleGenerator) {
+      // Вызываем генератор и добавляем его правила в общий массив
+      allRules.push(...ruleGenerator(config));
+    }
   }
+  
+  return allRules;
+}

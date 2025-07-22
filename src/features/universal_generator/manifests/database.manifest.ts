@@ -1,3 +1,5 @@
+import { Dictionaries } from "../replacement_util";
+
 export const databaseManifest = {
   static: [
     'lib/core/data/datasources/local/interfaces/i_database_service.dart',
@@ -11,11 +13,11 @@ export const databaseManifest = {
   replace: [
     {
       files: ['data/datasources/local/interfaces/category_local_datasource_service.dart'],
-      dictionaries: ['common', 'entity'] as const,
+      dictionaries: [Dictionaries.COMMON, Dictionaries.ENTITY] as const,
     },
     {
       files: ['data/datasources/remote/interfaces/category_remote_datasource_service.dart'], 
-      dictionaries: ['common', 'entity'] as const,
+      dictionaries: [Dictionaries.COMMON, Dictionaries.ENTITY] as const,
     },
   ],
 } as const;
