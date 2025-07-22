@@ -14,20 +14,19 @@ import { GenerationService } from "./generators/generation_service";
 export async function createDataFilesByReplacement() {
 
     const fileSystem = ServiceLocator.getInstance().getFileSystem();
+    // const baseStructure = new DefaultProjectStructure(config.getFeaturePath);
+
+    const codeFormatter = new CodeFormatter();
+    const model = ServerpodYamlParser.parse(getDocText());
 
     const config = new GenerationConfig({
         templProject: 't2',
         targetProject: 't3',
         featureName: 'home',
+        targetEntity: model.tableName,
         features: ['auth', 'general', 'routing', 'database']
     });
-
-    // const baseStructure = new DefaultProjectStructure(config.getFeaturePath);
-    const workspace = new DefaultWorkspaceStructure(config.targetFlutterRootPath, config.featureName);
-
-    const codeFormatter = new CodeFormatter();
-    const model = ServerpodYamlParser.parse(getDocText());
-
+        const workspace = new DefaultWorkspaceStructure(config.targetFlutterRootPath, config.featureName);
     // const projectNameGenerator = new ProjectNameGenerator(fileSystem, config);
     // projectNameGenerator.generate();
 

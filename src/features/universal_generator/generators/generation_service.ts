@@ -38,20 +38,26 @@ export class GenerationService {
       for (const replaceRule of manifest.replace) {
         const rules = getDictionaryRules(replaceRule.dictionaries, config);
         for (const filePath of replaceRule.files) {
-          replaceTasks.push({
-            sourcePath: path.join(config.templFlutterProjectPath, filePath),
-            destinationPath: path.join(config.targetFlutterProjectPath, filePath),
-            rules
-          });
+          let sourceBasePath = config.templFlutterProjectPath;
+          let destinationBasePath = config.targetFlutterProjectPath;
+
+          if (!filePath.includes('core')) {
+            sourceBasePath = config.sourceFeaturePath;
+            destinationBasePath = config.targetFeaturePath;
+            replaceTasks.push({
+              sourcePath: path.join(sourceBasePath, filePath),
+              destinationPath: path.join(destinationBasePath, filePath),
+              rules
+            });
+          }
         }
       }
+
+      await Promise.all([
+        this.staticProcessor.process(staticTasks),
+        this.replacingProcessor.process(replaceTasks)
+      ]);
     }
 
-    await Promise.all([
-      this.staticProcessor.process(staticTasks),
-      this.replacingProcessor.process(replaceTasks)
-    ]);
-  }
 
-  
-}
+  }}

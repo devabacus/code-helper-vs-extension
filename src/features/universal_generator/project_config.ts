@@ -54,10 +54,6 @@ export class GenerationConfig {
     return path.join(this.projectsPath, `${this.templProject}`, `${this.templProject}_server`);
   }
 
-
-
-
-
   get targetFeaturePath(): string {
     return path.join(this.targetFlutterProjectPath, 'lib', 'features', `${this.featureName}`);
   }
