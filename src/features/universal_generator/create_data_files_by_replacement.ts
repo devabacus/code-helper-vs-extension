@@ -1,7 +1,7 @@
 import { getDocText } from "../../utils/ui/ui_util";
 // import { addProviderFiles } from "./add_providers";
 import { ServiceLocator } from "../../core/services/service_locator";
-import { GeneratorConfig } from "../universal_generator/generator_config";
+import { ProjectConfig } from "./project_config";
 import { UniversalFileGenerator } from "./generators/universal_file_generator";
 import { CodeFormatter } from "../data_routine/serverpod_yaml_parser/formatters/code_formatter";
 import { ServerpodYamlParser } from "../data_routine/serverpod_yaml_parser/server_yaml_parser";
@@ -14,7 +14,7 @@ export async function createDataFilesByReplacement() {
 
     const fileSystem = ServiceLocator.getInstance().getFileSystem();
 
-    const config = new GeneratorConfig({
+    const config = new ProjectConfig({
         templProject: 't2',
         targetProject: 't3',
         featureName: 'home',

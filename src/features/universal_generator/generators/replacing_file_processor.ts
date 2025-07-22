@@ -11,7 +11,7 @@ export interface ReplaceTask {
 
 export class ReplacingFileProcessor {
 
-    constructor(private fileSystem: IFileSystem) {}
+  constructor(private fileSystem: IFileSystem) {}
 
   public async process(tasks: ReplaceTask[]): Promise<void> {
     const processPromises = tasks.map(task => this.processSingleFile(task));

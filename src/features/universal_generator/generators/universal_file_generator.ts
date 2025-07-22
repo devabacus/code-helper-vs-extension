@@ -2,7 +2,7 @@ import path from "path";
 import { IFileSystem } from "../../../core/interfaces/file_system";
 import { CodeFormatter } from "../../data_routine/serverpod_yaml_parser/formatters/code_formatter";
 import { ServerpodModel } from "../../data_routine/serverpod_yaml_parser/formatters/types";
-import { GeneratorConfig } from "../generator_config";
+import { ProjectConfig } from "../project_config";
 import { ContentProcessor, SimpleReplacementProcessor } from "../content_processor";
 import { PATTERN_FILES } from "../files/pattern_files";
 import { SIMPLE_FILES } from "../files/simple_files";
@@ -14,7 +14,7 @@ export class UniversalFileGenerator {
   constructor(
     private fileSystem: IFileSystem,
     private codeFormatter: CodeFormatter,
-    private genConf: GeneratorConfig
+    private genConf: ProjectConfig
   ) { }
 
   async generateAll(
