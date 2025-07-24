@@ -2,7 +2,7 @@ import path from 'path';
 import { DefaultFileSystem } from '../../../core/implementations/default_file_system';
 import { IFileSystem } from '../../../core/interfaces/file_system';
 import { allManifests } from '../manifests';
-import { GenerationConfig } from '../project_config';
+import { GenerationConfig } from '../generation_config';
 import { getDictionaryRules } from '../replacement_util';
 import { ReplaceTask, ReplacingFileProcessor } from './replacing_file_processor';
 import { StaticCopyTask, StaticFileProcessor } from './static_file_processor';
@@ -60,4 +60,5 @@ export class GenerationService {
     }
 
 
-  }}
+  }
+}

@@ -1,24 +1,24 @@
 import path from "path";
 import { IFileSystem } from "../../../../core/interfaces/file_system";
 import { snakeToPascalCase } from "../../../../utils/text_work/text_util";
-import { IWorkspaceStructure } from "../../project_structure/interfaces/i_workspace_structure";
+import { GenerationConfig } from "../../generation_config";
 import { SectionConfig, SectionReplacer } from "../../section_config";
 import { appDatabaseCont } from "./appdatabase_file";
 
 export class AppDatabaseGenerator {
     constructor(
         private fileSystem: IFileSystem,
-        private workspace: IWorkspaceStructure
+        private config: GenerationConfig
     ) { }
 
     public async generate(): Promise<void> {
         // --- Шаг 1: Определяем абсолютный путь к папке с генерируемым файлом ---
-        const destinationDir = this.workspace.core.data.localPath;
-        const coreDatabasePath = path.join(destinationDir, 'database.dart');
+        const destinationDir = this.config.coreDataLocalPath;
+        const coreDatabasePath = path.join(destinationDir, 'database.dart');    
 
         // --- Получаем пути к папкам с таблицами ---
-        const coreTablesDir = this.workspace.core.data.tablePath;
-        const featureTablesDir = this.workspace.feature.data.tablePath;
+        const coreTablesDir = this.config.coreTablesPath;
+        const featureTablesDir = this.config.featureTablesPath;
 
         const coreTableFiles = await this.fileSystem.readDirectory(coreTablesDir);
         const featureTableFiles = (await this.fileSystem.readDirectory(featureTablesDir)).filter(file => file.endsWith('.dart'));

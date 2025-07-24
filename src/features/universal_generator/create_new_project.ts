@@ -27,11 +27,8 @@ import { database_types_file } from "../data_routine/core/database/local/databas
 import { SERVERPOD_GENERATE } from "../serverpod/commands";
 import { testDataSpy } from "../serverpod/server_test/test_data_spy";
 import { testDataEndpoint } from "../serverpod/server_test/test_data_endpoint";
-import { GenerationConfig } from "./project_config";
-import { FileListAggregator } from "./files/file_list_agreggator";
-import { FlutterStaticFileGenerator } from "./generators/flutter_static_files_generator";
+import { GenerationConfig } from "./generation_config";
 import { DefaultFileSystem } from "../../core/implementations/default_file_system";
-import { ServerpodStaticGenerator } from "./generators/serverpod_static_files_generator";
 
 export async function createNewProject(addTemplateFolders?: (fullProjectPath: string) => void): Promise<void> {
 
@@ -56,11 +53,8 @@ export async function createNewProject(addTemplateFolders?: (fullProjectPath: st
     });
 
 
-    const staticFlutterGenerator = new FlutterStaticFileGenerator(genConfig);
-    await staticFlutterGenerator.generate();
-
-    const staticServerGenerator = new ServerpodStaticGenerator(genConfig);
-    await staticServerGenerator.generate();
+    // const staticFlutterGenerator = new FlutterStaticFileGenerator(genConfig);
+    // await staticFlutterGenerator.generate();
 
     // const mainPath = path.join(flutterPath, "lib", "main.dart");
     // const serverCheckUilPath = path.join(flutterPath, "lib", "check", "server_check_ui.dart");

@@ -66,6 +66,23 @@ export class GenerationConfig {
     return path.join(this.getFlutterPath(project), "lib");
   };
 
+  get corePath(): string {
+    return path.join(this.targetFlutterRootPath, 'core');
+  }
+
+  get coreDataLocalPath(): string {
+    return path.join(this.corePath, 'data', 'datasources', 'local');
+  }
+
+  get coreTablesPath(): string {
+    return path.join(this.coreDataLocalPath, 'tables');
+  }
+
+  get featureTablesPath(): string {
+    // getFeaturePath у вас уже есть
+    return path.join(this.getFeaturePath, 'data', 'datasources', 'local', 'tables');
+  }
+
 
 
 }

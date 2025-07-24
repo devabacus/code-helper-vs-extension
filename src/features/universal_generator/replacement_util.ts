@@ -1,6 +1,6 @@
 import { cap, pluralConvert, toPascalCase, unCap } from "../../utils/text_work/text_util";
 import { ReplacementRule } from "./generators/replacing_file_processor";
-import { GenerationConfig } from "./project_config";
+import { GenerationConfig } from "./generation_config";
 
 export const Dictionaries = {
   COMMON: 'common',
@@ -31,7 +31,7 @@ const dictionaryRegistry: Record<DictionaryName, RuleGenerator> = {
       D: cap(config.targetEntity),
       d: unCap(config.targetEntity),
     };
-    
+
     return [
       { from: baseForms.Ds, to: newForms.Ds },
       { from: baseForms.D, to: newForms.D },
@@ -43,7 +43,7 @@ const dictionaryRegistry: Record<DictionaryName, RuleGenerator> = {
 
 export function getDictionaryRules(dictionaries: readonly DictionaryName[], config: GenerationConfig): ReplacementRule[] {
   const allRules: ReplacementRule[] = [];
-  
+
   for (const dictName of dictionaries) {
     const ruleGenerator = dictionaryRegistry[dictName];
     if (ruleGenerator) {
@@ -51,6 +51,6 @@ export function getDictionaryRules(dictionaries: readonly DictionaryName[], conf
       allRules.push(...ruleGenerator(config));
     }
   }
-  
+
   return allRules;
 }
