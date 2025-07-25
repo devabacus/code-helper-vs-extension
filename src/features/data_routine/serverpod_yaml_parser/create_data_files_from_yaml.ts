@@ -1,0 +1,86 @@
+// import { createFileOneTime } from "../../../utils";
+// import { getActiveEditorPath } from "../../../utils/path_util";
+// import { toSnakeCase, unCap } from "../../../utils/text_work/text_util";
+// import { getDocText } from "../../../utils/ui/ui_util";
+// // import { addProviderFiles } from "./add_providers";
+// import path from "path";
+// import { ServiceLocator } from "../../../core/services/service_locator";
+// import { GenerateAllFilesCommandYaml } from "../commands/generate_all_files_command_yaml";
+// import { appDatabaseRoutine } from '../core/database/local/appdatabase_handle';
+// import { sync_metadata_dao_file } from "../core/database/local/daos/sync_metadata_dao_file";
+// import { sync_metadata_local_datasource_service_file } from "../core/database/local/interfaces/sync_metadata_local_datasource_service_file";
+// import { sync_metadata_local_datasource_file } from "../core/database/local/sources/sync_metadata_local_data_source_file";
+// import { DartTestGeneratorFactory } from "../factories/test_generator_factory";
+// import { entity_sync_event_spy_file } from "../generators/entity_sync_event_spy_file";
+// import { sync_event_type_spy } from "../generators/sync_event_type_spy";
+// import { sync_metadata_table_file } from "../generators/sync_metadata_table";
+// import { pickPath } from "../../../utils/ui/ui_ask_folder";
+// import { session_manager_provider_file } from "../core/providers/session_manager_provider_file";
+// import { user_manager_endpoint_file } from "../serverpod/endpoints/user_manager_endpoint";
+// import { ServerpodYamlParser } from "../../universal_generator/serverpod_yaml_parser/server_yaml_parser";
+
+// export async function createDataFilesFromYaml() {
+
+//     const currentFilePath = getActiveEditorPath()!;
+//     const rootProjectPath = currentFilePath.split(/\w*_server/)[0];
+//     const projectName = path.basename(rootProjectPath);
+//     const flutterDirPath = path.join(rootProjectPath, `${projectName}_flutter`,);
+//     const featureSPath = path.join(flutterDirPath, "lib", "features");
+//     const featurePath = path.join(flutterDirPath, "lib", "features", "home"); //TODO  временно для отладки
+
+//     const serverProjectRoot = currentFilePath.split(/\Wlib\W/)[0];
+
+//     // TODO нужно будет раскомментировать после отладки
+//     // const featurePath = await pickPath("Выберите feature", featureSPath);
+//     //     if (!featurePath) {
+//     //         return;
+//     //     }    
+
+//     const serverpodYamlModel = getDocText();
+//     const model = ServerpodYamlParser.parse(serverpodYamlModel);
+
+//     const entityNameCap = model.className;
+//     const entityName = unCap(model.className);
+
+//     const syncEventTypePath = path.join(serverProjectRoot, "lib", "src", "models", "sync_event_type.spy.yaml");
+//     const entitySyncEventPath = path.join(serverProjectRoot, "lib", "src", "models", `${toSnakeCase(entityName)}_sync_event.spy.yaml`);
+//     const syncMetaDataTablePath = path.join(flutterDirPath, "lib", "core", "database", "local", "tables", "sync_metadata_table.dart");
+//     const syncMetaDataDaoPath = path.join(flutterDirPath, "lib", "core", "database", "local", "daos", "sync_metadata_dao.dart");
+//     const syncMetaDataInterfacePath = path.join(flutterDirPath, "lib", "core", "database", "local", "interface", "sync_metadata_local_datasource_service.dart");
+//     const syncMetaDataSourcePath = path.join(flutterDirPath, "lib", "core", "database", "local", "sources", "sync_metadata_local_data_source.dart");
+//     const sessionManagerProviderPath = path.join(flutterDirPath, "lib", "core", "providers", "session_manager_provider.dart");
+//     const userManagerEndpointPath = path.join(serverProjectRoot, "lib", "src", "endpoints", "user_manager_endpoint.dart");
+//     // core/providers/session_manager_provider.dart
+
+
+//     createFileOneTime(syncEventTypePath, sync_event_type_spy);
+//     createFileOneTime(entitySyncEventPath, entity_sync_event_spy_file(entityName));
+//     createFileOneTime(syncMetaDataTablePath, sync_metadata_table_file);
+//     createFileOneTime(syncMetaDataDaoPath, sync_metadata_dao_file);
+//     createFileOneTime(syncMetaDataInterfacePath, sync_metadata_local_datasource_service_file);
+//     createFileOneTime(syncMetaDataSourcePath, sync_metadata_local_datasource_file);
+//     createFileOneTime(sessionManagerProviderPath, session_manager_provider_file(projectName));
+//     createFileOneTime(userManagerEndpointPath, user_manager_endpoint_file(projectName));
+
+//     const serviceLocator = ServiceLocator.getInstance();
+//     const fileSystem = serviceLocator.getFileSystem();
+//     // const generatorFactory = new GeneratorFactory(fileSystem);
+//     const testGeneratorFactory = new DartTestGeneratorFactory(fileSystem);
+
+//     const isRelationTable = model.fields.every(field => field.isRelation);
+//     if (isRelationTable) {
+
+//     }
+//     // TODO раскомментировать
+//     // executeInTerminal(SERVERPOD_GENERATE, serverProjectRoot);
+
+//     // const generatorCommands = new GenerateAllFilesCommandYaml(
+//     //     generatorFactory,
+//     //     featurePath,
+//     //     model,
+//     // );
+
+//     await generatorCommands.execute();
+//     await appDatabaseRoutine(featurePath, entityName);
+//     // await executeInTerminal(build_runner, flutterDirPath);
+// }

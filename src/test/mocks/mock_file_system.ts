@@ -2,6 +2,12 @@ import { IFileSystem } from "../../core/interfaces/file_system";
 
 
 export class MockFileSystem implements IFileSystem {
+    copyFile(pathSource: string, pathDest: string): Promise<void> {
+        throw new Error("Method not implemented.");
+    }
+    readDirectory(path: string): Promise<string[]> {
+        throw new Error("Method not implemented.");
+    }
     readFile(path: string): Promise<string> {
         throw new Error("Method not implemented.");
     }

@@ -16,14 +16,9 @@ import { mainFile } from "../template_project/flutter_content/files_content/main
 import { serverCheckUi } from "../template_project/flutter_content/files_content/server_check_ui";
 import { appFile } from "../template_project/flutter_content/files_content";
 import { authWrapperFile } from "../template_project/flutter_content/files_content/auth_wrapper";
-import { serverpodClientProviderFile } from "../data_routine/core/providers/serverpod_client_provider";
 import { serverFile } from "../serverpod/generators/server_dart_file";
 import { serverpodK8sFileGenerate } from "../serverpod/create_k8s_serverpod_files";
 import { server_pubspec_yaml_file } from "../serverpod/generators/server_pubspec_yaml";
-import { sync_registry_file } from "../data_routine/core/sync/sync_registry_file";
-import { sync_controller_provider_file } from "../data_routine/core/sync/sync_controller_provider_file";
-import { base_sync_repository } from "../data_routine/core/sync/base_sync_repository_file";
-import { database_types_file } from "../data_routine/core/database/local/database_types_file";
 import { SERVERPOD_GENERATE } from "../serverpod/commands";
 import { testDataSpy } from "../serverpod/server_test/test_data_spy";
 import { testDataEndpoint } from "../serverpod/server_test/test_data_endpoint";

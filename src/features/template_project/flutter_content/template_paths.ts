@@ -2,9 +2,6 @@ import path from "path";
 import { navServProv, routesCont } from '../../add_feature/files';
 
 import { navServ } from "../../add_feature/files/nav_service";
-import { logger_extension_file } from "../../logger/files/logger_extension_file";
-import { logger_provider_file } from "../../logger/files/logger_provider_file";
-import { logger_service_file } from "../../logger/files/logger_service_file";
 import { flutter_handle_ps1 } from "../service_files/flutter_handle_ps1";
 import { git_handle_ps1 } from "../service_files/git_handle_ps1";
 import { menv } from "../service_files/m_env";
@@ -37,9 +34,6 @@ export const templatefiles: Record<string, string> = {
     'core/config/config.dart': config_dart,
     // chopper
     'core/services/api/api_client.dart': api_client,
-    'core/services/logger/logger_service.dart': logger_service_file,
-    'core/services/logger/ref_logger_extensions.dart': logger_extension_file,
-    'core/providers/logger_provider.dart': logger_provider_file,
     // 'core/providers/session_manager_provider.dart': session_manager_provider_file,
 
 
@@ -54,17 +48,13 @@ export const templatefiles: Record<string, string> = {
 
     'core/providers/api_provider.dart': api_provider,
 
-
-
     // 'main.dart': mainFile,
     'app.dart': appFile,
 };
 
-
 type FuncAnyArgs<T> = (...args: string[]) => T
 
 export const projectFiles: Record<string, string> = {
-
     '.env': menv,
     '.vscode/settings.json': settingsJson,
     '_service_files/flutter_handle.ps1': flutter_handle_ps1,
@@ -72,8 +62,6 @@ export const projectFiles: Record<string, string> = {
     '_service_files/shell_commands.ps1': "",
 };
 
-
 export const routerPath = (rootPath: string) => path.join(rootPath, "lib", 'core/routing/router_config.dart');
-
 export const routerNavServPath = (rootPath: string) => path.join(rootPath, "lib", 'core/services/navigation_service.dart');
 

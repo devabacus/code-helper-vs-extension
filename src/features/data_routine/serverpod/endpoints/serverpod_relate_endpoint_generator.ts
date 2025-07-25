@@ -5,7 +5,7 @@ import { IFileSystem } from '../../../../core/interfaces/file_system';
 import { IProjectStructureLegacy } from '../../../../core/interfaces/project_structure';
 import { cap, pluralConvert, unCap } from '../../../../utils/text_work/text_util';
 import { PathData } from '../../../utils/path_util';
-import { ServerpodModel } from '../../serverpod_yaml_parser/formatters/types';
+import { ServerpodModel } from '../../../universal_generator/serverpod_yaml_parser/formatters/types';
 
 export class ServerpodRelateEndpointGenerator extends BaseGenerator<ServerpodModel> {
 

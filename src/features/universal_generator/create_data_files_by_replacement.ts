@@ -1,10 +1,10 @@
 import { getDocText } from "../../utils/ui/ui_util";
 import { ServiceLocator } from "../../core/services/service_locator";
 import { GenerationConfig } from "./generation_config";
-import { CodeFormatter } from "../data_routine/serverpod_yaml_parser/formatters/code_formatter";
-import { ServerpodYamlParser } from "../data_routine/serverpod_yaml_parser/server_yaml_parser";
 import { AppDatabaseGenerator } from "./generators/app_database/app_database_generator";
 import { GenerationService } from "./generators/generation_service";
+import { CodeFormatter } from "./serverpod_yaml_parser/formatters/code_formatter";
+import { ServerpodYamlParser } from "./serverpod_yaml_parser/server_yaml_parser";
 
 export async function createDataFilesByReplacement() {
 
