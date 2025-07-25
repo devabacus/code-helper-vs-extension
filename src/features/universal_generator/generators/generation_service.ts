@@ -24,7 +24,7 @@ export class GenerationService {
     this.sectionReplacer = new SectionReplacer(); // <-- Инициализируем
   }
 
-  public async generate(config: GenerationConfig, model: ServerpodModel): Promise<void> {
+  public async generate(config: GenerationConfig, model?: ServerpodModel): Promise<void> {
     // 1. Собираем все задачи из выбранных фичей
     const allStaticTasks: StaticCopyTask[] = [];
     const allReplaceTasks: ReplaceTask[] = [];
@@ -57,7 +57,7 @@ export class GenerationService {
         }
       }
 
-        if (manifest.templated) {
+        if (manifest.templated && model) {
         for (const task of manifest.templated) {
             // Путь к файлу-шаблону в фиче
             const sourcePath = path.join(config.sourceFeaturePath, task.file);

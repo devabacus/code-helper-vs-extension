@@ -55,14 +55,14 @@ export class CodeFormatter implements ICodeFormatter {
   }
 
   formatValueWrappedFields(fields: ServerpodField[]): string {
-    
-    const wrapped = fields.map(field => {
+    const wrappedFiltered = this.fieldsFilter(fields);
+    const wrapped = wrappedFiltered.map(field => {
       let _name = field.name;
       if(field.isRelation && field.relationType === 'manyToOne'){
         _name = `${field.name}Id`;
       }
       return `${_name}: Value(${_name})`;});
-    return wrapped.join(', ');
+    return wrapped.join(',\n');
   }
 
   // fieldsFilter(fields: ServerpodField[]): ServerpodField[] {
@@ -90,7 +90,7 @@ export class CodeFormatter implements ICodeFormatter {
       }
       return `${_field_name}: ${_field_value}`;
     });
-    return simple.join(', ');
+    return simple.join(',\n');
   }
 
   formatSimpleFieldsWithoutId(fields: Field[] | ServerpodField[]): string {
@@ -153,7 +153,7 @@ export class CodeFormatter implements ICodeFormatter {
 
   private generateColumnDefinition(field: ServerpodField): string {
     const columnType = this.mapServerpodTypeToDriftColumn(field.type);
-    let columnClass = cap(columnType);
+    let columnClass = columnType === 'integer' ? 'Int' : cap(columnType);
     if (columnType === 'boolean') { columnClass = 'Bool'; }
     const nullable = field.nullable ? '.nullable()' : '';
 
