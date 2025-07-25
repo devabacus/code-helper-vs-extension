@@ -6,4 +6,5 @@ export const routingManifest = {
     'lib/core/routing/routes_constants.dart',
   ],
   replace: [],
+  templated: [],
 } as const;

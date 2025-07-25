@@ -7,5 +7,6 @@ export const uiManifest = {
     'lib/check/server_check_ui.dart'
   ],
   replace: [],
+  templated: [],
 } as const; 
 

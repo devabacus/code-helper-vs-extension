@@ -4,4 +4,5 @@ export const authManifest = {
     'lib/core/providers/session_manager_provider.dart',
   ],
   replace: [],
+  templated: [],
 } as const;

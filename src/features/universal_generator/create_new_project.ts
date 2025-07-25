@@ -4,7 +4,6 @@ import { executeCommand, executeInTerminal } from "../../utils/terminal_handle";
 import { insertAtFileEnd } from "../../utils/text_work/text_insert/basic-insertion";
 import { getUserInput, pickPath } from "../../utils/ui/ui_ask_folder";
 import { gitInit } from "../git_init";
-import { addDependecy } from "../template_project/add_pubspec/flutter_add_pubspec";
 import { createRootTemplateFiles } from "../template_project/flutter_add_template_file";
 import { pubspec_yaml } from "../template_project/flutter_content/files_content/pubspec_yaml";
 import { startDependency } from "../template_project/flutter_content/package_pubscpec";

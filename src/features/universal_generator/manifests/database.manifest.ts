@@ -20,4 +20,23 @@ export const databaseManifest = {
       dictionaries: [Dictionaries.COMMON, Dictionaries.ENTITY] as const,
     },
   ],
+
+   templated: [
+    {
+      // Путь к файлу-шаблону в исходном проекте (templProject)
+      file: 'data/datasources/local/tables/category_table.dart',
+      // Словари для простой замены (как в секции 'replace')
+      dictionaries: [Dictionaries.COMMON, Dictionaries.ENTITY] as const,
+      // Правила для генерации сложных секций
+      sections: [
+        {
+          startMarker: '// === GENERATED_COLUMNS_START ===',
+          endMarker: '// === GENERATED_COLUMNS_END ===',
+          // Функция-генератор, которая создает контент для этой секции.
+          // Она будет вызвана в GenerationService.
+          generator: 'driftTableColumns', // Уникальное имя генератора
+        }
+      ]
+    }
+  ]
 } as const;

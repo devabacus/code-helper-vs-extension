@@ -6,4 +6,5 @@ export const generalManifest = {
     'lib/core/providers/logger_provider.dart',
   ],
   replace: [],
+  templated: [],
 } as const;
