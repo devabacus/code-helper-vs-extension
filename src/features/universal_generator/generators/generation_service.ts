@@ -62,7 +62,7 @@ export class GenerationService {
             // Путь к файлу-шаблону в фиче
             const sourcePath = path.join(config.sourceFeaturePath, task.file);
             // Путь назначения в новой фиче
-            const destinationPath = path.join(config.targetFeaturePath, task.file.replace('category', config.targetEntity!));
+            const destinationPath = path.join(config.targetFeaturePath, task.file.replaceAll('category', config.targetEntity!));
 
             // Читаем контент файла-шаблона
             let content = await this.fileSystem.readFile(sourcePath);
