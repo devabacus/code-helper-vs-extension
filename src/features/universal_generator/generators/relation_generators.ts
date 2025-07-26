@@ -2,321 +2,127 @@ import { RelationAnalyzer } from '../serverpod_yaml_parser/relation-analyzer';
 import { ServerpodModel } from '../serverpod_yaml_parser/formatters/types';
 import { cap, pluralConvert, toSnakeCase, unCap } from '../../../utils/text_work/text_util';
 import { CodeFormatter } from '../serverpod_yaml_parser/formatters/code_formatter';
+import { RelationMethodGenerator, TemplateContext } from './relation_method_generator';
 
 export function generateDaoManyToOneMethods(model: ServerpodModel): string {
-    const relationFields = RelationAnalyzer.manyToOneFields(model.fields);
-
-    // Если связей такого типа нет, ничего не генерируем
-    if (relationFields.length === 0) {
-        return '';
-    }
-
-    const D = model.className;
-    const d = unCap(model.className);
-    const Ds = pluralConvert(D);
-
-    return relationFields.map(field => {
-        const fieldName = field.name.endsWith('Id') ? field.name : `${field.name}Id`;
-        const methodNamePart = cap(field.name.replace(/Id$/, ''));
-        const daoMethodName = `get${Ds}By${methodNamePart}Id`;
-        const parameterName = fieldName;
-        const parameterType = 'String'; // Или можно определять тип из поля
-
-        return `
-  Future<List<${D}TableData>> ${daoMethodName}(${parameterType} ${parameterName}, {required int userId, required String customerId}) =>
-    (select(${d}Table)
-      ..where((t) => t.${parameterName}.equals(${parameterName}) & t.userId.equals(userId) & t.customerId.equals(customerId) & t.isDeleted.equals(false)))
-    .get();`;
-    }).join('\n');
+  return new RelationMethodGenerator(model).generate(ctx => `
+  Future<List<${ctx.D}TableData>> ${ctx.repoMethodName}(${ctx.parameterType} ${ctx.parameterName}, {required int userId, required String customerId}) =>
+    (select(${ctx.d}Table)
+      ..where((t) => t.${ctx.parameterName}.equals(${ctx.parameterName}) & t.userId.equals(userId) & t.customerId.equals(customerId) & t.isDeleted.equals(false)))
+    .get();`, '\n');
 }
-
 
 export function generateLocalDatasourceManyToOneMethods(model: ServerpodModel): string {
-    const relationFields = RelationAnalyzer.manyToOneFields(model.fields);
-
-    if (relationFields.length === 0) {
-        return '';
-    }
-
-    const D = model.className;
-    const d = unCap(model.className);
-    const Ds = pluralConvert(D);
-
-    return relationFields.map(field => {
-        // Определяем имя поля внешнего ключа (например, categoryId)
-        const fkFieldName = field.name.endsWith('Id') ? field.name : `${field.name}Id`;
-        // Определяем часть имени метода (например, Category из categoryId)
-        const methodNamePart = cap(field.name.replace(/Id$/, ''));
-        // Собираем полное имя метода (например, getProductsByCategoryId)
-        const dsMethodName = `get${Ds}By${methodNamePart}Id`;
-        const parameterName = fkFieldName;
-        const parameterType = 'String'; // У Serverpod все ID - строки
-
-        return `
+    return new RelationMethodGenerator(model).generate(ctx => `
   @override
-  Future<List<${D}Model>> ${dsMethodName}(${parameterType} ${parameterName}, {required int userId, required String customerId}) async {
-    final ${d}TableData = await _${d}Dao.${dsMethodName}(${parameterName}, userId: userId, customerId: customerId);
-    return ${d}TableData.toModels();
-  }`;
-    }).join('\\n');
+  Future<List<${ctx.D}Model>> ${ctx.repoMethodName}(${ctx.parameterType} ${ctx.parameterName}, {required int userId, required String customerId}) async {
+    final ${ctx.d}TableData = await _${ctx.d}Dao.${ctx.repoMethodName}(${ctx.parameterName}, userId: userId, customerId: customerId);
+    return ${ctx.d}TableData.toModels();
+  }`, '\n');
 }
-
 
 export function generateLocalDatasourceServiceManyToOneMethods(model: ServerpodModel): string {
-    const relationFields = RelationAnalyzer.manyToOneFields(model.fields);
-    if (relationFields.length === 0) {return ''};
-
-    const D = model.className;
-    const Ds = pluralConvert(D);
-
-    return relationFields.map(field => {
-        const fkFieldName = field.name.endsWith('Id') ? field.name : `${field.name}Id`;
-        const methodNamePart = cap(field.name.replace(/Id$/, ''));
-        const dsMethodName = `get${Ds}By${methodNamePart}Id`;
-        const parameterName = fkFieldName;
-        const parameterType = 'String';
-
-        return `
-  Future<List<${D}Model>> ${dsMethodName}(${parameterType} ${parameterName}, {required int userId, required String customerId});`;
-    }).join('');
+    return new RelationMethodGenerator(model).generate(ctx =>
+        `  Future<List<${ctx.D}Model>> ${ctx.repoMethodName}(${ctx.parameterType} ${ctx.parameterName}, {required int userId, required String customerId});`, '');
 }
 
-/**
- * Генерирует абстрактные методы для ICategoryRemoteDataSource.
- */
 export function generateRemoteDatasourceServiceManyToOneMethods(model: ServerpodModel): string {
-    const relationFields = RelationAnalyzer.manyToOneFields(model.fields);
-    if (relationFields.length === 0) return '';
-
-    const D = model.className;
-    const Ds = pluralConvert(D);
-
-    return relationFields.map(field => {
-        const fkFieldName = field.name.endsWith('Id') ? field.name : `${field.name}Id`;
-        const methodNamePart = cap(field.name.replace(/Id$/, ''));
-        const dsMethodName = `get${Ds}By${methodNamePart}Id`;
-        const parameterName = fkFieldName;
-
-        // В удаленном источнике данных мы можем использовать UuidValue
-        return `
-  Future<List<${D}>> ${dsMethodName}(UuidValue ${parameterName});`;
-    }).join('');
+    return new RelationMethodGenerator(model).generate(ctx =>
+        `  Future<List<${ctx.D}>> ${ctx.repoMethodName}(UuidValue ${ctx.parameterName});`, '');
 }
 
-/**
- * Генерирует реализацию методов для CategoryRemoteDataSource.
- */
 export function generateRemoteDatasourceManyToOneMethods(model: ServerpodModel): string {
-    const relationFields = RelationAnalyzer.manyToOneFields(model.fields);
-    if (relationFields.length === 0) return '';
-    
-    const D = model.className;
-    const d = unCap(model.className);
-    const Ds = pluralConvert(D);
-
-    return relationFields.map(field => {
-        const fkFieldName = field.name.endsWith('Id') ? field.name : `${field.name}Id`;
-        const methodNamePart = cap(field.name.replace(/Id$/, ''));
-        const dsMethodName = `get${Ds}By${methodNamePart}Id`;
-        const parameterName = fkFieldName;
-
-        return `
+  return new RelationMethodGenerator(model).generate(ctx => `
   @override
-  Future<List<${D}>> ${dsMethodName}(UuidValue ${parameterName}) async {
+  Future<List<${ctx.D}>> ${ctx.repoMethodName}(UuidValue ${ctx.parameterName}) async {
     try {
-      final result = await _client.${d}.${dsMethodName}(${parameterName});
+      final result = await _client.${ctx.d}.${ctx.repoMethodName}(${ctx.parameterName});
       return result;
     } catch (e) {
-      print('Ошибка получения ${Ds} по ${methodNamePart} ID: $e');
+      print('Ошибка получения ${ctx.Ds} по ${ctx.methodNamePart} ID: $e');
       rethrow;
     }
-  }`;
-    }).join('');
+  }`, '\n');
+}
+
+export function generateRepositoryImplManyToOneMethods(model: ServerpodModel): string {
+  return new RelationMethodGenerator(model).generate(ctx => `
+  @override
+  Future<List<${ctx.D}Entity>> ${ctx.repoMethodName}(${ctx.parameterType} ${ctx.parameterName}) async {
+    final ${ctx.d}s = await _localDataSource.${ctx.repoMethodName}(${ctx.parameterName}, userId: userId, customerId: customerId);
+    return ${ctx.d}s.map((e) => e.toEntity()).toList();
+  }`, '\n');
+}
+
+export function generateDomainRepositoryManyToOneMethods(model: ServerpodModel): string {
+    return new RelationMethodGenerator(model).generate(ctx =>
+        `  Future<List<${ctx.D}Entity>> ${ctx.repoMethodName}(${ctx.parameterType} ${ctx.parameterName});`, '');
+}
+
+export function generateUseCaseManyToOneMethods(model: ServerpodModel): string {
+  return new RelationMethodGenerator(model).generate(ctx => `class ${ctx.useCaseClassName} {
+  final I${ctx.D}Repository _repository;
+
+  ${ctx.useCaseClassName}(this._repository);
+
+  Future<List<${ctx.D}Entity>> call(${ctx.parameterType} ${ctx.fkFieldName}) {
+    return _repository.${ctx.repoMethodName}(${ctx.fkFieldName});
+  }
+}`);
+}
+
+export function generateUsecaseProviderManyToOneMethods(model: ServerpodModel): string {
+  const useCaseProviderName = (ctx: TemplateContext) => `${unCap(ctx.useCaseClassName)}`;
+  return new RelationMethodGenerator(model).generate(ctx => `
+@riverpod
+${ctx.useCaseClassName}? ${useCaseProviderName(ctx)}(Ref ref) {
+  final repository = ref.watch(currentUser${ctx.D}RepositoryProvider);
+  if (repository == null) {
+    return null;
+  }
+  return ${ctx.useCaseClassName}(repository);
+}`, '\n');
 }
 
 
 export function generateDriftTableImports(model: ServerpodModel): string {
     const relationFields = model.fields.filter(field =>
-      field.isRelation &&
-      field.relationType === 'manyToOne' &&
-      field.relatedModel &&
-      // Исключаем системные поля, которые могут быть связями
-      field.name !== 'customerId'
+      field.isRelation && field.relationType === 'manyToOne' &&
+      field.relatedModel && field.name !== 'customerId'
     );
-
-    if (relationFields.length === 0) {
-      return '';
-    }
+    if (relationFields.length === 0) return '';
 
     const imports = relationFields.map(field => {
-      // Имя связанной модели, например 'Category'
-      const relatedModelName = field.relatedModel!;
-      // Превращаем в snake_case для имени файла: 'category_table.dart'
-      const tableFileName = `${toSnakeCase(relatedModelName)}_table.dart`;
+      const tableFileName = `${toSnakeCase(field.relatedModel!)}_table.dart`;
       return `import '${tableFileName}';`;
     });
-
-    // Убираем дубликаты, чтобы не импортировать одну и ту же таблицу дважды
-    const uniqueImports = [...new Set(imports)];
-    return uniqueImports.join('\n');
+    return [...new Set(imports)].join('\n');
 }
 
 export function generateServerpodToModelParams(model: ServerpodModel): string {
     const formatter = new CodeFormatter();
-    // Получаем только те поля, которые нужно вставлять
     const fieldsToProcess = formatter.fieldsFilter(model.fields);
 
-    const params = fieldsToProcess.map(field => {
-        let fieldName = field.name;
+    return fieldsToProcess.map(field => {
         let fieldValue = field.name;
-
-        // Если это поле-связь (и оно не nullable)
-        if (field.isRelation && field.relationType === 'manyToOne') {
-            // Преобразуем UuidValue в String
+        if ((field.isRelation && field.relationType === 'manyToOne') || field.name === 'customerId') {
             fieldValue = `${field.name}${field.nullable ? '?' : ''}.toString()`;
         }
-        
-        // Для поля customerId, которое всегда есть, но его тип UuidValue
-        if (fieldName === 'customerId') {
-             fieldValue = `${field.name}${field.nullable ? '?' : ''}.toString()`;
-        }
-
-
-        return `${fieldName}: ${fieldValue}`;
-    });
-
-    return params.join(',\n      ');
+        return `${field.name}: ${fieldValue}`;
+    }).join(',\n      ');
 }
-
-export function generateRepositoryImplManyToOneMethods(model: ServerpodModel): string {
-    const relationFields = RelationAnalyzer.manyToOneFields(model.fields);
-    if (relationFields.length === 0) {
-        return '';
-    }
-
-    const D = model.className;
-    const d = unCap(model.className);
-    const Ds = pluralConvert(D);
-
-    return relationFields.map(field => {
-        const fkFieldName = field.name.endsWith('Id') ? field.name : `${field.name}Id`;
-        const methodNamePart = cap(field.name.replace(/Id$/, ''));
-        const repoMethodName = `get${Ds}By${methodNamePart}Id`;
-        const parameterName = fkFieldName;
-        const parameterType = 'String';
-
-        return `
-  @override
-  Future<List<${D}Entity>> ${repoMethodName}(${parameterType} ${parameterName}) async {
-    final ${d}s = await _localDataSource.${repoMethodName}(${parameterName}, userId: userId, customerId: customerId);
-    return ${d}s.map((e) => e.toEntity()).toList();
-  }`;
-    }).join('\n');
-}
-
 
 export function generateEntityToServerpodParams(model: ServerpodModel): string {
     const formatter = new CodeFormatter();
     const fieldsToProcess = formatter.fieldsFilter(model.fields);
 
-    const params = fieldsToProcess.map(field => {
-        let fieldName = field.name;
+    return fieldsToProcess.map(field => {
         let fieldValue = field.name;
-
-        // Если поле является связью (например, categoryId)
         if (field.isRelation && field.relationType === 'manyToOne') {
-            // Проверяем, является ли поле nullable
-            if (field.nullable) {
-                // Если поле может быть null, добавляем проверку
-                fieldValue = `${fieldName} == null ? null : serverpod.UuidValue.fromString(${fieldName}!)`;
-            } else {
-                // Если поле обязательное
-                fieldValue = `serverpod.UuidValue.fromString(${fieldName})`;
-            }
+            fieldValue = field.nullable
+                ? `${field.name} == null ? null : serverpod.UuidValue.fromString(${field.name}!)`
+                : `serverpod.UuidValue.fromString(${field.name})`;
         }
-        
-        return `${fieldName}: ${fieldValue}`;
-    });
-
-    return params.join(',\n      ');
-}
-
-
-export function generateUsecaseProviderManyToOneMethods(model: ServerpodModel): string {
-    const relationFields = RelationAnalyzer.manyToOneFields(model.fields);
-    if (relationFields.length === 0) {
-        return '';
-    }
-
-    const D = model.className;
-    const Ds = pluralConvert(D);
-
-    return relationFields.map(field => {
-        const methodNamePart = cap(field.name.replace(/Id$/, ''));
-        const useCaseMethodName = `get${Ds}By${methodNamePart}Id`;
-        const useCaseClassName = `${cap(useCaseMethodName)}UseCase`;
-        const useCaseProviderName = `${unCap(useCaseMethodName)}UseCase`;
-
-        // Возвращаем только код провайдера, без импортов
-        return `
-@riverpod
-${useCaseClassName}? ${useCaseProviderName}(Ref ref) {
-  final repository = ref.watch(currentUser${D}RepositoryProvider);
-  if (repository == null) {
-    // Пользователь не авторизован
-    return null;
-  }
-  return ${useCaseClassName}(repository);
-}`;
-    }).join('\n'); // Используем \n для разделения провайдеров
-}
-
-
-export function generateUseCaseManyToOneMethods(model: ServerpodModel): string {
-    const relationFields = RelationAnalyzer.manyToOneFields(model.fields);
-    if (relationFields.length === 0) {
-        return '';
-    }
-
-    const D = model.className;
-    const Ds = pluralConvert(D);
-
-    return relationFields.map(field => {
-        const fkFieldName = field.name.endsWith("Id") ? field.name : `${field.name}Id`;
-        const methodNamePart = cap(field.name.replace(/Id$/, ""));
-        const fkFieldType = "String"; // ID в Serverpod - это String (UuidValue)
-        
-        const useCaseClassName = `Get${Ds}By${methodNamePart}IdUseCase`;
-        const repositoryMethodName = `get${Ds}By${methodNamePart}Id`;
-
-        return `class ${useCaseClassName} {
-  final I${D}Repository _repository;
-
-  ${useCaseClassName}(this._repository);
-
-  Future<List<${D}Entity>> call(${fkFieldType} ${fkFieldName}) {
-    return _repository.${repositoryMethodName}(${fkFieldName});
-  }
-}`;
-    }).join('\n\n'); // Разделяем классы двумя переносами строки для читаемости
-}
-
-export function generateDomainRepositoryManyToOneMethods(model: ServerpodModel): string {
-    const relationFields = RelationAnalyzer.manyToOneFields(model.fields);
-    if (relationFields.length === 0) {
-        return '';
-    }
-
-    const D = model.className;
-    const Ds = pluralConvert(D);
-
-    return relationFields.map(field => {
-        const fkFieldName = field.name.endsWith('Id') ? field.name : `${field.name}Id`;
-        const methodNamePart = cap(field.name.replace(/Id$/, ''));
-        const repoMethodName = `get${Ds}By${methodNamePart}Id`;
-        const parameterName = fkFieldName;
-        const parameterType = 'String';
-
-        return `Future<List<${D}Entity>> ${repoMethodName}(${parameterType} ${parameterName});`;
-    }).join(''); // Методы в интерфейсе можно склеивать без переноса
+        return `${field.name}: ${fieldValue}`;
+    }).join(',\n      ');
 }
