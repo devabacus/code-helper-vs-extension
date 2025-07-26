@@ -74,18 +74,20 @@ export class GenerationService {
             }
 
             // Этап B: Замена по секциям
+           if (task.generators) { // Проверяем, есть ли новое поле generators
             const sectionConfigs: SectionConfig[] = [];
-            for (const section of task.sections) {
-                const generatorFunc = getSectionGenerator(section.generator);
+            for (const [index, generatorName] of task.generators.entries()) {
+                const generatorFunc = getSectionGenerator(generatorName);
                 if (generatorFunc) {
                     sectionConfigs.push({
-                        startMarker: section.startMarker,
-                        endMarker: section.endMarker,
+                        startMarker: `// === GENERATED_START_${index} ===`, // Генерируем маркер
+                        endMarker: `// === GENERATED_END_${index} ===`,     // Генерируем маркер
                         newContent: generatorFunc(config, model)
                     });
                 }
             }
             content = this.sectionReplacer.process(content, sectionConfigs);
+        }
 
             // Этап C: Сохраняем итоговый файл
             await this.fileSystem.createFolder(path.dirname(destinationPath));

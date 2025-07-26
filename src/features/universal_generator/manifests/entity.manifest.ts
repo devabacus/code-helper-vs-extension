@@ -14,7 +14,6 @@ export const entityManifest = {
       files: ['data/datasources/remote/interfaces/category_remote_datasource_service.dart'], 
       dictionaries: [Dictionaries.COMMON, Dictionaries.ENTITY]
     },
-    // G:\Projects\Flutter\serverpod\t2\t2_flutter\lib\features\home\data\datasources\local\daos\category\category_dao.dart
     {
       files: ['data/datasources/local/daos/category/category_dao.dart'], 
       dictionaries: [Dictionaries.COMMON, Dictionaries.ENTITY]
@@ -26,56 +25,34 @@ export const entityManifest = {
     {
       file: 'data/datasources/local/tables/category_table.dart',
       dictionaries: [Dictionaries.COMMON, Dictionaries.ENTITY],
-      sections: [{
-        startMarker: '// === GENERATED_START ===',
-        endMarker: '// === GENERATED_END ===',
-        generator: GENERATORS.DRIFT_TABLE_COLUMNS
-      }]
+      generators: [
+        GENERATORS.DRIFT_TABLE_COLUMNS
+      ]
     },
 
      {
       file: 'data/models/category/category_model.dart',
       dictionaries: [Dictionaries.COMMON, Dictionaries.ENTITY],
-      sections: [{
-        startMarker: '// === GENERATED_START ===',
-        endMarker: '// === GENERATED_END ===',
-        generator: GENERATORS.FREEZED_CONSTRUCTOR
-      }]
+      generators: [
+        GENERATORS.FREEZED_CONSTRUCTOR
+      ]
     },
 
     {
       file: 'data/datasources/local/tables/extensions/category_table_extension.dart',
       dictionaries: [Dictionaries.COMMON, Dictionaries.ENTITY],
-      sections: [
-        
-        {
-        startMarker: '// === GENERATED_SIMPLE_START ===',
-        endMarker: '// === GENERATED_SIMPLE_END ===',
-        generator: GENERATORS.SIMPLE_FIELDS
-      },
-       {
-        startMarker: '// === GENERATED_WRAPPED_START ===',
-        endMarker: '// === GENERATED_WRAPPED_END ===',
-        generator: GENERATORS.VALUE_WRAPPED_FIELDS
-      }
+      generators: [
+        GENERATORS.SIMPLE_FIELDS,
+        GENERATORS.VALUE_WRAPPED_FIELDS
     ]
     },
 
     {
       file: 'data/models/extensions/category_model_extension.dart',
       dictionaries: [Dictionaries.COMMON, Dictionaries.ENTITY],
-      sections: [
-        
-        {
-        startMarker: '// === GENERATED_SIMPLE_START ===',
-        endMarker: '// === GENERATED_SIMPLE_END ===',
-        generator: GENERATORS.SIMPLE_FIELDS
-      },
-       {
-        startMarker: '// === GENERATED_WRAPPED_START ===',
-        endMarker: '// === GENERATED_WRAPPED_END ===',
-        generator: GENERATORS.VALUE_WRAPPED_FIELDS
-      }
+      generators: [
+        GENERATORS.SIMPLE_FIELDS,
+        GENERATORS.VALUE_WRAPPED_FIELDS
     ]
     },
   ]
