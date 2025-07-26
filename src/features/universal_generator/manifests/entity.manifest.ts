@@ -12,7 +12,6 @@ export const entityManifest = {
         replace: [
             'data/datasources/local/interfaces/category_local_datasource_service.dart',
             'data/datasources/remote/interfaces/category_remote_datasource_service.dart',
-            'data/datasources/local/daos/category/category_dao.dart',
             'data/datasources/local/datasources/category_local_data_source.dart',
             'data/datasources/local/interfaces/category_local_datasource_service.dart',
             'data/datasources/remote/interfaces/category_remote_datasource_service.dart',
@@ -28,6 +27,10 @@ export const entityManifest = {
         ],
 
         templated: [
+            {
+            file: 'data/datasources/local/daos/category/category_dao.dart',
+                generators: [GENERATORS.DAO_RELATION_METHODS]
+            },
             {
                 file: 'data/datasources/local/tables/category_table.dart',
                 generators: [GENERATORS.DRIFT_TABLE_COLUMNS]

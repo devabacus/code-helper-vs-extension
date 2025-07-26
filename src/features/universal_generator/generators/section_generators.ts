@@ -1,6 +1,9 @@
 import { CodeFormatter } from "../serverpod_yaml_parser/formatters/code_formatter";
 import { ServerpodModel } from "../serverpod_yaml_parser/formatters/types";
 import { GenerationConfig } from "../paths/generation_config";
+import { RelationAnalyzer } from "../serverpod_yaml_parser/relation-analyzer";
+import { cap, pluralConvert, unCap } from "../../../utils/text_work/text_util";
+import { generateDaoManyToOneMethods } from "./relation_generators";
 
 export const GENERATORS = {
     DRIFT_TABLE_COLUMNS: 'driftTableColumns',
@@ -8,7 +11,10 @@ export const GENERATORS = {
     FREEZED_CONSTRUCTOR: 'freezedConstructor',
     DAO_METHODS: 'daoMethods',
     VALUE_WRAPPED_FIELDS: 'valueWrappedFields',
-    SIMPLE_FIELDS: 'simpleFields'
+    SIMPLE_FIELDS: 'simpleFields',
+    
+    DAO_RELATION_METHODS: 'daoRelationMethods', // <--- НОВЫЙ
+    ENTITY_RELATION_FIELDS: 'entityRelationFields', // <--- НОВЫЙ
 
 } as const;
 
@@ -46,6 +52,12 @@ const sectionGeneratorRegistry: Record<string, SectionGenerator> = {
         const formatter = new CodeFormatter();
         return formatter.formatSimpleFields(model.fields);
     },
+
+
+   [GENERATORS.DAO_RELATION_METHODS]: (config, model) => {
+        return generateDaoManyToOneMethods(model);
+    },
+
     // formatValueWrappedFields
     // Сюда можно добавлять другие генераторы...
     // например, для полей в freezed-классах, конструкторов и т.д.
