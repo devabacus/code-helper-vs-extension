@@ -3,10 +3,11 @@ import { ServerpodModel } from "../serverpod_yaml_parser/formatters/types";
 import { GenerationConfig } from "../paths/generation_config";
 import { RelationAnalyzer } from "../serverpod_yaml_parser/relation-analyzer";
 import { cap, pluralConvert, unCap } from "../../../utils/text_work/text_util";
-import { generateDaoManyToOneMethods, generateLocalDatasourceManyToOneMethods, generateLocalDatasourceServiceManyToOneMethods, generateRemoteDatasourceManyToOneMethods, generateRemoteDatasourceServiceManyToOneMethods } from "./relation_generators";
+import { generateDaoManyToOneMethods, generateDriftTableImports, generateLocalDatasourceManyToOneMethods, generateLocalDatasourceServiceManyToOneMethods, generateRemoteDatasourceManyToOneMethods, generateRemoteDatasourceServiceManyToOneMethods } from "./relation_generators";
 
 export const GENERATORS = {
     DRIFT_TABLE_COLUMNS: 'driftTableColumns',
+    DRIFT_TABLE_IMPORTS: 'driftTableImports',
     FREEZED_FIELDS: 'freezedFields',
     FREEZED_CONSTRUCTOR: 'freezedConstructor',
     DAO_METHODS: 'daoMethods',
@@ -36,6 +37,9 @@ const sectionGeneratorRegistry: Record<string, SectionGenerator> = {
     [GENERATORS.DRIFT_TABLE_COLUMNS]: (config, model) => {
         const codeFormatter = new CodeFormatter();
         return codeFormatter.generateDriftTableColumns(model.fields);
+    },
+     [GENERATORS.DRIFT_TABLE_IMPORTS]: (config, model) => {
+        return generateDriftTableImports(model);
     },
 
     [GENERATORS.FREEZED_FIELDS]: (config, model) => {
@@ -78,3 +82,5 @@ const sectionGeneratorRegistry: Record<string, SectionGenerator> = {
 export function getSectionGenerator(name: string): SectionGenerator | undefined {
     return sectionGeneratorRegistry[name];
 }
+
+

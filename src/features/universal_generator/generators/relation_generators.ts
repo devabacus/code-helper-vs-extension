@@ -1,6 +1,6 @@
 import { RelationAnalyzer } from '../serverpod_yaml_parser/relation-analyzer';
 import { ServerpodModel } from '../serverpod_yaml_parser/formatters/types';
-import { cap, pluralConvert, unCap } from '../../../utils/text_work/text_util';
+import { cap, pluralConvert, toSnakeCase, unCap } from '../../../utils/text_work/text_util';
 
 export function generateDaoManyToOneMethods(model: ServerpodModel): string {
     const relationFields = RelationAnalyzer.manyToOneFields(model.fields);
@@ -131,6 +131,33 @@ export function generateRemoteDatasourceManyToOneMethods(model: ServerpodModel):
     }
   }`;
     }).join('');
+}
+
+
+export function generateDriftTableImports(model: ServerpodModel): string {
+    const relationFields = model.fields.filter(field =>
+      field.isRelation &&
+      field.relationType === 'manyToOne' &&
+      field.relatedModel &&
+      // Исключаем системные поля, которые могут быть связями
+      field.name !== 'customerId'
+    );
+
+    if (relationFields.length === 0) {
+      return '';
+    }
+
+    const imports = relationFields.map(field => {
+      // Имя связанной модели, например 'Category'
+      const relatedModelName = field.relatedModel!;
+      // Превращаем в snake_case для имени файла: 'category_table.dart'
+      const tableFileName = `${toSnakeCase(relatedModelName)}_table.dart`;
+      return `import '${tableFileName}';`;
+    });
+
+    // Убираем дубликаты, чтобы не импортировать одну и ту же таблицу дважды
+    const uniqueImports = [...new Set(imports)];
+    return uniqueImports.join('\n');
 }
 // Сюда в будущем можно будет добавить:
 // export function generateEntityOneToManyFields(model: ServerpodModel): string { ... }

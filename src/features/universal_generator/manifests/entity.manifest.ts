@@ -50,7 +50,7 @@ export const entityManifest = {
             },
             {
                 file: 'data/datasources/local/tables/category_table.dart',
-                generators: [GENERATORS.DRIFT_TABLE_COLUMNS]
+                generators: [GENERATORS.DRIFT_TABLE_IMPORTS, GENERATORS.DRIFT_TABLE_COLUMNS]
             },
             {
                 file: 'data/models/category/category_model.dart',
