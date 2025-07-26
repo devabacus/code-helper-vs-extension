@@ -300,6 +300,23 @@ export function generateUseCaseManyToOneMethods(model: ServerpodModel): string {
 }`;
     }).join('\n\n'); // Разделяем классы двумя переносами строки для читаемости
 }
-// Сюда в будущем можно будет добавить:
-// export function generateEntityOneToManyFields(model: ServerpodModel): string { ... }
-// export function generateRepositoryManyToManyLogic(model: ServerpodModel): string { ... }
+
+export function generateDomainRepositoryManyToOneMethods(model: ServerpodModel): string {
+    const relationFields = RelationAnalyzer.manyToOneFields(model.fields);
+    if (relationFields.length === 0) {
+        return '';
+    }
+
+    const D = model.className;
+    const Ds = pluralConvert(D);
+
+    return relationFields.map(field => {
+        const fkFieldName = field.name.endsWith('Id') ? field.name : `${field.name}Id`;
+        const methodNamePart = cap(field.name.replace(/Id$/, ''));
+        const repoMethodName = `get${Ds}By${methodNamePart}Id`;
+        const parameterName = fkFieldName;
+        const parameterType = 'String';
+
+        return `Future<List<${D}Entity>> ${repoMethodName}(${parameterType} ${parameterName});`;
+    }).join(''); // Методы в интерфейсе можно склеивать без переноса
+}
