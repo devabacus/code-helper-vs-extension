@@ -208,15 +208,8 @@ export function generateRepositoryImplManyToOneMethods(model: ServerpodModel): s
         return `
   @override
   Future<List<${D}Entity>> ${repoMethodName}(${parameterType} ${parameterName}) async {
-    // Получаем ID пользователя и клиента
-    final userId = _sessionManager.signedInUser!.id!;
-    final customerId = _sessionManager.signedInUser!.customerId.toString();
-
-    // Вызываем метод из локального источника данных
-    final ${d}Models = await _localDataSource.${repoMethodName}(${parameterName}, userId: userId, customerId: customerId);
-    
-    // Конвертируем модели в сущности и возвращаем результат
-    return ${d}Models.map((e) => e.toEntity()).toList();
+    final ${d}s = await _localDataSource.${repoMethodName}(${parameterName}, userId: userId, customerId: customerId);
+    return ${d}s.map((e) => e.toEntity()).toList();
   }`;
     }).join('\n');
 }
