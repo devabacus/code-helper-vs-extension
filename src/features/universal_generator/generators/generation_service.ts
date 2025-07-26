@@ -4,7 +4,7 @@ import { IFileSystem } from '../../../core/interfaces/file_system';
 import { allManifests } from '../manifests';
 import { GenerationConfig } from '../generation_config';
 import { getDictionaryRules } from '../replacement_util';
-import { ReplaceTask, ReplacingFileProcessor } from './replacing_file_processor';
+import { ReplacementRule, ReplaceTask, ReplacingFileProcessor } from './replacing_file_processor';
 import { StaticCopyTask, StaticFileProcessor } from './static_file_processor';
 import { ServerpodModel } from '../serverpod_yaml_parser/formatters/types';
 import { SectionConfig, SectionReplacer } from '../section_config';
@@ -12,76 +12,105 @@ import { getSectionGenerator } from './section_generators';
 
 
 export class GenerationService {
-  private readonly fileSystem: IFileSystem;
-  private readonly staticProcessor: StaticFileProcessor;
-  private readonly replacingProcessor: ReplacingFileProcessor;
-  private readonly sectionReplacer: SectionReplacer; // <-- Добавляем реплейсер секций
+    private readonly fileSystem: IFileSystem;
+    private readonly staticProcessor: StaticFileProcessor;
+    private readonly replacingProcessor: ReplacingFileProcessor;
+    private readonly sectionReplacer: SectionReplacer;
 
-  constructor(fileSystem?: IFileSystem) {
-    this.fileSystem = fileSystem || new DefaultFileSystem();
-    this.staticProcessor = new StaticFileProcessor(this.fileSystem);
-    this.replacingProcessor = new ReplacingFileProcessor(this.fileSystem);
-    this.sectionReplacer = new SectionReplacer(); // <-- Инициализируем
-  }
+    constructor(fileSystem?: IFileSystem) {
+        this.fileSystem = fileSystem || new DefaultFileSystem();
+        this.staticProcessor = new StaticFileProcessor(this.fileSystem);
+        this.replacingProcessor = new ReplacingFileProcessor(this.fileSystem);
+        this.sectionReplacer = new SectionReplacer();
+    }
 
-  public async generate(config: GenerationConfig, model?: ServerpodModel): Promise<void> {
-    // 1. Собираем все задачи из выбранных фичей
-    const allStaticTasks: StaticCopyTask[] = [];
-    const allReplaceTasks: ReplaceTask[] = [];
+    public async generate(config: GenerationConfig, model?: ServerpodModel): Promise<void> {
+        const allStaticTasks: StaticCopyTask[] = [];
+        const allReplaceTasks: ReplaceTask[] = [];
+        const allTemplatedPromises: Promise<void>[] = [];
 
-    for (const featureName of config.features) {
-      const manifest = allManifests[featureName];
+        for (const featureName of config.features) {
+            const manifest = allManifests[featureName];
 
-      // Статические файлы
-      for (const relativePath of manifest.static) {
-        allStaticTasks.push({
-          sourcePath: path.join(config.templFlutterProjectPath, relativePath),
-          destinationPath: path.join(config.targetFlutterProjectPath, relativePath)
-        });
-      }
+            // 1. Обработка статических файлов (с проверкой)
+            if ('static' in manifest && manifest.static) {
+                for (const relativePath of manifest.static) {
+                    allStaticTasks.push({
+                        sourcePath: path.join(config.templFlutterProjectPath, relativePath),
+                        destinationPath: path.join(config.targetFlutterProjectPath, relativePath)
+                    });
+                }
+            }
 
-      // Файлы с заменой
-      for (const replaceRule of manifest.replace) {
-        const rules = getDictionaryRules(replaceRule.dictionaries, config);
-        for (const filePath of replaceRule.files) {
-          // Определяем пути для core или feature файлов
-          const isCoreFile = filePath.includes('core');
-          const sourceBasePath = isCoreFile ? config.templFlutterProjectPath : config.sourceFeaturePath;
-          const destinationBasePath = isCoreFile ? config.targetFlutterProjectPath : config.targetFeaturePath;
+            // 2. Новая логика для обработки структурированных манифестов
+            // Обработка `defaultEntityFiles` (с проверкой)
+            if ('defaultEntityFiles' in manifest && manifest.defaultEntityFiles && model) {
+                const group = manifest.defaultEntityFiles;
+                const rules = getDictionaryRules(group.dictionaries, config);
 
-          allReplaceTasks.push({
+                if (group.replace) {
+                    for (const filePath of group.replace) {
+                        allReplaceTasks.push(this.createReplaceTask(config, filePath, rules));
+                    }
+                }
+                
+                if (group.templated) {
+                    for (const task of group.templated) {
+                        allTemplatedPromises.push(this.processTemplatedFile(config, task, rules, model));
+                    }
+                }
+            }
+            
+            // Обработка `customFiles` (с проверкой)
+            if ('customFiles' in manifest && manifest.customFiles && model) {
+                 for (const group of manifest.customFiles) {
+                    const rules = getDictionaryRules(group.dictionaries, config);
+                    if (group.files) {
+                        for (const filePath of group.files) {
+                            allReplaceTasks.push(this.createReplaceTask(config, filePath, rules));
+                        }
+                    }
+                 }
+            }
+        }
+
+        await Promise.all([
+            this.staticProcessor.process(allStaticTasks),
+            this.replacingProcessor.process(allReplaceTasks),
+            ...allTemplatedPromises
+        ]);
+    }
+    
+    private createReplaceTask(config: GenerationConfig, filePath: string, rules: ReplacementRule[]): ReplaceTask {
+        const isCoreFile = filePath.includes('core');
+        const sourceBasePath = isCoreFile ? config.templFlutterProjectPath : config.sourceFeaturePath;
+        const destinationBasePath = isCoreFile ? config.targetFlutterProjectPath : config.targetFeaturePath;
+
+        return {
             sourcePath: path.join(sourceBasePath, filePath),
             destinationPath: path.join(destinationBasePath, filePath.replaceAll('category', config.targetEntity!)),
             rules
-          });
+        };
+    }
+
+    private async processTemplatedFile(config: GenerationConfig, task: any, rules: ReplacementRule[], model: ServerpodModel): Promise<void> {
+        const sourcePath = path.join(config.sourceFeaturePath, task.file);
+        const destinationPath = path.join(config.targetFeaturePath, task.file.replaceAll('category', config.targetEntity!));
+
+        let content = await this.fileSystem.readFile(sourcePath);
+
+        for (const rule of rules) {
+            content = content.replace(new RegExp(rule.from, 'g'), rule.to);
         }
-      }
 
-        if (manifest.templated && model) {
-        for (const task of manifest.templated) {
-            // Путь к файлу-шаблону в фиче
-            const sourcePath = path.join(config.sourceFeaturePath, task.file);
-            // Путь назначения в новой фиче
-            const destinationPath = path.join(config.targetFeaturePath, task.file.replaceAll('category', config.targetEntity!));
-
-            // Читаем контент файла-шаблона
-            let content = await this.fileSystem.readFile(sourcePath);
-
-            // Этап A: Простая замена по словарям
-            const simpleRules = getDictionaryRules(task.dictionaries, config);
-            for (const rule of simpleRules) {
-                content = content.replace(new RegExp(rule.from, 'g'), rule.to);
-            }
-
-            // Этап B: Замена по секциям
-           if (task.generators) { // Проверяем, есть ли новое поле generators
+        if (task.generators) {
             const sectionConfigs: SectionConfig[] = [];
             for (const [index, generatorName] of task.generators.entries()) {
                 const generatorFunc = getSectionGenerator(generatorName);
                 if (generatorFunc) {
                     sectionConfigs.push({
-                        startMarker: `// === GENERATED_START_${index} ===`, // Генерируем маркер
-                        endMarker: `// === GENERATED_END_${index} ===`,     // Генерируем маркер
+                        startMarker: `// === GENERATED_START_${index} ===`,
+                        endMarker: `// === GENERATED_END_${index} ===`,
                         newContent: generatorFunc(config, model)
                     });
                 }
@@ -89,16 +118,7 @@ export class GenerationService {
             content = this.sectionReplacer.process(content, sectionConfigs);
         }
 
-            // Этап C: Сохраняем итоговый файл
-            await this.fileSystem.createFolder(path.dirname(destinationPath));
-            await this.fileSystem.createFile(destinationPath, content);
-        }
-      }
+        await this.fileSystem.createFolder(path.dirname(destinationPath));
+        await this.fileSystem.createFile(destinationPath, content);
     }
-
-      await Promise.all([
-        this.staticProcessor.process(allStaticTasks),
-        this.replacingProcessor.process(allReplaceTasks)
-      ]);
-    }
-  }
+}
