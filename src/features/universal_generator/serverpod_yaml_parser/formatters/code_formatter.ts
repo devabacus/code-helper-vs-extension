@@ -58,8 +58,10 @@ export class CodeFormatter implements ICodeFormatter {
     const wrappedFiltered = this.fieldsFilter(fields);
     const wrapped = wrappedFiltered.map(field => {
       let _name = field.name;
+      let _value = field.name; 
       if(field.isRelation && field.relationType === 'manyToOne'){
-        _name = `${field.name}Id`;
+        _name = field.name.endsWith('Id') ? field.name : `${field.name}Id`;
+        _value = `${field.name}`;
       }
       return `${_name}: Value(${_name})`;});
     return wrapped.join(',\n');
