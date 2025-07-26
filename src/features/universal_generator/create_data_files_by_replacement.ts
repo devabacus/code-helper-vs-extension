@@ -18,7 +18,8 @@ export async function createDataFilesByReplacement() {
         targetProject: 't3',
         featureName: 'home',
         targetEntity: model.tableName,
-        features: ['auth', 'general', 'routing', 'database', 'ui', 'entity']
+        // features: ['auth', 'general', 'routing', 'database', 'ui', 'entity']
+        features: ['serverpod']
     });
 
     const generationService = new GenerationService(fileSystem);

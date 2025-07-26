@@ -1,11 +1,9 @@
 import { DictionaryPresets } from "../dictionary_presets";
 import { CustomFileGroup } from "./type";
 
-export const uiManifest = {
+export const serverpodManifest = {
   static: [
-    'lib/main.dart',
-    'lib/app.dart',
-    'lib/auth_wrapper.dart',
+    
   ],
   
     customFiles: [
