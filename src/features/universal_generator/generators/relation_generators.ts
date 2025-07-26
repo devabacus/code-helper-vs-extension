@@ -241,6 +241,38 @@ export function generateEntityToServerpodParams(model: ServerpodModel): string {
     return params.join(',\n      ');
 }
 
+
+export function generateUsecaseProviderManyToOneMethods(model: ServerpodModel): string {
+    const relationFields = RelationAnalyzer.manyToOneFields(model.fields);
+    if (relationFields.length === 0) {
+        return '';
+    }
+
+    const D = model.className;
+    const Ds = pluralConvert(D);
+
+    return relationFields.map(field => {
+        const methodNamePart = cap(field.name.replace(/Id$/, ''));
+        // Имя метода, например 'getTasksByCategoryId'
+        const useCaseMethodName = `get${Ds}By${methodNamePart}Id`;
+        // Имя класса UseCase, например 'GetTasksByCategoryIdUseCase'
+        const useCaseClassName = `${cap(useCaseMethodName)}UseCase`;
+        // Имя провайдера, например 'getTasksByCategoryIdUseCase'
+        const useCaseProviderName = `${unCap(useCaseMethodName)}UseCase`;
+
+        // Возвращаем только код провайдера, без импортов
+        return `
+@riverpod
+${useCaseClassName}? ${useCaseProviderName}(Ref ref) {
+  final repository = ref.watch(currentUser${D}RepositoryProvider);
+  if (repository == null) {
+    // Пользователь не авторизован
+    return null;
+  }
+  return ${useCaseClassName}(repository);
+}`;
+    }).join('\n'); // Используем \n для разделения провайдеров
+}
 // Сюда в будущем можно будет добавить:
 // export function generateEntityOneToManyFields(model: ServerpodModel): string { ... }
 // export function generateRepositoryManyToManyLogic(model: ServerpodModel): string { ... }

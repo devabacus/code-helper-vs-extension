@@ -17,7 +17,7 @@ export const entityManifest = {
             // 'data/datasources/remote/sources/category_remote_data_source.dart',
             'data/providers/category/category_data_providers.dart',
             // 'data/repositories/category_repository_impl.dart',
-            'domain/providers/category/category_usecase_providers.dart',
+            // 'domain/providers/category/category_usecase_providers.dart',
             'domain/repositories/category_repository.dart',
             'domain/usecases/category_usecases.dart',
             'presentation/providers/category/category_get_by_id_provider.dart',
@@ -86,7 +86,15 @@ export const entityManifest = {
                     GENERATORS.SIMPLE_FIELDS,
                     GENERATORS.ENTITY_TO_SERVERPOD_PARAMS,
                 ]
-            }
+            },
+
+            {
+                file: 'domain/providers/category/category_usecase_providers.dart',
+                generators: [
+                    GENERATORS.USECASE_PROVIDER_RELATION_METHODS,
+                ]
+            },
+
         ]
     },
 
