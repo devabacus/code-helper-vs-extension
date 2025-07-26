@@ -3,7 +3,7 @@ import { ServerpodModel } from "../serverpod_yaml_parser/formatters/types";
 import { GenerationConfig } from "../paths/generation_config";
 import { RelationAnalyzer } from "../serverpod_yaml_parser/relation-analyzer";
 import { cap, pluralConvert, unCap } from "../../../utils/text_work/text_util";
-import { generateDaoManyToOneMethods, generateDriftTableImports, generateLocalDatasourceManyToOneMethods, generateLocalDatasourceServiceManyToOneMethods, generateRemoteDatasourceManyToOneMethods, generateRemoteDatasourceServiceManyToOneMethods, generateRepositoryImplManyToOneMethods, generateServerpodToModelParams } from "./relation_generators";
+import { generateDaoManyToOneMethods, generateDriftTableImports, generateEntityToServerpodParams, generateLocalDatasourceManyToOneMethods, generateLocalDatasourceServiceManyToOneMethods, generateRemoteDatasourceManyToOneMethods, generateRemoteDatasourceServiceManyToOneMethods, generateRepositoryImplManyToOneMethods, generateServerpodToModelParams } from "./relation_generators";
 
 export const GENERATORS = {
     DRIFT_TABLE_COLUMNS: 'driftTableColumns',
@@ -22,6 +22,7 @@ export const GENERATORS = {
     REMOTE_DATASOURCE_SERVICE_RELATION_METHODS: 'remoteDatasourceServiceRelationMethods',
     REMOTE_DATASOURCE_RELATION_METHODS: 'remoteDatasourceRelationMethods', 
     REPOSITORY_IMPL_RELATION_METHODS: 'repositoryImplRelationMethods', 
+    ENTITY_TO_SERVERPOD_PARAMS: 'entityToServerpodParams',
 
 } as const;
 
@@ -81,6 +82,7 @@ const sectionGeneratorRegistry: Record<string, SectionGenerator> = {
     [GENERATORS.REMOTE_DATASOURCE_RELATION_METHODS]: (config, model) => generateRemoteDatasourceManyToOneMethods(model),
 
     [GENERATORS.REPOSITORY_IMPL_RELATION_METHODS]: (config, model) => generateRepositoryImplManyToOneMethods(model),
+    [GENERATORS.ENTITY_TO_SERVERPOD_PARAMS]: (config, model) => generateEntityToServerpodParams(model),
     // formatValueWrappedFields
     // Сюда можно добавлять другие генераторы...
     // например, для полей в freezed-классах, конструкторов и т.д.

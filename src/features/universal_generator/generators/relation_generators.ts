@@ -214,6 +214,33 @@ export function generateRepositoryImplManyToOneMethods(model: ServerpodModel): s
     }).join('\n');
 }
 
+
+export function generateEntityToServerpodParams(model: ServerpodModel): string {
+    const formatter = new CodeFormatter();
+    const fieldsToProcess = formatter.fieldsFilter(model.fields);
+
+    const params = fieldsToProcess.map(field => {
+        let fieldName = field.name;
+        let fieldValue = field.name;
+
+        // Если поле является связью (например, categoryId)
+        if (field.isRelation && field.relationType === 'manyToOne') {
+            // Проверяем, является ли поле nullable
+            if (field.nullable) {
+                // Если поле может быть null, добавляем проверку
+                fieldValue = `${fieldName} == null ? null : serverpod.UuidValue.fromString(${fieldName}!)`;
+            } else {
+                // Если поле обязательное
+                fieldValue = `serverpod.UuidValue.fromString(${fieldName})`;
+            }
+        }
+        
+        return `${fieldName}: ${fieldValue}`;
+    });
+
+    return params.join(',\n      ');
+}
+
 // Сюда в будущем можно будет добавить:
 // export function generateEntityOneToManyFields(model: ServerpodModel): string { ... }
 // export function generateRepositoryManyToManyLogic(model: ServerpodModel): string { ... }

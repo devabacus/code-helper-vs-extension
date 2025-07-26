@@ -84,7 +84,7 @@ export const entityManifest = {
                 file: 'domain/entities/extensions/category_entity_extension.dart',
                 generators: [
                     GENERATORS.SIMPLE_FIELDS,
-                    GENERATORS.SIMPLE_FIELDS,
+                    GENERATORS.ENTITY_TO_SERVERPOD_PARAMS,
                 ]
             }
         ]
