@@ -3,7 +3,7 @@ import { ServerpodModel } from "../serverpod_yaml_parser/formatters/types";
 import { GenerationConfig } from "../paths/generation_config";
 import { RelationAnalyzer } from "../serverpod_yaml_parser/relation-analyzer";
 import { cap, pluralConvert, unCap } from "../../../utils/text_work/text_util";
-import { generateDaoManyToOneMethods } from "./relation_generators";
+import { generateDaoManyToOneMethods, generateLocalDatasourceManyToOneMethods } from "./relation_generators";
 
 export const GENERATORS = {
     DRIFT_TABLE_COLUMNS: 'driftTableColumns',
@@ -13,8 +13,9 @@ export const GENERATORS = {
     VALUE_WRAPPED_FIELDS: 'valueWrappedFields',
     SIMPLE_FIELDS: 'simpleFields',
     
-    DAO_RELATION_METHODS: 'daoRelationMethods', // <--- НОВЫЙ
-    ENTITY_RELATION_FIELDS: 'entityRelationFields', // <--- НОВЫЙ
+    DAO_RELATION_METHODS: 'daoRelationMethods', 
+    ENTITY_RELATION_FIELDS: 'entityRelationFields', 
+    LOCAL_DATASOURCE_RELATION_METHODS: 'localDatasourceRelationMethods',
 
 } as const;
 
@@ -56,6 +57,10 @@ const sectionGeneratorRegistry: Record<string, SectionGenerator> = {
 
    [GENERATORS.DAO_RELATION_METHODS]: (config, model) => {
         return generateDaoManyToOneMethods(model);
+    },
+
+     [GENERATORS.LOCAL_DATASOURCE_RELATION_METHODS]: (config, model) => {
+        return generateLocalDatasourceManyToOneMethods(model);
     },
 
     // formatValueWrappedFields

@@ -8,11 +8,10 @@ export const entityManifest = {
 
     defaultEntityFiles: {
         dictionaries: DictionaryPresets.ENTITY,
-        
+
         replace: [
             'data/datasources/local/interfaces/category_local_datasource_service.dart',
             'data/datasources/remote/interfaces/category_remote_datasource_service.dart',
-            'data/datasources/local/datasources/category_local_data_source.dart',
             'data/datasources/local/interfaces/category_local_datasource_service.dart',
             'data/datasources/remote/interfaces/category_remote_datasource_service.dart',
             'data/datasources/remote/sources/category_remote_data_source.dart',
@@ -28,8 +27,14 @@ export const entityManifest = {
 
         templated: [
             {
-            file: 'data/datasources/local/daos/category/category_dao.dart',
+                file: 'data/datasources/local/daos/category/category_dao.dart',
                 generators: [GENERATORS.DAO_RELATION_METHODS]
+            },
+            {
+                file: 'data/datasources/local/datasources/category_local_data_source.dart',
+                generators: [
+                    GENERATORS.LOCAL_DATASOURCE_RELATION_METHODS
+                ]
             },
             {
                 file: 'data/datasources/local/tables/category_table.dart',
@@ -59,7 +64,7 @@ export const entityManifest = {
             },
             {
                 file: 'domain/entities/extensions/category_entity_extension.dart',
-                generators:[
+                generators: [
                     GENERATORS.SIMPLE_FIELDS,
                     GENERATORS.SIMPLE_FIELDS,
                 ]
