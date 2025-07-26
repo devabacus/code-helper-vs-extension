@@ -188,6 +188,39 @@ export function generateServerpodToModelParams(model: ServerpodModel): string {
     return params.join(',\n      ');
 }
 
+export function generateRepositoryImplManyToOneMethods(model: ServerpodModel): string {
+    const relationFields = RelationAnalyzer.manyToOneFields(model.fields);
+    if (relationFields.length === 0) {
+        return '';
+    }
+
+    const D = model.className;
+    const d = unCap(model.className);
+    const Ds = pluralConvert(D);
+
+    return relationFields.map(field => {
+        const fkFieldName = field.name.endsWith('Id') ? field.name : `${field.name}Id`;
+        const methodNamePart = cap(field.name.replace(/Id$/, ''));
+        const repoMethodName = `get${Ds}By${methodNamePart}Id`;
+        const parameterName = fkFieldName;
+        const parameterType = 'String';
+
+        return `
+  @override
+  Future<List<${D}Entity>> ${repoMethodName}(${parameterType} ${parameterName}) async {
+    // Получаем ID пользователя и клиента
+    final userId = _sessionManager.signedInUser!.id!;
+    final customerId = _sessionManager.signedInUser!.customerId.toString();
+
+    // Вызываем метод из локального источника данных
+    final ${d}Models = await _localDataSource.${repoMethodName}(${parameterName}, userId: userId, customerId: customerId);
+    
+    // Конвертируем модели в сущности и возвращаем результат
+    return ${d}Models.map((e) => e.toEntity()).toList();
+  }`;
+    }).join('\n');
+}
+
 // Сюда в будущем можно будет добавить:
 // export function generateEntityOneToManyFields(model: ServerpodModel): string { ... }
 // export function generateRepositoryManyToManyLogic(model: ServerpodModel): string { ... }

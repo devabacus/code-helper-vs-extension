@@ -16,7 +16,7 @@ export const entityManifest = {
             // 'data/datasources/remote/interfaces/category_remote_datasource_service.dart',
             // 'data/datasources/remote/sources/category_remote_data_source.dart',
             'data/providers/category/category_data_providers.dart',
-            'data/repositories/category_repository_impl.dart',
+            // 'data/repositories/category_repository_impl.dart',
             'domain/providers/category/category_usecase_providers.dart',
             'domain/repositories/category_repository.dart',
             'domain/usecases/category_usecases.dart',
@@ -47,6 +47,11 @@ export const entityManifest = {
             {
                 file: 'data/datasources/remote/sources/category_remote_data_source.dart',
                 generators: [GENERATORS.REMOTE_DATASOURCE_RELATION_METHODS]
+            },
+
+            {
+                file: 'data/repositories/category_repository_impl.dart',
+                generators: [GENERATORS.REPOSITORY_IMPL_RELATION_METHODS]
             },
             {
                 file: 'data/datasources/local/tables/category_table.dart',
