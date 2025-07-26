@@ -26,3 +26,6 @@ constructor(private fileSystem: IFileSystem) {}
     await Promise.all(copyPromises);
   }
 }
+
+// G:\Projects\Flutter\serverpod\t2\t2_flutter\lib\features\home\presentation\routing\home_router_config.dart
+// "G:\\Projects\\Flutter\\serverpod\\t3\\t3_flutter\\lib\\features\\home\\presentation\\routing\\home_router_config.dart"

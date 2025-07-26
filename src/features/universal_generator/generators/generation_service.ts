@@ -34,10 +34,14 @@ export class GenerationService {
 
             // 1. Обработка статических файлов (с проверкой)
             if ('static' in manifest && manifest.static) {
+              
                 for (const relativePath of manifest.static) {
+                  const isCoreFile = relativePath.includes('core');
+                  const sourceBasePath = isCoreFile ? config.templFlutterProjectPath : config.sourceFeaturePath;
+                  const destinationBasePath = isCoreFile ? config.targetFlutterProjectPath : config.targetFeaturePath;
                     allStaticTasks.push({
-                        sourcePath: path.join(config.templFlutterProjectPath, relativePath),
-                        destinationPath: path.join(config.targetFlutterProjectPath, relativePath)
+                        sourcePath: path.join(sourceBasePath, relativePath),
+                        destinationPath: path.join(destinationBasePath, relativePath)
                     });
                 }
             }
