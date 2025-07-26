@@ -18,12 +18,13 @@ export async function createDataFilesByReplacement() {
         targetProject: 't3',
         featureName: 'home',
         targetEntity: model.tableName,
-        features: ['general', 'routing', 'database', 'ui', 'entity', 'serverpod']
+        // features: ['general', 'routing', 'database', 'ui', 'serverpod']
+        features: ['entity']
+
     });
 
     const generationService = new GenerationService(fileSystem);
-    generationService.generate(config, model);
-
+    await generationService.generate(config, model);
 
     const appDatabaseGenerator = new AppDatabaseGenerator(fileSystem, config);
     await appDatabaseGenerator.generate();

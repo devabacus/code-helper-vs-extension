@@ -23,6 +23,8 @@ export const entityManifest = {
             'domain/repositories/category_repository.dart',
             'domain/usecases/category_usecases.dart',
             'presentation/providers/category/category_get_by_id_provider.dart',
+            'presentation/providers/category/category_state_providers.dart',
+            'server/lib/src/endpoints/category_endpoint.dart'
         ],
 
         templated: [
@@ -47,6 +49,10 @@ export const entityManifest = {
                     GENERATORS.SIMPLE_FIELDS,
                     GENERATORS.VALUE_WRAPPED_FIELDS
                 ]
+            },
+            {
+                file: 'domain/entities/category/category_entity.dart',
+                generators: [GENERATORS.FREEZED_CONSTRUCTOR]
             },
             {
                 file: 'domain/entities/extensions/category_entity_extension.dart',
