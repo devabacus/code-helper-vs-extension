@@ -1,11 +1,8 @@
-import { GENERATORS } from "../generators/section_generators";
 import { DictionaryPresets } from "../dictionary_presets"; // <-- Импортируем пресеты
-import { DictionaryName } from "../replacement_util";
+import { GENERATORS } from "../generators/section_generators";
+import { CustomFileGroup } from "./type";
 
-interface CustomFileGroup {
-  files: string[];
-  dictionaries: readonly DictionaryName[];
-}
+
 
 export const entityManifest = {
 

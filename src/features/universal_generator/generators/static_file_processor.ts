@@ -14,11 +14,12 @@ constructor(private fileSystem: IFileSystem) {}
 
   public async process(tasks: StaticCopyTask[]): Promise<void> {
     // Гарантируем, что все директории существуют
-    const dirPromises = tasks.map(task => 
-      this.fileSystem.createFolder(path.dirname(task.destinationPath))
-    );
-    await Promise.all(dirPromises);
-    
+
+    // const dirPromises = tasks.map(task => 
+    //   this.fileSystem.createFolder(path.dirname(task.destinationPath))
+    // );
+    // await Promise.all(dirPromises);
+         
     // Запускаем все операции копирования параллельно
     const copyPromises = tasks.map(task =>
       this.fileSystem.copyFile(task.sourcePath, task.destinationPath)
@@ -27,5 +28,3 @@ constructor(private fileSystem: IFileSystem) {}
   }
 }
 
-// G:\Projects\Flutter\serverpod\t2\t2_flutter\lib\features\home\presentation\routing\home_router_config.dart
-// "G:\\Projects\\Flutter\\serverpod\\t3\\t3_flutter\\lib\\features\\home\\presentation\\routing\\home_router_config.dart"

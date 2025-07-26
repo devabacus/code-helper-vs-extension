@@ -35,15 +35,16 @@ export class GenerationService {
             // 1. Обработка статических файлов (с проверкой)
             if ('static' in manifest && manifest.static) {
               
-                for (const relativePath of manifest.static) {
-                  const isCoreFile = relativePath.includes('core');
-                  const sourceBasePath = isCoreFile ? config.templFlutterProjectPath : config.sourceFeaturePath;
-                  const destinationBasePath = isCoreFile ? config.targetFlutterProjectPath : config.targetFeaturePath;
+                for (const filePath of manifest.static) {
+                  const isProjectLevelFile = filePath.startsWith('lib/');
+                  const sourceBasePath = isProjectLevelFile ? config.templFlutterProjectPath : config.sourceFeaturePath;
+                  const destinationBasePath = isProjectLevelFile ? config.targetFlutterProjectPath : config.targetFeaturePath;
                     allStaticTasks.push({
-                        sourcePath: path.join(sourceBasePath, relativePath),
-                        destinationPath: path.join(destinationBasePath, relativePath)
+                        sourcePath: path.join(sourceBasePath, filePath),
+                        destinationPath: path.join(destinationBasePath, filePath)
                     });
                 }
+                
             }
 
             // 2. Новая логика для обработки структурированных манифестов
@@ -86,9 +87,9 @@ export class GenerationService {
     }
     
     private createReplaceTask(config: GenerationConfig, filePath: string, rules: ReplacementRule[]): ReplaceTask {
-        const isCoreFile = filePath.includes('core');
-        const sourceBasePath = isCoreFile ? config.templFlutterProjectPath : config.sourceFeaturePath;
-        const destinationBasePath = isCoreFile ? config.targetFlutterProjectPath : config.targetFeaturePath;
+        const isProjectLevelFile = filePath.startsWith('lib/');
+                  const sourceBasePath = isProjectLevelFile ? config.templFlutterProjectPath : config.sourceFeaturePath;
+                  const destinationBasePath = isProjectLevelFile ? config.targetFlutterProjectPath : config.targetFeaturePath;
 
         return {
             sourcePath: path.join(sourceBasePath, filePath),
