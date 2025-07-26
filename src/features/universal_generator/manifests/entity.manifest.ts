@@ -14,6 +14,12 @@ export const entityManifest = {
       files: ['data/datasources/remote/interfaces/category_remote_datasource_service.dart'], 
       dictionaries: [Dictionaries.COMMON, Dictionaries.ENTITY]
     },
+    // G:\Projects\Flutter\serverpod\t2\t2_flutter\lib\features\home\data\datasources\local\daos\category\category_dao.dart
+    {
+      files: ['data/datasources/local/daos/category/category_dao.dart'], 
+      dictionaries: [Dictionaries.COMMON, Dictionaries.ENTITY]
+    },
+
   ],
 
   templated: [

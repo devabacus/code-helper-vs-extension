@@ -50,8 +50,8 @@ export class GenerationService {
           const destinationBasePath = isCoreFile ? config.targetFlutterProjectPath : config.targetFeaturePath;
 
           allReplaceTasks.push({
-            sourcePath: path.join(sourceBasePath, filePath.replace('category', config.templEntity!)),
-            destinationPath: path.join(destinationBasePath, filePath.replace('category', config.targetEntity!)),
+            sourcePath: path.join(sourceBasePath, filePath),
+            destinationPath: path.join(destinationBasePath, filePath.replaceAll('category', config.targetEntity!)),
             rules
           });
         }
