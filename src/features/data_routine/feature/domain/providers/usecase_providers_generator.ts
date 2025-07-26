@@ -30,15 +30,9 @@ export class UseCaseProvidersGenerator extends DataRoutineGenerator {
     if (relationFields.length > 0) {
       const providersData = relationFields.map(field => {
         const methodNamePart = cap(field.name.replace(/Id$/, ''));
-        // e.g., getTasksByCategoryId
         const useCaseMethodName = `get${Ds}By${methodNamePart}Id`;
-        // e.g., GetTasksByCategoryIdUseCase
         const useCaseClassName = `${cap(useCaseMethodName)}UseCase`;
-        // e.g., getTasksByCategoryIdUseCase
         const useCaseProviderName = `${unCap(useCaseMethodName)}UseCase`;
-
-        // Преобразуем имя метода в snake_case для имени файла
-        // e.g., get_tasks_by_category_id
         const snakeCaseMethodName = useCaseMethodName
           .replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`)
           .substring(1);
