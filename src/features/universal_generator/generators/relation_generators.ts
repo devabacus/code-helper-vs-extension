@@ -253,11 +253,8 @@ export function generateUsecaseProviderManyToOneMethods(model: ServerpodModel): 
 
     return relationFields.map(field => {
         const methodNamePart = cap(field.name.replace(/Id$/, ''));
-        // Имя метода, например 'getTasksByCategoryId'
         const useCaseMethodName = `get${Ds}By${methodNamePart}Id`;
-        // Имя класса UseCase, например 'GetTasksByCategoryIdUseCase'
         const useCaseClassName = `${cap(useCaseMethodName)}UseCase`;
-        // Имя провайдера, например 'getTasksByCategoryIdUseCase'
         const useCaseProviderName = `${unCap(useCaseMethodName)}UseCase`;
 
         // Возвращаем только код провайдера, без импортов
@@ -272,6 +269,36 @@ ${useCaseClassName}? ${useCaseProviderName}(Ref ref) {
   return ${useCaseClassName}(repository);
 }`;
     }).join('\n'); // Используем \n для разделения провайдеров
+}
+
+
+export function generateUseCaseManyToOneMethods(model: ServerpodModel): string {
+    const relationFields = RelationAnalyzer.manyToOneFields(model.fields);
+    if (relationFields.length === 0) {
+        return '';
+    }
+
+    const D = model.className;
+    const Ds = pluralConvert(D);
+
+    return relationFields.map(field => {
+        const fkFieldName = field.name.endsWith("Id") ? field.name : `${field.name}Id`;
+        const methodNamePart = cap(field.name.replace(/Id$/, ""));
+        const fkFieldType = "String"; // ID в Serverpod - это String (UuidValue)
+        
+        const useCaseClassName = `Get${Ds}By${methodNamePart}IdUseCase`;
+        const repositoryMethodName = `get${Ds}By${methodNamePart}Id`;
+
+        return `class ${useCaseClassName} {
+  final I${D}Repository _repository;
+
+  ${useCaseClassName}(this._repository);
+
+  Future<List<${D}Entity>> call(${fkFieldType} ${fkFieldName}) {
+    return _repository.${repositoryMethodName}(${fkFieldName});
+  }
+}`;
+    }).join('\n\n'); // Разделяем классы двумя переносами строки для читаемости
 }
 // Сюда в будущем можно будет добавить:
 // export function generateEntityOneToManyFields(model: ServerpodModel): string { ... }

@@ -3,7 +3,7 @@ import { ServerpodModel } from "../serverpod_yaml_parser/formatters/types";
 import { GenerationConfig } from "../paths/generation_config";
 import { RelationAnalyzer } from "../serverpod_yaml_parser/relation-analyzer";
 import { cap, pluralConvert, unCap } from "../../../utils/text_work/text_util";
-import { generateDaoManyToOneMethods, generateDriftTableImports, generateEntityToServerpodParams, generateLocalDatasourceManyToOneMethods, generateLocalDatasourceServiceManyToOneMethods, generateRemoteDatasourceManyToOneMethods, generateRemoteDatasourceServiceManyToOneMethods, generateRepositoryImplManyToOneMethods, generateServerpodToModelParams, generateUsecaseProviderManyToOneMethods } from "./relation_generators";
+import { generateDaoManyToOneMethods, generateDriftTableImports, generateEntityToServerpodParams, generateLocalDatasourceManyToOneMethods, generateLocalDatasourceServiceManyToOneMethods, generateRemoteDatasourceManyToOneMethods, generateRemoteDatasourceServiceManyToOneMethods, generateRepositoryImplManyToOneMethods, generateServerpodToModelParams, generateUseCaseManyToOneMethods, generateUsecaseProviderManyToOneMethods } from "./relation_generators";
 
 export const GENERATORS = {
     DRIFT_TABLE_COLUMNS: 'driftTableColumns',
@@ -24,6 +24,7 @@ export const GENERATORS = {
     REPOSITORY_IMPL_RELATION_METHODS: 'repositoryImplRelationMethods', 
     ENTITY_TO_SERVERPOD_PARAMS: 'entityToServerpodParams',
     USECASE_PROVIDER_RELATION_METHODS: 'usecaseProviderRelationProviders',
+    USECASE_RELATION_METHODS: 'usecaseRelationMethods', 
 
 } as const;
 
@@ -88,6 +89,10 @@ const sectionGeneratorRegistry: Record<string, SectionGenerator> = {
     
     [GENERATORS.USECASE_PROVIDER_RELATION_METHODS]: (config, model) => {
         return generateUsecaseProviderManyToOneMethods(model);
+    },
+
+     [GENERATORS.USECASE_RELATION_METHODS]: (config, model) => {
+        return generateUseCaseManyToOneMethods(model);
     },
     // formatValueWrappedFields
     // Сюда можно добавлять другие генераторы...

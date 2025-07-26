@@ -19,7 +19,7 @@ export const entityManifest = {
             // 'data/repositories/category_repository_impl.dart',
             // 'domain/providers/category/category_usecase_providers.dart',
             'domain/repositories/category_repository.dart',
-            'domain/usecases/category_usecases.dart',
+            // 'domain/usecases/category_usecases.dart',
             'presentation/providers/category/category_get_by_id_provider.dart',
             'presentation/providers/category/category_state_providers.dart',
             'server/lib/src/endpoints/category_endpoint.dart'
@@ -93,6 +93,11 @@ export const entityManifest = {
                 generators: [
                     GENERATORS.USECASE_PROVIDER_RELATION_METHODS,
                 ]
+            },
+
+            {
+                file: 'domain/usecases/category_usecases.dart',
+                generators: [GENERATORS.USECASE_RELATION_METHODS]
             },
 
         ]
