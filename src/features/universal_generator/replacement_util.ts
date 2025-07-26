@@ -1,6 +1,6 @@
 import { cap, pluralConvert, toPascalCase, unCap } from "../../utils/text_work/text_util";
 import { ReplacementRule } from "./generators/replacing_file_processor";
-import { GenerationConfig } from "./generation_config";
+import { GenerationConfig } from "./paths/generation_config";
 
 export const Dictionaries = {
   COMMON: 'common',

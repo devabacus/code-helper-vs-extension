@@ -1,4 +1,3 @@
-import { authManifest } from './auth.manifest';
 import { databaseManifest } from './database.manifest';
 import { entityManifest } from './entity.manifest';
 import { generalManifest } from './general.manifest';
@@ -7,7 +6,6 @@ import { serverpodManifest } from './serverpod.manifest';
 import { uiManifest } from './ui.manifest';
 
 export const allManifests = {
-  auth: authManifest,
   database: databaseManifest,
   general: generalManifest,
   routing: routingManifest,

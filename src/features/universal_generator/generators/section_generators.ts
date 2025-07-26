@@ -1,20 +1,20 @@
 import { CodeFormatter } from "../serverpod_yaml_parser/formatters/code_formatter";
 import { ServerpodModel } from "../serverpod_yaml_parser/formatters/types";
-import { GenerationConfig } from "../generation_config";
+import { GenerationConfig } from "../paths/generation_config";
 
 export const GENERATORS = {
-  DRIFT_TABLE_COLUMNS: 'driftTableColumns',
-  FREEZED_FIELDS: 'freezedFields',
-  FREEZED_CONSTRUCTOR: 'freezedConstructor',
-  DAO_METHODS: 'daoMethods',
-  VALUE_WRAPPED_FIELDS: 'valueWrappedFields',
-  SIMPLE_FIELDS: 'simpleFields'
+    DRIFT_TABLE_COLUMNS: 'driftTableColumns',
+    FREEZED_FIELDS: 'freezedFields',
+    FREEZED_CONSTRUCTOR: 'freezedConstructor',
+    DAO_METHODS: 'daoMethods',
+    VALUE_WRAPPED_FIELDS: 'valueWrappedFields',
+    SIMPLE_FIELDS: 'simpleFields'
 
 } as const;
 
 export const DEFAULT_MARKERS = {
-  START: '// === GENERATED_START ===',
-  END: '// === GENERATED_END ==='
+    START: '// === GENERATED_START ===',
+    END: '// === GENERATED_END ==='
 } as const;
 
 // Тип для функции-генератора
@@ -22,7 +22,7 @@ type SectionGenerator = (config: GenerationConfig, model: ServerpodModel) => str
 
 // Реестр, где мы будем хранить все наши генераторы
 const sectionGeneratorRegistry: Record<string, SectionGenerator> = {
-    
+
     [GENERATORS.DRIFT_TABLE_COLUMNS]: (config, model) => {
         const codeFormatter = new CodeFormatter();
         return codeFormatter.generateDriftTableColumns(model.fields);
@@ -37,7 +37,7 @@ const sectionGeneratorRegistry: Record<string, SectionGenerator> = {
         const formatter = new CodeFormatter();
         return formatter.formatRequiredTypeFields(model.fields);
     },
-    
+
     [GENERATORS.VALUE_WRAPPED_FIELDS]: (config, model) => {
         const formatter = new CodeFormatter();
         return formatter.formatValueWrappedFields(model.fields);

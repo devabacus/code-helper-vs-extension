@@ -1,7 +1,7 @@
 import path from "path";
 import { IFileSystem } from "../../../../core/interfaces/file_system";
 import { snakeToPascalCase } from "../../../../utils/text_work/text_util";
-import { GenerationConfig } from "../../generation_config";
+import { GenerationConfig } from "../../paths/generation_config";
 import { SectionConfig, SectionReplacer } from "../../section_config";
 import { appDatabaseCont } from "./appdatabase_file";
 
@@ -14,7 +14,7 @@ export class AppDatabaseGenerator {
     public async generate(): Promise<void> {
         // --- Шаг 1: Определяем абсолютный путь к папке с генерируемым файлом ---
         const destinationDir = this.config.coreDataLocalPath;
-        const coreDatabasePath = path.join(destinationDir, 'database.dart');    
+        const coreDatabasePath = path.join(destinationDir, 'database.dart');
 
         // --- Получаем пути к папкам с таблицами ---
         const coreTablesDir = this.config.coreTablesPath;
@@ -24,7 +24,7 @@ export class AppDatabaseGenerator {
         const featureTableFiles = (await this.fileSystem.readDirectory(featureTablesDir)).filter(file => file.endsWith('.dart'));
 
         // --- Шаг 2: Вычисляем относительные пути для импортов ---
-        
+
         // Для таблиц в CORE
         const relativeCorePath = path.relative(destinationDir, coreTablesDir).replaceAll('\\', '/');
         const coreImports = coreTableFiles.map(file => `import '${relativeCorePath}/${file}';`);
@@ -57,7 +57,7 @@ export class AppDatabaseGenerator {
                 newContent: allTables
             }
         ];
-        
+
         const replacer = new SectionReplacer();
         const finalContent = replacer.process(appDatabaseCont, sectionsToReplace);
         await this.fileSystem.createFile(coreDatabasePath, finalContent);

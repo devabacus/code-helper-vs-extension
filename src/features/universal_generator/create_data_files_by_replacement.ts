@@ -1,6 +1,6 @@
 import { getDocText } from "../../utils/ui/ui_util";
 import { ServiceLocator } from "../../core/services/service_locator";
-import { GenerationConfig } from "./generation_config";
+import { GenerationConfig } from "./paths/generation_config";
 import { AppDatabaseGenerator } from "./generators/app_database/app_database_generator";
 import { GenerationService } from "./generators/generation_service";
 import { CodeFormatter } from "./serverpod_yaml_parser/formatters/code_formatter";
@@ -18,13 +18,13 @@ export async function createDataFilesByReplacement() {
         targetProject: 't3',
         featureName: 'home',
         targetEntity: model.tableName,
-        // features: ['auth', 'general', 'routing', 'database', 'ui', 'entity']
-        features: ['serverpod']
+        features: ['general', 'routing', 'database', 'ui', 'entity', 'serverpod']
     });
 
     const generationService = new GenerationService(fileSystem);
     generationService.generate(config, model);
 
-    // const appDatabaseGenerator = new AppDatabaseGenerator(fileSystem, config);
-    // await appDatabaseGenerator.generate();
+
+    const appDatabaseGenerator = new AppDatabaseGenerator(fileSystem, config);
+    await appDatabaseGenerator.generate();
 }

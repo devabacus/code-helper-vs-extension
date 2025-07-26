@@ -21,7 +21,7 @@ import { server_pubspec_yaml_file } from "../serverpod/generators/server_pubspec
 import { SERVERPOD_GENERATE } from "../serverpod/commands";
 import { testDataSpy } from "../serverpod/server_test/test_data_spy";
 import { testDataEndpoint } from "../serverpod/server_test/test_data_endpoint";
-import { GenerationConfig } from "./generation_config";
+import { GenerationConfig } from "./paths/generation_config";
 import { DefaultFileSystem } from "../../core/implementations/default_file_system";
 
 export async function createNewProject(addTemplateFolders?: (fullProjectPath: string) => void): Promise<void> {

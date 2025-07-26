@@ -19,7 +19,7 @@ export class ReplacingFileProcessor {
   }
 
   private async processSingleFile(task: ReplaceTask): Promise<void> {
-    await this.fileSystem.createFolder(path.dirname(task.destinationPath));
+    // await this.fileSystem.createFolder(path.dirname(task.destinationPath));
 
     let content = await this.fileSystem.readFile(task.sourcePath);
 
