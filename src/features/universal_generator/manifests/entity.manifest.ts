@@ -67,7 +67,8 @@ export const entityManifest = {
                 file: 'data/models/extensions/category_model_extension.dart',
                 generators: [
                     GENERATORS.SIMPLE_FIELDS,
-                    GENERATORS.VALUE_WRAPPED_FIELDS
+                    GENERATORS.VALUE_WRAPPED_FIELDS,
+                    GENERATORS.SERVERPOD_TO_MODEL_PARAMS
                 ]
             },
             {

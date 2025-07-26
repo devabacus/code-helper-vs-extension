@@ -3,7 +3,7 @@ import { ServerpodModel } from "../serverpod_yaml_parser/formatters/types";
 import { GenerationConfig } from "../paths/generation_config";
 import { RelationAnalyzer } from "../serverpod_yaml_parser/relation-analyzer";
 import { cap, pluralConvert, unCap } from "../../../utils/text_work/text_util";
-import { generateDaoManyToOneMethods, generateDriftTableImports, generateLocalDatasourceManyToOneMethods, generateLocalDatasourceServiceManyToOneMethods, generateRemoteDatasourceManyToOneMethods, generateRemoteDatasourceServiceManyToOneMethods } from "./relation_generators";
+import { generateDaoManyToOneMethods, generateDriftTableImports, generateLocalDatasourceManyToOneMethods, generateLocalDatasourceServiceManyToOneMethods, generateRemoteDatasourceManyToOneMethods, generateRemoteDatasourceServiceManyToOneMethods, generateServerpodToModelParams } from "./relation_generators";
 
 export const GENERATORS = {
     DRIFT_TABLE_COLUMNS: 'driftTableColumns',
@@ -13,6 +13,7 @@ export const GENERATORS = {
     DAO_METHODS: 'daoMethods',
     VALUE_WRAPPED_FIELDS: 'valueWrappedFields',
     SIMPLE_FIELDS: 'simpleFields',
+    SERVERPOD_TO_MODEL_PARAMS: 'serverpodToModelParams',
     
     DAO_RELATION_METHODS: 'daoRelationMethods', 
     ENTITY_RELATION_FIELDS: 'entityRelationFields', 
@@ -59,6 +60,10 @@ const sectionGeneratorRegistry: Record<string, SectionGenerator> = {
     [GENERATORS.SIMPLE_FIELDS]: (config, model) => {
         const formatter = new CodeFormatter();
         return formatter.formatSimpleFields(model.fields);
+    },
+
+     [GENERATORS.SERVERPOD_TO_MODEL_PARAMS]: (config, model) => {
+        return generateServerpodToModelParams(model);
     },
 
 

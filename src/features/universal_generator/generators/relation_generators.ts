@@ -1,6 +1,7 @@
 import { RelationAnalyzer } from '../serverpod_yaml_parser/relation-analyzer';
 import { ServerpodModel } from '../serverpod_yaml_parser/formatters/types';
 import { cap, pluralConvert, toSnakeCase, unCap } from '../../../utils/text_work/text_util';
+import { CodeFormatter } from '../serverpod_yaml_parser/formatters/code_formatter';
 
 export function generateDaoManyToOneMethods(model: ServerpodModel): string {
     const relationFields = RelationAnalyzer.manyToOneFields(model.fields);
@@ -159,6 +160,34 @@ export function generateDriftTableImports(model: ServerpodModel): string {
     const uniqueImports = [...new Set(imports)];
     return uniqueImports.join('\n');
 }
+
+export function generateServerpodToModelParams(model: ServerpodModel): string {
+    const formatter = new CodeFormatter();
+    // Получаем только те поля, которые нужно вставлять
+    const fieldsToProcess = formatter.fieldsFilter(model.fields);
+
+    const params = fieldsToProcess.map(field => {
+        let fieldName = field.name;
+        let fieldValue = field.name;
+
+        // Если это поле-связь (и оно не nullable)
+        if (field.isRelation && field.relationType === 'manyToOne') {
+            // Преобразуем UuidValue в String
+            fieldValue = `${field.name}${field.nullable ? '?' : ''}.toString()`;
+        }
+        
+        // Для поля customerId, которое всегда есть, но его тип UuidValue
+        if (fieldName === 'customerId') {
+             fieldValue = `${field.name}${field.nullable ? '?' : ''}.toString()`;
+        }
+
+
+        return `${fieldName}: ${fieldValue}`;
+    });
+
+    return params.join(',\n      ');
+}
+
 // Сюда в будущем можно будет добавить:
 // export function generateEntityOneToManyFields(model: ServerpodModel): string { ... }
 // export function generateRepositoryManyToManyLogic(model: ServerpodModel): string { ... }
