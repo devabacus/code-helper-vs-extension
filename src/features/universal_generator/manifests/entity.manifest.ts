@@ -10,11 +10,11 @@ export const entityManifest = {
         dictionaries: DictionaryPresets.ENTITY,
 
         replace: [
-            'data/datasources/local/interfaces/category_local_datasource_service.dart',
-            'data/datasources/remote/interfaces/category_remote_datasource_service.dart',
-            'data/datasources/local/interfaces/category_local_datasource_service.dart',
-            'data/datasources/remote/interfaces/category_remote_datasource_service.dart',
-            'data/datasources/remote/sources/category_remote_data_source.dart',
+            // 'data/datasources/local/interfaces/category_local_datasource_service.dart',
+            // 'data/datasources/remote/interfaces/category_remote_datasource_service.dart',
+            // 'data/datasources/local/interfaces/category_local_datasource_service.dart',
+            // 'data/datasources/remote/interfaces/category_remote_datasource_service.dart',
+            // 'data/datasources/remote/sources/category_remote_data_source.dart',
             'data/providers/category/category_data_providers.dart',
             'data/repositories/category_repository_impl.dart',
             'domain/providers/category/category_usecase_providers.dart',
@@ -35,6 +35,18 @@ export const entityManifest = {
                 generators: [
                     GENERATORS.LOCAL_DATASOURCE_RELATION_METHODS
                 ]
+            },
+            {
+                file: 'data/datasources/local/interfaces/category_local_datasource_service.dart',
+                generators: [GENERATORS.LOCAL_DATASOURCE_SERVICE_RELATION_METHODS]
+            },
+            {
+                file: 'data/datasources/remote/interfaces/category_remote_datasource_service.dart',
+                generators: [GENERATORS.REMOTE_DATASOURCE_SERVICE_RELATION_METHODS]
+            },
+            {
+                file: 'data/datasources/remote/sources/category_remote_data_source.dart',
+                generators: [GENERATORS.REMOTE_DATASOURCE_RELATION_METHODS]
             },
             {
                 file: 'data/datasources/local/tables/category_table.dart',

@@ -3,7 +3,7 @@ import { ServerpodModel } from "../serverpod_yaml_parser/formatters/types";
 import { GenerationConfig } from "../paths/generation_config";
 import { RelationAnalyzer } from "../serverpod_yaml_parser/relation-analyzer";
 import { cap, pluralConvert, unCap } from "../../../utils/text_work/text_util";
-import { generateDaoManyToOneMethods, generateLocalDatasourceManyToOneMethods } from "./relation_generators";
+import { generateDaoManyToOneMethods, generateLocalDatasourceManyToOneMethods, generateLocalDatasourceServiceManyToOneMethods, generateRemoteDatasourceManyToOneMethods, generateRemoteDatasourceServiceManyToOneMethods } from "./relation_generators";
 
 export const GENERATORS = {
     DRIFT_TABLE_COLUMNS: 'driftTableColumns',
@@ -16,6 +16,9 @@ export const GENERATORS = {
     DAO_RELATION_METHODS: 'daoRelationMethods', 
     ENTITY_RELATION_FIELDS: 'entityRelationFields', 
     LOCAL_DATASOURCE_RELATION_METHODS: 'localDatasourceRelationMethods',
+    LOCAL_DATASOURCE_SERVICE_RELATION_METHODS: 'localDatasourceServiceRelationMethods', 
+    REMOTE_DATASOURCE_SERVICE_RELATION_METHODS: 'remoteDatasourceServiceRelationMethods',
+    REMOTE_DATASOURCE_RELATION_METHODS: 'remoteDatasourceRelationMethods', 
 
 } as const;
 
@@ -62,6 +65,10 @@ const sectionGeneratorRegistry: Record<string, SectionGenerator> = {
      [GENERATORS.LOCAL_DATASOURCE_RELATION_METHODS]: (config, model) => {
         return generateLocalDatasourceManyToOneMethods(model);
     },
+
+      [GENERATORS.LOCAL_DATASOURCE_SERVICE_RELATION_METHODS]: (config, model) => generateLocalDatasourceServiceManyToOneMethods(model),
+    [GENERATORS.REMOTE_DATASOURCE_SERVICE_RELATION_METHODS]: (config, model) => generateRemoteDatasourceServiceManyToOneMethods(model),
+    [GENERATORS.REMOTE_DATASOURCE_RELATION_METHODS]: (config, model) => generateRemoteDatasourceManyToOneMethods(model),
 
     // formatValueWrappedFields
     // Сюда можно добавлять другие генераторы...

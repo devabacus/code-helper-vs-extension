@@ -60,6 +60,78 @@ export function generateLocalDatasourceManyToOneMethods(model: ServerpodModel): 
     }).join('\\n');
 }
 
+
+export function generateLocalDatasourceServiceManyToOneMethods(model: ServerpodModel): string {
+    const relationFields = RelationAnalyzer.manyToOneFields(model.fields);
+    if (relationFields.length === 0) {return ''};
+
+    const D = model.className;
+    const Ds = pluralConvert(D);
+
+    return relationFields.map(field => {
+        const fkFieldName = field.name.endsWith('Id') ? field.name : `${field.name}Id`;
+        const methodNamePart = cap(field.name.replace(/Id$/, ''));
+        const dsMethodName = `get${Ds}By${methodNamePart}Id`;
+        const parameterName = fkFieldName;
+        const parameterType = 'String';
+
+        return `
+  Future<List<${D}Model>> ${dsMethodName}(${parameterType} ${parameterName}, {required int userId, required String customerId});`;
+    }).join('');
+}
+
+/**
+ * Генерирует абстрактные методы для ICategoryRemoteDataSource.
+ */
+export function generateRemoteDatasourceServiceManyToOneMethods(model: ServerpodModel): string {
+    const relationFields = RelationAnalyzer.manyToOneFields(model.fields);
+    if (relationFields.length === 0) return '';
+
+    const D = model.className;
+    const Ds = pluralConvert(D);
+
+    return relationFields.map(field => {
+        const fkFieldName = field.name.endsWith('Id') ? field.name : `${field.name}Id`;
+        const methodNamePart = cap(field.name.replace(/Id$/, ''));
+        const dsMethodName = `get${Ds}By${methodNamePart}Id`;
+        const parameterName = fkFieldName;
+
+        // В удаленном источнике данных мы можем использовать UuidValue
+        return `
+  Future<List<${D}>> ${dsMethodName}(UuidValue ${parameterName});`;
+    }).join('');
+}
+
+/**
+ * Генерирует реализацию методов для CategoryRemoteDataSource.
+ */
+export function generateRemoteDatasourceManyToOneMethods(model: ServerpodModel): string {
+    const relationFields = RelationAnalyzer.manyToOneFields(model.fields);
+    if (relationFields.length === 0) return '';
+    
+    const D = model.className;
+    const d = unCap(model.className);
+    const Ds = pluralConvert(D);
+
+    return relationFields.map(field => {
+        const fkFieldName = field.name.endsWith('Id') ? field.name : `${field.name}Id`;
+        const methodNamePart = cap(field.name.replace(/Id$/, ''));
+        const dsMethodName = `get${Ds}By${methodNamePart}Id`;
+        const parameterName = fkFieldName;
+
+        return `
+  @override
+  Future<List<${D}>> ${dsMethodName}(UuidValue ${parameterName}) async {
+    try {
+      final result = await _client.${d}.${dsMethodName}(${parameterName});
+      return result;
+    } catch (e) {
+      print('Ошибка получения ${Ds} по ${methodNamePart} ID: $e');
+      rethrow;
+    }
+  }`;
+    }).join('');
+}
 // Сюда в будущем можно будет добавить:
 // export function generateEntityOneToManyFields(model: ServerpodModel): string { ... }
 // export function generateRepositoryManyToManyLogic(model: ServerpodModel): string { ... }
