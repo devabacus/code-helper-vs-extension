@@ -24,6 +24,8 @@ export interface ServerpodModel {
   fields: ServerpodField[];
   indexes?: ServerpodIndex[];
   isRelation: boolean;
+  entity1?: string;
+  entity2?: string;
 }
 
 export interface ManyToManyRelation {

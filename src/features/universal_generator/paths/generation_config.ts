@@ -10,6 +10,8 @@ export interface IGenerationConfig {
   projectsPath?: string;
   templEntity?: string;
   targetEntity?: string;
+  targetEntity1?: string;
+  targetEntity2?: string;
   sourceFeaturePath?: string;
 }
 
@@ -19,6 +21,8 @@ export class GenerationConfig {
   public projectsPath: string;
   public templEntity: string;
   public targetEntity: string;
+  public targetEntity1: string;
+  public targetEntity2: string;
   public sourceFeaturePath: string;
   public featureName: string;
   public features: FeatureName[];
@@ -31,6 +35,8 @@ export class GenerationConfig {
     this.projectsPath = config.projectsPath || 'G:/Projects/Flutter/serverpod';
     this.templEntity = config.templEntity || 'category';
     this.targetEntity = config.targetEntity || '';
+    this.targetEntity1 = config.targetEntity1 || '';
+    this.targetEntity2 = config.targetEntity2 || '';
     this.sourceFeaturePath = config.sourceFeaturePath || `G:/Projects/Flutter/serverpod/${this.templProject}/${this.templProject}_flutter/lib/features/home`;
   }
 

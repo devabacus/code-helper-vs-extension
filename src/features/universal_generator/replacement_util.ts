@@ -5,6 +5,7 @@ import { GenerationConfig } from "./paths/generation_config";
 export const Dictionaries = {
   COMMON: 'common',
   ENTITY: 'entity',
+  MANY_TO_MANY: 'manyToMany',
 } as const;
 
 export type DictionaryName = typeof Dictionaries[keyof typeof Dictionaries];
@@ -37,6 +38,32 @@ const dictionaryRegistry: Record<DictionaryName, RuleGenerator> = {
       { from: baseForms.D, to: newForms.D },
       { from: baseForms.d, to: newForms.d },
     ];
+  },
+
+  [Dictionaries.MANY_TO_MANY]: (config) => {
+    // Убедимся, что у нас есть обе сущности для замены
+    if (!config.targetEntity1 || !config.targetEntity2) {
+      return [];
+    }
+    // Шаблонные имена (например, из TaskTagMap)
+    const templEntity1 = 'task';
+    const templEntity2 = 'tag';
+
+    // Собираем все формы слов для замены
+    const rules: ReplacementRule[] = [];
+      rules.push(
+      { from: pluralConvert(cap(templEntity1)), to: pluralConvert(cap(config.targetEntity1)) },
+      { from: cap(templEntity1), to: cap(config.targetEntity1) },
+      { from: unCap(templEntity1), to: unCap(config.targetEntity1) },
+    );
+    
+    // Добавляем правила для entity2 (tag -> targetEntity2)  
+    rules.push(
+      { from: pluralConvert(cap(templEntity2)), to: pluralConvert(cap(config.targetEntity2)) },
+      { from: cap(templEntity2), to: cap(config.targetEntity2) },
+      { from: unCap(templEntity2), to: unCap(config.targetEntity2) },
+    );
+    return rules;
   },
 };
 

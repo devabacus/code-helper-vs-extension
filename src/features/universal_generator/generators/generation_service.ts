@@ -10,6 +10,7 @@ import { ServerpodModel } from '../serverpod_yaml_parser/formatters/types';
 import { SectionConfig, SectionReplacer } from '../section_config';
 import { getSectionGenerator } from './section_generators';
 import { getPathInfo } from '../paths/path_handle';
+import { cap } from '../../../utils/text_work/text_util';
 
 
 export class GenerationService {
@@ -89,6 +90,16 @@ export class GenerationService {
   private createReplaceTask(config: GenerationConfig, filePath: string, rules: ReplacementRule[]): ReplaceTask {
     const { sourceBasePath, destinationBasePath, relativePath } = getPathInfo(config, filePath);
 
+    let destinationRelativePath = relativePath;
+
+    
+    if (config.targetEntity1 && config.targetEntity2) {
+      destinationRelativePath = destinationRelativePath
+        .replaceAll('task_tag', `${config.targetEntity1}_${config.targetEntity2}`)
+    } else if (config.targetEntity) {
+      destinationRelativePath = destinationRelativePath.replaceAll(config.templEntity, config.targetEntity);
+    }
+    
     return {
       sourcePath: path.join(sourceBasePath, relativePath),
       // Заменяем 'category' (или другой templEntity) на целевую сущность в пути назначения
@@ -104,6 +115,16 @@ export class GenerationService {
     const { sourceBasePath, destinationBasePath, relativePath } = getPathInfo(config, task.file);
 
     const sourcePath = path.join(sourceBasePath, relativePath);
+    let destinationRelativePath = relativePath;
+
+  if (config.targetEntity1 && config.targetEntity2) {
+      destinationRelativePath = destinationRelativePath
+        .replaceAll('task_tag', `${config.targetEntity1}_${config.targetEntity2}`)
+    } else if (config.targetEntity) {
+      destinationRelativePath = destinationRelativePath.replaceAll(config.templEntity, config.targetEntity);
+    }
+
+
     const destinationPath = path.join(destinationBasePath, relativePath.replaceAll(config.templEntity, config.targetEntity!));
 
     let content = await this.fileSystem.readFile(sourcePath);
