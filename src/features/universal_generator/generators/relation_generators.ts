@@ -90,7 +90,7 @@ export function generateDriftTableImports(model: ServerpodModel): string {
       field.isRelation && field.relationType === 'manyToOne' &&
       field.relatedModel && field.name !== 'customerId'
     );
-    if (relationFields.length === 0) return '';
+    if (relationFields.length === 0) {return '';}
 
     const imports = relationFields.map(field => {
       const tableFileName = `${toSnakeCase(field.relatedModel!)}_table.dart`;
