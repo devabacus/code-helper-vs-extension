@@ -4,18 +4,53 @@ import { RelationAnalyzer } from './relation-analyzer';
 
 export class ServerpodYamlParser {
 
-  static parse(yamlContent: string): ServerpodModel {
+ static parse(yamlContent: string): ServerpodModel {
     const parsed = yaml.load(yamlContent) as any;
 
-    return {
+    const model: ServerpodModel = {
       className: parsed.class || '',
       tableName: parsed.table || '',
       isRelation: parsed.class.includes('Map'),
       fields: this.parseFields(parsed.fields || {}),
       indexes: this.parseIndexes(parsed.indexes),
     };
+
+    // Если это связующая таблица (many-to-many), определяем связанные сущности
+    if (model.isRelation) {
+      const entities = this.extractManyToManyEntities(model);
+      if (entities) {
+        model.entity1 = entities.entity1;
+        model.entity2 = entities.entity2;
+      }
+    }
+    return model;
   }
 
+  private static extractManyToManyEntities(model: ServerpodModel): { entity1: string; entity2: string } | null {
+    const relationFields = model.fields.filter(field => field.isRelation);
+    
+    if (relationFields.length < 2) {
+      return null;
+    }
+
+    // Берем первые два relation-поля и извлекаем имена сущностей
+    const entity1 = this.extractEntityNameFromField(relationFields[0]);
+    const entity2 = this.extractEntityNameFromField(relationFields[1]);
+
+    if (!entity1 || !entity2) {
+      return null;
+    }
+
+    return { entity1, entity2 };
+  }
+
+  private static extractEntityNameFromField(field: ServerpodField): string | null {
+    if (field.relatedModel) {
+      return field.relatedModel.toLowerCase();
+    }
+    return field.name.replace(/Id$/, '').toLowerCase();
+  }
+ 
   private static parseFields(fieldsObj: any): ServerpodField[] {
     return Object.entries(fieldsObj).map(([name, definition]) =>
       this.parseField(name, definition as string)
