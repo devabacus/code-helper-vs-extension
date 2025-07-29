@@ -48,8 +48,8 @@ export class GenerationConfig {
   get targetFlutterProjectPath(): string { return this.getFlutterPath(this.targetProject); };
   get templFlutterProjectPath(): string { return this.getFlutterPath(this.templProject); };
 
-  get targetFlutterRootPath(): string { return this.flutterRootPath(this.targetProject); };
-  get templFlutterRootPath(): string { return this.flutterRootPath(this.templProject); }
+  get targetFlutterLibPath(): string { return this.flutterLibPath(this.targetProject); };
+  get templFlutterLibPath(): string { return this.flutterLibPath(this.templProject); }
 
 
   get targetServerProjectPath(): string {
@@ -68,12 +68,12 @@ export class GenerationConfig {
     return path.join(this.projectsPath, `${projectName}`, `${projectName}_flutter`);
   }
 
-  flutterRootPath(project: string): string {
+  flutterLibPath(project: string): string {
     return path.join(this.getFlutterPath(project), "lib");
   };
 
   get corePath(): string {
-    return path.join(this.targetFlutterRootPath, 'core');
+    return path.join(this.targetFlutterLibPath, 'core');
   }
 
   get coreDataLocalPath(): string {

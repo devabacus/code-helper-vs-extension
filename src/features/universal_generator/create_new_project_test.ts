@@ -24,7 +24,7 @@ import { testDataEndpoint } from "../serverpod/server_test/test_data_endpoint";
 import { GenerationConfig } from "./paths/generation_config";
 import { DefaultFileSystem } from "../../core/implementations/default_file_system";
 
-export async function createNewProject(addTemplateFolders?: (fullProjectPath: string) => void): Promise<void> {
+export async function createNewProjectTest(addTemplateFolders?: (fullProjectPath: string) => void): Promise<void> {
 
     // пользователь выбирает категории 
     const projectsPath = await pickPath();

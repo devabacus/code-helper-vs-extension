@@ -3,6 +3,7 @@ import { CustomFileGroup } from "./type";
 
 export const serverpodManifest = {
   static: [
+
     // auth
     'lib/core/providers/serverpod_client_provider.dart',
     'lib/core/providers/session_manager_provider.dart',
@@ -25,6 +26,7 @@ export const serverpodManifest = {
       files: [
         'lib/check/server_check_ui.dart',
         'server/lib/server.dart',
+        'server/pubspec.yaml'
     ],
       dictionaries: DictionaryPresets.PROJECT_ONLY 
     }

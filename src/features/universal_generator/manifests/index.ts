@@ -4,6 +4,7 @@ import { generalManifest } from './general.manifest';
 import { manyToManyManifest } from './many_to_many.manifest';
 import { routingManifest } from './routing.manifest';
 import { serverpodManifest } from './serverpod.manifest';
+import { serverpodDeployManifest } from './serverpod_deploy.manifest';
 import { uiManifest } from './ui.manifest';
 
 export const allManifests = {
@@ -13,7 +14,9 @@ export const allManifests = {
   ui: uiManifest,
   entity: entityManifest,
   serverpod: serverpodManifest,
+  deploy: serverpodDeployManifest, 
   manyToMany: manyToManyManifest,
+
 } as const;
 
 export type FeatureName = keyof typeof allManifests;

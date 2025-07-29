@@ -11,7 +11,6 @@ import { ReplacementRule, ReplaceTask, ReplacingFileProcessor } from './replacin
 import { getSectionGenerator } from './section_generators';
 import { StaticCopyTask, StaticFileProcessor } from './static_file_processor';
 
-
 export class GenerationService {
   private readonly fileSystem: IFileSystem;
   private readonly staticProcessor: StaticFileProcessor;
@@ -30,8 +29,8 @@ export class GenerationService {
     const allReplaceTasks: ReplaceTask[] = [];
     const allTemplatedPromises: Promise<void>[] = [];
 
-    for (const featureName of config.features) {
-      const manifest = allManifests[featureName];
+    for (const featureManifest of config.features) {
+      const manifest = allManifests[featureManifest];
 
       // 1. Обработка статических файлов (с новой логикой путей)
       if ('static' in manifest && manifest.static) {

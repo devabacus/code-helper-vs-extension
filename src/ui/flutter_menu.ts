@@ -15,13 +15,15 @@ import { getActiveEditorPath, getLibPath, getRootWorkspaceFolders } from "../uti
 import { addServerpodMapModel, addServerpodModel } from "../features/data_routine/generators/add_serverpod_model";
 import { createDataFilesByReplacement } from "../features/universal_generator/create_data_files_by_replacement";
 import { createNewProject } from "../features/universal_generator/create_new_project";
+import { createNewProjectTest } from "../features/universal_generator/create_new_project_test";
 
 export async function flutterHandler() {
     const options: { [key: string]: () => Promise<any> } = {
         'Создать файлы данных из yaml': () => createDataFilesByReplacement(),
         // 'Создать файлы данных из yaml': () => createDataFilesFromYaml(),
         // 'Новый проект c serverpod': () => flutterCreateNewServerPodProject(addBaseTemplate),
-        'Новый проект c serverpod': () => createNewProject(addBaseTemplate),
+        // 'Новый проект c serverpod': () => createNewProject(addBaseTemplate),
+        'Новый проект c serverpod': () => createNewProjectTest(addBaseTemplate),
         'Сгенерировать файлы для serverpod': () => serverpodK8sFileGenerate(getRootWorkspaceFolders()),
         // 'Новый базовый проект': () => flutterCreateNewProject(startAppRoutine),
         'Добавить base template': () => addBaseTemplate(getRootWorkspaceFolders()),

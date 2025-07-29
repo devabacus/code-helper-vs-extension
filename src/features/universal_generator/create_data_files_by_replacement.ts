@@ -15,7 +15,6 @@ export async function createDataFilesByReplacement() {
     const model = ServerpodYamlParser.parse(getDocText());
     const features: FeatureName[] = model.isRelation ? ['manyToMany'] : ['entity'];
 
-
     const config = new GenerationConfig({
         templProject: 't2',
         targetProject: 't3',
@@ -23,8 +22,9 @@ export async function createDataFilesByReplacement() {
         targetEntity: model.tableName,
         targetEntity1: model.entity1,
         targetEntity2: model.entity2,
-        // features: ['general', 'routing', 'database', 'ui', 'serverpod']
-        features: features
+        // features: ['general', 'routing', 'database', 'ui', 'serverpod', 'deploy']
+        features: ['general']
+        // features: features
 
     });
 

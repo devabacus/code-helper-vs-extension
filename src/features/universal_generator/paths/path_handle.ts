@@ -15,6 +15,13 @@ export function getPathInfo(config: GenerationConfig, filePath: string): PathInf
             relativePath: filePath.substring('server/'.length) // Удаляем префикс
         };
     }
+    if (filePath.startsWith('flutter/')) {
+        return {
+            sourceBasePath: config.templFlutterProjectPath,
+            destinationBasePath: config.targetFlutterProjectPath,
+            relativePath: filePath.substring('flutter/'.length)
+        };
+    }
     // 2. Проверяем, является ли файл файлом уровня Flutter-проекта
     if (filePath.startsWith('lib/')) {
         return {
