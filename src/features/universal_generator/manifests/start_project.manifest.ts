@@ -1,24 +1,25 @@
 import { DictionaryPresets } from "../dictionary_presets";
-import { CustomFileGroup } from "./type";
 
 export const startProjectManifest = {
-  // ✅ Указываем корневые директории для статического копирования
-  static_dirs: [
-    'lib/core/',
-    'presentation/routing/',
-    'presentation/services/',
-  ],
+  baseFiles: {
+      dictionaries: DictionaryPresets.PROJECT_ONLY,
 
-  // ✅ Здесь остаются только файлы вне директории /core
-  static: [
-    'flutter/_service_files/flutter_handle.ps1',
-    'flutter/.gitignore',
-    'lib/main.dart',
-    'lib/app.dart',
-    'lib/auth_wrapper.dart',
-  ],
+      dirs: [
+        'lib/core/',
+        'presentation/routing/',
+        'presentation/services/',
+      ],
 
-  // ✅ Указываем файл, который нужно проигнорировать
+      files: [
+        'flutter/_service_files/flutter_handle.ps1',
+        'flutter/.gitignore',
+        'lib/main.dart',
+        'lib/app.dart',
+        'lib/auth_wrapper.dart',
+        'lib/check/server_check_ui.dart',
+      ]
+  },
+
   exclude: [
     'lib/core/data/datasources/local/database.dart'
   ],
@@ -26,14 +27,4 @@ export const startProjectManifest = {
   replace: [],
   templated: [],
 
-  customFiles: [
-    {
-      files: [
-        'lib/check/server_check_ui.dart',
-        'lib/core/providers/serverpod_client_provider.dart',
-        'lib/core/providers/session_manager_provider.dart',
-      ],
-      dictionaries: DictionaryPresets.PROJECT_ONLY
-    }
-  ] as CustomFileGroup[]
 } as const;

@@ -29,6 +29,6 @@ export async function createDataFilesByReplacement() {
     const generationService = new GenerationService(fileSystem);
     await generationService.generate(config, model);
 
-    const appDatabaseGenerator = new AppDatabaseGenerator(fileSystem, config);
-    await appDatabaseGenerator.generate();
+    // const appDatabaseGenerator = new AppDatabaseGenerator(fileSystem, config);
+    // await appDatabaseGenerator.generate();
 }
