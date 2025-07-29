@@ -21,7 +21,6 @@ export async function createDataFilesByReplacement() {
         targetEntity1: model.entity1,
         targetEntity2: model.entity2,
         features: ['startProject']
-        // features: ['general']
         // features: features
 
     });

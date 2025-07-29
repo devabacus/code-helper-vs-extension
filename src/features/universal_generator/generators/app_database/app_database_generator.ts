@@ -1,10 +1,16 @@
+// universal_generator/generators/app_database/app_database_generator.ts
+
 import path from "path";
 import { IFileSystem } from "../../../../core/interfaces/file_system";
 import { snakeToPascalCase } from "../../../../utils/text_work/text_util";
 import { GenerationConfig } from "../../paths/generation_config";
-import { SectionConfig, SectionReplacer } from "../../section_config";
 import { appDatabaseCont } from "./appdatabase_file";
 
+/**
+ * Генератор для файла AppDatabase.
+ * Его задача - сканировать все файлы таблиц в проекте
+ * и вставить их импорты и классы в главный файл базы данных.
+ */
 export class AppDatabaseGenerator {
     constructor(
         private fileSystem: IFileSystem,
@@ -12,57 +18,68 @@ export class AppDatabaseGenerator {
     ) { }
 
     public async generate(): Promise<void> {
-        // --- Шаг 1: Определяем абсолютный путь к папке с генерируемым файлом ---
+        // --- Шаг 1: Определяем пути ---
         const destinationDir = this.config.coreDataLocalPath;
         const coreDatabasePath = path.join(destinationDir, 'database.dart');
-
-        // --- Получаем пути к папкам с таблицами ---
         const coreTablesDir = this.config.coreTablesPath;
         const featureTablesDir = this.config.featureTablesPath;
 
+        // --- Шаг 2: Собираем информацию о файлах таблиц ---
         const coreTableFiles = await this.fileSystem.readDirectory(coreTablesDir);
         const featureTableFiles = (await this.fileSystem.readDirectory(featureTablesDir)).filter(file => file.endsWith('.dart'));
 
-        // --- Шаг 2: Вычисляем относительные пути для импортов ---
+        // --- Шаг 3: Генерируем контент для вставок ---
 
-        // Для таблиц в CORE
+        // Генерируем импорты
         const relativeCorePath = path.relative(destinationDir, coreTablesDir).replaceAll('\\', '/');
-        const coreImports = coreTableFiles.map(file => `import '${relativeCorePath}/${file}';`);
+        const coreImports = coreTableFiles.map(file => `import 'tables/core/${file}';`); // Путь стал более явным и надежным
 
-        // Для таблиц в FEATURE
         const relativeFeaturePath = path.relative(destinationDir, featureTablesDir).replaceAll('\\', '/');
-        const featureImports = featureTableFiles.map(file => `import '${relativeFeaturePath}/${file}';`);
+        const featureImports = featureTableFiles.map(file => `import 'tables/feature/${file}';`); // Путь стал более явным и надежным
 
-        // --- Собираем все вместе ---
-        const allImports = [
-            ...coreImports,
-            ...featureImports
-        ].join('\n');
+        const allImports = [...coreImports, ...featureImports].join('\n');
 
-        const allTables = [
+        // Генерируем список классов таблиц
+        const allTableClasses = [
             ...coreTableFiles.map(file => `${snakeToPascalCase(file.split('.')[0])},`),
             ...featureTableFiles.map(file => `${snakeToPascalCase(file.split('.')[0])},`)
         ].join('\n    ');
 
-        // ... остальная часть вашего кода для замены секций и создания файла остается без изменений
-        const sectionsToReplace: SectionConfig[] = [
-            {
-                startMarker: '// === GENERATED_IMPORTS_START ===',
-                endMarker: '// === GENERATED_IMPORTS_END ===',
-                newContent: allImports
-            },
-            {
-                startMarker: '// === GENERATED_TABLES_START ===',
-                endMarker: '// === GENERATED_TABLES_END ===',
-                newContent: allTables
-            }
-        ];
+        // --- Шаг 4: Вставляем сгенерированный контент в шаблон ---
+        let finalContent = this.replaceSection(
+            appDatabaseCont, 
+            '// === GENERATED_IMPORTS_START ===', 
+            '// === GENERATED_IMPORTS_END ===', 
+            allImports
+        );
 
-        const replacer = new SectionReplacer();
-        const finalContent = replacer.process(appDatabaseCont, sectionsToReplace);
+        finalContent = this.replaceSection(
+            finalContent, 
+            '// === GENERATED_TABLES_START ===', 
+            '// === GENERATED_TABLES_END ===', 
+            allTableClasses
+        );
+        
+        // --- Шаг 5: Создаем итоговый файл ---
         await this.fileSystem.createFile(coreDatabasePath, finalContent);
     }
+
+    /**
+     * Простой метод для замены содержимого между двумя маркерами.
+     * @param content Исходный контент файла.
+     * @param startMarker Начальный маркер.
+     * @param endMarker Конечный маркер.
+     * @param newContent Новый контент для вставки.
+     * @returns Контент с замененной секцией.
+     */
+    private replaceSection(
+        content: string,
+        startMarker: string,
+        endMarker: string,
+        newContent: string
+    ): string {
+        const regex = new RegExp(`${startMarker}[\\s\\S]*?${endMarker}`, 'g');
+        const replacement = `${startMarker}\n${newContent}\n${endMarker}`;
+        return content.replace(regex, replacement);
+    }
 }
-
-
-

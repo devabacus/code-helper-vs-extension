@@ -1,30 +1,16 @@
+// universal_generator/generators/generation_service.ts
+
 import path from 'path';
-import { DefaultFileSystem } from '../../../core/implementations/default_file_system';
 import { IFileSystem } from '../../../core/interfaces/file_system';
-import { allManifests, FeatureName } from '../manifests';
+import { DefaultFileSystem } from '../../../core/implementations/default_file_system';
 import { GenerationConfig } from '../paths/generation_config';
-import { getPathInfo } from '../paths/path_handle';
-// ✅ Импортируем нужные типы
-import { getDictionaryRules, DictionaryName } from '../replacement_util'; 
-import { SectionConfig, SectionReplacer } from '../section_config';
+import { getDictionaryRules, DictionaryName } from '../replacement_util';
+import { allManifests, FeatureName } from '../manifests';
+import { ReplacingFileProcessor, ReplaceTask, ReplacementRule } from './replacing_file_processor';
+import { SectionReplacer } from '../section_config';
 import { ServerpodModel } from '../serverpod_yaml_parser/formatters/types';
-import { ReplacementRule, ReplaceTask, ReplacingFileProcessor } from './replacing_file_processor';
-import { getSectionGenerator } from './section_generators';
-
-// Интерфейсы для типизации манифестов
-interface FileGroup {
-    dictionaries: readonly DictionaryName[]; // <-- Используем правильный тип
-    replace_dirs?: string[];
-    replace?: string[];
-    templated?: { file: string; generators: string[] }[];
-}
-
-interface BaseFileGroup {
-    // ✅ ИСПРАВЛЕНИЕ: Используем конкретный тип DictionaryName вместо string
-    dictionaries: readonly DictionaryName[]; 
-    dirs?: string[];
-    files?: string[];
-}
+import { getPathInfo } from '../paths/path_handle';
+import { MarkerAnalyzer } from './marker_analyzer';
 
 export class GenerationService {
     private readonly fileSystem: IFileSystem;
@@ -40,63 +26,48 @@ export class GenerationService {
     public async generate(config: GenerationConfig, model?: ServerpodModel): Promise<void> {
         const allReplaceTasks: ReplaceTask[] = [];
         const allTemplatedPromises: Promise<void>[] = [];
+        
+        const scanDirs = allManifests.startProject.scan_dirs || [];
+        
+        // Используем правильный путь к корневой папке Flutter-проекта шаблона.
+        const sourceBasePath = config.templFlutterProjectPath; 
+        // -------------------------
 
-        for (const featureName of config.features) {
-            const manifest = allManifests[featureName as FeatureName];
-            if (!manifest) { continue; }
+        for (const dir of scanDirs) {
+            const fullDirSourcePath = path.join(sourceBasePath, dir);
+            if (!await this.fileSystem.exists(fullDirSourcePath)) { continue; }
 
-            const exclusionSet = new Set<string>();
-            if ('exclude' in manifest && (manifest as any).exclude) {
-                (manifest as any).exclude.forEach((file: string) => exclusionSet.add(file));
-            }
-            const fileGroupsForExclusion = ['defaultEntityFiles', 'manyToManyFiles'];
-            for (const groupName of fileGroupsForExclusion) {
-                const group = (manifest as any)[groupName];
-                if (group?.templated) {
-                    group.templated.forEach((task: { file: string; }) => exclusionSet.add(task.file));
-                }
-            }
+            const filesInDir = await (this.fileSystem as any).readDirectoryRecursive(fullDirSourcePath);
 
-            const baseFilesGroup = (manifest as any).baseFiles as BaseFileGroup | undefined;
-            if (baseFilesGroup) {
-                // Теперь здесь не будет ошибки, так как типы совпадают
-                const rules = getDictionaryRules(baseFilesGroup.dictionaries, config);
-
-                if (baseFilesGroup.files) {
-                    for (const filePath of baseFilesGroup.files) {
-                        if (exclusionSet.has(filePath)) {continue;}
-                        allReplaceTasks.push(this._createReplaceTask(config, filePath, rules));
-                    }
+            for (const fullFilePath of filesInDir) {
+                if (fullFilePath.includes('.g.') || fullFilePath.includes('.freezed.')) {
+                    continue;
                 }
 
-                if (baseFilesGroup.dirs) {
-                    for (const dirPath of baseFilesGroup.dirs) {
-                        const { sourceBasePath } = getPathInfo(config, dirPath);
-                        const fullDirSourcePath = path.join(sourceBasePath, dirPath);
-                        if (!await this.fileSystem.exists(fullDirSourcePath)) { continue; }
+                const content = await this.fileSystem.readFile(fullFilePath);
+                const fileManifest = MarkerAnalyzer.analyze(content);
 
-                        const filesInDir = await (this.fileSystem as any).readDirectoryRecursive(fullDirSourcePath);
+                const relevantFeature = config.features.find(feature => fileManifest.types.includes(feature as any));
 
-                        for (const fullFilePath of filesInDir) {
-                            if (fullFilePath.includes('.g.') || fullFilePath.includes('.freezed.')) {
-                                continue;
-                            }
-                            const relativeFilePath = path.relative(sourceBasePath, fullFilePath).replace(/\\/g, '/');
-                            if (exclusionSet.has(relativeFilePath)) {
-                                continue;
-                            }
-                            allReplaceTasks.push(this._createReplaceTask(config, relativeFilePath, rules));
-                        }
-                    }
+                if (!relevantFeature || fileManifest.types.includes('ignore')) {
+                    continue;
                 }
-            }
-            
-            const processableGroups = ['defaultEntityFiles', 'manyToManyFiles'];
-            for (const [groupName, group] of processableGroups.map(name => [name, (manifest as any)[name]])) {
-                if (group && model) {
-                    const { replaceTasks, templatedPromises } = await this._processFileGroup(group, config, model, groupName as string, exclusionSet);
-                    allReplaceTasks.push(...replaceTasks);
-                    allTemplatedPromises.push(...templatedPromises);
+
+                let dictionaries: readonly DictionaryName[];
+                if (fileManifest.dictionaries.length > 0) {
+                    dictionaries = fileManifest.dictionaries;
+                } else {
+                    const manifest = allManifests[relevantFeature];
+                    dictionaries = manifest.dictionaries;
+                }
+                const rules = getDictionaryRules(dictionaries, config);
+
+                const relativeFilePath = path.relative(sourceBasePath, fullFilePath).replace(/\\/g, '/');
+
+                if (fileManifest.isTemplated && model) {
+                    allTemplatedPromises.push(this._processTemplatedFile(config, relativeFilePath, rules, model, content));
+                } else {
+                    allReplaceTasks.push(this._createReplaceTask(config, relativeFilePath, rules));
                 }
             }
         }
@@ -107,127 +78,46 @@ export class GenerationService {
         ]);
     }
 
-    /**
-     * ✅ Приватный метод для обработки сложных файловых групп (defaultEntityFiles, manyToManyFiles).
-     */
-    private async _processFileGroup(
-        group: FileGroup,
-        config: GenerationConfig,
-        model: ServerpodModel,
-        groupName: string,
-        exclusionSet: Set<string> 
-    ): Promise<{ replaceTasks: ReplaceTask[]; templatedPromises: Promise<void>[] }> {
-        const replaceTasks: ReplaceTask[] = [];
-        const templatedPromises: Promise<void>[] = [];
-        const rules = getDictionaryRules(group.dictionaries, config); // Здесь тоже все корректно
-
-        let entityToFilterBy: string | undefined;
-        if (groupName === 'manyToManyFiles') {
-            entityToFilterBy = 'task_tag';
-        } else if (groupName === 'defaultEntityFiles') {
-            entityToFilterBy = config.templEntity;
-        }
-
-        if (group.replace_dirs) {
-            for (const dirPath of group.replace_dirs) {
-                const { sourceBasePath } = getPathInfo(config, dirPath);
-                const fullDirSourcePath = path.join(sourceBasePath, dirPath);
-                if (!await this.fileSystem.exists(fullDirSourcePath)) { continue; }
-
-                const filesInDir = await (this.fileSystem as any).readDirectoryRecursive(fullDirSourcePath);
-                
-                for (const fullFilePath of filesInDir) {
-                    const relativeFilePath = path.relative(sourceBasePath, fullFilePath).replace(/\\/g, '/');
-                    if (exclusionSet.has(relativeFilePath)) {continue;}
-                    if (fullFilePath.includes('.g.') || fullFilePath.includes('.freezed.')) {continue;}
-                    if (entityToFilterBy && !relativeFilePath.includes(entityToFilterBy)) {continue;}
-                    
-                    replaceTasks.push(this._createReplaceTask(config, relativeFilePath, rules));
-                }
-            }
-        }
-        
-        if (group.replace) {
-            for (const filePath of group.replace) {
-                if (exclusionSet.has(filePath)) {continue;}
-                replaceTasks.push(this._createReplaceTask(config, filePath, rules));
-            }
-        }
-
-        if (group.templated) {
-            for (const task of group.templated) {
-                if (exclusionSet.has(task.file) && !group.templated.some(t => t.file === task.file)) {continue;}
-                templatedPromises.push(this._processTemplatedFile(config, task, rules, model));
-            }
-        }
-
-        return { replaceTasks, templatedPromises };
-    }
-
-    /**
-     * Создает задачу на замену контента в файле.
-     */
     private _createReplaceTask(config: GenerationConfig, filePath: string, rules: ReplacementRule[]): ReplaceTask {
-        const { sourceBasePath, destinationBasePath, relativePath } = getPathInfo(config, filePath);
-        let destinationRelativePath = relativePath;
-
-        const templEntity = config.targetEntity1 && config.targetEntity2 ? 'task_tag' : config.templEntity;
-        const targetEntity = config.targetEntity1 && config.targetEntity2 ? `${config.targetEntity1}_${config.targetEntity2}` : config.targetEntity;
+        const { sourceBasePath, destinationBasePath } = getPathInfo(config, filePath);
+        const destinationRelativePath = this._getDestinationPath(filePath, config);
         
-        if (targetEntity) {
-            destinationRelativePath = destinationRelativePath.replaceAll(templEntity, targetEntity);
-        }
-
         return {
-            sourcePath: path.join(sourceBasePath, relativePath),
+            sourcePath: path.join(sourceBasePath, filePath),
             destinationPath: path.join(destinationBasePath, destinationRelativePath),
             rules,
         };
     }
-
-    /**
-     * Обрабатывает один шаблонный файл: выполняет замену и вставляет секции.
-     */
-    private async _processTemplatedFile(config: GenerationConfig, task: { file: string, generators: string[] }, rules: ReplacementRule[], model: ServerpodModel): Promise<void> {
-        const { sourceBasePath, destinationBasePath, relativePath } = getPathInfo(config, task.file);
-        const sourcePath = path.join(sourceBasePath, relativePath);
-
-        if (!await this.fileSystem.exists(sourcePath)) {
-            console.warn(`[GenerationService] Templated file not found, skipping: ${sourcePath}`);
-            return;
-        }
-        
-        let content = await this.fileSystem.readFile(sourcePath);
+    
+    private async _processTemplatedFile(config: GenerationConfig, filePath: string, rules: ReplacementRule[], model: ServerpodModel, initialContent: string): Promise<void> {
+        let content = initialContent;
 
         for (const rule of rules) {
             content = content.replace(new RegExp(rule.from, 'g'), rule.to);
         }
 
-        if (task.generators) {
-            const sectionConfigs: SectionConfig[] = [];
-            for (const [index, generatorName] of task.generators.entries()) {
-                const generatorFunc = getSectionGenerator(generatorName);
-                if (generatorFunc) {
-                    sectionConfigs.push({
-                        startMarker: `// === GENERATED_START_${index} ===`,
-                        endMarker: `// === GENERATED_END_${index} ===`,
-                        newContent: generatorFunc(config, model),
-                    });
-                }
-            }
-            content = this.sectionReplacer.process(content, sectionConfigs);
+        if (model) {
+            content = this.sectionReplacer.process(content, config, model);
         }
 
+        const destinationRelativePath = this._getDestinationPath(filePath, config);
+        const { destinationBasePath } = getPathInfo(config, filePath);
+        const destinationPath = path.join(destinationBasePath, destinationRelativePath);
+        
+        await this.fileSystem.createFolder(path.dirname(destinationPath));
+        await this.fileSystem.createFile(destinationPath, content);
+    }
+
+    private _getDestinationPath(relativePath: string, config: GenerationConfig): string {
         let destinationRelativePath = relativePath;
+        
         const templEntity = config.targetEntity1 && config.targetEntity2 ? 'task_tag' : config.templEntity;
         const targetEntity = config.targetEntity1 && config.targetEntity2 ? `${config.targetEntity1}_${config.targetEntity2}` : config.targetEntity;
         
-        if (targetEntity) {
+        if (targetEntity && templEntity) {
             destinationRelativePath = destinationRelativePath.replaceAll(templEntity, targetEntity);
         }
-
-        const destinationPath = path.join(destinationBasePath, destinationRelativePath);
-        await this.fileSystem.createFolder(path.dirname(destinationPath));
-        await this.fileSystem.createFile(destinationPath, content);
+        
+        return destinationRelativePath;
     }
 }

@@ -1,18 +1,6 @@
 import { DictionaryPresets } from "../dictionary_presets";
-import { CustomFileGroup } from "./type";
 
 export const manyToManyManifest = {
-  manyToManyFiles: {
-      dictionaries: DictionaryPresets.M2M,
-
-      replace_dirs: [
-        'data/',
-        'domain/',
-      ],
-
-      replace: [],
-      templated: [],
-  },
-  
-  customFiles: [] as CustomFileGroup[], 
-};
+  // Словари по умолчанию для файлов с маркером `// manifest:many_to_many`
+  dictionaries: DictionaryPresets.M2M,
+} as const;
