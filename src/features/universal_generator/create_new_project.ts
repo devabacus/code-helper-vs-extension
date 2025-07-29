@@ -44,7 +44,7 @@ export async function createNewProject(addTemplateFolders?: (fullProjectPath: st
         templProject: 't2',
         projectsPath: projectsPath,
         targetProject: targetProject,
-        features: ['general', 'routing', 'database', 'ui', 'serverpod', 'deploy']
+        // features: ['startProject', 'serverpod', 'deploy']
     });
 
     if (addTemplateFolders) {

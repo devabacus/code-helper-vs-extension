@@ -1,17 +1,11 @@
-import { databaseManifest } from './database.manifest';
 import { entityManifest } from './entity.manifest';
 import { startProjectManifest } from './start_project.manifest';
 import { manyToManyManifest } from './many_to_many.manifest';
-import { routingManifest } from './routing.manifest';
 import { serverpodManifest } from './serverpod.manifest';
 import { serverpodDeployManifest } from './serverpod_deploy.manifest';
-import { uiManifest } from './ui.manifest';
 
 export const allManifests = {
-  database: databaseManifest,
-  general: startProjectManifest,
-  routing: routingManifest,
-  ui: uiManifest,
+  startProject: startProjectManifest,
   entity: entityManifest,
   serverpod: serverpodManifest,
   deploy: serverpodDeployManifest,

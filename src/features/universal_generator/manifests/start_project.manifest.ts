@@ -21,7 +21,9 @@ export const startProjectManifest = {
   },
 
   exclude: [
-    'lib/core/data/datasources/local/database.dart'
+    'lib/core/data/datasources/local/database.dart',
+    'lib/core/config/test_config.dart'
+
   ],
 
   replace: [],
