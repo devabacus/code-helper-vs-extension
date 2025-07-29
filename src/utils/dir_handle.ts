@@ -85,4 +85,24 @@ export async function fileExists(filePath: string): Promise<boolean> {
     }
 }
 
+export async function readDirectoryRecursive(dirPath: string): Promise<string[]> {
+  const entries = await fs.promises.readdir(dirPath, { withFileTypes: true });
+  const files: string[] = [];
+
+  for (const entry of entries) {
+    const fullPath = path.join(dirPath, entry.name);
+    if (entry.isDirectory()) {
+      // Если это директория, рекурсивно читаем ее и добавляем файлы
+      files.push(...await readDirectoryRecursive(fullPath));
+    } else {
+      // Если это файл, просто добавляем его путь
+      files.push(fullPath);
+    }
+  }
+  return files;
+}
+
+
+
+
 

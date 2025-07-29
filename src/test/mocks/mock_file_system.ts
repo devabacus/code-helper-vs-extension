@@ -2,6 +2,9 @@ import { IFileSystem } from "../../core/interfaces/file_system";
 
 
 export class MockFileSystem implements IFileSystem {
+    readDirectoryRecursive(path: string): Promise<string[]> {
+        throw new Error("Method not implemented.");
+    }
     copyFile(pathSource: string, pathDest: string): Promise<void> {
         throw new Error("Method not implemented.");
     }
@@ -11,7 +14,7 @@ export class MockFileSystem implements IFileSystem {
     readFile(path: string): Promise<string> {
         throw new Error("Method not implemented.");
     }
-    fileExists(path: string): Promise<boolean> {
+    exists(path: string): Promise<boolean> {
         throw new Error("Method not implemented.");
     }
 

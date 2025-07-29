@@ -2,28 +2,19 @@ import { DictionaryPresets } from "../dictionary_presets"; // <-- Импорти
 import { GENERATORS } from "../generators/section_generators";
 import { CustomFileGroup } from "./type";
 
-
-
 export const entityManifest = {
 
     defaultEntityFiles: {
         dictionaries: DictionaryPresets.ENTITY,
 
-        replace: [
-            // 'data/datasources/local/interfaces/category_local_datasource_service.dart',
-            // 'data/datasources/remote/interfaces/category_remote_datasource_service.dart',
-            // 'data/datasources/local/interfaces/category_local_datasource_service.dart',
-            // 'data/datasources/remote/interfaces/category_remote_datasource_service.dart',
-            // 'data/datasources/remote/sources/category_remote_data_source.dart',
-            'data/providers/category/category_data_providers.dart',
-            // 'data/repositories/category_repository_impl.dart',
-            // 'domain/providers/category/category_usecase_providers.dart',
-            // 'domain/repositories/category_repository.dart',
-            // 'domain/usecases/category_usecases.dart',
-            'presentation/providers/category/category_get_by_id_provider.dart',
-            'presentation/providers/category/category_state_providers.dart',
-            'server/lib/src/endpoints/category_endpoint.dart'
+        replace_dirs: [
+            'data/',
+            'domain/',
+            'presentation/',
+            'server/lib/src/endpoints/'
         ],
+
+        replace: [],
 
         templated: [
             {
@@ -48,7 +39,6 @@ export const entityManifest = {
                 file: 'data/datasources/remote/sources/category_remote_data_source.dart',
                 generators: [GENERATORS.REMOTE_DATASOURCE_RELATION_METHODS]
             },
-
             {
                 file: 'data/repositories/category_repository_impl.dart',
                 generators: [GENERATORS.REPOSITORY_IMPL_RELATION_METHODS]
@@ -87,31 +77,22 @@ export const entityManifest = {
                     GENERATORS.ENTITY_TO_SERVERPOD_PARAMS,
                 ]
             },
-
             {
                 file: 'domain/providers/category/category_usecase_providers.dart',
                 generators: [
                     GENERATORS.USECASE_PROVIDER_RELATION_METHODS,
                 ]
             },
-
             {
                 file: 'domain/usecases/category_usecases.dart',
                 generators: [GENERATORS.USECASE_RELATION_METHODS]
             },
-
             {
                 file: 'domain/repositories/category_repository.dart',
                 generators: [GENERATORS.DOMAIN_REPOSITORY_RELATION_METHODS]
             },
-
         ]
     },
 
-    /**
-     * Сюда можно будет добавлять файлы с особыми правилами замены,
-     * если они не вписываются в стандартный поток.
-     * Например: { files: ['...'], dictionaries: DictionaryPresets.PROJECT_ONLY }
-     */
     customFiles: [] as CustomFileGroup[]
 };
