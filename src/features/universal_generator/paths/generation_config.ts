@@ -1,5 +1,5 @@
 import path from "path";
-import { FeatureName } from "../manifests";
+import { FeatureName } from "../generators/manifests";
 
 // Простые файлы - только замена entity
 export interface IGenerationConfig {

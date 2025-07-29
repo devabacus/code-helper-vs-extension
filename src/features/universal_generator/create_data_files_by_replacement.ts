@@ -2,7 +2,7 @@ import { ServiceLocator } from "../../core/services/service_locator";
 import { getDocText } from "../../utils/ui/ui_util";
 import { AppDatabaseGenerator } from "./generators/app_database/app_database_generator";
 import { GenerationService } from "./generators/generation_service";
-import { FeatureName } from "./manifests";
+import { FeatureName } from "./generators/manifests";
 import { GenerationConfig } from "./paths/generation_config";
 import { ServerpodYamlParser } from "./serverpod_yaml_parser/server_yaml_parser";
 
