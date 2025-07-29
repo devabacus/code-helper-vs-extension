@@ -39,11 +39,43 @@ export class GenerationService {
 
         for (const featureName of config.features) {
             const manifest = allManifests[featureName as FeatureName];
-            if (!manifest) {continue;}
+            if (!manifest) { continue; }
 
-            // 1. Обработка статических файлов
+            // --- ШАГ 1: Собираем единый и полный список исключений для этого манифеста ---
+            const exclusionSet = new Set<string>();
+
+            // 1.1 Файлы, которые нужно полностью проигнорировать
+            if ('exclude' in manifest && (manifest as any).exclude) {
+                (manifest as any).exclude.forEach((file: string) => exclusionSet.add(file));
+            }
+
+            // 1.2 Файлы, обрабатываемые по особым правилам (они не должны попадать в обработку директорий)
+            const fileGroups = ['defaultEntityFiles', 'manyToManyFiles'];
+            for (const groupName of fileGroups) {
+                const group = (manifest as any)[groupName];
+                if (!group) {continue;}
+                if (group.templated) {
+                    group.templated.forEach((task: { file: string; }) => exclusionSet.add(task.file));
+                }
+                if (group.replace) {
+                    group.replace.forEach((filePath: string) => exclusionSet.add(filePath));
+                }
+            }
+            if ('customFiles' in manifest && (manifest as any).customFiles) {
+                (manifest as any).customFiles.forEach((group: { files: string[] }) => {
+                    if (group.files) {group.files.forEach(file => exclusionSet.add(file));}
+                });
+            }
+            if ('static' in manifest && manifest.static) {
+                manifest.static.forEach(file => exclusionSet.add(file));
+            }
+
+            // --- ШАГ 2: Обрабатываем все секции, используя список исключений ---
+
+            // 2.1 Обработка ОДИНОЧНЫХ статических файлов
             if ('static' in manifest && manifest.static) {
                 for (const filePath of manifest.static) {
+                    if ((manifest as any).exclude?.includes(filePath)) {continue;} // Проверка, что файл не в главном exclude
                     const { sourceBasePath, destinationBasePath, relativePath } = getPathInfo(config, filePath);
                     allStaticTasks.push({
                         sourcePath: path.join(sourceBasePath, relativePath),
@@ -51,23 +83,47 @@ export class GenerationService {
                     });
                 }
             }
+            
+           if ('static_dirs' in manifest && (manifest as any).static_dirs) {
+    for (const dirPath of (manifest as any).static_dirs) {
+        const { sourceBasePath, destinationBasePath } = getPathInfo(config, dirPath);
+        const fullDirSourcePath = path.join(sourceBasePath, dirPath);
 
-            // 2. Обработка файловых групп (defaultEntityFiles, manyToManyFiles и т.д.)
-            const processableGroups: [string, FileGroup | undefined][] = [
-                ['defaultEntityFiles', (manifest as any).defaultEntityFiles],
-                ['manyToManyFiles', (manifest as any).manyToManyFiles],
-            ];
+        if (!await this.fileSystem.exists(fullDirSourcePath)) { continue; }
 
-           for (const [groupName, group] of processableGroups) {
+        const filesInDir = await (this.fileSystem as any).readDirectoryRecursive(fullDirSourcePath);
+
+        for (const fullFilePath of filesInDir) {
+            // ✅ ДОБАВЛЕНА ПРОВЕРКА: Игнорируем .g. и .freezed. файлы
+            if (fullFilePath.includes('.g.') || fullFilePath.includes('.freezed.')) {
+                continue;
+            }
+
+            const relativeFilePath = path.relative(sourceBasePath, fullFilePath).replace(/\\/g, '/');
+            if (exclusionSet.has(relativeFilePath)) {
+                continue; 
+            }
+            allStaticTasks.push({
+                sourcePath: fullFilePath,
+                destinationPath: path.join(destinationBasePath, relativeFilePath),
+            });
+        }
+    }
+}
+
+            // 2.3 Обработка файловых групп (defaultEntityFiles, manyToManyFiles и т.д.)
+            for (const [groupName, group] of fileGroups.map(name => [name, (manifest as any)[name]])) {
                 if (group && model) {
-                    const { replaceTasks, templatedPromises } = await this._processFileGroup(group, config, model, groupName);
+                    const { replaceTasks, templatedPromises } = await this._processFileGroup(group, config, model, groupName as string, exclusionSet);
                     allReplaceTasks.push(...replaceTasks);
                     allTemplatedPromises.push(...templatedPromises);
                 }
             }
-            // 3. Обработка customFiles (для обратной совместимости)
+
+            // 2.4 Обработка customFiles (для обратной совместимости)
             if ('customFiles' in manifest && (manifest as any).customFiles && model) {
                 for (const group of (manifest as any).customFiles) {
+                    if ((manifest as any).exclude?.some((ex: string) => group.files.includes(ex))) {continue;}
                     const rules = getDictionaryRules(group.dictionaries, config);
                     if (group.files) {
                         for (const filePath of group.files) {
@@ -86,34 +142,30 @@ export class GenerationService {
     }
 
     /**
-     * ✅ Приватный метод для обработки любой файловой группы.
+     * ✅ Приватный метод для обработки одной файловой группы (defaultEntityFiles, manyToManyFiles).
      */
-   private async _processFileGroup(
+    private async _processFileGroup(
         group: FileGroup,
         config: GenerationConfig,
         model: ServerpodModel,
-        groupName: string // <-- Получаем имя группы
+        groupName: string,
+        // Принимает уже готовый набор исключений
+        exclusionSet: Set<string> 
     ): Promise<{ replaceTasks: ReplaceTask[]; templatedPromises: Promise<void>[] }> {
         const replaceTasks: ReplaceTask[] = [];
         const templatedPromises: Promise<void>[] = [];
         const rules = getDictionaryRules(group.dictionaries as any, config);
 
-        // --- 1. Сбор исключений ---
-        const exclusionSet = new Set<string>();
-        if (group.templated) { group.templated.forEach(task => exclusionSet.add(task.file)); }
-        if (group.replace) { group.replace.forEach(filePath => exclusionSet.add(filePath)); }
-
-        // ★★★ ИЗМЕНЕНИЕ 2: Выбираем ключевое слово для фильтрации ★★★
+        // Определяем, по какому слову фильтровать файлы для этой группы
         let entityToFilterBy: string | undefined;
-
         if (groupName === 'manyToManyFiles') {
             entityToFilterBy = 'task_tag'; // Для M2M ищем 'task_tag'
         } else if (groupName === 'defaultEntityFiles') {
-            entityToFilterBy = config.templEntity; // Для обычных сущностей используем стандартный `templEntity` ('category')
+            entityToFilterBy = config.templEntity; // Для обычных сущностей 'category'
         }
 
-        // --- 2. Обработка директорий из `replace_dirs` ---
-      if (group.replace_dirs) {
+        // --- Обработка директорий из `replace_dirs` ---
+        if (group.replace_dirs) {
             for (const dirPath of group.replace_dirs) {
                 const { sourceBasePath } = getPathInfo(config, dirPath);
                 const fullDirSourcePath = path.join(sourceBasePath, dirPath);
@@ -123,42 +175,46 @@ export class GenerationService {
                 const filesInDir = await (this.fileSystem as any).readDirectoryRecursive(fullDirSourcePath);
                 
                 for (const fullFilePath of filesInDir) {
+                    const relativeFilePath = path.relative(sourceBasePath, fullFilePath).replace(/\\/g, '/');
+
+                    // Пропускаем файл, если он уже обрабатывается другим правилом или исключен
+                    if (exclusionSet.has(relativeFilePath)) {
+                        continue;
+                    }
+                    
+                    // Пропускаем сгенерированные build_runner'ом файлы
                     if (fullFilePath.includes('.g.') || fullFilePath.includes('.freezed.')) {
                         continue;
                     }
-
-                    const relativeFilePath = path.relative(sourceBasePath, fullFilePath).replace(/\\/g, '/');
                     
-                    if (!exclusionSet.has(relativeFilePath)) {
-                        // ★★★ ИЗМЕНЕНИЕ 3: Используем выбранное слово для фильтрации ★★★
-                        if (entityToFilterBy && !relativeFilePath.includes(entityToFilterBy)) {
-                            continue; // Пропускаем, если имя файла не содержит нужное слово
-                        }
-                        
-                        replaceTasks.push(this._createReplaceTask(config, relativeFilePath, rules));
+                    // Пропускаем, если имя файла не содержит нужную нам шаблонную сущность
+                    if (entityToFilterBy && !relativeFilePath.includes(entityToFilterBy)) {
+                        continue;
                     }
+                    
+                    replaceTasks.push(this._createReplaceTask(config, relativeFilePath, rules));
                 }
             }
         }
         
-        
-        // --- 3. Обработка явного `replace` (остается без изменений) ---
+        // --- Обработка явного `replace` ---
         if (group.replace) {
             for (const filePath of group.replace) {
+                 if (exclusionSet.has(filePath) && !group.replace.includes(filePath)) {continue;}
                 replaceTasks.push(this._createReplaceTask(config, filePath, rules));
             }
         }
 
-        // --- 4. Обработка `templated` (остается без изменений) ---
+        // --- Обработка `templated` ---
         if (group.templated) {
             for (const task of group.templated) {
+                 if (exclusionSet.has(task.file) && !group.templated.some(t => t.file === task.file)) {continue;}
                 templatedPromises.push(this._processTemplatedFile(config, task, rules, model));
             }
         }
 
         return { replaceTasks, templatedPromises };
     }
-
 
     /**
      * Создает задачу на замену контента в файле.
