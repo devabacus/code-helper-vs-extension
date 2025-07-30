@@ -28,8 +28,9 @@ export class SectionReplacer {
         const endMarker = `// === generated_end:${generatorName} ===`;
         
         // Формируем новый блок с отступами для красоты.
-        const indentedContent = newContent.split('\n').map(line => `  ${line}`).join('\n');
-        return `${startMarker}\n${indentedContent}\n  ${endMarker}`;
+        let indentedContent = newContent.split('\n').map(line => `  ${line}`).join('\n');
+          return newContent? `${startMarker}\n${indentedContent}\n  ${endMarker}`: '';
+
       }
       
       // Если генератор для данного имени не найден, возвращаем исходный блок,
