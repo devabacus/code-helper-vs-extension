@@ -6,13 +6,14 @@ export const allManifests = {
     scan_dirs: [
       'lib/',
       'server/',
+      // 'lib/core/config/'
     ],
   },
 
   entity: {
     dictionaries: DictionaryPresets.ENTITY,
     scan_dirs: [
-      'feature/' 
+      'feature/'
     ]
   },
 
@@ -22,10 +23,10 @@ export const allManifests = {
       'feature/'
     ]
   },
-  
+
   deploy: {
     dictionaries: DictionaryPresets.PROJECT_ONLY,
-    scan_dirs: [      
+    scan_dirs: [
       'server/',
     ],
   },

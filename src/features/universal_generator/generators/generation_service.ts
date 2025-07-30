@@ -3,7 +3,7 @@
 import path from 'path';
 import { IFileSystem } from '../../../core/interfaces/file_system';
 import { DefaultFileSystem } from '../../../core/implementations/default_file_system';
-import { GenerationConfig, IGenerationConfig } from '../paths/generation_config';
+import { GenerationConfig } from '../paths/generation_config';
 import { getDictionaryRules, DictionaryName } from '../replacement_util';
 import { ReplacingFileProcessor, ReplaceTask, ReplacementRule } from './replacing_file_processor';
 import { SectionReplacer } from '../section_config';
@@ -18,17 +18,16 @@ export class GenerationService {
     private readonly fileSystem: IFileSystem;
     private readonly replacingProcessor: ReplacingFileProcessor;
     private readonly sectionReplacer: SectionReplacer;
-    private readonly relationPatcher: RelationPatcher; // <--- Добавляем свойство
+    private readonly relationPatcher: RelationPatcher;
 
     constructor(fileSystem?: IFileSystem) {
         this.fileSystem = fileSystem || new DefaultFileSystem();
         this.replacingProcessor = new ReplacingFileProcessor(this.fileSystem);
         this.sectionReplacer = new SectionReplacer();
-        this.relationPatcher = new RelationPatcher(this.fileSystem); // <--- Инициализируем
+        this.relationPatcher = new RelationPatcher(this.fileSystem);
     }
 
     public async generate(config: GenerationConfig, model?: ServerpodModel): Promise<void> {
-        // --- ЭТАП 1: БАЗОВАЯ ГЕНЕРАЦИЯ (по шаблону 'category') ---
         const baseGenerationConfig = new GenerationConfig({ ...config, templEntity: 'category' });
         
         const allReplaceTasks: ReplaceTask[] = [];
@@ -42,29 +41,48 @@ export class GenerationService {
             }
         }
 
+        const isEntityBasedGeneration = baseGenerationConfig.features.includes('entity') || baseGenerationConfig.features.includes('manyToMany');
+
         for (const dir of directoriesToScan) {
-            const { sourceBasePath } = getPathInfo(baseGenerationConfig, dir);
-            const fullDirSourcePath = path.join(sourceBasePath);
-            if (!await this.fileSystem.exists(fullDirSourcePath)) {continue;}
+            // Получаем все части пути из getPathInfo
+            const pathInfo = getPathInfo(baseGenerationConfig, dir);
+            
+            // Собираем полный путь для сканирования
+            const fullDirSourcePath = path.join(pathInfo.sourceBasePath, pathInfo.relativePath);
+            // --- КОНЕЦ ИСПРАВЛЕНИЯ ---
+
+            if (!await this.fileSystem.exists(fullDirSourcePath)) {
+                continue;
+            }
 
             const filesInDir = await (this.fileSystem as any).readDirectoryRecursive(fullDirSourcePath);
 
             for (const fullFilePath of filesInDir) {
-                if (!fullFilePath.includes(baseGenerationConfig.templEntity) || fullFilePath.includes('.g.') || fullFilePath.includes('.freezed.')) {
+                if (isEntityBasedGeneration && !fullFilePath.includes(baseGenerationConfig.templEntity)) {
+                    continue;
+                }
+                
+                if (fullFilePath.includes('.g.') || fullFilePath.includes('.freezed.')) {
                     continue;
                 }
 
                 const content = await this.fileSystem.readFile(fullFilePath);
                 const fileManifest = MarkerAnalyzer.analyze(content);
-                if (fileManifest.types.includes('ignore')) {continue;}
+                if (fileManifest.types.includes('ignore')) {
+                    continue;
+                }
                 
                 const isRelevant = baseGenerationConfig.features.some(feature => fileManifest.types.includes(feature as any));
-                if (!isRelevant) {continue;}
+                if (!isRelevant) {
+                    continue;
+                }
 
                 const dictionaries = fileManifest.dictionaries.length > 0 ? fileManifest.dictionaries : allManifests[baseGenerationConfig.features[0]]?.dictionaries || [];
                 const rules = getDictionaryRules(dictionaries, baseGenerationConfig);
 
-                const relativePath = path.relative(sourceBasePath, fullFilePath).replace(/\\/g, '/');
+                // `path.relative` будет работать правильно, так как `pathInfo.sourceBasePath` - это по-прежнему корневая папка проекта
+                const relativePath = path.relative(pathInfo.sourceBasePath, fullFilePath).replace(/\\/g, '/');
+                
                 if (fileManifest.isTemplated && model) {
                     allTemplatedPromises.push(this._processTemplatedFile(baseGenerationConfig, relativePath, rules, model, content));
                 } else {
@@ -78,9 +96,7 @@ export class GenerationService {
             ...allTemplatedPromises,
         ]);
 
-        // --- ЭТАП 2: ПАТЧИНГ ФАЙЛОВ МЕТОДАМИ ДЛЯ КАЖДОЙ СВЯЗИ ---
         if (model && RelationAnalyzer.manyToOneFields(model.fields).length > 0) {
-            // Вызываем новый класс, передавая оригинальный конфиг
             await this.relationPatcher.patch(config, model); 
         }
     }

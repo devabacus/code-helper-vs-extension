@@ -20,15 +20,12 @@ export async function createDataFilesByReplacement() {
         targetEntity: model.tableName,
         targetEntity1: model.entity1,
         targetEntity2: model.entity2,
-        // features: ['startProject']
-        // features: ['entity']
-        features: features
-
+        features: ['startProject']
+        // features: features
     });
 
     const generationService = new GenerationService(fileSystem);
     await generationService.generate(config, model);
-
     // const appDatabaseGenerator = new AppDatabaseGenerator(fileSystem, config);
     // await appDatabaseGenerator.generate();
 }

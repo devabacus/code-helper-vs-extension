@@ -88,7 +88,7 @@ export class RelationPatcher {
             if (allProcessedBlocks.length > 0) {
                 const relativePath = path.relative(featureSourcePath, templateFilePath).replace(/\\/g, '/');
                 const destinationPath = path.join(config.targetFeaturePath, this._getDestinationPath(new GenerationConfig({ ...config, templEntity: 'category' }), relativePath));
-
+    
                 if (!await this.fileSystem.exists(destinationPath)) {
                     continue;
                 }
