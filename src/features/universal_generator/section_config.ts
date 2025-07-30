@@ -30,9 +30,9 @@ export class SectionReplacer {
         // Формируем новый блок с отступами для красоты.
         if (newContent) {
           const indentedContent = newContent.split('\n').map(line => line ? `  ${line}` : '').join('\n');
-          return `${startMarker}\n${indentedContent}\n  ${endMarker}`;
+          return `${startMarker}\n${indentedContent}\n${endMarker}`;
         } else {
-          return `${startMarker}\n  ${endMarker}`;
+          return `${startMarker}\n${endMarker}`;
         }
 
       }
