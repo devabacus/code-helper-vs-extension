@@ -1,9 +1,7 @@
+import { GenerationConfig } from "../paths/generation_config";
 import { CodeFormatter } from "../serverpod_yaml_parser/formatters/code_formatter";
 import { ServerpodModel } from "../serverpod_yaml_parser/formatters/types";
-import { GenerationConfig } from "../paths/generation_config";
-import { RelationAnalyzer } from "../serverpod_yaml_parser/relation-analyzer";
-import { cap, pluralConvert, unCap } from "../../../utils/text_work/text_util";
-import { generateDaoManyToOneMethods, generateDomainRepositoryManyToOneMethods, generateDriftTableImports, generateEntityToServerpodParams, generateLocalDatasourceManyToOneMethods, generateLocalDatasourceServiceManyToOneMethods, generateRemoteDatasourceManyToOneMethods, generateRemoteDatasourceServiceManyToOneMethods, generateRepositoryImplManyToOneMethods, generateServerpodToModelParams, generateUseCaseManyToOneMethods, generateUsecaseProviderManyToOneMethods } from "./relation_generators";
+import { generateDriftTableImports, generateEntityToServerpodParams, generateServerpodToModelParams } from "./relation_generation";
 
 export const GENERATORS = {
     DRIFT_TABLE_COLUMNS: 'driftTableColumns',
@@ -14,18 +12,8 @@ export const GENERATORS = {
     VALUE_WRAPPED_FIELDS: 'valueWrappedFields',
     SIMPLE_FIELDS: 'simpleFields',
     SERVERPOD_TO_MODEL_PARAMS: 'serverpodToModelParams',
-    
-    DAO_RELATION_METHODS: 'daoRelationMethods', 
-    ENTITY_RELATION_FIELDS: 'entityRelationFields', 
-    LOCAL_DATASOURCE_RELATION_METHODS: 'localDatasourceRelationMethods',
-    LOCAL_DATASOURCE_SERVICE_RELATION_METHODS: 'localDatasourceServiceRelationMethods', 
-    REMOTE_DATASOURCE_SERVICE_RELATION_METHODS: 'remoteDatasourceServiceRelationMethods',
-    REMOTE_DATASOURCE_RELATION_METHODS: 'remoteDatasourceRelationMethods', 
-    REPOSITORY_IMPL_RELATION_METHODS: 'repositoryImplRelationMethods', 
     ENTITY_TO_SERVERPOD_PARAMS: 'entityToServerpodParams',
-    USECASE_PROVIDER_RELATION_METHODS: 'usecaseProviderRelationProviders',
-    USECASE_RELATION_METHODS: 'usecaseRelationMethods', 
-    DOMAIN_REPOSITORY_RELATION_METHODS: 'domainRepositoryRelationMethods',
+    ENTITY_RELATION_FIELDS: 'entityRelationFields', 
 
 } as const;
 
@@ -35,73 +23,44 @@ export const DEFAULT_MARKERS = {
 } as const;
 
 // Тип для функции-генератора
-type SectionGenerator = (config: GenerationConfig, model: ServerpodModel) => string;
+type SectionGenerator = (model: ServerpodModel) => string;
 
 // Реестр, где мы будем хранить все наши генераторы
 const sectionGeneratorRegistry: Record<string, SectionGenerator> = {
 
-    [GENERATORS.DRIFT_TABLE_COLUMNS]: (config, model) => {
+    [GENERATORS.DRIFT_TABLE_COLUMNS]: (model) => {
         const codeFormatter = new CodeFormatter();
         return codeFormatter.generateDriftTableColumns(model.fields);
     },
-     [GENERATORS.DRIFT_TABLE_IMPORTS]: (config, model) => {
-        return generateDriftTableImports(model);
-    },
-
-    [GENERATORS.FREEZED_FIELDS]: (config, model) => {
+    
+    [GENERATORS.FREEZED_FIELDS]: (model) => {
         const formatter = new CodeFormatter();
         return formatter.formatClassFields(model.fields);
     },
-
-    [GENERATORS.FREEZED_CONSTRUCTOR]: (config, model) => {
+    
+    [GENERATORS.FREEZED_CONSTRUCTOR]: (model) => {
         const formatter = new CodeFormatter();
         return formatter.formatRequiredTypeFields(model.fields);
     },
-
-    [GENERATORS.VALUE_WRAPPED_FIELDS]: (config, model) => {
+    
+    [GENERATORS.VALUE_WRAPPED_FIELDS]: (model) => {
         const formatter = new CodeFormatter();
         return formatter.formatValueWrappedFields(model.fields);
     },
-    [GENERATORS.SIMPLE_FIELDS]: (config, model) => {
+    [GENERATORS.SIMPLE_FIELDS]: (model) => {
         const formatter = new CodeFormatter();
         return formatter.formatSimpleFields(model.fields);
     },
+    [GENERATORS.DRIFT_TABLE_IMPORTS]: (model) => {
+       return generateDriftTableImports(model);
+   },
 
-     [GENERATORS.SERVERPOD_TO_MODEL_PARAMS]: (config, model) => {
+     [GENERATORS.SERVERPOD_TO_MODEL_PARAMS]: (model) => {
         return generateServerpodToModelParams(model);
     },
 
+    [GENERATORS.ENTITY_TO_SERVERPOD_PARAMS]: (model) => generateEntityToServerpodParams(model),
 
-   [GENERATORS.DAO_RELATION_METHODS]: (config, model) => {
-        return generateDaoManyToOneMethods(model);
-    },
-
-     [GENERATORS.LOCAL_DATASOURCE_RELATION_METHODS]: (config, model) => {
-        return generateLocalDatasourceManyToOneMethods(model);
-    },
-
-      [GENERATORS.LOCAL_DATASOURCE_SERVICE_RELATION_METHODS]: (config, model) => generateLocalDatasourceServiceManyToOneMethods(model),
-    [GENERATORS.REMOTE_DATASOURCE_SERVICE_RELATION_METHODS]: (config, model) => generateRemoteDatasourceServiceManyToOneMethods(model),
-    [GENERATORS.REMOTE_DATASOURCE_RELATION_METHODS]: (config, model) => generateRemoteDatasourceManyToOneMethods(model),
-
-    [GENERATORS.REPOSITORY_IMPL_RELATION_METHODS]: (config, model) => generateRepositoryImplManyToOneMethods(model),
-    [GENERATORS.ENTITY_TO_SERVERPOD_PARAMS]: (config, model) => generateEntityToServerpodParams(model),
-
-    
-    [GENERATORS.USECASE_PROVIDER_RELATION_METHODS]: (config, model) => {
-        return generateUsecaseProviderManyToOneMethods(model);
-    },
-
-     [GENERATORS.USECASE_RELATION_METHODS]: (config, model) => {
-        return generateUseCaseManyToOneMethods(model);
-    },
-
-    [GENERATORS.DOMAIN_REPOSITORY_RELATION_METHODS]: (config, model) => {
-        return generateDomainRepositoryManyToOneMethods(model);
-    },
-    // formatValueWrappedFields
-    // Сюда можно добавлять другие генераторы...
-    // например, для полей в freezed-классах, конструкторов и т.д.
 };
 
 export function getSectionGenerator(name: string): SectionGenerator | undefined {

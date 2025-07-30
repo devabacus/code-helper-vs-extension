@@ -3,14 +3,14 @@
 import path from 'path';
 import { IFileSystem } from '../../../core/interfaces/file_system';
 import { GenerationConfig } from '../paths/generation_config';
-import { getDictionaryRules, Dictionaries } from '../replacement_util';
+import { getDictionaryRules } from '../replacement_util';
 import { ServerpodModel } from '../serverpod_yaml_parser/formatters/types';
 import { getPathInfo } from '../paths/path_handle';
 import { RelationAnalyzer } from '../serverpod_yaml_parser/relation-analyzer';
 import { DictionaryPresets } from '../dictionary_presets';
 
 export class RelationPatcher {
-    constructor(private fileSystem: IFileSystem) {}
+    constructor(private fileSystem: IFileSystem) { }
 
     public async patch(config: GenerationConfig, model: ServerpodModel): Promise<void> {
         console.log('Обнаружены связи, запускается процесс патчинга...');
@@ -21,50 +21,64 @@ export class RelationPatcher {
         const startMarker = `// === generated_start:${markerName} ===`;
         const endMarker = `// === generated_end:${markerName} ===`;
         const regex = new RegExp(`${startMarker}[\\s\\S]*?${endMarker}`, 'g');
-        
+
         const relationFields = RelationAnalyzer.manyToOneFields(model.fields);
-        if (relationFields.length === 0) {return;}
+        if (relationFields.length === 0) {
+            return;
+        }
 
         const { sourceBasePath: featureSourcePath } = getPathInfo(config, 'feature/');
-        if (!await this.fileSystem.exists(featureSourcePath)) {return;}
+        if (!await this.fileSystem.exists(featureSourcePath)) {
+            return;
+        }
 
         const templateFiles = await (this.fileSystem as any).readDirectoryRecursive(featureSourcePath);
 
         for (const templateFilePath of templateFiles) {
-            // Ищем базовый шаблон, который будем патчить (например, category_dao.dart)
-            if (!templateFilePath.includes(config.templEntity)) {continue;}
+            if (!templateFilePath.includes(config.templEntity)) {
+                continue;
+            }
 
-            // Находим соответствующий ему шаблон для связей (task_dao.dart)
             const relationTemplatePath = templateFilePath.replaceAll(config.templEntity, relationTemplateEntity);
-            if (!await this.fileSystem.exists(relationTemplatePath)) {continue;}
-            
+            if (!await this.fileSystem.exists(relationTemplatePath)) {
+                continue;
+            }
+
             const relationTemplateContent = await this.fileSystem.readFile(relationTemplatePath);
-            const matchedBlocks = relationTemplateContent.match(regex);
-            if (!matchedBlocks) {continue;}
+
+            const matched = relationTemplateContent.match(regex);
+            if (!matched) {
+                continue;
+            }
+            const blockContent = matched[0];
+
+            const isBlockInClass = relationTemplateContent.trim().endsWith('}');
+
 
             let allProcessedBlocks = '';
 
-            // Для каждой связи в модели генерируем свой блок кода
             for (const relationField of relationFields) {
-                if (!relationField.relatedModel) {continue;}
+                if (!relationField.relatedModel) {
+                    continue;
+                }
 
-                let templateBlock = matchedBlocks.join('\n\n');
+                let templateBlock = blockContent;
 
-                // 1. Заменяем основную сущность (task -> targetEntity)
+                // 1. Заменяем основную сущность
                 const mainEntityConfig = new GenerationConfig({ ...config, templEntity: relationTemplateEntity, targetEntity: model.className });
                 const mainEntityRules = getDictionaryRules(DictionaryPresets.ENTITY, mainEntityConfig);
                 for (const rule of mainEntityRules) {
                     templateBlock = templateBlock.replace(new RegExp(rule.from, 'g'), rule.to);
                 }
 
-                // 2. Заменяем связанную сущность (category -> actual related entity)
+                // 2. Заменяем связанную сущность
                 const relatedEntityConfig = new GenerationConfig({ ...config, templEntity: templateRelatedEntity, targetEntity: relationField.relatedModel });
                 const relatedEntityRules = getDictionaryRules(DictionaryPresets.ENTITY, relatedEntityConfig);
                 for (const rule of relatedEntityRules) {
                     templateBlock = templateBlock.replace(new RegExp(rule.from, 'g'), rule.to);
                 }
-                
-                // 3. Заменяем ID поле (categoryId -> actual field name)
+
+                // 3. Заменяем ID поле
                 const targetIdName = relationField.name.endsWith('Id') ? relationField.name : `${relationField.name}Id`;
                 templateBlock = templateBlock.replace(new RegExp(`${templateRelatedEntity}Id`, 'g'), targetIdName);
 
@@ -73,14 +87,27 @@ export class RelationPatcher {
 
             if (allProcessedBlocks.length > 0) {
                 const relativePath = path.relative(featureSourcePath, templateFilePath).replace(/\\/g, '/');
-                // Для определения пути назначения используем конфиг с базовой сущностью ('category')
-                const destinationPath = path.join(config.targetFeaturePath, this._getDestinationPath(new GenerationConfig({...config, templEntity: 'category'}), relativePath));
+                const destinationPath = path.join(config.targetFeaturePath, this._getDestinationPath(new GenerationConfig({ ...config, templEntity: 'category' }), relativePath));
 
-                if (!await this.fileSystem.exists(destinationPath)) {continue;}
+                if (!await this.fileSystem.exists(destinationPath)) {
+                    continue;
+                }
+
 
                 const destinationContent = await this.fileSystem.readFile(destinationPath);
-                await this.fileSystem.createFile(destinationPath, destinationContent + allProcessedBlocks);
-                console.log(`[PATCHED]: ${path.basename(destinationPath)} с ${relationFields.length} новым методом(-ами)`);
+                if (isBlockInClass) {
+                    const lastBraceIndex = destinationContent.lastIndexOf('}');
+                    if (lastBraceIndex !== -1) {
+                        const indentedBlock = allProcessedBlocks.trim();
+                        const newContent =
+                            destinationContent.slice(0, lastBraceIndex) +
+                            `\n  ${indentedBlock}\n` +
+                            destinationContent.slice(lastBraceIndex);
+                        await this.fileSystem.createFile(destinationPath, newContent);
+                    }
+                } else {
+                    await this.fileSystem.createFile(destinationPath, destinationContent + allProcessedBlocks);
+                }
             }
         }
     }
