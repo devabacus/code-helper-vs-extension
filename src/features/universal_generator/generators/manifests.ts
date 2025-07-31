@@ -6,7 +6,7 @@ export const allManifests = {
     scan_dirs: [
       'lib/',
       'server/',
-      // 'lib/core/config/'
+      // 'flutter/'
     ],
   },
 

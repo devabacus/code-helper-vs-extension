@@ -1,6 +1,6 @@
 import path from 'path';
 import { createFile, createFolders, executeCommand } from '../../utils';
-import { addFeatureFolders } from '../add_feature/add_feature';
+import { addFeature } from '../add_feature/add_feature';
 import { baseTemplateFolders, projectFiles, routerPath, templatefiles } from './flutter_content/template_paths';
 import { pubGet } from './flutter_content/terminal_commands';
 import { routerCont } from '../add_feature/files/router_config';
@@ -14,7 +14,7 @@ export async function addBaseTemplate(rootPath: string) {
     await createFolders(coreFolders);
     await createTemplateFiles(rootPath);
     await createFile(routerPath(rootPath), routerCont);
-    addFeatureFolders(rootPath, 'home');
+    addFeature(rootPath, 'home');
     // await addDriftDB(rootPath);
     // crBarrelFls(`${rootPath}/lib`);
     executeCommand(pubGet, rootPath);

@@ -6,18 +6,24 @@ import { fNavServBase, fNavServPath, fNavServProv, fNavServProvPath, fNavServPro
 
 
 import { updRouterThings } from '../template_project/update_files';
+import { GenerationConfig } from '../universal_generator/paths/generation_config';
 import { fFoldPths } from './feat_folds_path';
 import { fMainPgCont, fMainPgPth } from './files/feat_main_page_cont';
 
 
-export async function addFeatureFolders(rootPath: string, featName: string = "") {
+export async function addFeature(rootPath: string, featName: string = "") {
 
     let featureName = featName;
+
+    const config = new GenerationConfig({
+            templProject: 't2',
+            targetProject: 't3',
+        });
 
     if (featName === '') {
         featureName = await getUserInputWrapper(true, "type feature name") as string;
     }
-    const feauturePath = `${rootPath}/lib/features/${featureName}`;
+    const feauturePath = `${config.targetFlutterProjectPath}/lib/features/${featureName}`;
     if (featureName === 'undefined') { return; }
 
     const featureFolders = fFoldPths.map(function (pathTempDirFiles) {

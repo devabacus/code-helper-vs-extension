@@ -1,6 +1,6 @@
 import { window } from "vscode";
 import { addApiService } from "../features/add_api_service/add_api_service";
-import { addFeatureFolders } from "../features/add_feature/add_feature";
+import { addFeature } from "../features/add_feature/add_feature";
 import { deleteFuture } from "../features/add_feature/delete_feature";
 import { deletePage } from "../features/add_feature/delete_page";
 import { createFlutterPackage } from "../features/flutter_create_package";
@@ -19,17 +19,17 @@ import { createNewProjectTest } from "../features/universal_generator/create_new
 
 export async function flutterHandler() {
     const options: { [key: string]: () => Promise<any> } = {
+        'Новый проект c serverpod': () => createNewProject(),
         'Создать файлы данных из yaml': () => createDataFilesByReplacement(),
         // 'Создать файлы данных из yaml': () => createDataFilesFromYaml(),
         // 'Новый проект c serverpod': () => flutterCreateNewServerPodProject(addBaseTemplate),
-        // 'Новый проект c serverpod': () => createNewProject(addBaseTemplate),
-        'Новый проект c serverpod': () => createNewProjectTest(addBaseTemplate),
+        // 'Новый проект c serverpod': () => createNewProjectTest(addBaseTemplate),
         'Сгенерировать файлы для serverpod': () => serverpodK8sFileGenerate(getRootWorkspaceFolders()),
         // 'Новый базовый проект': () => flutterCreateNewProject(startAppRoutine),
         'Добавить base template': () => addBaseTemplate(getRootWorkspaceFolders()),
         'Добавить template files': () => createTemplateFiles(getRootWorkspaceFolders()),
         'Добавить плагины': () => executeCommand(addStartPlugins, getRootWorkspaceFolders()),
-        'Добавить feauture': () => addFeatureFolders(getRootWorkspaceFolders()),
+        'Добавить feauture': () => addFeature(getRootWorkspaceFolders()),
         'Создать Flutter пакет': createFlutterPackage,
         'Создать навигацию для файла': () => updateRoutingFls(getActiveEditorPath()!),
         'Добавить api сервис в текущий файл': () => addApiService(getActiveEditorPath()!),
@@ -48,5 +48,5 @@ export async function flutterHandler() {
     if (choice && options[choice]) {
         await options[choice]();
     }
-}   
+}
 

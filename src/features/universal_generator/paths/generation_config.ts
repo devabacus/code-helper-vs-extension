@@ -89,6 +89,8 @@ export class GenerationConfig {
     return path.join(this.getFeaturePath, 'data', 'datasources', 'local', 'tables');
   }
 
-
+  get monoRepoPath(): string {
+    return path.join(this.projectsPath, this.targetProject);
+  }
 
 }

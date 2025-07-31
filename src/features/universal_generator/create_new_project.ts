@@ -23,36 +23,32 @@ import { testDataSpy } from "../serverpod/server_test/test_data_spy";
 import { testDataEndpoint } from "../serverpod/server_test/test_data_endpoint";
 import { GenerationConfig } from "./paths/generation_config";
 import { DefaultFileSystem } from "../../core/implementations/default_file_system";
+import { ServiceLocator } from "../../core/services/service_locator";
+import { GenerationService } from "./generators/generation_service";
 
-export async function createNewProject(addTemplateFolders?: (fullProjectPath: string) => void): Promise<void> {
+export async function createNewProject(): Promise<void> {
 
-    // пользователь выбирает категории 
-    const projectsPath = await pickPath();
-    if (!projectsPath) {
-        return;
-    }
+    const fileSystem = ServiceLocator.getInstance().getFileSystem();
+    
     const targetProject = await getUserInput('введите название проекта');
     if (!targetProject) {
         return;
     }
 
-    await executeCommand(`serverpod create ${targetProject}`, projectsPath);
-
-    const monoRepoPath = path.join(projectsPath, targetProject);
-
-    const genConfig = new GenerationConfig({
+    const config = new GenerationConfig({
         templProject: 't2',
-        projectsPath: projectsPath,
         targetProject: targetProject,
-        // features: ['startProject', 'serverpod', 'deploy']
+        features: ['startProject']
     });
 
-    if (addTemplateFolders) {
-        addTemplateFolders(genConfig.targetFlutterProjectPath);
-    }
-    startAppFix(genConfig.targetFlutterProjectPath);
+    await executeCommand(`serverpod create ${targetProject}`, config.projectsPath);
 
-    // const serviceFilesPth = path.join(fullFlutterProjectPath, "_service_files");
+    const monoRepoPath = config.monoRepoPath;
+
+    const generationService = new GenerationService(fileSystem);
+        await generationService.generate(config);
+    startAppFix(config.targetFlutterProjectPath);
+
     // const vscodePth = path.join(fullFlutterProjectPath, ".vscode");
     // await createFolder(serviceFilesPth);
     // await createFolder(vscodePth);
@@ -63,17 +59,17 @@ export async function createNewProject(addTemplateFolders?: (fullProjectPath: st
 
     // createFile(path.join(fullFlutterProjectPath, "pubspec.yaml"), pubspec_yaml(projectName));
 
-    gitInit(monoRepoPath);
+    // gitInit(monoRepoPath);
 
-    const homePagePath = path.join(genConfig.targetFlutterProjectPath, 'lib', 'features', 'home', 'presentation', 'pages', 'home_page.dart');
-    const openCommand = `code -g "${homePagePath}" "${monoRepoPath}"`;
+    // const homePagePath = path.join(genConfig.targetFlutterProjectPath, 'lib', 'features', 'home', 'presentation', 'pages', 'home_page.dart');
+    const openCommand = `code -g "${monoRepoPath}" "${monoRepoPath}"`;
 
-    await executeCommand(pubGet, genConfig.targetFlutterProjectPath);
-    await executeCommand(pubGet, genConfig.targetServerProjectPath);
-    await executeCommand(build_runner, genConfig.targetFlutterProjectPath);
-    await executeCommand(SERVERPOD_GENERATE, genConfig.targetServerProjectPath);
+    // await executeCommand(pubGet, genConfig.targetFlutterProjectPath);
+    // await executeCommand(pubGet, genConfig.targetServerProjectPath);
+    // await executeCommand(build_runner, genConfig.targetFlutterProjectPath);
+    // await executeCommand(SERVERPOD_GENERATE, genConfig.targetServerProjectPath);
     gitInit(monoRepoPath);
-    await executeCommand(openCommand, projectsPath);
+    await executeCommand(openCommand, config.projectsPath);
     // serverpodK8sFileGenerate(projectsPath);
 
 }

@@ -9,7 +9,6 @@ interface PathInfo {
 }
 
 export function getPathInfo(config: GenerationConfig, filePath: string): PathInfo {
-    // 1. Проверяем, является ли путь относительным для фичи.
     if (filePath.startsWith('feature/')) {
         return {
             sourceBasePath: config.sourceFeaturePath,
@@ -17,9 +16,7 @@ export function getPathInfo(config: GenerationConfig, filePath: string): PathInf
             relativePath: filePath.substring('feature/'.length) // Удаляем префикс
         };
     }
-    // === КОНЕЦ ИЗМЕНЕНИЙ ===
 
-    // 2. Старая логика для путей от корня проекта остается без изменений.
     if (filePath.startsWith('server/')) {
         return {
             sourceBasePath: config.templServerProjectPath,
