@@ -8,6 +8,7 @@ export interface IFileSystem {
     readDirectory(path: string): Promise<string[]>;
     readDirectoryRecursive(path: string): Promise<string[]>;
     exists(path: string): Promise<boolean>;
+    isDirectory(path: string): Promise<boolean>;
 
 }
 

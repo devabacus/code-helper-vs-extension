@@ -2,7 +2,6 @@ import fs from 'fs';
 import path from 'path';
 import { promises as fsPromises } from 'fs';
 
-
 export async function createFolders(folderPaths: string[], errorHandler?: (error: string) => void): Promise<void> {
 
     for (const dirPath of folderPaths) {
@@ -74,6 +73,14 @@ export async function readDirectory(directoryPath: string): Promise<string[]> {
     }
 }
 
+export async function isDirectory(dirPath: string): Promise<boolean> {
+    try {
+        const stats = await fs.promises.stat(dirPath);
+        return stats.isDirectory();
+    } catch {
+        return false;
+    }
+}
 
 
 export async function fileExists(filePath: string): Promise<boolean> {
@@ -101,8 +108,3 @@ export async function readDirectoryRecursive(dirPath: string): Promise<string[]>
   }
   return files;
 }
-
-
-
-
-

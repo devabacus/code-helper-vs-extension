@@ -4,9 +4,9 @@ export const allManifests = {
   startProject: {
     dictionaries: DictionaryPresets.PROJECT_ONLY,
     scan_dirs: [
-      'lib/',
+      'flutter/',
       'server/',
-      // 'flutter/'
+      // 'lib/',
     ],
   },
 

@@ -1,5 +1,3 @@
-// universal_generator/generators/generation_service.ts
-
 import path from 'path';
 import { IFileSystem } from '../../../core/interfaces/file_system';
 import { DefaultFileSystem } from '../../../core/implementations/default_file_system';
@@ -13,6 +11,7 @@ import { MarkerAnalyzer } from './marker_analyzer';
 import { allManifests, FeatureName } from './manifests';
 import { RelationAnalyzer } from '../serverpod_yaml_parser/relation-analyzer';
 import { RelationPatcher } from './relation_patcher';
+import { scanWithIgnore } from '../../../utils/dir_handle_adv';
 
 export class GenerationService {
     private readonly fileSystem: IFileSystem;
@@ -44,28 +43,27 @@ export class GenerationService {
         const isEntityBasedGeneration = baseGenerationConfig.features.includes('entity') || baseGenerationConfig.features.includes('manyToMany');
 
         for (const dir of directoriesToScan) {
-            // Получаем все части пути из getPathInfo
+
             const pathInfo = getPathInfo(baseGenerationConfig, dir);
             
-            // Собираем полный путь для сканирования
             const fullDirSourcePath = path.join(pathInfo.sourceBasePath, pathInfo.relativePath);
-            // --- КОНЕЦ ИСПРАВЛЕНИЯ ---
 
             if (!await this.fileSystem.exists(fullDirSourcePath)) {
                 continue;
             }
 
-            const filesInDir = await (this.fileSystem as any).readDirectoryRecursive(fullDirSourcePath);
+            const filesInDir = await scanWithIgnore(fullDirSourcePath, this.fileSystem);
+
+
+            // const filesInDir = await (this.fileSystem as any).readDirectoryRecursive(fullDirSourcePath);
 
             for (const fullFilePath of filesInDir) {
                 if (isEntityBasedGeneration && !fullFilePath.includes(baseGenerationConfig.templEntity)) {
                     continue;
-                }
-                
+                }                
                 if (fullFilePath.includes('.g.') || fullFilePath.includes('.freezed.')) {
                     continue;
                 }
-
                 const content = await this.fileSystem.readFile(fullFilePath);
                 const fileManifest = MarkerAnalyzer.analyze(content);
                 if (fileManifest.types.includes('ignore')) {
@@ -80,7 +78,6 @@ export class GenerationService {
                 const dictionaries = fileManifest.dictionaries.length > 0 ? fileManifest.dictionaries : allManifests[baseGenerationConfig.features[0]]?.dictionaries || [];
                 const rules = getDictionaryRules(dictionaries, baseGenerationConfig);
 
-                // `path.relative` будет работать правильно, так как `pathInfo.sourceBasePath` - это по-прежнему корневая папка проекта
                 const relativePath = path.relative(pathInfo.sourceBasePath, fullFilePath).replace(/\\/g, '/');
                 
                 if (fileManifest.isTemplated && model) {

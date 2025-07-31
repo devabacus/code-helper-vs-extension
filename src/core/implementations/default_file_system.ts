@@ -1,12 +1,7 @@
-import { copyFile as utilCopyFile, fileExists, readFile, createFile as utilCreateFile, createFolder as utilCreateFolder, readDirectory, readDirectoryRecursive } from "../../utils";
+import { copyFile as utilCopyFile, fileExists, readFile, createFile as utilCreateFile, createFolder as utilCreateFolder, readDirectory, readDirectoryRecursive, isDirectory } from "../../utils";
 import { IFileSystem } from "../interfaces/file_system";
 
 export class DefaultFileSystem implements IFileSystem {
- 
-
-  readDirectory(path: string): Promise<string[]> {
-    return readDirectory(path);
-  }
 
   async copyFile(pathSource: string, pathDest: string): Promise<void> {
     utilCopyFile(pathSource, pathDest);
@@ -28,8 +23,16 @@ export class DefaultFileSystem implements IFileSystem {
     return fileExists(path);
   }
 
+  readDirectory(path: string): Promise<string[]> {
+    return readDirectory(path);
+  }
+
   readDirectoryRecursive(path: string): Promise<string[]> {
     return readDirectoryRecursive(path);
+  }
+
+  isDirectory(path: string): Promise<boolean> {
+    return isDirectory(path);
   }
 
 }

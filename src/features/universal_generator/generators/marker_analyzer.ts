@@ -19,7 +19,8 @@ export interface FileManifest {
  */
 export class MarkerAnalyzer {
   public static analyze(content: string): FileManifest {
-    const manifestLine = content.match(/\/\/\s*manifest:\s*([^\r\n]+)/);
+    // const manifestLine = content.match(/\/\/\s*manifest:\s*([^\r\n]+)/);
+    const manifestLine = content.match(/(?:\/\/|#)\s*manifest:\s*([^\r\n]+)/);
     let types: ManifestType[] = [];
 
     if (manifestLine && manifestLine[1]) {
@@ -32,7 +33,9 @@ export class MarkerAnalyzer {
     }
 
     // Ищем строку со словарями.
-    const dictionariesLine = content.match(/\/\/\s*dictionaries:\s*([A-Z_,\s]+)/i);
+    // const dictionariesLine = content.match(/\/\/\s*dictionaries:\s*([A-Z_,\s]+)/i);
+    const dictionariesLine = content.match(/(?:\/\/|#)\s*dictionaries:\s*([A-Z_,\s]+)/i);
+
     let dictionaries: DictionaryName[] = [];
     
     if (dictionariesLine && dictionariesLine[1]) {
@@ -40,7 +43,8 @@ export class MarkerAnalyzer {
     }
 
     // Проверяем, является ли файл шаблонным.
-    const isTemplated = /\/\/\s*===\s*generated_start:/.test(content);
+    // const isTemplated = /\/\/\s*===\s*generated_start:/.test(content);
+    const isTemplated = /(?:\/\/|#)\s*===\s*generated_start:/.test(content);
 
     return { types, dictionaries, isTemplated };
   }

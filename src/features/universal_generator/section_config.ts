@@ -17,7 +17,7 @@ export class SectionReplacer {
   ): string {
     // Регулярное выражение для поиска всех блоков start/end с именем генератора.
     // \1 - это обратная ссылка, гарантирующая, что имя в start и end совпадает.
-    const sectionRegex = /\/\/ === generated_start:(\w+) ===[\s\S]*?\/\/ === generated_end:\1 ===/g;
+    const sectionRegex = /(?:\/\/|#) === generated_start:(\w+) ===[\s\S]*?(?:\/\/|#) === generated_end:\1 ===/g;
 
     return content.replace(sectionRegex, (match, generatorName) => {
       const generatorFunc = getSectionGenerator(generatorName);
