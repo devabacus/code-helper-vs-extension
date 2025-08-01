@@ -5,44 +5,33 @@ import { GenerationConfig } from "./generation_config";
 interface PathInfo {
     sourceBasePath: string;
     destinationBasePath: string;
-    relativePath: string;
+    // Удаляем relativePath, так как он будет вычисляться в GenerationService
 }
 
-export function getPathInfo(config: GenerationConfig, filePath: string): PathInfo {
-    if (filePath.startsWith('feature/')) {
-        return {
-            sourceBasePath: config.sourceFeaturePath,
-            destinationBasePath: config.targetFeaturePath,
-            relativePath: filePath.substring('feature/'.length) // Удаляем префикс
-        };
-    }
+export function getPathInfo(config: GenerationConfig, dirKey: string): PathInfo {
+    // dirKey - это ключ из scan_dirs, например "flutter/" или "server/"
 
-    if (filePath.startsWith('server/')) {
-        return {
-            sourceBasePath: config.templServerProjectPath,
-            destinationBasePath: config.targetServerProjectPath,
-            relativePath: filePath.substring('server/'.length)
-        };
+    switch (dirKey) {
+        case 'flutter/':
+            return {
+                sourceBasePath: config.templFlutterProjectPath,
+                destinationBasePath: config.targetFlutterProjectPath,
+            };
+
+        case 'server/':
+            return {
+                sourceBasePath: config.templServerProjectPath,
+                destinationBasePath: config.targetServerProjectPath,
+            };
+        
+        case 'feature/':
+             return {
+                sourceBasePath: config.sourceFeaturePath,
+                destinationBasePath: config.targetFeaturePath,
+            };
+
+        default:
+            // Обработка неожиданных значений, можно выбросить ошибку
+            throw new Error(`[getPathInfo] Unknown directory key: ${dirKey}`);
     }
-    if (filePath.startsWith('flutter/')) {
-        return {
-            sourceBasePath: config.templFlutterProjectPath,
-            destinationBasePath: config.targetFlutterProjectPath,
-            relativePath: filePath.substring('flutter/'.length)
-        };
-    }
-    if (filePath.startsWith('lib/')) {
-        return {
-            sourceBasePath: config.templFlutterProjectPath,
-            destinationBasePath: config.targetFlutterProjectPath,
-            relativePath: filePath
-        };
-    }
-    
-    // 3. Резервный вариант, если префикс не указан.
-    return {
-        sourceBasePath: config.sourceFeaturePath,
-        destinationBasePath: config.targetFeaturePath,
-        relativePath: filePath
-    };
 }

@@ -12,14 +12,8 @@ export interface FileManifest {
   isTemplated: boolean;
 }
 
-/**
- * Анализирует содержимое файла на наличие маркеров.
- * Обрабатываются только файлы с явным маркером.
- * Если маркер не найден, файл получает тип 'ignore'.
- */
 export class MarkerAnalyzer {
   public static analyze(content: string): FileManifest {
-    // const manifestLine = content.match(/\/\/\s*manifest:\s*([^\r\n]+)/);
     const manifestLine = content.match(/(?:\/\/|#)\s*manifest:\s*([^\r\n]+)/);
     let types: ManifestType[] = [];
 
@@ -33,7 +27,6 @@ export class MarkerAnalyzer {
     }
 
     // Ищем строку со словарями.
-    // const dictionariesLine = content.match(/\/\/\s*dictionaries:\s*([A-Z_,\s]+)/i);
     const dictionariesLine = content.match(/(?:\/\/|#)\s*dictionaries:\s*([A-Z_,\s]+)/i);
 
     let dictionaries: DictionaryName[] = [];
@@ -43,7 +36,6 @@ export class MarkerAnalyzer {
     }
 
     // Проверяем, является ли файл шаблонным.
-    // const isTemplated = /\/\/\s*===\s*generated_start:/.test(content);
     const isTemplated = /(?:\/\/|#)\s*===\s*generated_start:/.test(content);
 
     return { types, dictionaries, isTemplated };

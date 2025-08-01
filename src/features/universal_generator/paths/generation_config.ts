@@ -51,7 +51,6 @@ export class GenerationConfig {
   get targetFlutterLibPath(): string { return this.flutterLibPath(this.targetProject); };
   get templFlutterLibPath(): string { return this.flutterLibPath(this.templProject); }
 
-
   get targetServerProjectPath(): string {
     return path.join(this.projectsPath, `${this.targetProject}`, `${this.targetProject}_server`);
   }
@@ -85,12 +84,16 @@ export class GenerationConfig {
   }
 
   get featureTablesPath(): string {
-    // getFeaturePath у вас уже есть
     return path.join(this.getFeaturePath, 'data', 'datasources', 'local', 'tables');
   }
 
-  get monoRepoPath(): string {
+  get monoRepoTargetPath(): string {
     return path.join(this.projectsPath, this.targetProject);
   }
+
+  get monoRepoTemplPath(): string {
+    return path.join(this.projectsPath, this.templProject);
+  }
+
 
 }

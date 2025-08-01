@@ -1,3 +1,5 @@
+// universal_generator/generators/generation_service.ts
+
 import path from 'path';
 import { IFileSystem } from '../../../core/interfaces/file_system';
 import { DefaultFileSystem } from '../../../core/implementations/default_file_system';
@@ -6,12 +8,18 @@ import { getDictionaryRules, DictionaryName } from '../replacement_util';
 import { ReplacingFileProcessor, ReplaceTask, ReplacementRule } from './replacing_file_processor';
 import { SectionReplacer } from '../section_config';
 import { ServerpodModel } from '../serverpod_yaml_parser/formatters/types';
-import { getPathInfo } from '../paths/path_handle';
+import { getPathInfo } from '../paths/path_handle'; // Используем обновленный path_handle
 import { MarkerAnalyzer } from './marker_analyzer';
 import { allManifests, FeatureName } from './manifests';
 import { RelationAnalyzer } from '../serverpod_yaml_parser/relation-analyzer';
 import { RelationPatcher } from './relation_patcher';
 import { scanWithIgnore } from '../../../utils/dir_handle_adv';
+
+// Определим тип для PathInfo для большей строгости
+interface PathInfo {
+    sourceBasePath: string;
+    destinationBasePath: string;
+}
 
 export class GenerationService {
     private readonly fileSystem: IFileSystem;
@@ -27,26 +35,26 @@ export class GenerationService {
     }
 
     public async generate(config: GenerationConfig, model?: ServerpodModel): Promise<void> {
-        const baseGenerationConfig = new GenerationConfig({ ...config, templEntity: 'category' });
         
         const allReplaceTasks: ReplaceTask[] = [];
         const allTemplatedPromises: Promise<void>[] = [];
 
         const directoriesToScan = new Set<string>();
-        for (const featureName of baseGenerationConfig.features) {
+        for (const featureName of config.features) {
             const manifest = allManifests[featureName as FeatureName];
             if (manifest?.scan_dirs) {
                 manifest.scan_dirs.forEach(dir => directoriesToScan.add(dir));
             }
         }
 
-        const isEntityBasedGeneration = baseGenerationConfig.features.includes('entity') || baseGenerationConfig.features.includes('manyToMany');
+        const isEntityBasedGeneration = config.features.includes('entity') || config.features.includes('manyToMany');
 
-        for (const dir of directoriesToScan) {
-
-            const pathInfo = getPathInfo(baseGenerationConfig, dir);
+        for (const dir of directoriesToScan) { // dir - это "flutter/", "server/" и т.д.
             
-            const fullDirSourcePath = path.join(pathInfo.sourceBasePath, pathInfo.relativePath);
+            // 1. Получаем правильные базовые пути для текущего типа директории
+            const pathInfo = getPathInfo(config, dir);
+            
+            const fullDirSourcePath = pathInfo.sourceBasePath;
 
             if (!await this.fileSystem.exists(fullDirSourcePath)) {
                 continue;
@@ -54,11 +62,8 @@ export class GenerationService {
 
             const filesInDir = await scanWithIgnore(fullDirSourcePath, this.fileSystem);
 
-
-            // const filesInDir = await (this.fileSystem as any).readDirectoryRecursive(fullDirSourcePath);
-
             for (const fullFilePath of filesInDir) {
-                if (isEntityBasedGeneration && !fullFilePath.includes(baseGenerationConfig.templEntity)) {
+                if (isEntityBasedGeneration && !fullFilePath.includes(config.templEntity)) {
                     continue;
                 }                
                 if (fullFilePath.includes('.g.') || fullFilePath.includes('.freezed.')) {
@@ -70,20 +75,24 @@ export class GenerationService {
                     continue;
                 }
                 
-                const isRelevant = baseGenerationConfig.features.some(feature => fileManifest.types.includes(feature as any));
+                const isRelevant = config.features.some(feature => fileManifest.types.includes(feature as any));
                 if (!isRelevant) {
                     continue;
                 }
 
-                const dictionaries = fileManifest.dictionaries.length > 0 ? fileManifest.dictionaries : allManifests[baseGenerationConfig.features[0]]?.dictionaries || [];
-                const rules = getDictionaryRules(dictionaries, baseGenerationConfig);
+                const dictionaries = fileManifest.dictionaries.length > 0 ? fileManifest.dictionaries : allManifests[config.features[0]]?.dictionaries || [];
+                const rules = getDictionaryRules(dictionaries, config);
 
-                const relativePath = path.relative(pathInfo.sourceBasePath, fullFilePath).replace(/\\/g, '/');
+                // 2. 🔥 **КЛЮЧЕВОЕ ИЗМЕНЕНИЕ!** Вычисляем путь относительно сканируемой папки.
+                // Это даст нам "pubspec.yaml" или "lib/features/home/data/models/user.dart"
+                const relativePath = path.relative(fullDirSourcePath, fullFilePath).replace(/\\/g, '/');
                 
                 if (fileManifest.isTemplated && model) {
-                    allTemplatedPromises.push(this._processTemplatedFile(baseGenerationConfig, relativePath, rules, model, content));
+                    // 3. Передаем pathInfo в обработчик
+                    allTemplatedPromises.push(this._processTemplatedFile(config, relativePath, rules, model, content, pathInfo));
                 } else {
-                    allReplaceTasks.push(this._createReplaceTask(baseGenerationConfig, relativePath, rules));
+                     // 3. Передаем pathInfo в обработчик
+                    allReplaceTasks.push(this._createReplaceTask(config, relativePath, rules, pathInfo));
                 }
             }
         }
@@ -98,25 +107,24 @@ export class GenerationService {
         }
     }
 
-    private _createReplaceTask(config: GenerationConfig, relativePath: string, rules: ReplacementRule[]): ReplaceTask {
-        const { sourceBasePath, destinationBasePath } = getPathInfo(config, relativePath);
+    // 4. Обновляем сигнатуры методов, чтобы они принимали pathInfo
+    private _createReplaceTask(config: GenerationConfig, relativePath: string, rules: ReplacementRule[], pathInfo: PathInfo): ReplaceTask {
         const destinationRelativePath = this._getDestinationPath(relativePath, config);
         return {
-            sourcePath: path.join(sourceBasePath, relativePath),
-            destinationPath: path.join(destinationBasePath, destinationRelativePath),
+            sourcePath: path.join(pathInfo.sourceBasePath, relativePath),
+            destinationPath: path.join(pathInfo.destinationBasePath, destinationRelativePath),
             rules,
         };
     }
 
-    private async _processTemplatedFile(config: GenerationConfig, relativePath: string, rules: ReplacementRule[], model: ServerpodModel, initialContent: string): Promise<void> {
+    private async _processTemplatedFile(config: GenerationConfig, relativePath: string, rules: ReplacementRule[], model: ServerpodModel, initialContent: string, pathInfo: PathInfo): Promise<void> {
         let content = initialContent;
         for (const rule of rules) {
             content = content.replace(new RegExp(rule.from, 'g'), rule.to);
         }
         content = this.sectionReplacer.process(content, config, model);
-        const { destinationBasePath } = getPathInfo(config, relativePath);
         const destinationRelativePath = this._getDestinationPath(relativePath, config);
-        const destinationPath = path.join(destinationBasePath, destinationRelativePath);
+        const destinationPath = path.join(pathInfo.destinationBasePath, destinationRelativePath);
         await this.fileSystem.createFolder(path.dirname(destinationPath));
         await this.fileSystem.createFile(destinationPath, content);
     }

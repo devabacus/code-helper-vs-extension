@@ -18,9 +18,8 @@ const dictionaryRegistry: Record<DictionaryName, RuleGenerator> = {
     // Сюда можно добавлять другие общие правила для проекта
   ],
   [Dictionaries.ENTITY]: (config) => {
-    if (!config.targetEntity) {
-      return [];
-    }
+    if (!config.targetEntity) {return [];}
+
     const baseForms = {
       Ds: pluralConvert(cap(config.templEntity)),
       D: cap(config.templEntity),
@@ -41,10 +40,7 @@ const dictionaryRegistry: Record<DictionaryName, RuleGenerator> = {
   },
 
   [Dictionaries.MANY_TO_MANY]: (config) => {
-    // Убедимся, что у нас есть обе сущности для замены
-    if (!config.targetEntity1 || !config.targetEntity2) {
-      return [];
-    }
+    if (!config.targetEntity1 || !config.targetEntity2) {return [];}
     // Шаблонные имена (например, из TaskTagMap)
     const templEntity1 = 'task';
     const templEntity2 = 'tag';

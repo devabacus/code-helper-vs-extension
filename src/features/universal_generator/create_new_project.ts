@@ -29,7 +29,7 @@ import { GenerationService } from "./generators/generation_service";
 export async function createNewProject(): Promise<void> {
 
     const fileSystem = ServiceLocator.getInstance().getFileSystem();
-    
+
     const targetProject = await getUserInput('введите название проекта');
     if (!targetProject) {
         return;
@@ -43,10 +43,10 @@ export async function createNewProject(): Promise<void> {
 
     await executeCommand(`serverpod create ${targetProject}`, config.projectsPath);
 
-    const monoRepoPath = config.monoRepoPath;
+    const monoRepoPath = config.monoRepoTargetPath;
 
     const generationService = new GenerationService(fileSystem);
-        await generationService.generate(config);
+    await generationService.generate(config);
     startAppFix(config.targetFlutterProjectPath);
 
     // const vscodePth = path.join(fullFlutterProjectPath, ".vscode");
