@@ -52,6 +52,22 @@ export function toSnakeCase(str: string): string {
 }
 
 
+/**
+ * Преобразует строку из snake_case в PascalCase (ClassName).
+ * @param {string} snakeCaseString - Строка для преобразования, например "my_class_name".
+ * @returns {string} - Строка в формате PascalCase, например "MyClassName".
+ */
+export function snakeToPascalCase(snakeCaseString: string): string {
+  return snakeCaseString.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+    ).join('');
+}
+
+// --- Пример использования ---
+const fileName = 'category_table_extended';
+const className = snakeToPascalCase(fileName);
+console.log(className); // Выведет: CategoryTableExtended
+
+
 export const textGroupReplacer = (content: string, regex: RegExp, newTableName: string) => content.replace(regex, (match, p1) => {
     const trimmedCont = p1.trim();
     return `tables: [${trimmedCont ? trimmedCont + ', ' : ''}${newTableName}]`;

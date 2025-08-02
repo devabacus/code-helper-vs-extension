@@ -1,128 +1,123 @@
-import * as path from "path";
-import { createFile, createFileOneTime, createFolder } from "../../utils";
-import { executeCommand, executeInTerminal } from "../../utils/terminal_handle";
-import { insertAtFileEnd } from "../../utils/text_work/text_insert/basic-insertion";
-import { getUserInput, pickPath } from "../../utils/ui/ui_ask_folder";
-import { gitInit } from "../git_init";
-import { addDependecy } from "./add_pubspec/flutter_add_pubspec";
-import { createRootTemplateFiles } from "./flutter_add_template_file";
-import { pubspec_yaml } from "./flutter_content/files_content/pubspec_yaml";
-import { startDependency } from "./flutter_content/package_pubscpec";
-import { build_runner, pubGet } from "./flutter_content/terminal_commands";
-import { startAppFix } from "./start_app_fix";
-import { gitignoreCont } from "./flutter_content/files_content/_gitignore";
-import { serverpodDataYaml } from "../serverpod/generators/server_data_yaml";
-import { mainFile } from "./flutter_content/files_content/main_file";
-import { serverCheckUi } from "./flutter_content/files_content/server_check_ui";
-import { appFile } from "./flutter_content/files_content";
-import { authWrapperFile } from "./flutter_content/files_content/auth_wrapper";
-import { serverpodClientProviderFile } from "../data_routine/core/providers/serverpod_client_provider";
-import { serverFile } from "../serverpod/generators/server_dart_file";
-import { serverpodK8sFileGenerate } from "../serverpod/create_k8s_serverpod_files";
-import { server_pubspec_yaml_file } from "../serverpod/generators/server_pubspec_yaml";
-import { sync_registry_file } from "../data_routine/core/sync/sync_registry_file";
-import { sync_controller_provider_file } from "../data_routine/core/sync/sync_controller_provider_file";
-import { base_sync_repository } from "../data_routine/core/sync/base_sync_repository_file";
-import { database_types_file } from "../data_routine/core/database/local/database_types_file";
-import { SERVERPOD_GENERATE } from "../serverpod/commands";
-import { testDataSpy } from "../serverpod/server_test/test_data_spy";
-import { testDataEndpoint } from "../serverpod/server_test/test_data_endpoint";
+// import * as path from "path";
+// import { createFile, createFileOneTime, createFolder } from "../../utils";
+// import { executeCommand, executeInTerminal } from "../../utils/terminal_handle";
+// import { insertAtFileEnd } from "../../utils/text_work/text_insert/basic-insertion";
+// import { getUserInput, pickPath } from "../../utils/ui/ui_ask_folder";
+// import { gitInit } from "../git_init";
+// import { addDependecy } from "./add_pubspec/flutter_add_pubspec";
+// import { createRootTemplateFiles } from "./flutter_add_template_file";
+// import { pubspec_yaml } from "./flutter_content/files_content/pubspec_yaml";
+// import { startDependency } from "./flutter_content/package_pubscpec";
+// import { build_runner, pubGet } from "./flutter_content/terminal_commands";
+// import { startAppFix } from "./start_app_fix";
+// import { gitignoreCont } from "./flutter_content/files_content/_gitignore";
+// import { serverpodDataYaml } from "../serverpod/generators/server_data_yaml";
+// import { mainFile } from "./flutter_content/files_content/main_file";
+// import { serverCheckUi } from "./flutter_content/files_content/server_check_ui";
+// import { appFile } from "./flutter_content/files_content";
+// import { authWrapperFile } from "./flutter_content/files_content/auth_wrapper";
+// import { serverFile } from "../serverpod/generators/server_dart_file";
+// import { serverpodK8sFileGenerate } from "../serverpod/create_k8s_serverpod_files";
+// import { server_pubspec_yaml_file } from "../serverpod/generators/server_pubspec_yaml";
+// import { SERVERPOD_GENERATE } from "../serverpod/commands";
+// import { testDataSpy } from "../serverpod/server_test/test_data_spy";
+// import { testDataEndpoint } from "../serverpod/server_test/test_data_endpoint";
 
-export async function flutterCreateNewServerPodProject(addTemplateFolders?: (fullProjectPath: string) => void): Promise<void> {
+// export async function flutterCreateNewServerPodProject(addTemplateFolders?: (fullProjectPath: string) => void): Promise<void> {
 
-    // пользователь выбирает категории 
-    const projectsPath = await pickPath();
-    if (!projectsPath) {
-        return;
-    }
-    const projectName = await getUserInput('введите название проекта');
-    if (!projectName) {
-        return;
-    }
-    // createFolder(path.join(projectsPath, projectName));
-    const create_command = `serverpod create ${projectName}`;
-    await executeCommand(create_command, projectsPath);
+//     // пользователь выбирает категории 
+//     const projectsPath = await pickPath();
+//     if (!projectsPath) {
+//         return;
+//     }
+//     const projectName = await getUserInput('введите название проекта');
+//     if (!projectName) {
+//         return;
+//     }
+//     // createFolder(path.join(projectsPath, projectName));
+//     const create_command = `serverpod create ${projectName}`;
+//     await executeCommand(create_command, projectsPath);
 
-    const monoRepoPath = path.join(projectsPath, projectName);
+//     const monoRepoPath = path.join(projectsPath, projectName);
 
-    const fullFlutterProjectPath = path.join(monoRepoPath, `${projectName}_flutter`);
+//     const fullFlutterProjectPath = path.join(monoRepoPath, `${projectName}_flutter`);
 
-    const serverPath = path.join(monoRepoPath, `${projectName}_server`);
-    const flutterPath = path.join(monoRepoPath, `${projectName}_flutter`);
+//     const serverPath = path.join(monoRepoPath, `${projectName}_server`);
+//     const flutterPath = path.join(monoRepoPath, `${projectName}_flutter`);
 
-    // await executeCommand(`serverpod generate --experimental-features`, serverPath);
+//     // await executeCommand(`serverpod generate --experimental-features`, serverPath);
 
-    const serverDataYamlPath = path.join(serverPath, "server_data.yaml");
-    const serverPubSpecYamlPath = path.join(serverPath, "pubspec.yaml");
+//     const serverDataYamlPath = path.join(serverPath, "server_data.yaml");
+//     const serverPubSpecYamlPath = path.join(serverPath, "pubspec.yaml");
 
-    const mainPath = path.join(flutterPath, "lib", "main.dart");
-    const serverCheckUilPath = path.join(flutterPath, "lib", "check", "server_check_ui.dart");
-    const authWrapperFilePath = path.join(flutterPath, "lib", "auth_wrapper.dart");
-    const appFilePath = path.join(flutterPath, "lib", "app.dart");
-    const serverpodClientProviderFilePath = path.join(flutterPath, "lib", "core", "providers", "serverpod_client_provider.dart");
-    const testDataSpyPath = path.join(serverPath, "lib", "src", "models", "test_data.spy.yaml");
-    const testDataEndPointPath = path.join(serverPath, "lib", "src", "endpoints", "test_data_endpoint.dart");
+//     const mainPath = path.join(flutterPath, "lib", "main.dart");
+//     const serverCheckUilPath = path.join(flutterPath, "lib", "check", "server_check_ui.dart");
+//     const authWrapperFilePath = path.join(flutterPath, "lib", "auth_wrapper.dart");
+//     const appFilePath = path.join(flutterPath, "lib", "app.dart");
+//     const serverpodClientProviderFilePath = path.join(flutterPath, "lib", "core", "providers", "serverpod_client_provider.dart");
+//     const testDataSpyPath = path.join(serverPath, "lib", "src", "models", "test_data.spy.yaml");
+//     const testDataEndPointPath = path.join(serverPath, "lib", "src", "endpoints", "test_data_endpoint.dart");
 
-    const serverFilePath = path.join(serverPath, "lib", "server.dart");
+//     const serverFilePath = path.join(serverPath, "lib", "server.dart");
 
-    createFile(serverDataYamlPath, serverpodDataYaml(projectName));
-    createFile(mainPath, mainFile(projectName));
+//     createFile(serverDataYamlPath, serverpodDataYaml(projectName));
+//     createFile(mainPath, mainFile(projectName));
 
-    createFile(appFilePath, appFile);
-    createFile(authWrapperFilePath, authWrapperFile());
-    createFile(serverpodClientProviderFilePath, serverpodClientProviderFile(projectName));
-    createFile(serverFilePath, serverFile(projectName));
-    createFile(serverPubSpecYamlPath, server_pubspec_yaml_file(projectName));
+//     createFile(appFilePath, appFile);
+//     createFile(authWrapperFilePath, authWrapperFile());
+//     createFile(serverpodClientProviderFilePath, serverpodClientProviderFile(projectName));
+//     createFile(serverFilePath, serverFile(projectName));
+//     createFile(serverPubSpecYamlPath, server_pubspec_yaml_file(projectName));
 
-    createFile(testDataSpyPath, testDataSpy);
-    createFile(testDataEndPointPath, testDataEndpoint);
+//     createFile(testDataSpyPath, testDataSpy);
+//     createFile(testDataEndPointPath, testDataEndpoint);
 
 
-    const databaseTypesPath = path.join(flutterPath, "lib", "core", "database", "local", "database_types.dart");
-    const syncRegistryPath = path.join(flutterPath, "lib", "core", "sync", "sync_registry.dart");
-    const syncControllerPath = path.join(flutterPath, "lib", "core", "sync", "sync_controller_provider.dart");
+//     const databaseTypesPath = path.join(flutterPath, "lib", "core", "database", "local", "database_types.dart");
+//     const syncRegistryPath = path.join(flutterPath, "lib", "core", "sync", "sync_registry.dart");
+//     const syncControllerPath = path.join(flutterPath, "lib", "core", "sync", "sync_controller_provider.dart");
     
-    // 'core/database/local/daos/sync_metadata_dao.dart': sync_metadata_dao_file,
+//     // 'core/database/local/daos/sync_metadata_dao.dart': sync_metadata_dao_file,
     
     
-    createFileOneTime(syncRegistryPath, sync_registry_file);
-    createFileOneTime(syncControllerPath, sync_controller_provider_file);
-    const baseSyncRepositoryPath = path.join(flutterPath, "lib", "core", "sync", "base_sync_repository.dart");
-    createFileOneTime(baseSyncRepositoryPath, base_sync_repository);
-    createFileOneTime(databaseTypesPath, database_types_file);
+//     createFileOneTime(syncRegistryPath, sync_registry_file);
+//     createFileOneTime(syncControllerPath, sync_controller_provider_file);
+//     const baseSyncRepositoryPath = path.join(flutterPath, "lib", "core", "sync", "base_sync_repository.dart");
+//     createFileOneTime(baseSyncRepositoryPath, base_sync_repository);
+//     createFileOneTime(databaseTypesPath, database_types_file);
 
-    createFile(serverCheckUilPath, serverCheckUi(projectName));
-
-
-    if (addTemplateFolders) {
-        addTemplateFolders(fullFlutterProjectPath);
-    }
-    startAppFix(fullFlutterProjectPath);
-
-    insertAtFileEnd(path.join(fullFlutterProjectPath, '.gitignore'), gitignoreCont);
-
-    const serviceFilesPth = path.join(fullFlutterProjectPath, "_service_files");
-    const vscodePth = path.join(fullFlutterProjectPath, ".vscode");
-    await createFolder(serviceFilesPth);
-    await createFolder(vscodePth);
+//     createFile(serverCheckUilPath, serverCheckUi(projectName));
 
 
-    createRootTemplateFiles(fullFlutterProjectPath);
+//     if (addTemplateFolders) {
+//         addTemplateFolders(fullFlutterProjectPath);
+//     }
+//     startAppFix(fullFlutterProjectPath);
+
+//     insertAtFileEnd(path.join(fullFlutterProjectPath, '.gitignore'), gitignoreCont);
+
+//     const serviceFilesPth = path.join(fullFlutterProjectPath, "_service_files");
+//     const vscodePth = path.join(fullFlutterProjectPath, ".vscode");
+//     await createFolder(serviceFilesPth);
+//     await createFolder(vscodePth);
 
 
-    createFile(path.join(fullFlutterProjectPath, "pubspec.yaml"), pubspec_yaml(projectName));
+//     createRootTemplateFiles(fullFlutterProjectPath);
 
-    // gitInit(monoRepoPath);
 
-    const homePagePath = path.join(fullFlutterProjectPath, 'lib', 'features', 'home', 'presentation', 'pages', 'home_page.dart');
-    const openCommand = `code -g "${homePagePath}" "${monoRepoPath}"`;
+//     createFile(path.join(fullFlutterProjectPath, "pubspec.yaml"), pubspec_yaml(projectName));
 
-    await executeCommand(pubGet, fullFlutterProjectPath);
-    await executeCommand(pubGet, serverPath);
-    await executeCommand(build_runner, fullFlutterProjectPath);
-    await executeCommand(SERVERPOD_GENERATE, serverPath);
-    gitInit(monoRepoPath);
-    await executeCommand(openCommand, projectsPath);
-    // serverpodK8sFileGenerate(projectsPath);
+//     // gitInit(monoRepoPath);
 
-}
+//     const homePagePath = path.join(fullFlutterProjectPath, 'lib', 'features', 'home', 'presentation', 'pages', 'home_page.dart');
+//     const openCommand = `code -g "${homePagePath}" "${monoRepoPath}"`;
+
+//     await executeCommand(pubGet, fullFlutterProjectPath);
+//     await executeCommand(pubGet, serverPath);
+//     await executeCommand(build_runner, fullFlutterProjectPath);
+//     await executeCommand(SERVERPOD_GENERATE, serverPath);
+//     gitInit(monoRepoPath);
+//     await executeCommand(openCommand, projectsPath);
+//     // serverpodK8sFileGenerate(projectsPath);
+
+// }

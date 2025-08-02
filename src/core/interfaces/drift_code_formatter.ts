@@ -1,4 +1,4 @@
-import { Field } from "../../features/data_routine/serverpod_yaml_parser/formatters/code_formatter.interface";
+import { Field } from "../../features/universal_generator/serverpod_yaml_parser/formatters/code_formatter.interface";
 
 export interface _IDriftCodeFormatter {
   getFieldsClass(fields: Field[]): string;

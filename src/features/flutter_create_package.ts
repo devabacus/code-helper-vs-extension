@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as vscode from 'vscode';
 
-import { addDependecy } from './template_project/add_pubspec/flutter_add_pubspec';
+// import { addDependecy } from './template_project/add_pubspec/flutter_add_pubspec';
 import { new_local_package } from './template_project/flutter_content/package_pubscpec';
 import { getUserInput, pickPath } from '../utils/ui/ui_ask_folder';
 import { textValidator } from '../utils/text_work/text_util';
@@ -36,7 +36,7 @@ export async function createFlutterPackage() {
         // Шаг 3: Создание Flutter приложения внутри example
         await executeCommand(`flutter create example`, projectPath);
 
-        addDependecy(new_local_package(packageName), examplePath);
+        // addDependecy(new_local_package(packageName), examplePath);
         const pkgMainFlPth = path.join("lib", `${packageName}.dart`);
 
         const openCommand = `code -g "${pkgMainFlPth}" "${projectPath}"`;

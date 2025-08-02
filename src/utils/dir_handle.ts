@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-
+import { promises as fsPromises } from 'fs';
 
 export async function createFolders(folderPaths: string[], errorHandler?: (error: string) => void): Promise<void> {
 
@@ -30,7 +30,18 @@ export async function createFileOneTime(path: string, content: string) {
    }         
 }
 
-
+export async function copyFile(pathSource: string, pathDest: string): Promise<void> {
+  try {
+    const destDir = path.dirname(pathDest);
+    await fsPromises.mkdir(destDir, { recursive: true });
+    await fsPromises.copyFile(pathSource, pathDest);
+    
+  } catch (error) {
+    console.error(`Ошибка при копировании файла из ${pathSource} в ${pathDest}`, error);
+    // Пробрасываем ошибку, чтобы вызывающий код мог ее обработать
+    throw error;
+  }
+}
 
 
 export async function createFile(mpath: string, content: string) {
@@ -52,6 +63,26 @@ export async function readFile(filePath: string): Promise<string> {
     }
 }
 
+export async function readDirectory(directoryPath: string): Promise<string[]> {
+    try {
+        const files = await fsPromises.readdir(directoryPath);
+        return files;
+    } catch (error) {
+        console.error(`Ошибка при чтении директории ${directoryPath}:`, error);
+        throw error;
+    }
+}
+
+export async function isDirectory(dirPath: string): Promise<boolean> {
+    try {
+        const stats = await fs.promises.stat(dirPath);
+        return stats.isDirectory();
+    } catch {
+        return false;
+    }
+}
+
+
 export async function fileExists(filePath: string): Promise<boolean> {
     try {
         await fs.promises.access(filePath, fs.constants.F_OK);
@@ -59,4 +90,21 @@ export async function fileExists(filePath: string): Promise<boolean> {
     } catch {
         return false;
     }
+}
+
+export async function readDirectoryRecursive(dirPath: string): Promise<string[]> {
+  const entries = await fs.promises.readdir(dirPath, { withFileTypes: true });
+  const files: string[] = [];
+
+  for (const entry of entries) {
+    const fullPath = path.join(dirPath, entry.name);
+    if (entry.isDirectory()) {
+      // Если это директория, рекурсивно читаем ее и добавляем файлы
+      files.push(...await readDirectoryRecursive(fullPath));
+    } else {
+      // Если это файл, просто добавляем его путь
+      files.push(fullPath);
+    }
+  }
+  return files;
 }
