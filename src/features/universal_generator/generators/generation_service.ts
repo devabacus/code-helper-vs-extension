@@ -35,25 +35,25 @@ export class GenerationService {
     }
 
     public async generate(config: GenerationConfig, model?: ServerpodModel): Promise<void> {
-        
+
         const allReplaceTasks: ReplaceTask[] = [];
         const allTemplatedPromises: Promise<void>[] = [];
 
         const directoriesToScan = new Set<string>();
-        for (const featureName of config.features) {
+        for (const featureName of config.manifestFeatures) {
             const manifest = allManifests[featureName as FeatureName];
             if (manifest?.scan_dirs) {
                 manifest.scan_dirs.forEach(dir => directoriesToScan.add(dir));
             }
         }
 
-        const isEntityBasedGeneration = config.features.includes('entity') || config.features.includes('manyToMany');
+        const isEntityBasedGeneration = config.manifestFeatures.includes('entity') || config.manifestFeatures.includes('manyToMany');
 
         for (const dir of directoriesToScan) { // dir - это "flutter/", "server/" и т.д.
-            
+
             // 1. Получаем правильные базовые пути для текущего типа директории
             const pathInfo = getPathInfo(config, dir);
-            
+
             const fullDirSourcePath = pathInfo.sourceBasePath;
 
             if (!await this.fileSystem.exists(fullDirSourcePath)) {
@@ -65,7 +65,7 @@ export class GenerationService {
             for (const fullFilePath of filesInDir) {
                 if (isEntityBasedGeneration && !fullFilePath.includes(config.templEntity)) {
                     continue;
-                }                
+                }
                 if (fullFilePath.includes('.g.') || fullFilePath.includes('.freezed.')) {
                     continue;
                 }
@@ -74,36 +74,36 @@ export class GenerationService {
                 if (fileManifest.types.includes('ignore')) {
                     continue;
                 }
-                
-                const isRelevant = config.features.some(feature => fileManifest.types.includes(feature as any));
+
+                const isRelevant = config.manifestFeatures.some(feature => fileManifest.types.includes(feature as any));
                 if (!isRelevant) {
                     continue;
                 }
 
-                const dictionaries = fileManifest.dictionaries.length > 0 ? fileManifest.dictionaries : allManifests[config.features[0]]?.dictionaries || [];
+                const dictionaries = fileManifest.dictionaries.length > 0 ? fileManifest.dictionaries : allManifests[config.manifestFeatures[0]]?.dictionaries || [];
                 const rules = getDictionaryRules(dictionaries, config);
 
                 // 2. 🔥 **КЛЮЧЕВОЕ ИЗМЕНЕНИЕ!** Вычисляем путь относительно сканируемой папки.
                 // Это даст нам "pubspec.yaml" или "lib/features/home/data/models/user.dart"
                 const relativePath = path.relative(fullDirSourcePath, fullFilePath).replace(/\\/g, '/');
-                
+
                 if (fileManifest.isTemplated && model) {
                     // 3. Передаем pathInfo в обработчик
                     allTemplatedPromises.push(this._processTemplatedFile(config, relativePath, rules, model, content, pathInfo));
                 } else {
-                     // 3. Передаем pathInfo в обработчик
+                    // 3. Передаем pathInfo в обработчик
                     allReplaceTasks.push(this._createReplaceTask(config, relativePath, rules, pathInfo));
                 }
             }
         }
-        
+
         await Promise.all([
             this.replacingProcessor.process(allReplaceTasks),
             ...allTemplatedPromises,
         ]);
 
         if (model && RelationAnalyzer.manyToOneFields(model.fields).length > 0) {
-            await this.relationPatcher.patch(config, model); 
+            await this.relationPatcher.patch(config, model);
         }
     }
 

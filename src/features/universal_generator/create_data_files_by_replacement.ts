@@ -16,15 +16,17 @@ export async function createDataFilesByReplacement() {
     const config = new GenerationConfig({
         templProject: 't2',
         targetProject: 't2',
-        featureName: 'home',
+        templFeatureName: 'home',
+        targetFeatureName: 'configuration',
+        templEntity: model.tableName,
         targetEntity: model.tableName,
         targetEntity1: model.entity1,
         targetEntity2: model.entity2,
         // features: ['startProject']
-        features: features
+        manifestType: features
     });
 
-    const generationService = new GenerationService(fileSystem);    
+    const generationService = new GenerationService(fileSystem);
     await generationService.generate(config, model);
     const appDatabaseGenerator = new AppDatabaseGenerator(fileSystem, config);
     await appDatabaseGenerator.generate();

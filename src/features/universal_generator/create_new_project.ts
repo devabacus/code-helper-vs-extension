@@ -39,7 +39,7 @@ export async function createNewProject(): Promise<void> {
     const config = new GenerationConfig({
         templProject: 't2',
         targetProject: targetProject,
-        features: ['startProject']
+        manifestType: ['startProject']
     });
 
     await executeCommand(`serverpod create ${targetProject}`, config.projectsPath);

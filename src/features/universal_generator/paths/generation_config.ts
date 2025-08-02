@@ -1,12 +1,13 @@
 import path from "path";
-import { FeatureName } from "../generators/manifests";
+import { FeatureName as ManifestTypeName } from "../generators/manifests";
 
 // Простые файлы - только замена entity
 export interface IGenerationConfig {
   targetProject: string;
   templProject: string;
-  features?: FeatureName[];
-  featureName?: string;
+  manifestType?: ManifestTypeName[];
+  templFeatureName?: string;
+  targetFeatureName?: string;
   projectsPath?: string;
   templEntity?: string;
   targetEntity?: string;
@@ -24,14 +25,16 @@ export class GenerationConfig {
   public targetEntity1: string;
   public targetEntity2: string;
   public sourceFeaturePath: string;
-  public featureName: string;
-  public features: FeatureName[];
+  public templFeatureName: string;
+  public targetFeatureName: string;
+  public manifestFeatures: ManifestTypeName[];
 
   constructor(config: IGenerationConfig) {
     this.templProject = config.templProject || 't2';
     this.targetProject = config.targetProject;
-    this.features = config.features || [];
-    this.featureName = config.featureName || 'home';
+    this.manifestFeatures = config.manifestType || [];
+    this.templFeatureName = config.templFeatureName || 'home';
+    this.targetFeatureName = config.targetFeatureName || 'home';
     this.projectsPath = config.projectsPath || 'G:/Projects/Flutter/serverpod';
     this.templEntity = config.templEntity || 'category';
     this.targetEntity = config.targetEntity || '';
@@ -41,7 +44,7 @@ export class GenerationConfig {
   }
 
   get getFeaturePath(): string {
-    return path.join(this.projectsPath, this.targetProject, `${this.targetProject}_flutter`, 'lib', 'features', this.featureName);
+    return path.join(this.projectsPath, this.targetProject, `${this.targetProject}_flutter`, 'lib', 'features', this.templFeatureName);
   }
 
   get targetFlutterProjectPath(): string { return this.getFlutterPath(this.targetProject); };
@@ -59,7 +62,7 @@ export class GenerationConfig {
   }
 
   get targetFeaturePath(): string {
-    return path.join(this.targetFlutterProjectPath, 'lib', 'features', `${this.featureName}`);
+    return path.join(this.targetFlutterProjectPath, 'lib', 'features', `${this.templFeatureName}`);
   }
 
   private getFlutterPath(projectName: string): string {
