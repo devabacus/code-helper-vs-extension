@@ -25,17 +25,21 @@ export class AppDatabaseGenerator {
         const featureTablesDir = this.config.featureTablesPath;
 
         // --- Шаг 2: Собираем информацию о файлах таблиц ---
-        const coreTableFiles = await this.fileSystem.readDirectory(coreTablesDir);
-        const featureTableFiles = (await this.fileSystem.readDirectory(featureTablesDir)).filter(file => file.endsWith('.dart'));
+        const coreTableFiles = (await this.fileSystem.readDirectory(coreTablesDir)).filter(file => file.endsWith('.dart'));     
+        
+        let featureTableFiles: string[] = [];
+        if (await this.fileSystem.exists(featureTablesDir)) {
+            featureTableFiles = (await this.fileSystem.readDirectory(featureTablesDir)).filter(file => file.endsWith('.dart'));
+        }
 
         // --- Шаг 3: Генерируем контент для вставок ---
 
         // Генерируем импорты
         const relativeCorePath = path.relative(destinationDir, coreTablesDir).replaceAll('\\', '/');
-        const coreImports = coreTableFiles.map(file => `import 'tables/core/${file}';`); // Путь стал более явным и надежным
+        const coreImports = coreTableFiles.map(file => `import '${relativeCorePath}/${file}';`);
 
         const relativeFeaturePath = path.relative(destinationDir, featureTablesDir).replaceAll('\\', '/');
-        const featureImports = featureTableFiles.map(file => `import 'tables/feature/${file}';`); // Путь стал более явным и надежным
+        const featureImports = featureTableFiles.map(file => `import '${relativeFeaturePath}/${file}';`);
 
         const allImports = [...coreImports, ...featureImports].join('\n');
 

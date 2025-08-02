@@ -42,7 +42,6 @@ export class GenerationConfig {
 
   get getFeaturePath(): string {
     return path.join(this.projectsPath, this.targetProject, `${this.targetProject}_flutter`, 'lib', 'features', this.featureName);
-
   }
 
   get targetFlutterProjectPath(): string { return this.getFlutterPath(this.targetProject); };
@@ -94,6 +93,4 @@ export class GenerationConfig {
   get monoRepoTemplPath(): string {
     return path.join(this.projectsPath, this.templProject);
   }
-
-
 }

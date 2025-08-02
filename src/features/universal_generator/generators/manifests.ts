@@ -12,7 +12,8 @@ export const allManifests = {
   entity: {
     dictionaries: DictionaryPresets.ENTITY,
     scan_dirs: [
-      'feature/'
+      'feature/',
+      'server/',
     ]
   },
 

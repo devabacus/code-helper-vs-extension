@@ -25,6 +25,7 @@ import { GenerationConfig } from "./paths/generation_config";
 import { DefaultFileSystem } from "../../core/implementations/default_file_system";
 import { ServiceLocator } from "../../core/services/service_locator";
 import { GenerationService } from "./generators/generation_service";
+import { AppDatabaseGenerator } from "./generators/app_database/app_database_generator";
 
 export async function createNewProject(): Promise<void> {
 
@@ -42,33 +43,24 @@ export async function createNewProject(): Promise<void> {
     });
 
     await executeCommand(`serverpod create ${targetProject}`, config.projectsPath);
-
     const monoRepoPath = config.monoRepoTargetPath;
-
     const generationService = new GenerationService(fileSystem);
     await generationService.generate(config);
+
+    const appDatabaseGenerator = new AppDatabaseGenerator(fileSystem, config);
+    await appDatabaseGenerator.generate();
+
     startAppFix(config.targetFlutterProjectPath);
-
-    // const vscodePth = path.join(fullFlutterProjectPath, ".vscode");
-    // await createFolder(serviceFilesPth);
-    // await createFolder(vscodePth);
-
-
-    // createRootTemplateFiles(fullFlutterProjectPath);
-
-
-    // createFile(path.join(fullFlutterProjectPath, "pubspec.yaml"), pubspec_yaml(projectName));
-
-    // gitInit(monoRepoPath);
+    gitInit(monoRepoPath);
 
     // const homePagePath = path.join(genConfig.targetFlutterProjectPath, 'lib', 'features', 'home', 'presentation', 'pages', 'home_page.dart');
     const openCommand = `code -g "${monoRepoPath}" "${monoRepoPath}"`;
 
-    // await executeCommand(pubGet, genConfig.targetFlutterProjectPath);
-    // await executeCommand(pubGet, genConfig.targetServerProjectPath);
-    // await executeCommand(build_runner, genConfig.targetFlutterProjectPath);
-    // await executeCommand(SERVERPOD_GENERATE, genConfig.targetServerProjectPath);
-    gitInit(monoRepoPath);
+    await executeCommand(pubGet, config.targetFlutterProjectPath);
+    await executeCommand(pubGet, config.targetServerProjectPath);
+    await executeCommand(build_runner, config.targetFlutterProjectPath);
+    await executeCommand(SERVERPOD_GENERATE, config.targetServerProjectPath);
+    // gitInit(monoRepoPath);
     await executeCommand(openCommand, config.projectsPath);
     // serverpodK8sFileGenerate(projectsPath);
 
