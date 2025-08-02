@@ -1,4 +1,5 @@
 import { ServiceLocator } from "../../core/services/service_locator";
+import { pickPath } from "../../utils/ui/ui_ask_folder";
 import { getDocText } from "../../utils/ui/ui_util";
 import { AppDatabaseGenerator } from "./generators/app_database/app_database_generator";
 import { GenerationService } from "./generators/generation_service";
@@ -12,6 +13,12 @@ export async function createDataFilesByReplacement() {
 
     const model = ServerpodYamlParser.parse(getDocText());
     const features: FeatureName[] = model.isRelation ? ['manyToMany'] : ['entity'];
+
+    const featurePath = await pickPath("Выберите feature", featureSPath);
+        if (!featurePath) {
+            return;
+        }    
+
 
     const config = new GenerationConfig({
         templProject: 't2',
