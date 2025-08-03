@@ -24,6 +24,22 @@ export class AppDatabaseGenerator {
         const coreTablesDir = this.config.coreTablesPath;
         const featureTablesDir = this.config.featureTablesPath;
 
+        let existingContent = '';
+        let existingImports: Set<string> = new Set();
+        let existingTableClasses: Set<string> = new Set();
+        let currentSchemaVersion = 1;
+
+        // Если файл уже существует, читаем его содержимое
+        if (await this.fileSystem.exists(coreDatabasePath)) {
+            existingContent = await this.fileSystem.readFile(coreDatabasePath);
+            existingImports = this.extractSectionContent(existingContent, '// === GENERATED_IMPORTS_START ===', '// === GENERATED_IMPORTS_END ===');
+            existingTableClasses = this.extractSectionContent(existingContent, '// === GENERATED_TABLES_START ===', '// === GENERATED_TABLES_END ===');
+            currentSchemaVersion = this.extractSchemaVersion(existingContent);
+        } else {
+             // Если файл не существует, используем шаблон
+            existingContent = appDatabaseCont;
+        }
+
         // --- Шаг 2: Собираем информацию о файлах таблиц ---
         const coreTableFiles = (await this.fileSystem.readDirectory(coreTablesDir)).filter(file => file.endsWith('.dart'));     
         
@@ -33,50 +49,73 @@ export class AppDatabaseGenerator {
         }
 
         // --- Шаг 3: Генерируем контент для вставок ---
+        // Генерируем новые импорты
+        const newCoreImports = coreTableFiles.map(file => {
+             const relativeCorePath = path.relative(destinationDir, coreTablesDir).replaceAll('\\', '/');
+             return `import '${relativeCorePath}/${file}';`;
+        });
 
-        // Генерируем импорты
-        const relativeCorePath = path.relative(destinationDir, coreTablesDir).replaceAll('\\', '/');
-        const coreImports = coreTableFiles.map(file => `import '${relativeCorePath}/${file}';`);
+        const newFeatureImports = featureTableFiles.map(file => {
+             const relativeFeaturePath = path.relative(destinationDir, featureTablesDir).replaceAll('\\', '/');
+             return `import '${relativeFeaturePath}/${file}';`;
+        });
+        
+        const allImports = new Set([...existingImports, ...newCoreImports, ...newFeatureImports]);
 
-        const relativeFeaturePath = path.relative(destinationDir, featureTablesDir).replaceAll('\\', '/');
-        const featureImports = featureTableFiles.map(file => `import '${relativeFeaturePath}/${file}';`);
-
-        const allImports = [...coreImports, ...featureImports].join('\n');
-
-        // Генерируем список классов таблиц
-        const allTableClasses = [
-            ...coreTableFiles.map(file => `${snakeToPascalCase(file.split('.')[0])},`),
-            ...featureTableFiles.map(file => `${snakeToPascalCase(file.split('.')[0])},`)
-        ].join('\n    ');
+        // Генерируем список новых классов таблиц
+        const newCoreTableClasses = coreTableFiles.map(file => `${snakeToPascalCase(file.split('.')[0])},`);
+        const newFeatureTableClasses = featureTableFiles.map(file => `${snakeToPascalCase(file.split('.')[0])},`);
+        
+        const allTableClasses = new Set([...existingTableClasses, ...newCoreTableClasses, ...newFeatureTableClasses]);
 
         // --- Шаг 4: Вставляем сгенерированный контент в шаблон ---
-        let finalContent = this.replaceSection(
-            appDatabaseCont, 
+        let finalContent = this.updateSection(
+            existingContent, 
             '// === GENERATED_IMPORTS_START ===', 
             '// === GENERATED_IMPORTS_END ===', 
-            allImports
+            [...allImports].join('\n')
         );
 
-        finalContent = this.replaceSection(
+        finalContent = this.updateSection(
             finalContent, 
             '// === GENERATED_TABLES_START ===', 
             '// === GENERATED_TABLES_END ===', 
-            allTableClasses
+            [...allTableClasses].join('\n    ')
         );
+
+        // --- Шаг 5: Обновляем миграцию и версию ---
+        finalContent = this.updateMigration(finalContent, currentSchemaVersion, [...allTableClasses].join('\n    '));
         
-        // --- Шаг 5: Создаем итоговый файл ---
+        // --- Шаг 6: Создаем или обновляем итоговый файл ---
         await this.fileSystem.createFile(coreDatabasePath, finalContent);
+    }
+    
+    /**
+     * Извлекает содержимое между маркерами и возвращает в виде Set.
+     */
+    private extractSectionContent(content: string, startMarker: string, endMarker: string): Set<string> {
+        const regex = new RegExp(`${startMarker}\\s*([\\s\\S]*?)\\s*${endMarker}`, 'g');
+        const match = regex.exec(content);
+        if (match && match[1]) {
+            return new Set(match[1].split('\n').map(line => line.trim()).filter(Boolean));
+        }
+        return new Set();
     }
 
     /**
-     * Простой метод для замены содержимого между двумя маркерами.
-     * @param content Исходный контент файла.
-     * @param startMarker Начальный маркер.
-     * @param endMarker Конечный маркер.
-     * @param newContent Новый контент для вставки.
-     * @returns Контент с замененной секцией.
+     * Извлекает текущую версию схемы из файла.
      */
-    private replaceSection(
+    private extractSchemaVersion(content: string): number {
+        const regex = /int get schemaVersion => (\d+);/;
+        const match = content.match(regex);
+        return match ? parseInt(match[1], 10) : 1;
+    }
+
+
+    /**
+     * Обновляет содержимое между двумя маркерами, сохраняя старое содержимое.
+     */
+    private updateSection(
         content: string,
         startMarker: string,
         endMarker: string,
@@ -85,5 +124,40 @@ export class AppDatabaseGenerator {
         const regex = new RegExp(`${startMarker}[\\s\\S]*?${endMarker}`, 'g');
         const replacement = `${startMarker}\n${newContent}\n${endMarker}`;
         return content.replace(regex, replacement);
+    }
+
+    /**
+     * Обновляет стратегию миграции, добавляя новую миграцию и увеличивая версию.
+     */
+    private updateMigration(content: string, currentVersion: number, newTablesContent: string): string {
+        const newVersion = currentVersion + 1;
+        const migrationMarker = '// === GENERATED_MIGRATION_START ===';
+        const migrationEndMarker = '// === GENERATED_MIGRATION_END ===';
+        const newMigrationBlock = `
+        if (from < ${newVersion}) {
+            // Добавление новой таблицы или изменение схемы
+        }
+        `;
+
+        // Проверяем, существует ли уже блок миграции.
+        // Если да, то добавляем новый блок миграции, иначе создаем его.
+        if (content.includes(migrationMarker)) {
+            const regex = new RegExp(`${migrationMarker}[\\s\\S]*?${migrationEndMarker}`, 'g');
+            const replacement = `${migrationMarker}${newMigrationBlock}\n        ${migrationEndMarker}`;
+            content = content.replace(regex, replacement);
+        } else {
+             // Если маркеров для миграции нет, просто добавляем новый блок.
+            const onUpgradeRegex = /onUpgrade: \(Migrator m, int from, int to\) async {([\s\S]*?)}/;
+            const newOnUpgrade = `onUpgrade: (Migrator m, int from, int to) async {
+            ${migrationMarker}${newMigrationBlock}
+        ${migrationEndMarker}
+        }`;
+        content = content.replace(onUpgradeRegex, newOnUpgrade);
+        }
+
+        // Обновляем версию
+        content = content.replace(/int get schemaVersion => (\d+);/, `int get schemaVersion => ${newVersion};`);
+        
+        return content;
     }
 }
