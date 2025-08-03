@@ -3,49 +3,74 @@ import { FeatureName as ManifestTypeName } from "../generators/manifests";
 
 // Простые файлы - только замена entity
 export interface IGenerationConfig {
-  targetProject: string;
-  templProject: string;
+  templProject?: string;
   manifestType?: ManifestTypeName[];
   templFeatureName?: string;
-  targetFeatureName?: string;
+  targetFeaturePath?: string;
+  targetProject?: string;
   projectsPath?: string;
   templEntity?: string;
   targetEntity?: string;
   targetEntity1?: string;
   targetEntity2?: string;
   sourceFeaturePath?: string;
+  workspacesPath?: string;
 }
 
 export class GenerationConfig {
   public templProject: string;
-  public targetProject: string;
   public projectsPath: string;
   public templEntity: string;
+  public targetProject: string;
   public targetEntity: string;
   public targetEntity1: string;
   public targetEntity2: string;
   public sourceFeaturePath: string;
   public templFeatureName: string;
-  public targetFeatureName: string;
+  public targetFeaturePath: string;
   public manifestFeatures: ManifestTypeName[];
+  public workspacesPath: string;
+
 
   constructor(config: IGenerationConfig) {
     this.templProject = config.templProject || 't2';
-    this.targetProject = config.targetProject;
     this.manifestFeatures = config.manifestType || [];
     this.templFeatureName = config.templFeatureName || 'home';
-    this.targetFeatureName = config.targetFeatureName || 'home';
+    this.targetFeaturePath = config.targetFeaturePath || '';
     this.projectsPath = config.projectsPath || 'G:/Projects/Flutter/serverpod';
     this.templEntity = config.templEntity || 'category';
+    this.workspacesPath = config.workspacesPath || '';
+    this.targetProject = config.targetProject || path.basename(this.workspacesPath);
     this.targetEntity = config.targetEntity || '';
     this.targetEntity1 = config.targetEntity1 || '';
     this.targetEntity2 = config.targetEntity2 || '';
     this.sourceFeaturePath = config.sourceFeaturePath || `G:/Projects/Flutter/serverpod/${this.templProject}/${this.templProject}_flutter/lib/features/home`;
   }
 
-  get getFeaturePath(): string {
-    return path.join(this.projectsPath, this.targetProject, `${this.targetProject}_flutter`, 'lib', 'features', this.templFeatureName);
+
+  get monoRepoTargetPath(): string {
+    return path.join(this.projectsPath, this.targetProject);
   }
+
+  get monoRepoTemplPath(): string {
+    return path.join(this.projectsPath, this.templProject);
+  }
+
+  get featuresPath(): string {
+    return path.join(this.workspacesPath, `${this.targetProject}_flutter`, 'lib', 'features');
+  }
+
+  get targetFeatureName(): string {
+    return path.basename(this.targetFeaturePath);
+  }
+
+  get featureTablesPath(): string {
+    return path.join(this.targetFeaturePath, 'data', 'datasources', 'local', 'tables');
+  }
+
+  // get getTemplFeaturePath(): string {
+  //   return path.join(this.projectsPath, this.targetProject, `${this.targetProject}_flutter`, 'lib', 'features', this.templFeatureName);
+  // }
 
   get targetFlutterProjectPath(): string { return this.getFlutterPath(this.targetProject); };
   get templFlutterProjectPath(): string { return this.getFlutterPath(this.templProject); };
@@ -59,10 +84,6 @@ export class GenerationConfig {
 
   get templServerProjectPath(): string {
     return path.join(this.projectsPath, `${this.templProject}`, `${this.templProject}_server`);
-  }
-
-  get targetFeaturePath(): string {
-    return path.join(this.targetFlutterProjectPath, 'lib', 'features', `${this.templFeatureName}`);
   }
 
   private getFlutterPath(projectName: string): string {
@@ -85,15 +106,6 @@ export class GenerationConfig {
     return path.join(this.coreDataLocalPath, 'tables');
   }
 
-  get featureTablesPath(): string {
-    return path.join(this.getFeaturePath, 'data', 'datasources', 'local', 'tables');
-  }
 
-  get monoRepoTargetPath(): string {
-    return path.join(this.projectsPath, this.targetProject);
-  }
 
-  get monoRepoTemplPath(): string {
-    return path.join(this.projectsPath, this.templProject);
-  }
 }

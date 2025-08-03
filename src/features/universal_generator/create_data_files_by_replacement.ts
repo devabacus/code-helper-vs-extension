@@ -1,4 +1,5 @@
 import { ServiceLocator } from "../../core/services/service_locator";
+import { getRootWorkspaceFolders } from "../../utils/path_util";
 import { pickPath } from "../../utils/ui/ui_ask_folder";
 import { getDocText } from "../../utils/ui/ui_util";
 import { AppDatabaseGenerator } from "./generators/app_database/app_database_generator";
@@ -14,24 +15,24 @@ export async function createDataFilesByReplacement() {
     const model = ServerpodYamlParser.parse(getDocText());
     const features: FeatureName[] = model.isRelation ? ['manyToMany'] : ['entity'];
 
-    const featurePath = await pickPath("Выберите feature", featureSPath);
-        if (!featurePath) {
-            return;
-        }    
-
+    const workspacePath = getRootWorkspaceFolders();
 
     const config = new GenerationConfig({
         templProject: 't2',
-        targetProject: 't2',
+        workspacesPath: workspacePath,
         templFeatureName: 'home',
-        targetFeatureName: 'configuration',
-        templEntity: model.tableName,
+        targetFeaturePath: 'configuration',
         targetEntity: model.tableName,
         targetEntity1: model.entity1,
         targetEntity2: model.entity2,
         // features: ['startProject']
         manifestType: features
     });
+
+    const featurePath = await pickPath("Выберите feature", config.featuresPath);
+    if (featurePath) {
+        config.targetFeaturePath = featurePath;
+    } else { return; }
 
     const generationService = new GenerationService(fileSystem);
     await generationService.generate(config, model);

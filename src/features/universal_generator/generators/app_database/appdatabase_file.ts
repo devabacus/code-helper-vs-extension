@@ -29,6 +29,8 @@ MigrationStrategy get migration => MigrationStrategy(
         if (from < 2) {
 
         }        
+        // === GENERATED_MIGRATION_START ===
+        // === GENERATED_MIGRATION_END ===
         
       },
     );
