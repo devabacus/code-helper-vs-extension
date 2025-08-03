@@ -83,15 +83,11 @@ export class GenerationService {
                 const dictionaries = fileManifest.dictionaries.length > 0 ? fileManifest.dictionaries : allManifests[config.manifestFeatures[0]]?.dictionaries || [];
                 const rules = getDictionaryRules(dictionaries, config);
 
-                // 2. 🔥 **КЛЮЧЕВОЕ ИЗМЕНЕНИЕ!** Вычисляем путь относительно сканируемой папки.
-                // Это даст нам "pubspec.yaml" или "lib/features/home/data/models/user.dart"
                 const relativePath = path.relative(fullDirSourcePath, fullFilePath).replace(/\\/g, '/');
 
                 if (fileManifest.isTemplated && model) {
-                    // 3. Передаем pathInfo в обработчик
                     allTemplatedPromises.push(this._processTemplatedFile(config, relativePath, rules, model, content, pathInfo));
                 } else {
-                    // 3. Передаем pathInfo в обработчик
                     allReplaceTasks.push(this._createReplaceTask(config, relativePath, rules, pathInfo));
                 }
             }
