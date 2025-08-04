@@ -21,8 +21,12 @@ export class AppDatabaseGenerator {
         // --- Шаг 1: Определяем пути ---
         const destinationDir = this.config.coreDataLocalPath;
         const coreDatabasePath = path.join(destinationDir, 'database.dart');
-        const coreTablesDir = this.config.coreTablesPath;
+        // const coreTablesDir = this.config.coreTablesPath;
         const featureTablesDir = this.config.featureTablesPath;
+
+        // Определяем путь к шаблонному файлу
+        const templateDatabasePath = path.join(this.config.templFlutterLibPath, 'core', 'data', 'datasources', 'local', 'database.dart');
+
 
         let existingContent = '';
         let existingImports: Set<string> = new Set();
@@ -36,12 +40,17 @@ export class AppDatabaseGenerator {
             existingTableClasses = this.extractSectionContent(existingContent, '// === GENERATED_TABLES_START ===', '// === GENERATED_TABLES_END ===');
             currentSchemaVersion = this.extractSchemaVersion(existingContent);
         } else {
-             // Если файл не существует, используем шаблон
-            existingContent = appDatabaseCont;
+             // Если файл не существует, используем шаблон из проекта и очищаем содержимое маркеров
+            existingContent = await this.fileSystem.readFile(templateDatabasePath);
+            
+            // Очищаем содержимое всех генерируемых секций
+            existingContent = this.updateSection(existingContent, '// === GENERATED_IMPORTS_START ===', '// === GENERATED_IMPORTS_END ===', '');
+            existingContent = this.updateSection(existingContent, '// === GENERATED_TABLES_START ===', '// === GENERATED_TABLES_END ===', '');
+            existingContent = this.updateSection(existingContent, '// === GENERATED_MIGRATION_START ===', '// === GENERATED_MIGRATION_END ===', '');
         }
 
         // --- Шаг 2: Собираем информацию о файлах таблиц ---
-        const coreTableFiles = (await this.fileSystem.readDirectory(coreTablesDir)).filter(file => file.endsWith('.dart'));     
+        // const coreTableFiles = (await this.fileSystem.readDirectory(coreTablesDir)).filter(file => file.endsWith('.dart'));     
         
         let featureTableFiles: string[] = [];
         if (await this.fileSystem.exists(featureTablesDir)) {
@@ -50,23 +59,25 @@ export class AppDatabaseGenerator {
 
         // --- Шаг 3: Генерируем контент для вставок ---
         // Генерируем новые импорты
-        const newCoreImports = coreTableFiles.map(file => {
-             const relativeCorePath = path.relative(destinationDir, coreTablesDir).replaceAll('\\', '/');
-             return `import '${relativeCorePath}/${file}';`;
-        });
+        // const newCoreImports = coreTableFiles.map(file => {
+        //      const relativeCorePath = path.relative(destinationDir, coreTablesDir).replaceAll('\\', '/');
+        //      return `import '${relativeCorePath}/${file}';`;
+        // });
 
         const newFeatureImports = featureTableFiles.map(file => {
              const relativeFeaturePath = path.relative(destinationDir, featureTablesDir).replaceAll('\\', '/');
              return `import '${relativeFeaturePath}/${file}';`;
         });
         
-        const allImports = new Set([...existingImports, ...newCoreImports, ...newFeatureImports]);
+        // const allImports = new Set([...existingImports, ...newCoreImports, ...newFeatureImports]);
+        const allImports = new Set([...existingImports, ...newFeatureImports]);
 
         // Генерируем список новых классов таблиц
-        const newCoreTableClasses = coreTableFiles.map(file => `${snakeToPascalCase(file.split('.')[0])},`);
+        // const newCoreTableClasses = coreTableFiles.map(file => `${snakeToPascalCase(file.split('.')[0])},`);
         const newFeatureTableClasses = featureTableFiles.map(file => `${snakeToPascalCase(file.split('.')[0])},`);
         
-        const allTableClasses = new Set([...existingTableClasses, ...newCoreTableClasses, ...newFeatureTableClasses]);
+        // const allTableClasses = new Set([...existingTableClasses, ...newCoreTableClasses, ...newFeatureTableClasses]);
+        const allTableClasses = new Set([...existingTableClasses, ...newFeatureTableClasses]);
 
         // --- Шаг 4: Вставляем сгенерированный контент в шаблон ---
         let finalContent = this.updateSection(
