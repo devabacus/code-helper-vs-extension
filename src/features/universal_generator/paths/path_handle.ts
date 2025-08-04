@@ -2,7 +2,7 @@
 
 import { GenerationConfig } from "./generation_config";
 
-interface PathInfo {
+export interface PathInfo {
     sourceBasePath: string;
     destinationBasePath: string;
     // Удаляем relativePath, так как он будет вычисляться в GenerationService

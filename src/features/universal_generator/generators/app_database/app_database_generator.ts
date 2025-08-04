@@ -84,7 +84,9 @@ export class AppDatabaseGenerator {
         );
 
         // --- Шаг 5: Обновляем миграцию и версию ---
-        finalContent = this.updateMigration(finalContent, currentSchemaVersion, [...allTableClasses].join('\n    '));
+        if(!existingTableClasses.has(newFeatureTableClasses[0])) {            
+            finalContent = this.updateMigration(finalContent, currentSchemaVersion, [...allTableClasses].join('\n    '));
+        }
         
         // --- Шаг 6: Создаем или обновляем итоговый файл ---
         await this.fileSystem.createFile(coreDatabasePath, finalContent);

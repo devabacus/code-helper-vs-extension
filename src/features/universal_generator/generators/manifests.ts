@@ -33,4 +33,4 @@ export const allManifests = {
 
 } as const;
 
-export type FeatureName = keyof typeof allManifests;
+export type manifestType = keyof typeof allManifests;

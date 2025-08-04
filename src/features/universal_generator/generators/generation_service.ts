@@ -8,18 +8,13 @@ import { getDictionaryRules, DictionaryName } from '../replacement_util';
 import { ReplacingFileProcessor, ReplaceTask, ReplacementRule } from './replacing_file_processor';
 import { SectionReplacer } from '../section_config';
 import { ServerpodModel } from '../serverpod_yaml_parser/formatters/types';
-import { getPathInfo } from '../paths/path_handle'; // Используем обновленный path_handle
-import { MarkerAnalyzer } from './marker_analyzer';
-import { allManifests, FeatureName } from './manifests';
+import { getPathInfo, PathInfo } from '../paths/path_handle';
+import { FileManifest, MarkerAnalyzer } from './marker_analyzer';
+import { allManifests, manifestType } from './manifests';
 import { RelationAnalyzer } from '../serverpod_yaml_parser/relation-analyzer';
 import { RelationPatcher } from './relation_patcher';
 import { scanWithIgnore } from '../../../utils/dir_handle_adv';
 
-// Определим тип для PathInfo для большей строгости
-interface PathInfo {
-    sourceBasePath: string;
-    destinationBasePath: string;
-}
 
 export class GenerationService {
     private readonly fileSystem: IFileSystem;
@@ -36,93 +31,114 @@ export class GenerationService {
 
     public async generate(config: GenerationConfig, model?: ServerpodModel): Promise<void> {
 
-        const allReplaceTasks: ReplaceTask[] = [];
-        const allTemplatedPromises: Promise<void>[] = [];
-
+        const allPromises: Promise<void>[] = [];
         const directoriesToScan = new Set<string>();
-        for (const featureName of config.manifestFeatures) {
-            const manifest = allManifests[featureName as FeatureName];
+        for (const _manifest of config.allManifests) {
+            const manifest = allManifests[_manifest as manifestType];
             if (manifest?.scan_dirs) {
                 manifest.scan_dirs.forEach(dir => directoriesToScan.add(dir));
             }
         }
+        const isEntityBasedGeneration = config.allManifests.includes('entity') || config.allManifests.includes('manyToMany');
 
-        const isEntityBasedGeneration = config.manifestFeatures.includes('entity') || config.manifestFeatures.includes('manyToMany');
-
-        for (const dir of directoriesToScan) { // dir - это "flutter/", "server/" и т.д.
-
-            // 1. Получаем правильные базовые пути для текущего типа директории
+        for (const dir of directoriesToScan) {
             const pathInfo = getPathInfo(config, dir);
-
             const fullDirSourcePath = pathInfo.sourceBasePath;
-
-            if (!await this.fileSystem.exists(fullDirSourcePath)) {
-                continue;
-            }
-
+            if (!await this.fileSystem.exists(fullDirSourcePath)) { continue; }
+            
             const filesInDir = await scanWithIgnore(fullDirSourcePath, this.fileSystem);
 
-            for (const fullFilePath of filesInDir) {
-                if (isEntityBasedGeneration && !fullFilePath.includes(config.templEntity)) {
-                    continue;
-                }
-                if (fullFilePath.includes('.g.') || fullFilePath.includes('.freezed.')) {
-                    continue;
-                }
-                const content = await this.fileSystem.readFile(fullFilePath);
-                const fileManifest = MarkerAnalyzer.analyze(content);
-                if (fileManifest.types.includes('ignore')) {
-                    continue;
-                }
+            for (const templateFullPath of filesInDir) {
+                if (isEntityBasedGeneration && !templateFullPath.includes(config.templEntity)) { continue; }
+                if (templateFullPath.includes('.g.') || templateFullPath.includes('.freezed.')) { continue; }
 
-                const isRelevant = config.manifestFeatures.some(feature => fileManifest.types.includes(feature as any));
-                if (!isRelevant) {
-                    continue;
-                }
-
-                const dictionaries = fileManifest.dictionaries.length > 0 ? fileManifest.dictionaries : allManifests[config.manifestFeatures[0]]?.dictionaries || [];
-                const rules = getDictionaryRules(dictionaries, config);
-
-                const relativePath = path.relative(fullDirSourcePath, fullFilePath).replace(/\\/g, '/');
-
-                if (fileManifest.isTemplated && model) {
-                    allTemplatedPromises.push(this._processTemplatedFile(config, relativePath, rules, model, content, pathInfo));
-                } else {
-                    allReplaceTasks.push(this._createReplaceTask(config, relativePath, rules, pathInfo));
-                }
+                const templateContent = await this.fileSystem.readFile(templateFullPath);
+                const fileManifest = MarkerAnalyzer.analyze(templateContent);
+                
+                if (fileManifest.types.includes('ignore')) { continue; }
+                const isRelevant = config.allManifests.some(feature => fileManifest.types.includes(feature as any));
+                if (!isRelevant) { continue; }
+                
+                allPromises.push(this._processFile(config, templateFullPath, templateContent, fileManifest, pathInfo, model));
             }
         }
 
-        await Promise.all([
-            this.replacingProcessor.process(allReplaceTasks),
-            ...allTemplatedPromises,
-        ]);
+        await Promise.all(allPromises);
 
         if (model && RelationAnalyzer.manyToOneFields(model.fields).length > 0) {
             await this.relationPatcher.patch(config, model);
         }
     }
 
-    // 4. Обновляем сигнатуры методов, чтобы они принимали pathInfo
-    private _createReplaceTask(config: GenerationConfig, relativePath: string, rules: ReplacementRule[], pathInfo: PathInfo): ReplaceTask {
-        const destinationRelativePath = this._getDestinationPath(relativePath, config);
-        return {
-            sourcePath: path.join(pathInfo.sourceBasePath, relativePath),
-            destinationPath: path.join(pathInfo.destinationBasePath, destinationRelativePath),
-            rules,
-        };
-    }
+    private async _processFile(
+        config: GenerationConfig,
+        templateFullPath: string,
+        templateContent: string,
+        fileManifest: FileManifest,
+        pathInfo: PathInfo,
+        model?: ServerpodModel
+    ): Promise<void> {
+        const relativePath = path.relative(pathInfo.sourceBasePath, templateFullPath).replace(/\\/g, '/');
+        const destinationPath = path.join(pathInfo.destinationBasePath, this._getDestinationPath(relativePath, config));
+        
+        const destinationExists = await this.fileSystem.exists(destinationPath);
+        const hasBaseMarker = /(?:\/\/|#) === generated_start:base ===/.test(templateContent);
 
-    private async _processTemplatedFile(config: GenerationConfig, relativePath: string, rules: ReplacementRule[], model: ServerpodModel, initialContent: string, pathInfo: PathInfo): Promise<void> {
-        let content = initialContent;
-        for (const rule of rules) {
-            content = content.replace(new RegExp(rule.from, 'g'), rule.to);
+        // --- СТРАТЕГИЯ 1: СЛИЯНИЕ (MERGE) ---
+        if (destinationExists && hasBaseMarker) {
+            const destinationContent = await this.fileSystem.readFile(destinationPath);
+            const newContent = this._mergeBaseContent(templateContent, destinationContent, fileManifest, config);
+            await this.fileSystem.createFile(destinationPath, newContent);
+            return;
         }
-        content = this.sectionReplacer.process(content, config, model);
-        const destinationRelativePath = this._getDestinationPath(relativePath, config);
-        const destinationPath = path.join(pathInfo.destinationBasePath, destinationRelativePath);
+
+        // --- СТРАТЕГИЯ 2: ПОЛНАЯ ЗАМЕНА (ДЛЯ ВСЕХ О СТАЛЬНЫХ СЛУЧАЕВ) ---
+        
+        // 🔥 ВОЗВРАЩАЕМ КОРРЕКТНУЮ ЛОГИКУ ПОИСКА СЛОВАРЕЙ
+        const dictionaries = fileManifest.dictionaries.length > 0 ? fileManifest.dictionaries : allManifests[config.allManifests[0]]?.dictionaries || [];
+        const rules = getDictionaryRules(dictionaries, config);
+
+        let newContent = templateContent;
+        for (const rule of rules) {
+            newContent = newContent.replace(new RegExp(rule.from, 'g'), rule.to);
+        }
+
+        if (fileManifest.isTemplated && model) {
+            newContent = this.sectionReplacer.process(newContent, config, model);
+        }
+
         await this.fileSystem.createFolder(path.dirname(destinationPath));
-        await this.fileSystem.createFile(destinationPath, content);
+        await this.fileSystem.createFile(destinationPath, newContent);
+    }
+    
+    private _mergeBaseContent(
+        templateContent: string,
+        destinationContent: string,
+        fileManifest: FileManifest,
+        config: GenerationConfig,
+    ): string {
+        const baseBlockRegex = /((?:\/\/|#) === generated_start:base ===)([\s\S]*?)((?:\/\/|#) === generated_end:base ===)/;
+        
+        const templateMatch = templateContent.match(baseBlockRegex);
+        if (!templateMatch || typeof templateMatch[2] !== 'string') {
+            return destinationContent;
+        }
+        let newBlockContent = templateMatch[2];
+
+        // 🔥 И ЗДЕСЬ ТОЖЕ ВОЗВРАЩАЕМ ЛОГИКУ ПОИСКА СЛОВАРЕЙ
+        const dictionaries = fileManifest.dictionaries.length > 0 ? fileManifest.dictionaries : allManifests[config.allManifests[0]]?.dictionaries || [];
+        const rules = getDictionaryRules(dictionaries, config);
+
+        for (const rule of rules) {
+            newBlockContent = newBlockContent.replace(new RegExp(rule.from, 'g'), rule.to);
+        }
+        
+        const finalContent = destinationContent.replace(
+            baseBlockRegex,
+            `$1${newBlockContent}$3`
+        );
+
+        return finalContent;
     }
 
     private _getDestinationPath(relativePath: string, config: GenerationConfig): string {

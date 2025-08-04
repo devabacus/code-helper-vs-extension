@@ -1,10 +1,10 @@
 import path from "path";
-import { FeatureName as ManifestTypeName } from "../generators/manifests";
+import { manifestType as ManifestType } from "../generators/manifests";
 
 // Простые файлы - только замена entity
 export interface IGenerationConfig {
   templProject?: string;
-  manifestType?: ManifestTypeName[];
+  manifest?: ManifestType[];
   templFeatureName?: string;
   targetFeaturePath?: string;
   targetProject?: string;
@@ -28,13 +28,13 @@ export class GenerationConfig {
   public sourceFeaturePath: string;
   public templFeatureName: string;
   public targetFeaturePath: string;
-  public manifestFeatures: ManifestTypeName[];
+  public allManifests: ManifestType[];
   public workspacesPath: string;
 
 
   constructor(config: IGenerationConfig) {
     this.templProject = config.templProject || 't2';
-    this.manifestFeatures = config.manifestType || [];
+    this.allManifests = config.manifest || [];
     this.templFeatureName = config.templFeatureName || 'home';
     this.targetFeaturePath = config.targetFeaturePath || '';
     this.projectsPath = config.projectsPath || 'G:/Projects/Flutter/serverpod';
