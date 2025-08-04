@@ -4,7 +4,6 @@ import path from "path";
 import { IFileSystem } from "../../../../core/interfaces/file_system";
 import { snakeToPascalCase } from "../../../../utils/text_work/text_util";
 import { GenerationConfig } from "../../paths/generation_config";
-import { appDatabaseCont } from "./appdatabase_file";
 
 /**
  * Генератор для файла AppDatabase.
