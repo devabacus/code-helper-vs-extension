@@ -31,7 +31,7 @@ export class AppDatabaseGenerator {
         let existingImports: Set<string> = new Set();
         let existingTableClasses: Set<string> = new Set();
         let currentSchemaVersion = 1;
-
+ 
         // Если файл уже существует, читаем его содержимое
         if (await this.fileSystem.exists(coreDatabasePath)) {
             existingContent = await this.fileSystem.readFile(coreDatabasePath);
