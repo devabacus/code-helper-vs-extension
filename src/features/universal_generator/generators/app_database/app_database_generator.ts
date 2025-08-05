@@ -26,7 +26,6 @@ export class AppDatabaseGenerator {
         // Определяем путь к шаблонному файлу
         const templateDatabasePath = path.join(this.config.templFlutterLibPath, 'core', 'data', 'datasources', 'local', 'database.dart');
 
-
         let existingContent = '';
         let existingImports: Set<string> = new Set();
         let existingTableClasses: Set<string> = new Set();
