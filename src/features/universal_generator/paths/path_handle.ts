@@ -23,6 +23,12 @@ export function getPathInfo(config: GenerationConfig, dirKey: string): PathInfo 
                 sourceBasePath: config.templServerProjectPath,
                 destinationBasePath: config.targetServerProjectPath,
             };
+
+        case 'admin/':
+            return {
+                sourceBasePath: config.templAdminProjectPath,
+                destinationBasePath: config.targetAdminProjectPath,
+            };
         
         case 'feature/':
              return {

@@ -86,6 +86,15 @@ export class GenerationConfig {
     return path.join(this.projectsPath, `${this.templProject}`, `${this.templProject}_server`);
   }
 
+  get templAdminProjectPath(): string {
+    return path.join(this.projectsPath, `${this.templProject}`, `${this.templProject}_admin`);
+  }
+
+  get targetAdminProjectPath(): string {
+    return path.join(this.projectsPath, `${this.targetProject}`, `${this.targetProject}_admin`);
+  }
+
+
   private getFlutterPath(projectName: string): string {
     return path.join(this.projectsPath, `${projectName}`, `${projectName}_flutter`);
   }

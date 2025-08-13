@@ -33,7 +33,6 @@ export async function serverpodK8sFileGenerate(projectPath: string): Promise<voi
 
     const serverDataYamlPath = path.join(serverPath, "server_data.yaml");
     const dockerignorePath = path.join(serverPath, ".dockerignore");
-    const serverHandleCmdsPath = path.join(serverPath, "_server_handle_files", "_server_commands.ps1");
     const clusterIssuerPath = path.join(serverPath, "k8s_1", "cluster_issuer.yaml");
     const nginxServicePath = path.join(serverPath, "k8s_1", "nginx_service.yaml");
     const pgProxyPodPath = path.join(serverPath, "k8s_1", "pg-proxy-pod.yaml");
@@ -57,7 +56,6 @@ export async function serverpodK8sFileGenerate(projectPath: string): Promise<voi
 
     createFile(testDataSpyPath, testDataSpy);
     createFile(testDataEndPointPath, testDataEndpoint);
-    createFile(serverHandleCmdsPath, serverServiceFile(serverYamlData, serverPath, flutterPath));
     createFile(clusterIssuerPath, clusterIssuerFile);
     createFile(nginxServicePath, nginxServiceFile);
     createFile(pgProxyPodPath, pgProxyPodFile(serverYamlData));

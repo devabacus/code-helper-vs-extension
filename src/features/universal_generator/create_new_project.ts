@@ -42,8 +42,12 @@ export async function createNewProject(): Promise<void> {
         manifest: ['startProject']
     });
 
+    
     await executeCommand(`serverpod create ${targetProject}`, config.projectsPath);
     const monoRepoPath = config.monoRepoTargetPath;
+
+    await executeCommand(`flutter create ${targetProject}_admin`, monoRepoPath);
+
     const generationService = new GenerationService(fileSystem);
     await generationService.generate(config);
 
@@ -58,8 +62,11 @@ export async function createNewProject(): Promise<void> {
 
     await executeCommand(pubGet, config.targetFlutterProjectPath);
     await executeCommand(pubGet, config.targetServerProjectPath);
-    await executeCommand(build_runner, config.targetFlutterProjectPath);
+    await executeCommand(pubGet, config.targetAdminProjectPath);
+
     await executeCommand(SERVERPOD_GENERATE, config.targetServerProjectPath);
+    await executeCommand(build_runner, config.targetFlutterProjectPath);
+    await executeCommand(build_runner, config.targetAdminProjectPath);
     // gitInit(monoRepoPath);
     await executeCommand(openCommand, config.projectsPath);
     // serverpodK8sFileGenerate(projectsPath);
