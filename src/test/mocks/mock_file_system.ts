@@ -2,6 +2,9 @@ import { IFileSystem } from "../../core/interfaces/file_system";
 
 
 export class MockFileSystem implements IFileSystem {
+    isDirectory(path: string): Promise<boolean> {
+        throw new Error("Method not implemented.");
+    }
     readDirectoryRecursive(path: string): Promise<string[]> {
         throw new Error("Method not implemented.");
     }
