@@ -58,6 +58,7 @@
       }
     ],
     "keybindings": [
+
       {
         "command": "code-helper.snippet_generate",
         "key": "alt+ctrl+shift+p"

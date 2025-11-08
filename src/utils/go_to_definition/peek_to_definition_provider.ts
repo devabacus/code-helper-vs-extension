@@ -2,6 +2,10 @@
 import * as vscode from 'vscode';
 import * as fs from 'fs';
 
+function toPascalCase(str: string): string {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
 export async function customPeekDefinition(
     document: vscode.TextDocument, 
     position: vscode.Position, 
@@ -24,19 +28,25 @@ export async function customPeekDefinition(
 
         const targetSymbolName = word.substring(0, word.length - 'Provider'.length);
         const targetFileContent = fs.readFileSync(targetFilePath, 'utf8');
-        const symbolIndex = targetFileContent.indexOf(targetSymbolName);
+        
+        // Пробуем найти сначала camelCase (для функций), потом PascalCase (для классов)
+        let symbolIndex = targetFileContent.indexOf(targetSymbolName);
+        let actualSymbolName = targetSymbolName;
+        
+        if (symbolIndex === -1) {
+            actualSymbolName = toPascalCase(targetSymbolName);
+            symbolIndex = targetFileContent.indexOf(actualSymbolName);
+        }
 
         if (symbolIndex !== -1) {
             const targetUri = vscode.Uri.file(targetFilePath);
             const targetDocument = await vscode.workspace.openTextDocument(targetUri);
             const startPosition = targetDocument.positionAt(symbolIndex);
-            const endPosition = startPosition.translate(0, targetSymbolName.length);
+            const endPosition = startPosition.translate(0, actualSymbolName.length);
             const targetRange = new vscode.Range(startPosition, endPosition);
             
-            // Создаем location для peek
             const location = new vscode.Location(targetUri, targetRange);
             
-            // Используем showReferences для показа peek окна
             await vscode.commands.executeCommand(
                 'editor.action.showReferences',
                 document.uri,
