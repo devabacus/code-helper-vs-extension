@@ -7,8 +7,8 @@ function toPascalCase(str: string): string {
 }
 
 export async function customPeekDefinition(
-    document: vscode.TextDocument, 
-    position: vscode.Position, 
+    document: vscode.TextDocument,
+    position: vscode.Position,
     word: string
 ): Promise<void> {
     try {
@@ -28,25 +28,34 @@ export async function customPeekDefinition(
 
         const targetSymbolName = word.substring(0, word.length - 'Provider'.length);
         const targetFileContent = fs.readFileSync(targetFilePath, 'utf8');
-        
-        // Пробуем найти сначала camelCase (для функций), потом PascalCase (для классов)
-        let symbolIndex = targetFileContent.indexOf(targetSymbolName);
-        let actualSymbolName = targetSymbolName;
-        
-        if (symbolIndex === -1) {
-            actualSymbolName = toPascalCase(targetSymbolName);
-            symbolIndex = targetFileContent.indexOf(actualSymbolName);
+
+        const pascalCaseName = toPascalCase(targetSymbolName);
+        const camelCaseName = targetSymbolName;
+
+        // Ищем символ (класс или функцию), перед которым есть аннотация @Riverpod
+        const regex = new RegExp(`@riverpod(?:\\([^)]*\\))?\\s*.*?\\b(${pascalCaseName}|${camelCaseName})\\b`, 'gis');
+        const match = regex.exec(targetFileContent);
+
+        let symbolIndex = -1;
+        let actualSymbolName = '';
+
+        if (match) {
+            // Найдено совпадение с аннотацией.
+            // `match.index` - это начало "@Riverpod". Нам нужен индекс самого символа.
+            actualSymbolName = match[1];
+            // Ищем позицию символа после найденной аннотации
+            symbolIndex = targetFileContent.indexOf(actualSymbolName, match.index);
         }
 
         if (symbolIndex !== -1) {
             const targetUri = vscode.Uri.file(targetFilePath);
             const targetDocument = await vscode.workspace.openTextDocument(targetUri);
             const startPosition = targetDocument.positionAt(symbolIndex);
-            const endPosition = startPosition.translate(0, actualSymbolName.length);
+            const endPosition = targetDocument.positionAt(symbolIndex + actualSymbolName.length);
             const targetRange = new vscode.Range(startPosition, endPosition);
-            
+
             const location = new vscode.Location(targetUri, targetRange);
-            
+
             await vscode.commands.executeCommand(
                 'editor.action.showReferences',
                 document.uri,

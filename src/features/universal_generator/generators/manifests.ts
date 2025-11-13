@@ -21,7 +21,7 @@ export const allManifests = {
 
   manyToMany: {
     dictionaries: DictionaryPresets.M2M,
-    scan_dirs: [
+    scan_dirs: [ 
       'feature/'
     ]
   },
