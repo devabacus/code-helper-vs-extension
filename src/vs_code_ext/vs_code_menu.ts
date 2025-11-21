@@ -26,8 +26,10 @@ export async function vsCodeExtHandler() {
 async function reinstallExtension() {
     const reinstallExtCmds = [
         'vsce package',
-        'code --uninstall-extension mrfrolk.code-helper',
-        'code --install-extension code-helper-0.0.1.vsix'
+        // 'code --uninstall-extension mrfrolk.code-helper',
+        // 'code --install-extension code-helper-0.0.1.vsix'
+        'antigravity --uninstall-extension mrfrolk.code-helper',
+        'antigravity --install-extension code-helper-0.0.1.vsix --force'
     ];
     await terminalCommands(reinstallExtCmds, getRootWorkspaceFolders());
     window.showInformationMessage('✅ Расширение успешно обновлено!');
@@ -35,7 +37,7 @@ async function reinstallExtension() {
 
 
 async function rebuildExtension() {
-    const rebuildCmds :string[] = [
+    const rebuildCmds: string[] = [
         'npm update @vscode/test-cli @vscode/test-electron @types/mocha',
         'npm run compile'
     ];
