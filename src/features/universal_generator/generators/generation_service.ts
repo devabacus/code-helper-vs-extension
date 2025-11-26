@@ -55,7 +55,7 @@ export class GenerationService {
                 const templateContent = await this.fileSystem.readFile(templateFullPath);
                 const fileManifest = MarkerAnalyzer.analyze(templateContent);
                 
-                if (fileManifest.types.includes('ignore')) { continue; }
+                if (fileManifest.types.includes('ignore')) { continue; }    
                 const isRelevant = config.allManifests.some(feature => fileManifest.types.includes(feature as any));
                 if (!isRelevant) { continue; }
                 

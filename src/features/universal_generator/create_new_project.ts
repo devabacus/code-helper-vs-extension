@@ -58,7 +58,7 @@ export async function createNewProject(): Promise<void> {
     gitInit(monoRepoPath);
 
     // const homePagePath = path.join(genConfig.targetFlutterProjectPath, 'lib', 'features', 'home', 'presentation', 'pages', 'home_page.dart');
-    const openCommand = `code -g "${monoRepoPath}" "${monoRepoPath}"`;
+    const openCommand = `antigravity -g "${monoRepoPath}"`;
 
     await executeCommand(pubGet, config.targetFlutterProjectPath);
     await executeCommand(pubGet, config.targetServerProjectPath);
