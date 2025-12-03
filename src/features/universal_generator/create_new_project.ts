@@ -29,8 +29,10 @@ import { AppDatabaseGenerator } from "./generators/app_database/app_database_gen
 
 export async function createNewProject(): Promise<void> {
 
+    // Это нужно для тестов для реальной генерации всегда используеться DefaultFileSystem
     const fileSystem = ServiceLocator.getInstance().getFileSystem();
 
+    // сохраняем название проекта, далее будет использоваться для генерации
     const targetProject = await getUserInput('введите название проекта');
     if (!targetProject) {
         return;
