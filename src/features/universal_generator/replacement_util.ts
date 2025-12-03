@@ -22,18 +22,21 @@ const dictionaryRegistry: Record<DictionaryName, RuleGenerator> = {
 
     const baseForms = {
       Ds: pluralConvert(cap(config.templEntity)),
+      ds: pluralConvert(unCap(config.templEntity)),
       D: cap(config.templEntity),
       d: unCap(config.templEntity),
     };
 
     const newForms = {
       Ds: pluralConvert(cap(config.targetEntity)),
+      ds: pluralConvert(unCap(config.targetEntity)),
       D: cap(config.targetEntity),
       d: unCap(config.targetEntity),
     };
 
     return [
       { from: baseForms.Ds, to: newForms.Ds },
+      { from: baseForms.ds, to: newForms.ds },
       { from: baseForms.D, to: newForms.D },
       { from: baseForms.d, to: newForms.d },
     ];
