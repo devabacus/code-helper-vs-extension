@@ -57,8 +57,8 @@ export async function serverpodK8sFileGenerate(projectPath: string): Promise<voi
     createFile(testDataSpyPath, testDataSpy);
     createFile(testDataEndPointPath, testDataEndpoint);
     createFile(clusterIssuerPath, clusterIssuerFile);
-    createFile(nginxServicePath, nginxServiceFile);
-    createFile(pgProxyPodPath, pgProxyPodFile(serverYamlData));
+    // createFile(nginxServicePath, nginxServiceFile); nginx ingress больше не поддерживается в кубере
+    // createFile(pgProxyPodPath, pgProxyPodFile(serverYamlData)); нейросеть говорит что это не нужно
 
 
 

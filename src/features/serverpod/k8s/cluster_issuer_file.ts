@@ -20,5 +20,5 @@ spec:
     - http01:
         ingress:
           # Очень важная строка: говорим cert-manager'у использовать ваш Ingress-контроллер
-          class: nginx
+          class: traefik
 `;

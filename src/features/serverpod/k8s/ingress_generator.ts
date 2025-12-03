@@ -32,10 +32,10 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: ${appName}-server-ingress
-  annotations:
-    kubernetes.io/ingress.class: "nginx" 
+  annotations:    
     cert-manager.io/cluster-issuer: "letsencrypt-prod" 
 spec:
+  ingressClassName: traefik
   tls:
   - hosts:
     - ${apiFqdn}
