@@ -27,89 +27,95 @@ export class RelationPatcher {
             return;
         }
 
-        const { sourceBasePath: featureSourcePath } = getPathInfo(config, 'feature/');
-        if (!await this.fileSystem.exists(featureSourcePath)) {
-            return;
-        }
+        const directories = ['feature/', 'server/'];
 
-        const templateFiles = await (this.fileSystem as any).readDirectoryRecursive(featureSourcePath);
+        for (const dirKey of directories) {
+            const { sourceBasePath, destinationBasePath } = getPathInfo(config, dirKey);
 
-        for (const templateFilePath of templateFiles) {
-            if (!templateFilePath.includes(config.templEntity)) {
+            if (!await this.fileSystem.exists(sourceBasePath)) {
                 continue;
             }
 
-            const relationTemplatePath = templateFilePath.replaceAll(config.templEntity, relationTemplateEntity);
-            if (!await this.fileSystem.exists(relationTemplatePath)) {
-                continue;
-            }
+            const templateFiles = await (this.fileSystem as any).readDirectoryRecursive(sourceBasePath);
 
-            const relationTemplateContent = await this.fileSystem.readFile(relationTemplatePath);
-
-            const matched = relationTemplateContent.match(regex);
-            if (!matched) {
-                continue;
-            }
-            const blockContent = matched[0];
-
-            const isBlockInClass = relationTemplateContent.trim().endsWith('}');
-
-
-            let allProcessedBlocks = '';
-
-            for (const relationField of relationFields) {
-                if (!relationField.relatedModel) {
+            for (const templateFilePath of templateFiles) {
+                if (!templateFilePath.includes(config.templEntity)) {
                     continue;
                 }
 
-                let templateBlock = blockContent;
-
-                // 1. Заменяем основную сущность
-                const mainEntityConfig = new GenerationConfig({ ...config, templEntity: relationTemplateEntity, targetEntity: model.className });
-                const mainEntityRules = getDictionaryRules(DictionaryPresets.ENTITY, mainEntityConfig);
-                for (const rule of mainEntityRules) {
-                    templateBlock = templateBlock.replace(new RegExp(rule.from, 'g'), rule.to);
-                }
-
-                // 2. Заменяем связанную сущность
-                const relatedEntityConfig = new GenerationConfig({ ...config, templEntity: templateRelatedEntity, targetEntity: relationField.relatedModel });
-                const relatedEntityRules = getDictionaryRules(DictionaryPresets.ENTITY, relatedEntityConfig);
-                for (const rule of relatedEntityRules) {
-                    templateBlock = templateBlock.replace(new RegExp(rule.from, 'g'), rule.to);
-                }
-
-                // 3. Заменяем ID поле
-                const targetIdName = relationField.name.endsWith('Id') ? relationField.name : `${relationField.name}Id`;
-                templateBlock = templateBlock.replace(new RegExp(`${templateRelatedEntity}Id`, 'g'), targetIdName);
-
-                allProcessedBlocks += '\n\n' + templateBlock;
-            }
-
-            if (allProcessedBlocks.length > 0) {
-                const relativePath = path.relative(featureSourcePath, templateFilePath).replace(/\\/g, '/');
-                const destinationPath = path.join(config.targetFeaturePath, this._getDestinationPath(new GenerationConfig({ ...config, templEntity: 'category' }), relativePath));
-    
-                if (!await this.fileSystem.exists(destinationPath)) {
+                const relationTemplatePath = templateFilePath.replaceAll(config.templEntity, relationTemplateEntity);
+                if (!await this.fileSystem.exists(relationTemplatePath)) {
                     continue;
                 }
 
+                const relationTemplateContent = await this.fileSystem.readFile(relationTemplatePath);
 
-                const destinationContent = await this.fileSystem.readFile(destinationPath);
-                if (isBlockInClass) {
-                    const lastBraceIndex = destinationContent.lastIndexOf('}');
-                    if (lastBraceIndex !== -1) {
-                        const indentedBlock = allProcessedBlocks.trim();
-                        const newContent =
-                            destinationContent.slice(0, lastBraceIndex) +
-                            `\n  ${indentedBlock}\n` +
-                            destinationContent.slice(lastBraceIndex);
-                        await this.fileSystem.createFile(destinationPath, newContent);
+                const matched = relationTemplateContent.match(regex);
+                if (!matched) {
+                    continue;
+                }
+                const blockContent = matched[0];
+
+                const isBlockInClass = relationTemplateContent.trim().endsWith('}');
+
+
+                let allProcessedBlocks = '';
+
+                for (const relationField of relationFields) {
+                    if (!relationField.relatedModel) {
+                        continue;
                     }
-                } else {
-                    await this.fileSystem.createFile(destinationPath, destinationContent + allProcessedBlocks);
+
+                    let templateBlock = blockContent;
+
+                    // 1. Заменяем основную сущность
+                    const mainEntityConfig = new GenerationConfig({ ...config, templEntity: relationTemplateEntity, targetEntity: model.className });
+                    const mainEntityRules = getDictionaryRules(DictionaryPresets.ENTITY, mainEntityConfig);
+                    for (const rule of mainEntityRules) {
+                        templateBlock = templateBlock.replace(new RegExp(rule.from, 'g'), rule.to);
+                    }
+
+                    // 2. Заменяем связанную сущность
+                    const relatedEntityConfig = new GenerationConfig({ ...config, templEntity: templateRelatedEntity, targetEntity: relationField.relatedModel });
+                    const relatedEntityRules = getDictionaryRules(DictionaryPresets.ENTITY, relatedEntityConfig);
+                    for (const rule of relatedEntityRules) {
+                        templateBlock = templateBlock.replace(new RegExp(rule.from, 'g'), rule.to);
+                    }
+
+                    // 3. Заменяем ID поле
+                    const targetIdName = relationField.name.endsWith('Id') ? relationField.name : `${relationField.name}Id`;
+                    templateBlock = templateBlock.replace(new RegExp(`${templateRelatedEntity}Id`, 'g'), targetIdName);
+
+                    allProcessedBlocks += '\n\n' + templateBlock;
+                }
+
+                if (allProcessedBlocks.length > 0) {
+                    const relativePath = path.relative(sourceBasePath, templateFilePath).replace(/\\/g, '/');
+                    const destinationPath = path.join(destinationBasePath, this._getDestinationPath(new GenerationConfig({ ...config, templEntity: 'category' }), relativePath));
+
+                    if (!await this.fileSystem.exists(destinationPath)) {
+                        continue;
+                    }
+
+
+                    const destinationContent = await this.fileSystem.readFile(destinationPath);
+                    if (isBlockInClass) {
+                        const lastBraceIndex = destinationContent.lastIndexOf('}');
+                        if (lastBraceIndex !== -1) {
+                            const indentedBlock = allProcessedBlocks.trim();
+                            const newContent =
+                                destinationContent.slice(0, lastBraceIndex) +
+                                `\n  ${indentedBlock}\n` +
+                                destinationContent.slice(lastBraceIndex);
+                            await this.fileSystem.createFile(destinationPath, newContent);
+                        }
+                    } else {
+                        await this.fileSystem.createFile(destinationPath, destinationContent + allProcessedBlocks);
+                    }
                 }
             }
         }
+
     }
 
     private _getDestinationPath(config: GenerationConfig, relativePath: string): string {

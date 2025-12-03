@@ -61,9 +61,10 @@ export class CodeFormatter implements ICodeFormatter {
       let _value = field.name; 
       if(field.isRelation && field.relationType === 'manyToOne'){
         _name = field.name.endsWith('Id') ? field.name : `${field.name}Id`;
-        _value = `${field.name}`;
-      }
-      return `${_name}: Value(${_name})`;});
+        // _value = `${field.name}`;
+        _value = field.name.endsWith('Id') ? `${field.name}.toString()` : `${field.name}`;
+      } 
+      return `${_name}: Value(${_value})`;});
     return wrapped.join(',\n');
   }
 

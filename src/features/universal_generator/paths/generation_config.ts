@@ -36,11 +36,11 @@ export class GenerationConfig {
     this.templProject = config.templProject || 't2';
     this.allManifests = config.manifest || [];
     this.templFeatureName = config.templFeatureName || 'home';
-    this.targetFeaturePath = config.targetFeaturePath || '';
     this.projectsPath = config.projectsPath || 'G:/Projects/Flutter/serverpod';
     this.templEntity = config.templEntity || 'category';
     this.workspacesPath = config.workspacesPath || '';
     this.targetProject = config.targetProject || path.basename(this.workspacesPath);
+    this.targetFeaturePath = config.targetFeaturePath || `G:/Projects/Flutter/serverpod/${this.targetProject}/${this.targetProject}_flutter/lib/features/home`;
     this.targetEntity = config.targetEntity || '';
     this.targetEntity1 = config.targetEntity1 || '';
     this.targetEntity2 = config.targetEntity2 || '';

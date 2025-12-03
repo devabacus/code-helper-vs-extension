@@ -45,20 +45,20 @@ export class GenerationService {
             const pathInfo = getPathInfo(config, dir);
             const fullDirSourcePath = pathInfo.sourceBasePath;
             if (!await this.fileSystem.exists(fullDirSourcePath)) { continue; }
-            
+
             const filesInDir = await scanWithIgnore(fullDirSourcePath, this.fileSystem);
 
             for (const templateFullPath of filesInDir) {
-                if (isEntityBasedGeneration && !templateFullPath.includes(config.templEntity)) { continue; }
+                // if (!isEntityBasedGeneration) { continue; } Если мы оставляем такой вариант тогда при старте проекта вообще не копируются файлы pubspec.yaml и так далее. Т.е все итерации пропускаются
+                if (isEntityBasedGeneration && !config.allManifests.includes('manyToMany') && !templateFullPath.includes(config.templEntity)) { continue; }
                 if (templateFullPath.includes('.g.') || templateFullPath.includes('.freezed.')) { continue; }
-
                 const templateContent = await this.fileSystem.readFile(templateFullPath);
                 const fileManifest = MarkerAnalyzer.analyze(templateContent);
-                
-                if (fileManifest.types.includes('ignore')) { continue; }    
+
+                if (fileManifest.types.includes('ignore')) { continue; }
                 const isRelevant = config.allManifests.some(feature => fileManifest.types.includes(feature as any));
                 if (!isRelevant) { continue; }
-                
+
                 allPromises.push(this._processFile(config, templateFullPath, templateContent, fileManifest, pathInfo, model));
             }
         }
@@ -80,7 +80,7 @@ export class GenerationService {
     ): Promise<void> {
         const relativePath = path.relative(pathInfo.sourceBasePath, templateFullPath).replace(/\\/g, '/');
         const destinationPath = path.join(pathInfo.destinationBasePath, this._getDestinationPath(relativePath, config));
-        
+
         const destinationExists = await this.fileSystem.exists(destinationPath);
         const hasBaseMarker = /(?:\/\/|#) === generated_start:base ===/.test(templateContent);
 
@@ -93,7 +93,7 @@ export class GenerationService {
         }
 
         // --- СТРАТЕГИЯ 2: ПОЛНАЯ ЗАМЕНА (ДЛЯ ВСЕХ О СТАЛЬНЫХ СЛУЧАЕВ) ---
-        
+
         // 🔥 ВОЗВРАЩАЕМ КОРРЕКТНУЮ ЛОГИКУ ПОИСКА СЛОВАРЕЙ
         const dictionaries = fileManifest.dictionaries.length > 0 ? fileManifest.dictionaries : allManifests[config.allManifests[0]]?.dictionaries || [];
         const rules = getDictionaryRules(dictionaries, config);
@@ -110,7 +110,7 @@ export class GenerationService {
         await this.fileSystem.createFolder(path.dirname(destinationPath));
         await this.fileSystem.createFile(destinationPath, newContent);
     }
-    
+
     private _mergeBaseContent(
         templateContent: string,
         destinationContent: string,
@@ -118,7 +118,7 @@ export class GenerationService {
         config: GenerationConfig,
     ): string {
         const baseBlockRegex = /((?:\/\/|#) === generated_start:base ===)([\s\S]*?)((?:\/\/|#) === generated_end:base ===)/;
-        
+
         const templateMatch = templateContent.match(baseBlockRegex);
         if (!templateMatch || typeof templateMatch[2] !== 'string') {
             return destinationContent;
@@ -132,7 +132,7 @@ export class GenerationService {
         for (const rule of rules) {
             newBlockContent = newBlockContent.replace(new RegExp(rule.from, 'g'), rule.to);
         }
-        
+
         const finalContent = destinationContent.replace(
             baseBlockRegex,
             `$1${newBlockContent}$3`

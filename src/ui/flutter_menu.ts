@@ -21,7 +21,6 @@ export async function flutterHandler() {
     const options: { [key: string]: () => Promise<any> } = {
         'Новый проект c serverpod': () => createNewProject(),
         'Создать файлы данных из yaml': () => createDataFilesByReplacement(),
-        'Отладка': () => createNewProject(),
         // 'Создать файлы данных из yaml': () => createDataFilesFromYaml(),
         // 'Новый проект c serverpod': () => flutterCreateNewServerPodProject(addBaseTemplate),
         // 'Новый проект c serverpod': () => createNewProjectTest(addBaseTemplate),

@@ -27,8 +27,10 @@ export const pubGet = `flutter pub get`;
 export const build_runner = `dart run build_runner build --delete-conflicting-outputs`;
 
 
+
 const regularPluginsCommand = `${startPlugins.join(' ')}`;
 const devPluginsCommand = `${startDevPlugins.map((item: string) => `dev:${item} `).join('')}`;
+// команда не используется потому что копируем pubspec.yaml из шаблона и запускаем flutter pub get
 
 export const addStartPlugins = `${pubAddComm}${regularPluginsCommand} ${devPluginsCommand}`;
 

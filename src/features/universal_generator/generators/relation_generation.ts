@@ -24,6 +24,7 @@ export function generateServerpodToModelParams(model: ServerpodModel): string {
         let fieldValue = field.name;
         if ((field.isRelation && field.relationType === 'manyToOne') || field.name === 'customerId') {
             fieldValue = `${field.name}${field.nullable ? '?' : ''}.toString()`;
+            // fieldValue = `${field.name} == null ? null : serverpod.UuidValue.fromString(${field.name}!)`;
         }
         return `${field.name}: ${fieldValue}`;
     }).join(',\n      ');

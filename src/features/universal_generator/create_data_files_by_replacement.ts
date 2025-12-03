@@ -30,6 +30,7 @@ export async function createDataFilesByReplacement() {
     });
 
     const featurePath = await pickPath("Выберите feature", config.featuresPath);
+
     if (featurePath) {
         config.targetFeaturePath = featurePath;
     } else { return; }
