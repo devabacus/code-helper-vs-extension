@@ -23,7 +23,8 @@ export class RelationPatcher {
         const regex = new RegExp(`${startMarker}[\\s\\S]*?${endMarker}`, 'g');
 
         const relationFields = RelationAnalyzer.manyToOneFields(model.fields);
-        if (relationFields.length === 0) {
+        //todo Связанные модели (которые содержат Map) не обрабатываются 
+        if (relationFields.length === 0 || model.className.includes('Map')) {
             return;
         }
 
