@@ -18,7 +18,7 @@ export async function createDataFilesByReplacement() {
     const workspacePath = getRootWorkspaceFolders();
 
     const config = new GenerationConfig({
-        templProject: 't19',
+        templProject: 't23',
         workspacesPath: workspacePath,
         templFeatureName: 'home',
         targetFeaturePath: 'configuration',
