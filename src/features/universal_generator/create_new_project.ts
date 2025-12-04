@@ -39,7 +39,7 @@ export async function createNewProject(): Promise<void> {
     }
 
     const config = new GenerationConfig({
-        templProject: 't2',
+        templProject: 't19',
         targetProject: targetProject,
         manifest: ['startProject']
     });
