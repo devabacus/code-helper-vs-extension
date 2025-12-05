@@ -47,15 +47,15 @@ export async function serverpodK8sFileGenerate(projectPath: string): Promise<voi
 
     // const mainPath = path.join(flutterPath, "lib", "main.dart");
     // const serverCheckUilPath = path.join(flutterPath, "lib", "check", "server_check_ui.dart");
-    const testDataSpyPath = path.join(serverPath, "lib", "src", "models", "test_data.spy.yaml");
-    const testDataEndPointPath = path.join(serverPath, "lib", "src", "endpoints", "test_data_endpoint.dart");
+    // const testDataSpyPath = path.join(serverPath, "lib", "src", "models", "test_data.spy.yaml");
+    // const testDataEndPointPath = path.join(serverPath, "lib", "src", "endpoints", "test_data_endpoint.dart");
     
     createFile(dockerignorePath, dockerignore);
     // createFile(mainPath, mainFile(projectName));
     // createFile(serverCheckUilPath, serverCheckUi(projectName));
 
-    createFile(testDataSpyPath, testDataSpy);
-    createFile(testDataEndPointPath, testDataEndpoint);
+    // createFile(testDataSpyPath, testDataSpy);
+    // createFile(testDataEndPointPath, testDataEndpoint);
     createFile(clusterIssuerPath, clusterIssuerFile);
     // createFile(nginxServicePath, nginxServiceFile); nginx ingress больше не поддерживается в кубере
     // createFile(pgProxyPodPath, pgProxyPodFile(serverYamlData)); нейросеть говорит что это не нужно
